@@ -1,0 +1,9 @@
+﻿<?xml version="1.0"?>
+<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Info BuildTag="Demo" BuildDescription="Offline-Demo" IsDemo="true" />
+  <FileSystem AppDir="EULG-Vorfuehr" DataDir="EULG-Vorfuehr" AppBinary="EULG_client.exe" SyncBinary="Eulg_sync_client.exe" />
+  <Registry UserSettingsKey="EULG_Vorfuehr" MachineSettingsKey="EULG_Vorfuehr" UninstallKey="EULG_Vorfuehr" UninstallName="EULG - Vorführclient" LocalDbInstance="" />
+  <ShellIcons DesktopApp="EULG Vorführclient" StartMenuFolder="EULG Vorführclient" StartMenuApp="EULG Vorführclient" StartMenuSync="EULG Vorführclient Sync" StartMenuSupportTool="EULG Support (Vorführ-Client)" StartMenuFernwartung="EULG Fernwartung" />
+  <Update Channel="Demo" UseHttps="true" />
+  <Urls Update="service.eulg.de/Update/" Web="https://service.eulg.de/Api" Sync="syncservice.eulg.de:443" SyncHttp="service.eulg.de/Sync" DbUpdateUrl="" CertPublicKey="" />
+</Branding>

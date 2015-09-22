@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <NugetRepo Condition=" '$(NugetRepo)'=='' ">$(MSBuildProjectDirectory)\..\..\packages</NugetRepo>
+    <NoSigning Condition=" '$(NoSigning)' == '' ">False</NoSigning>
+    <ProjectGuid>{4DDA980F-20E0-425B-8AB5-B21A83ED6608}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Eulg.Setup</RootNamespace>
+    <AssemblyName>Setup</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Eulg.Setup.App</StartupObject>
+  </PropertyGroup>
+  <Import Project="$(TPath)" Condition="Exists($(TPath))" />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Setup-Eulg.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Crypt.cs" />
+    <Compile Include="Dependencies.cs" />
+    <Compile Include="FingerPrint.cs" />
+    <Compile Include="Pages\Failed.xaml.cs">
+      <DependentUpon>Failed.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\InstChoosePath.xaml.cs">
+      <DependentUpon>InstChoosePath.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\InstDependencies.xaml.cs">
+      <DependentUpon>InstDependencies.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\InstDone.xaml.cs">
+      <DependentUpon>InstDone.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\InstLogin.xaml.cs">
+      <DependentUpon>InstLogin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\InstProgress.xaml.cs">
+      <DependentUpon>InstProgress.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\InstWelcome.xaml.cs">
+      <DependentUpon>InstWelcome.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ISetupPageBase.cs" />
+    <Compile Include="Pages\MaintainChoose.xaml.cs">
+      <DependentUpon>MaintainChoose.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MaintainDone.xaml.cs">
+      <DependentUpon>MaintainDone.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MaintainUninstall.xaml.cs">
+      <DependentUpon>MaintainUninstall.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProxySettings.xaml.cs">
+      <DependentUpon>ProxySettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SectionStream.cs" />
+    <Compile Include="SetupHelper.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="UpdateClient.cs" />
+    <Compile Include="Validators\HostOrIpValidator.cs" />
+    <Compile Include="WorkerConfig.cs" />
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Pages\Failed.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InstChoosePath.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InstDependencies.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InstDone.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InstLogin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InstProgress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\InstWelcome.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MaintainChoose.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MaintainDone.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\MaintainUninstall.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProxySettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="SplashLogo.png" />
+    <Resource Include="AppIcon.ico" />
+    <Resource Include="Close16.png" />
+    <Resource Include="Pages\Inst128.png" />
+    <Resource Include="Pages\Remove.png" />
+    <Resource Include="Pages\Repair.png" />
+    <Resource Include="Setup-Eulg.ico" />
+    <Resource Include="Pages\Setup-Eulg.png" />
+    <Resource Include="Pages\Green Ball.png" />
+    <Resource Include="Pages\Orange Ball.png" />
+    <Resource Include="Pages\Red Ball.png" />
+    <Resource Include="Pages\Yellow Ball.png" />
+    <Resource Include="Pages\circle_green.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Pages\circle_red.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Pages\circle_yellow.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
+  <PropertyGroup>
+    <SolutionRootDir>$(MSBuildProjectDirectory)\..\..\</SolutionRootDir>
+  </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionRootDir)CodeSigning.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <Targets Include="SignAppExe">
+        <Properties>Configuration=$(Configuration);Platform=$(Platform);NoSigning=$(NoSigning)</Properties>
+      </Targets>
+    </ItemGroup>
+    <CallTarget Targets="@(Targets)" RunEachTargetSeparately="True" />
+  </Target>
+  <Target Name="SignAppExe" Condition=" '$(Configuration)' == 'Release' And '$(NoSigning)'=='False' ">
+    <CallTarget Targets="SignApp" />
+  </Target>
+</Project>

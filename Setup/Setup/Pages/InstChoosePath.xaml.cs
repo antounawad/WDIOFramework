@@ -1,0 +1,203 @@
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using Eulg.Setup.Shared;
+
+namespace Eulg.Setup.Pages
+{
+    public partial class InstChoosePath : ISetupPageBase
+    {
+        public InstChoosePath()
+        {
+            InitializeComponent();
+
+            PageTitle = "Installations-Verzeichnis";
+            HasPrev = true;
+            HasNext = true;
+        }
+
+        public string PageTitle { get; set; }
+        public Type PrevPage { get; set; }
+        public bool HasNext { get; set; }
+        public bool HasPrev { get; set; }
+        public string NextButtonText { get; set; }
+
+        public void OnLoad()
+        {
+            TxtPath.Text = SetupHelper.InstallPath;
+            CheckDrive();
+        }
+        public void OnLoadComplete()
+        {
+            if (SetupHelper.OfflineInstall) OnNext();
+        }
+        public void OnNext()
+        {
+            if (!TxtPath.Text.Equals(Path.GetFullPath(TxtPath.Text), StringComparison.CurrentCultureIgnoreCase))
+            {
+                TxtPath.Text = Path.GetFullPath(TxtPath.Text);
+                return;
+            }
+            if (!CheckDrive(true))
+            {
+                return;
+            }
+            var path = TxtPath.Text;
+            path = Path.GetFullPath(path);
+            SetupHelper.InstallPath = path;
+            MainWindow.Instance.NavigateToPage(SetupHelper.ProgressPage);
+            new Task(delegate
+            {
+                if (!DoInstall())
+                {
+                    Dispatcher.Invoke(new Action(() => MainWindow.Instance.NavigateToPage(new Failed())));
+                    return;
+                }
+                Dispatcher.Invoke(new Action(() => MainWindow.Instance.NavigateToPage(new InstDone())));
+            }).Start();
+        }
+
+        public bool OnPrev()
+        {
+            return true;
+        }
+
+        public bool OnClose()
+        {
+            return true;
+        }
+
+        private bool CheckDrive(bool showError = false)
+        {
+            try
+            {
+                var drive = TxtPath.Text.Length > 0 ? TxtPath.Text.Substring(0, 1) : "C";
+                var driveInfo = new DriveInfo(drive);
+                var spaceNeeded = SetupHelper.UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize);
+                var spaceAvailable = driveInfo.AvailableFreeSpace;
+                var spaceRemaining = spaceAvailable - spaceNeeded;
+                LabelSpaceNeeded.Content = $"{decimal.Round(spaceNeeded / 1024m / 1024m):N0} MB";
+                LabelSpaceAvailabel.Content = $"{decimal.Round(spaceAvailable / 1024m / 1024m):N0} MB";
+                LabelSpaceRemaining.Content = $"{decimal.Round(spaceRemaining / 1024m / 1024m):N0} MB";
+                return (spaceRemaining > 0 && driveInfo.IsReady && driveInfo.DriveType == DriveType.Fixed);
+            }
+            catch (Exception exception)
+            {
+                if (showError)
+                {
+                    MessageBox.Show(exception.GetMessagesTree(), "Hinweis", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            return false;
+        }
+
+        private bool DoInstall()
+        {
+            SetupHelper.CancelRequested = false;
+            SetupHelper.UpdateClient.Log(UpdateClient.ELogTypeEnum.Info, "Setup " + SetupHelper.Config.Version + " (" + SetupHelper.Config.Branding.Info.BuildTag + ")");
+            SetupHelper.ReportProgress("Laufende Prozesse überprüfen...", "", -1);
+            if (!SetupHelper.CheckRunningProcesses())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Update-Dienst entfernen...", "", -1);
+            if (!SetupHelper.RemoveUpdateService())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Programmdateien installieren...", "", -1);
+            if (SetupHelper.OfflineInstall)
+            {
+                SetupHelper.ExtractAppDir();
+            }
+            else
+            {
+                while (true)
+                {
+                    if (SetupHelper.DownloadAppDir(true))
+                    {
+                        break;
+                    }
+                    if (MessageBox.Show("Beim Download der Programmdateien ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Internet-Verbindung." + Environment.NewLine + Environment.NewLine + "Nochmal versuchen?", "Fehler", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
+                    {
+                        SetupHelper.Log(UpdateClient.ELogTypeEnum.Warning, "Setup wurde vom Benutzer abgebrochen!");
+                        return false;
+                    }
+                    SetupHelper.CancelRequested = false;
+                }
+            }
+            SetupHelper.ReportProgress("Update-Dienst installieren...", "", -1);
+            if (!SetupHelper.InstallUpdateService())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Uninstaller installieren...", "", -1);
+            if (!SetupHelper.InstallUninstaller())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Uninstaller registrieren...", "", -1);
+            if (!SetupHelper.RegisterUninstaller())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Einstellungen speichern (Registry)...", "", -1);
+            if (!SetupHelper.PrepareRegistry())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Einstellungen speichern (Branding)...", "", -1);
+            if (!SetupHelper.WriteBranding())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Programmstart beschleunigen...", "", -1);
+            if (!SetupHelper.InstallNgen())
+            {
+                return false;
+            }
+            SetupHelper.ReportProgress("Protokoll versenden...", "", -1);
+            if (!SetupHelper.UpdateClient.UploadLogfile())
+            {
+                if (!SetupHelper.OfflineInstall)
+                {
+                    return false;
+                }
+            }
+            SetupHelper.ReportProgress("Programm-Symbole hinzufügen...", "", -1);
+            if (!SetupHelper.AddShellIcons())
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private void BtnChoosePath_OnClick(object sender, RoutedEventArgs e)
+        {
+            using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                fbd.SelectedPath = TxtPath.Text;
+                fbd.ShowNewFolderButton = true;
+                fbd.ShowDialog();
+                TxtPath.Text = fbd.SelectedPath;
+            }
+        }
+
+        private void TxtPath_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckDrive();
+        }
+
+        private void TxtPath_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                OnNext();
+            }
+        }
+    }
+}

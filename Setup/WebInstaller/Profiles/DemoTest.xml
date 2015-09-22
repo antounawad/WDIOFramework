@@ -1,0 +1,9 @@
+﻿<?xml version="1.0"?>
+<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Info BuildTag="DemoTest" BuildDescription="Offline-Demo inhouse" IsDemo="true" />
+  <FileSystem AppDir="EULG-VorfuehrTest" DataDir="EULG-VorfuehrTest" AppBinary="EULG_client.exe" SyncBinary="Eulg_sync_client.exe" />
+  <Registry UserSettingsKey="EULG_VorfuehrTest" MachineSettingsKey="EULG_VorfuehrTest" UninstallKey="EULG_VorfuehrTest" UninstallName="EULG - Vorführclient (Test)" LocalDbInstance="EULGDemoTest" />
+  <ShellIcons DesktopApp="EULG Vorführclient (Test)" StartMenuFolder="EULG Vorführclient (Test)" StartMenuApp="EULG Vorführclient (Test)" StartMenuSync="EULG Vorführclient Sync (Test)" StartMenuSupportTool="EULG Support (Vorführ-Client Test)" StartMenuFernwartung="EULG Fernwartung" />
+  <Update Channel="Demo" UseHttps="false" />
+  <Urls Update="192.168.15.4/Service/Update/" Web="https://192.168.15.4/Service/Api" Sync="192.168.15.4:8888" SyncHttp="192.168.15.4/Service/Sync" DbUpdateUrl="" CertPublicKey="" />
+</Branding>

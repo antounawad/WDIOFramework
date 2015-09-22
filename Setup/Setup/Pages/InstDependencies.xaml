@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="Eulg.Setup.Pages.InstDependencies"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Width="480"
+             d:DesignHeight="300"
+             mc:Ignorable="d">
+
+    <StackPanel x:Name="AreaInstDependencies">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0"
+                   Grid.Column="0"
+                   Content=".NET Framework 4.5.1" />
+            <Image x:Name="IconDependencyNet"
+                   Grid.Row="0"
+                   Grid.Column="2"
+                   Width="16"
+                   Height="16"
+                   Source="circle_yellow.png" />
+            <Label Grid.Row="1"
+                   Grid.Column="0"
+                   Content="Visual C++ Runtime 2008 SP1 x86" />
+            <Image x:Name="IconDependencyCpp2008"
+                   Grid.Row="1"
+                   Grid.Column="2"
+                   Width="16"
+                   Height="16"
+                   Source="circle_yellow.png" />
+            <Label Grid.Row="2"
+                   Grid.Column="0"
+                   Content="Visual C++ Runtime 2012 Update 4 x86" />
+            <Image x:Name="IconDependencyCpp2012"
+                   Grid.Row="2"
+                   Grid.Column="2"
+                   Width="16"
+                   Height="16"
+                   Source="circle_yellow.png" />
+            <Label Grid.Row="3"
+                   Grid.Column="0"
+                   Content="Internet Explorer 9 (oder neuer)" />
+            <Image x:Name="IconDependencyIe9"
+                   Grid.Row="3"
+                   Grid.Column="2"
+                   Width="16"
+                   Height="16"
+                   Source="circle_yellow.png" />
+
+            <Label x:Name="LabelDependencyJre"
+                   Grid.Row="4"
+                   Grid.Column="0"
+                   Content="Java Runtime Environment 1.7" />
+            <Image x:Name="IconDependencyJre"
+                   Grid.Row="4"
+                   Grid.Column="2"
+                   Width="16"
+                   Height="16"
+                   Source="circle_yellow.png" />
+        </Grid>
+    </StackPanel>
+</UserControl>

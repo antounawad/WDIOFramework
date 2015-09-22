@@ -1,0 +1,175 @@
+﻿<UserControl x:Class="Eulg.Setup.ProxySettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:validators="clr-namespace:Eulg.Setup.Validators"
+             Width="420"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Top"
+             d:DesignHeight="300"
+             d:DesignWidth="420"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Style.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="DefaultTextBox" TargetType="{x:Type TextBox}">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Height" Value="26" />
+                <Setter Property="Margin" Value="4" />
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="DefaultPasswordBox" TargetType="{x:Type PasswordBox}">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Height" Value="26" />
+                <Setter Property="Margin" Value="4" />
+            </Style>
+
+            <Style x:Key="DescriptiveLabel" TargetType="{x:Type Label}">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Margin" Value="4" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid DataContext="{Binding ProxyConfig, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140" />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3"
+                   Margin="0 0 0 12"
+                   TextWrapping="Wrap">
+            <Run FontSize="16"
+                 FontWeight="SemiBold"
+                 Text="Proxy-Einstellungen" />
+            <LineBreak />
+            <LineBreak />
+            <Run>
+                Falls Sie Internetverbindungen über einen Proxyserver herstellen können Sie diesen hier
+                einrichten. Diese Einstellungen gelten für den Downloadvorgang und nach Abschluss der
+                Installation auch für den Beratungsclient und den Sync.
+            </Run>
+        </TextBlock>
+
+        <Label Grid.Row="1"
+               Grid.Column="0"
+               Content="Hostname/IP"
+               Style="{StaticResource DescriptiveLabel}" />
+        <TextBox Grid.Row="1"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 Style="{StaticResource DefaultTextBox}"
+                 Validation.Error="OnValidationStateChanged">
+            <TextBox.Text>
+                <Binding NotifyOnValidationError="True"
+                         Path="Address"
+                         UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validators:HostOrIpValidator />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <Label Grid.Row="2"
+               Grid.Column="0"
+               Content="Port (Http, Socks 5)"
+               Style="{StaticResource DescriptiveLabel}" />
+        <TextBox x:Name="TextBoxHttpPort"
+                 Grid.Row="2"
+                 Grid.Column="1"
+                 Style="{StaticResource DefaultTextBox}"
+                 Text="{Binding HttpPort,
+                                UpdateSourceTrigger=PropertyChanged,
+                                NotifyOnValidationError=True}"
+                 Validation.Error="OnValidationStateChanged" />
+        <TextBox x:Name="TextBoxSocksPort"
+                 Grid.Row="2"
+                 Grid.Column="2"
+                 Style="{StaticResource DefaultTextBox}"
+                 Text="{Binding Socks5Port,
+                                UpdateSourceTrigger=PropertyChanged,
+                                NotifyOnValidationError=True}"
+                 Validation.Error="OnValidationStateChanged" />
+
+        <Label Grid.Row="3"
+               Grid.Column="0"
+               Content="Benutzer"
+               Style="{StaticResource DescriptiveLabel}" />
+        <TextBox Grid.Row="3"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 Style="{StaticResource DefaultTextBox}"
+                 Text="{Binding Username,
+                                UpdateSourceTrigger=PropertyChanged}" />
+
+        <Label Grid.Row="4"
+               Grid.Column="0"
+               Content="Passwort"
+               Style="{StaticResource DescriptiveLabel}" />
+        <PasswordBox x:Name="PasswordBox"
+                     Grid.Row="4"
+                     Grid.Column="1"
+                     Grid.ColumnSpan="2"
+                     PasswordChanged="OnPasswordChanged"
+                     Style="{StaticResource DefaultPasswordBox}"
+                     x:FieldModifier="private" />
+        <Button x:Name="ClearPasswordButton"
+                Grid.Row="4"
+                Grid.Column="2"
+                Width="24"
+                Height="24"
+                Margin="0 0 5 0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Background="#00FFFFFF"
+                BorderThickness="0"
+                Click="OnClearPassword"
+                x:FieldModifier="private">
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontFamily="Webdings"
+                       FontSize="12"
+                       Text="r" />
+        </Button>
+
+        <Label Grid.Row="5"
+               Grid.Column="0"
+               Content="Domäne"
+               Style="{StaticResource DescriptiveLabel}" />
+        <TextBox Grid.Row="5"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 Style="{StaticResource DefaultTextBox}"
+                 Text="{Binding Domain,
+                                UpdateSourceTrigger=PropertyChanged}" />
+    </Grid>
+</UserControl>
