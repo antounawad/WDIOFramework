@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Eulg.Setup"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:validators="clr-namespace:Eulg.Setup.Validators"
              Width="420"
@@ -23,7 +24,7 @@
                 <Setter Property="Margin" Value="4" />
                 <Style.Triggers>
                     <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                        <Setter Property="ToolTip" Value="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={x:Static RelativeSource.Self}}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -46,7 +47,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid DataContext="{Binding ProxyConfig, Mode=OneWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}">
+    <Grid DataContext="{Binding ProxyConfig, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProxySettings}}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="140" />
             <ColumnDefinition />
@@ -54,6 +55,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition />
@@ -66,84 +68,80 @@
                    Grid.Column="0"
                    Grid.ColumnSpan="3"
                    Margin="0 0 0 12"
-                   TextWrapping="Wrap">
-            <Run FontSize="16"
+                   TextWrapping="Wrap"><Run FontSize="16"
                  FontWeight="SemiBold"
                  Text="Proxy-Einstellungen" />
             <LineBreak />
-            <LineBreak />
-            <Run>
-                Falls Sie Internetverbindungen über einen Proxyserver herstellen können Sie diesen hier
-                einrichten. Diese Einstellungen gelten für den Downloadvorgang und nach Abschluss der
-                Installation auch für den Beratungsclient und den Sync.
-            </Run>
+            <LineBreak /><Run Text="Falls Sie Internetverbindungen über einen Proxyserver herstellen können Sie diesen hier einrichten. Diese Einstellungen gelten für den Downloadvorgang und nach Abschluss der Installation auch für den Beratungsclient und den Sync." />
         </TextBlock>
 
-        <Label Grid.Row="1"
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3">
+            <RadioButton Content="Proxy-Einstellungen des Systems verwenden" IsChecked="{Binding ProxyTypeDefault}" />
+            <RadioButton Content="Kein Proxy" IsChecked="{Binding ProxyTypeNone}" />
+            <RadioButton Content="Manuelle Proxy-Konfiguration" IsChecked="{Binding ProxyTypeManual}" />
+        </StackPanel>
+
+        <Label Grid.Row="2"
                Grid.Column="0"
                Content="Hostname/IP"
                Style="{StaticResource DescriptiveLabel}" />
-        <TextBox Grid.Row="1"
+        <TextBox Grid.Row="2"
                  Grid.Column="1"
                  Grid.ColumnSpan="2"
+                 IsEnabled="{Binding ProxyTypeManual}"
                  Style="{StaticResource DefaultTextBox}"
                  Validation.Error="OnValidationStateChanged">
-            <TextBox.Text>
-                <Binding NotifyOnValidationError="True"
-                         Path="Address"
-                         UpdateSourceTrigger="PropertyChanged">
-                    <Binding.ValidationRules>
-                        <validators:HostOrIpValidator />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
+            <Binding NotifyOnValidationError="True"
+                     Path="Address"
+                     UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                    <validators:HostOrIpValidator />
+                </Binding.ValidationRules>
+            </Binding>
         </TextBox>
 
-        <Label Grid.Row="2"
+        <Label Grid.Row="3"
                Grid.Column="0"
                Content="Port (Http, Socks 5)"
                Style="{StaticResource DescriptiveLabel}" />
         <TextBox x:Name="TextBoxHttpPort"
-                 Grid.Row="2"
+                 Grid.Row="3"
                  Grid.Column="1"
+                 IsEnabled="{Binding ProxyTypeManual}"
                  Style="{StaticResource DefaultTextBox}"
                  Text="{Binding HttpPort,
-                                UpdateSourceTrigger=PropertyChanged,
-                                NotifyOnValidationError=True}"
-                 Validation.Error="OnValidationStateChanged" />
-        <TextBox x:Name="TextBoxSocksPort"
-                 Grid.Row="2"
-                 Grid.Column="2"
-                 Style="{StaticResource DefaultTextBox}"
-                 Text="{Binding Socks5Port,
-                                UpdateSourceTrigger=PropertyChanged,
-                                NotifyOnValidationError=True}"
+                                NotifyOnValidationError=True,
+                                UpdateSourceTrigger=PropertyChanged}"
                  Validation.Error="OnValidationStateChanged" />
 
-        <Label Grid.Row="3"
+        <Label Grid.Row="4"
                Grid.Column="0"
                Content="Benutzer"
                Style="{StaticResource DescriptiveLabel}" />
-        <TextBox Grid.Row="3"
+        <TextBox Grid.Row="4"
                  Grid.Column="1"
                  Grid.ColumnSpan="2"
+                 IsEnabled="{Binding ProxyTypeManual}"
                  Style="{StaticResource DefaultTextBox}"
                  Text="{Binding Username,
                                 UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="4"
+        <Label Grid.Row="5"
                Grid.Column="0"
                Content="Passwort"
                Style="{StaticResource DescriptiveLabel}" />
         <PasswordBox x:Name="PasswordBox"
-                     Grid.Row="4"
+                     Grid.Row="5"
                      Grid.Column="1"
                      Grid.ColumnSpan="2"
+                     IsEnabled="{Binding ProxyTypeManual}"
                      PasswordChanged="OnPasswordChanged"
                      Style="{StaticResource DefaultPasswordBox}"
                      x:FieldModifier="private" />
         <Button x:Name="ClearPasswordButton"
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="2"
                 Width="24"
                 Height="24"
@@ -161,13 +159,14 @@
                        Text="r" />
         </Button>
 
-        <Label Grid.Row="5"
+        <Label Grid.Row="6"
                Grid.Column="0"
                Content="Domäne"
                Style="{StaticResource DescriptiveLabel}" />
-        <TextBox Grid.Row="5"
+        <TextBox Grid.Row="6"
                  Grid.Column="1"
                  Grid.ColumnSpan="2"
+                 IsEnabled="{Binding ProxyTypeManual}"
                  Style="{StaticResource DefaultTextBox}"
                  Text="{Binding Domain,
                                 UpdateSourceTrigger=PropertyChanged}" />
