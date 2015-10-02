@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Eulg.Setup.Shared
+namespace Eulg.Shared
 {
     [XmlRoot]
     public class SetupConfig

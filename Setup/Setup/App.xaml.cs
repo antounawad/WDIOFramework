@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using Eulg.Setup.Shared;
+using Eulg.Shared;
 
 namespace Eulg.Setup
 {

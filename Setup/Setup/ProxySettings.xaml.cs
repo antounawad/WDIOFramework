@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace Eulg.Setup
 {
@@ -20,33 +19,19 @@ namespace Eulg.Setup
 
         public class ProxyConfigWrapper
         {
-            public string Address { get { return Shared.ProxyConfig.Address; } set { Shared.ProxyConfig.Address = value; } }
-            public ushort HttpPort { get { return Shared.ProxyConfig.HttpPort; } set { Shared.ProxyConfig.HttpPort = value; } }
-            public string Username { get { return Shared.ProxyConfig.Username; } set { Shared.ProxyConfig.Username = value; } }
-            public string Domain { get { return Shared.ProxyConfig.Domain; } set { Shared.ProxyConfig.Domain = value; } }
-            public string Password { get { return Shared.ProxyConfig.Password; } set { Shared.ProxyConfig.Password = value; } }
-            public bool ProxyTypeDefault { get { return (Shared.ProxyConfig.ProxyType == Shared.ProxyConfig.EProxyType.Default); } set { if (value) Shared.ProxyConfig.ProxyType = Shared.ProxyConfig.EProxyType.Default; } }
-            public bool ProxyTypeNone { get { return (Shared.ProxyConfig.ProxyType == Shared.ProxyConfig.EProxyType.None); } set { if (value) Shared.ProxyConfig.ProxyType = Shared.ProxyConfig.EProxyType.None; } }
-            public bool ProxyTypeManual { get { return (Shared.ProxyConfig.ProxyType == Shared.ProxyConfig.EProxyType.Manual); } set { if (value) Shared.ProxyConfig.ProxyType = Shared.ProxyConfig.EProxyType.Manual; } }
+            public string Address { get { return Eulg.Shared.ProxyConfig.Address; } set { Eulg.Shared.ProxyConfig.Address = value; } }
+            public ushort HttpPort { get { return Eulg.Shared.ProxyConfig.HttpPort.GetValueOrDefault(0); } set { Eulg.Shared.ProxyConfig.HttpPort = value; } }
+            public string Username { get { return Eulg.Shared.ProxyConfig.Username; } set { Eulg.Shared.ProxyConfig.Username = value; } }
+            public string Domain { get { return Eulg.Shared.ProxyConfig.Domain; } set { Eulg.Shared.ProxyConfig.Domain = value; } }
+            public string Password { get { return Eulg.Shared.ProxyConfig.Password; } set { Eulg.Shared.ProxyConfig.Password = value; } }
+            public bool ProxyTypeDefault { get { return (Eulg.Shared.ProxyConfig.ProxyType == Eulg.Shared.ProxyConfig.EProxyType.Default); } set { if (value) Eulg.Shared.ProxyConfig.ProxyType = Eulg.Shared.ProxyConfig.EProxyType.Default; } }
+            public bool ProxyTypeNone { get { return (Eulg.Shared.ProxyConfig.ProxyType == Eulg.Shared.ProxyConfig.EProxyType.None); } set { if (value) Eulg.Shared.ProxyConfig.ProxyType = Eulg.Shared.ProxyConfig.EProxyType.None; } }
+            public bool ProxyTypeManual { get { return (Eulg.Shared.ProxyConfig.ProxyType == Eulg.Shared.ProxyConfig.EProxyType.Manual); } set { if (value) Eulg.Shared.ProxyConfig.ProxyType = Eulg.Shared.ProxyConfig.EProxyType.Manual; } }
         }
 
         public ProxyConfigWrapper ProxyConfig { get; } = new ProxyConfigWrapper();
 
 
-        public class RadioButtonCheckedConverter : IValueConverter
-        {
-            public object Convert(object value, Type targetType, object parameter,
-                System.Globalization.CultureInfo culture)
-            {
-                return value.Equals(parameter);
-            }
-
-            public object ConvertBack(object value, Type targetType, object parameter,
-                System.Globalization.CultureInfo culture)
-            {
-                return value.Equals(true) ? parameter : Binding.DoNothing;
-            }
-        }
 
         public ProxySettings()
         {
@@ -80,8 +65,8 @@ namespace Eulg.Setup
 
             try
             {
-                Shared.ProxyConfig.WriteToRegistry();
-                Shared.ProxyConfig.SetDefault();
+                Eulg.Shared.ProxyConfig.WriteToRegistry();
+                Eulg.Shared.ProxyConfig.SetDefault();
                 RememberCurrentConfig();
                 return true;
             }

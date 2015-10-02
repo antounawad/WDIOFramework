@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Principal;
-using Eulg.Update.Shared;
+using Eulg.Shared;
 using Update.Fix.Fixes;
 
 namespace Update.Fix

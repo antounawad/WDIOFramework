@@ -1,0 +1,50 @@
+﻿<Window x:Class="Eulg.Client.SupportTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EULG Support" 
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="None" AllowsTransparency="True"  Background="Transparent"
+        Icon="SupportTool.ico"
+        Width="980" SizeToContent="Height" MinHeight="575"
+        Loaded="MainWindow_OnLoaded">
+
+    <StackPanel Orientation="Vertical" Margin="33" Focusable="False">
+
+        <Image x:Name="EulgLogo" Panel.ZIndex="1" Source="SplashLogo.png" Width="600" Height="147" >
+            <Image.Effect>
+                <DropShadowEffect ShadowDepth="3" RenderingBias="Performance" BlurRadius="12"/>
+            </Image.Effect>
+        </Image>
+        <Image Source="Close16.png" Height="16" Width="16" Margin="560,-260,0,0" Panel.ZIndex="2" MouseLeftButtonDown="CloseIcon_OnMouseLeftButtonDown" />
+
+        <Border x:Name="ContentBorder" Margin="227,-70,175,0" HorizontalAlignment="Stretch" Focusable="False" BorderThickness="3,3,3,3" CornerRadius="12,12,12,12" Padding="10,75,10,10">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="3" RenderingBias="Performance" BlurRadius="12"/>
+            </Border.Effect>
+            
+            <Border.BorderBrush>
+                <LinearGradientBrush MappingMode="RelativeToBoundingBox" StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#C84B4B" Offset="0" />
+                    <GradientStop Color="#D08080" Offset="1" />
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Gainsboro" Offset="1" />
+                    <GradientStop Color="#FFF7F7F7" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <DockPanel x:Name="DrawerContent" MinWidth="486">
+                <!--<StatusBar DockPanel.Dock="Bottom">
+                    <StatusBarItem>
+                        <TextBlock>Hallo</TextBlock>
+                    </StatusBarItem>
+                </StatusBar>-->
+                <ContentControl x:Name="ViewContainer"/>
+            </DockPanel>
+        </Border>
+
+    </StackPanel>
+</Window>

@@ -82,6 +82,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="..\Update.Shared\Update.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\Shared\Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <SolutionRootDir>$(MSBuildProjectDirectory)\..\..\</SolutionRootDir>
   </PropertyGroup>

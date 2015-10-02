@@ -73,7 +73,7 @@ namespace Eulg.Update.Worker
                     {
                         var tmp = runningProcs.Where(p => !p.HasExited).Select(p => Environment.NewLine + "– " + p.ProcessName);
                         var result = MessageBox.Show("Die Aktualisierung kann nicht durchgeführt werden, da noch noch abhängige Anwendungen laufen. " +
-                                                     "Laufende Prozesse: " + String.Join("", tmp), "EULG Update", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
+                                                     "Laufende Prozesse: " + string.Join("", tmp), "EULG Update", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
                         if (result != DialogResult.Retry)
                         {
                             Log.Write(UpdateWorker.LogTypeEnum.Info, "There were running processes left and the user chose to cancel");
@@ -98,7 +98,7 @@ namespace Eulg.Update.Worker
                     Log.Write(UpdateWorker.LogTypeEnum.Error, ex.ToString());
                     var msg = ex is AggregateException ? string.Join(Environment.NewLine, ((AggregateException) ex).Flatten().InnerExceptions.Where(f => f is ServiceActivationException).Select(s => s.Message)) : ex.Message;
                     if (MessageBox.Show("Die Aktualisierung konnte leider nicht durchgeführt werden. Bei der Vorbereitung des Updates trat ein unvorhergesehener Fehler auf. Es wird die letzte Version des Clients gestartet." +
-                                        Environment.NewLine + Environment.NewLine + String.Format("Fehler: {1} ({0})", ex.GetType(), msg), "EULG Update: Fehler", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.OK)
+                                        Environment.NewLine + Environment.NewLine + string.Format("Fehler: {1} ({0})", ex.GetType(), msg), "EULG Update: Fehler", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.OK)
                     {
                         worker.StartApplication(false);
                     }
@@ -115,7 +115,7 @@ namespace Eulg.Update.Worker
                     Dispatcher.CurrentDispatcher.Invoke(() =>
                     {
                         if (MessageBox.Show(MainWindow, "Die Aktualisierung konnte leider nicht durchgeführt werden. Bei der Anwendung des Updates trat ein unvorhergesehener Fehler auf. Es wird die letzte Version des Clients gestartet." +
-                                                        Environment.NewLine + Environment.NewLine + String.Format("Fehler: {1} ({0})", ex.GetType(), ex.Message), "EULG Update: Fehler", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.OK)
+                                                        Environment.NewLine + Environment.NewLine + string.Format("Fehler: {1} ({0})", ex.GetType(), ex.Message), "EULG Update: Fehler", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == DialogResult.OK)
                         {
                             worker.StartApplication(false);
                         }

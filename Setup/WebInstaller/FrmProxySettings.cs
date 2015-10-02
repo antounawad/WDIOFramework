@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Forms;
-using Eulg.Setup.Shared;
+using Eulg.Shared;
 
 namespace Eulg.Setup.WebInstaller
 {
@@ -12,7 +12,7 @@ namespace Eulg.Setup.WebInstaller
             InitializeComponent();
 
             TxtAddress.Text = ProxyConfig.Address;
-            TxtPort.Text = ProxyConfig.HttpPort.ToString(CultureInfo.InvariantCulture);
+            TxtPort.Text = ProxyConfig.HttpPort.GetValueOrDefault(0).ToString(CultureInfo.InvariantCulture);
             TxtUserName.Text = ProxyConfig.Username;
             TxtPassword.Text = ProxyConfig.Password;
             TxtDomain.Text = ProxyConfig.Domain;

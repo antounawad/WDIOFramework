@@ -10,6 +10,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Xml.Serialization;
 using Eulg.Setup.Shared;
+using Eulg.Shared;
 
 namespace Eulg.Setup
 {
@@ -389,17 +390,13 @@ namespace Eulg.Setup
         {
             WorkerConfig.WorkerFiles.Clear();
             // AppDir
-            var appDir = UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir");
-            CompareDirectory(ApplicationPath, appDir);
+            CompareDirectory(ApplicationPath, UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir"));
             // Support
-            var support = UpdateConf.UpdateFiles.Where(w => w.FilePath == "Support");
-            CompareDirectory(Path.Combine(ApplicationPath, "Support"), support);
+            CompareDirectory(Path.Combine(ApplicationPath, "Support"), UpdateConf.UpdateFiles.Where(w => w.FilePath == "Support"));
             // Plugins
-            var pluginsDir = UpdateConf.UpdateFiles.Where(w => w.FilePath == "Plugins");
-            CompareDirectory(Path.Combine(ApplicationPath, "Plugins"), pluginsDir);
-            // Deletes
-            var appDeletes = UpdateConf.UpdateDeletes.Where(w => w.FilePath == "AppDir");
-            CompareDeletes(ApplicationPath, appDeletes);
+            CompareDirectory(Path.Combine(ApplicationPath, "Plugins"), UpdateConf.UpdateFiles.Where(w => w.FilePath == "Plugins"));
+            // AppDir Deletes
+            CompareDeletes(ApplicationPath, UpdateConf.UpdateDeletes.Where(w => w.FilePath == "AppDir"));
 
             var updateService = UpdateConf.UpdateFiles.Where(w => w.FilePath == "" && w.FileName.Equals("UpdateService.exe", StringComparison.CurrentCultureIgnoreCase));
             CompareDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService"), updateService);

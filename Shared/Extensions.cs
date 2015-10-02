@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Eulg.Setup.Shared
+namespace Eulg.Shared
 {
     public static class Extensions
     {

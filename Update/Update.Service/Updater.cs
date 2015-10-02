@@ -7,6 +7,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
+using Eulg.Shared;
 using Eulg.Update.Shared;
 
 namespace Eulg.Update.Service

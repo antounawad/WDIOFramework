@@ -2,14 +2,14 @@
 using System.Net;
 using Microsoft.Win32;
 
-namespace Eulg.Setup.Shared
+namespace Eulg.Shared
 {
     public static class ProxyConfig
     {
         public enum EProxyType { Default = 0, None = 1, Manual = 2 }
         public static EProxyType ProxyType { get; set; }
         public static string Address { get; set; }
-        public static ushort HttpPort { get; set; }
+        public static ushort? HttpPort { get; set; }
         public static string Username { get; set; }
         public static string Password { get; set; }
         public static string Domain { get; set; }
@@ -40,7 +40,7 @@ namespace Eulg.Setup.Shared
                     proxy = null;
                     break;
                 case EProxyType.Manual:
-                    proxy = new WebProxy(Address, HttpPort);
+                    proxy = new WebProxy(Address, HttpPort.GetValueOrDefault(3128));
                     if (!string.IsNullOrWhiteSpace(Username))
                     {
                         proxy.Credentials = new NetworkCredential(Username, Password, Domain);
@@ -77,6 +77,7 @@ namespace Eulg.Setup.Shared
                     Domain = keyLmParent.GetValue("ProxyDomain", null) as string;
                 }
             }
+            if (Address != null && Address.Equals("*")) Address = null;
             if (Address == null)
                 ProxyType = EProxyType.Default;
             else if (Address.Equals(string.Empty, StringComparison.InvariantCultureIgnoreCase))
@@ -88,8 +89,24 @@ namespace Eulg.Setup.Shared
         }
         public static void WriteToRegistry()
         {
-            var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
-            var keyLmParent = keyLmSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyLmSoftware?.CreateSubKey(REG_KEY_PARENT);
+            if (ProxyType == EProxyType.Manual)
+            {
+                if (string.IsNullOrWhiteSpace(Address) || Address.Equals("*") || HttpPort == null || HttpPort < 1)
+                    ProxyType = EProxyType.Default;
+            }
+
+            // ReSharper disable once TooWideLocalVariableScope
+            RegistryKey keyLmSoftware;
+            RegistryKey keyLmParent = null;
+            try
+            {
+                keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
+                keyLmParent = keyLmSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyLmSoftware?.CreateSubKey(REG_KEY_PARENT);
+            }
+            catch
+            {
+                // ignored: nur mir Admin-Rechten in HKEY_LOCAL_MACHINE
+            }
 
             var keyCuSoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
             var keyCuParent = keyCuSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyCuSoftware?.CreateSubKey(REG_KEY_PARENT);
@@ -97,54 +114,38 @@ namespace Eulg.Setup.Shared
             switch (ProxyType)
             {
                 case EProxyType.Default:
-                    if (keyLmParent != null)
-                    {
-                        keyLmParent.DeleteValue("ProxyAddress", false);
-                        keyLmParent.DeleteValue("ProxyHttpPort", false);
-                        keyLmParent.DeleteValue("ProxySocks5Port", false);
-                        keyLmParent.DeleteValue("ProxyUsername", false);
-                        keyLmParent.DeleteValue("ProxyPassword", false);
-                        keyLmParent.DeleteValue("ProxyDomain", false);
-                    }
-                    if (keyCuParent != null)
-                    {
-                        keyCuParent.DeleteValue("ProxyAddress", false);
-                        keyCuParent.DeleteValue("ProxyHttpPort", false);
-                        keyCuParent.DeleteValue("ProxySocks5Port", false);
-                        keyCuParent.DeleteValue("ProxyUsername", false);
-                        keyCuParent.DeleteValue("ProxyPassword", false);
-                        keyCuParent.DeleteValue("ProxyDomain", false);
-                    }
+                    Address = "*";
+                    HttpPort = null;
+                    Username = null;
+                    Password = null;
+                    Domain = null;
                     break;
 
                 case EProxyType.None:
-                    keyLmParent.SetValue("ProxyAddress", string.Empty, RegistryValueKind.String);
-                    keyLmParent.SetValue("ProxyHttpPort", 0, RegistryValueKind.DWord);
-                    keyLmParent.SetValue("ProxyUsername", string.Empty, RegistryValueKind.String);
-                    keyLmParent.SetValue("ProxyPassword", string.Empty, RegistryValueKind.String);
-                    keyLmParent.SetValue("ProxyDomain", string.Empty, RegistryValueKind.String);
-
-                    keyCuParent.SetValue("ProxyAddress", string.Empty, RegistryValueKind.String);
-                    keyCuParent.SetValue("ProxyHttpPort", 0, RegistryValueKind.DWord);
-                    keyCuParent.SetValue("ProxyUsername", string.Empty, RegistryValueKind.String);
-                    keyCuParent.SetValue("ProxyPassword", string.Empty, RegistryValueKind.String);
-                    keyCuParent.SetValue("ProxyDomain", string.Empty, RegistryValueKind.String);
+                    Address = "";
+                    HttpPort = null;
+                    Username = null;
+                    Password = null;
+                    Domain = null;
                     break;
 
                 case EProxyType.Manual:
-                    keyLmParent.SetValue("ProxyAddress", Address, RegistryValueKind.String);
-                    keyLmParent.SetValue("ProxyHttpPort", HttpPort, RegistryValueKind.DWord);
-                    keyLmParent.SetValue("ProxyUsername", Username, RegistryValueKind.String);
-                    keyLmParent.SetValue("ProxyPassword", Password, RegistryValueKind.String);
-                    keyLmParent.SetValue("ProxyDomain", Domain, RegistryValueKind.String);
-
-                    keyCuParent.SetValue("ProxyAddress", Address, RegistryValueKind.String);
-                    keyCuParent.SetValue("ProxyHttpPort", HttpPort, RegistryValueKind.DWord);
-                    keyCuParent.SetValue("ProxyUsername", Username, RegistryValueKind.String);
-                    keyCuParent.SetValue("ProxyPassword", Password, RegistryValueKind.String);
-                    keyCuParent.SetValue("ProxyDomain", Domain, RegistryValueKind.String);
                     break;
             }
+
+            foreach (var key in new[] { keyCuParent, keyLmParent })
+            {
+                if (key != null)
+                {
+                    if (Address != null) key.SetValue("ProxyAddress", Address, RegistryValueKind.String); else key.DeleteValue("ProxyAddress", false);
+                    if (HttpPort != null) key.SetValue("ProxyHttpPort", HttpPort, RegistryValueKind.DWord); else key.DeleteValue("ProxyHttpPort", false);
+                    if (Username != null) key.SetValue("ProxyUsername", Username, RegistryValueKind.String); else key.DeleteValue("ProxyUsername", false);
+                    if (Password != null) key.SetValue("ProxyPassword", Password, RegistryValueKind.String); else key.DeleteValue("ProxyPassword", false);
+                    if (Domain != null) key.SetValue("ProxyDomain", Domain, RegistryValueKind.String); else key.DeleteValue("ProxyDomain", false);
+                    key.DeleteValue("ProxySocks5Port", false);
+                }
+            }
+
         }
     }
 }

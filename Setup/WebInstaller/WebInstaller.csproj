@@ -152,6 +152,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
+  <Import Project="..\..\Shared\Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <SolutionRootDir>$(MSBuildProjectDirectory)\..\..\</SolutionRootDir>
   </PropertyGroup>

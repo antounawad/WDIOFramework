@@ -48,10 +48,10 @@ namespace Eulg.Update.Worker
                 throw new Exception("Konfigurationsdatei nicht gefunden!");
             }
 
-            var xmlSer = new XmlSerializer(typeof (WorkerConfig));
+            var xmlSer = new XmlSerializer(typeof(WorkerConfig));
             using (var reader = File.OpenRead(_xmlFile))
             {
-                Config = (WorkerConfig) xmlSer.Deserialize(reader);
+                Config = (WorkerConfig)xmlSer.Deserialize(reader);
             }
 
             if (!string.IsNullOrEmpty(Config.LogFile))
@@ -189,7 +189,7 @@ namespace Eulg.Update.Worker
             {
                 mainWindow.UpdateProgress.Value = 0;
                 mainWindow.UpdateProgress.Minimum = 0;
-                mainWindow.UpdateProgress.Maximum = operations.Count*2;
+                mainWindow.UpdateProgress.Maximum = operations.Count * 2;
                 mainWindow.UpdateProgress.Style = ProgressBarStyle.Continuous;
             };
 
@@ -305,7 +305,7 @@ namespace Eulg.Update.Worker
 
         internal void StartApplication(bool bUpdateSuccess)
         {
-            if (string.IsNullOrEmpty(Config.ApplicationFile))
+            if (string.IsNullOrWhiteSpace(Config.ApplicationFile))
             {
                 return;
             }
@@ -334,7 +334,7 @@ namespace Eulg.Update.Worker
 
         internal void ExecuteCustomProcess()
         {
-            if (Config.StartProcess != null)
+            if (!string.IsNullOrWhiteSpace(Config.StartProcess?.FileName))
             {
                 Updater.ProcessStart(Config.StartProcess, true);
             }

@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    
+    <!-- Sizing -->
+    <GridLength x:Key="LabelColWidth">145</GridLength>
+    
+    <CornerRadius x:Key="DefaultCornerRadius">3</CornerRadius>
+    
+    <!--Border Thickness-->
+    <Thickness x:Key="NoBorder">0</Thickness>
+    <Thickness x:Key="SmallBorder">1</Thickness>
+    <Thickness x:Key="NormalBorder">3</Thickness>
+    
+    <!--Margin Thickness-->
+    <Thickness x:Key="DefaultMargin">5</Thickness>
+    <Thickness x:Key="MediumMargin">15</Thickness>
+
+    <system:Double x:Key="DefaultDesignWidth">674</system:Double>
+    <system:Double x:Key="SmallGridCellWidth">50</system:Double>
+    <system:Double x:Key="DefaultGridCellWidth">150</system:Double>
+    <system:Double x:Key="LargeGridCellWidth">250</system:Double>
+    <system:Double x:Key="DefaultTextControlHeight">28</system:Double>
+    <system:Double x:Key="DefaultFontSize">14</system:Double>
+    <system:Double x:Key="SmallFontSize">12</system:Double>
+    <system:Double x:Key="AccordionFont">14</system:Double>
+    <system:Double x:Key="AccordionWidth">200</system:Double>
+
+    <system:Double x:Key="DefaultInputElementHeight">26</system:Double>    
+
+</ResourceDictionary>

@@ -9,11 +9,7 @@
     <Import_RootNamespace>Eulg.Setup.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Branding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MutexManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProxyConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SetupConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UpdateConfig.cs" />
   </ItemGroup>
 </Project>

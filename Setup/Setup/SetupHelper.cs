@@ -15,6 +15,7 @@ using System.Windows;
 using System.Xml.Serialization;
 using Eulg.Setup.Pages;
 using Eulg.Setup.Shared;
+using Eulg.Shared;
 using IWshRuntimeLibrary;
 using Microsoft.Win32;
 using File = System.IO.File;
@@ -179,7 +180,7 @@ namespace Eulg.Setup
             UpdateClient.UserName = UserName;
             UpdateClient.Password = Password;
             var result = UpdateClient.DownloadManifest();
-            if (UpdateClient?.UpdateConf != null && UpdateClient.UpdateConf.BrandingVersion > Branding.BRANDING_VERSION)
+            if (UpdateClient?.UpdateConf != null && UpdateClient.UpdateConf.BrandingVersion > Branding.BrandingVersion)
             {
                 MessageBox.Show("Dieser Web-Installer ist leider nicht mehr aktuell. Bitte verwenden Sie einen aktuellen Installer!", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Error);
                 return UpdateClient.EUpdateCheckResult.Error;

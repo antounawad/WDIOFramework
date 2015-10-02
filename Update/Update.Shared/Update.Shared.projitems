@@ -9,7 +9,6 @@
     <Import_RootNamespace>Eulg.Update.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IUpdater.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WorkerConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WorkerProcess.cs" />

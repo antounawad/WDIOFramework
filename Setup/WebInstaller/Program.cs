@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using Eulg.Setup.Shared;
+using Eulg.Shared;
 
 namespace Eulg.Setup.WebInstaller
 {
@@ -30,7 +31,7 @@ namespace Eulg.Setup.WebInstaller
         }
         // ReSharper restore UnusedMember.Local
 
-        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.Release;
+        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.EulgDeTestRelease;
 
         //public static WebClient WebClient;
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileDeflate";
@@ -250,7 +251,7 @@ namespace Eulg.Setup.WebInstaller
             {
                 _updateConfig = (UpdateConfig)xmlSer.Deserialize(reader);
             }
-            if (_updateConfig.BrandingVersion > Branding.BRANDING_VERSION)
+            if (_updateConfig.BrandingVersion > Branding.BrandingVersion)
             {
                 const string MSG = "Dieser Installationsassistent ist leider nicht mehr aktuell. " +
                                    "Bitte verwenden Sie einen aktuellen Assistenten, den Sie in Ihrer Webverwaltung herunterladen können!";
