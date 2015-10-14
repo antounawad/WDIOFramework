@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Eulg.Update.Shared;
 
 namespace Eulg.Update.Worker
 {
     public abstract class FileOp
     {
+        private static readonly Random _random = new Random(DateTime.Now.Millisecond);
+
         private enum EState
         {
             None,
@@ -18,6 +21,12 @@ namespace Eulg.Update.Worker
         protected abstract void DoPrepare();
         protected abstract void DoCommit();
         protected abstract void DoRollback();
+
+        protected static string GetRandomBackupSuffix(char opType)
+        {
+            var randomString = new string(Enumerable.Range(0, 4).Select(_ => (char)('a' - 1 + _random.Next(27))).ToArray());
+            return $"{char.ToUpperInvariant(opType)}${randomString}";
+        }
 
         public string TargetFile { get; private set; }
 
@@ -73,7 +82,7 @@ namespace Eulg.Update.Worker
             catch (Exception ex)
             {
                 // Rollback must not throw
-                Log.Write(ex, "Error while reverting file copy");
+                Log.Write(ex, "Error while reverting {0}", GetType().Name);
             }
             finally
             {
@@ -129,7 +138,7 @@ namespace Eulg.Update.Worker
             {
                 _source = source;
                 _dest = dest;
-                _backup = dest + ".tx$";
+                _backup = dest + $".{GetRandomBackupSuffix('U')}";
             }
 
             protected override void DoPrepare()
@@ -203,7 +212,7 @@ namespace Eulg.Update.Worker
             {
                 _source = dest;
                 _dest = dest.Replace(UpdateWorker.ResetFileTag, "");
-                _backup = _dest + ".tx$";
+                _backup = _dest + $".{GetRandomBackupSuffix('R')}";
             }
 
             protected override void DoPrepare()
@@ -261,7 +270,7 @@ namespace Eulg.Update.Worker
             public FileDelete(string target)
             {
                 _target = target;
-                _backup = target + ".tx$";
+                _backup = target + $".{GetRandomBackupSuffix('D')}";
 
                 _targetIsDirectory = Directory.Exists(_target);
             }
@@ -297,13 +306,20 @@ namespace Eulg.Update.Worker
 
             protected override void DoCommit()
             {
-                if (_targetIsDirectory && Directory.Exists(_backup))
+                try
                 {
-                    DelTree(_backup);
+                    if (_targetIsDirectory && Directory.Exists(_backup))
+                    {
+                        DelTree(_backup);
+                    }
+                    else if (!_targetIsDirectory && File.Exists(_backup))
+                    {
+                        Service.FileDelete(_backup);
+                    }
                 }
-                else if (!_targetIsDirectory && File.Exists(_backup))
+                catch (Exception ex)
                 {
-                    Service.FileDelete(_backup);
+                    Log.Write(UpdateWorker.LogTypeEnum.Warning, "Failed to remove backup of delete operation; non-critical but annoying [{0}: {1}]", ex.GetType().Name, ex.Message);
                 }
             }
 
