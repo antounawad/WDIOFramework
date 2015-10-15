@@ -293,7 +293,8 @@ namespace Eulg.Client.SupportTool
                         FileDateTime = updateFile.FileDateTime,
                         FileSize = updateFile.FileSize,
                         FileSizeGz = updateFile.FileSizeGz,
-                        FileName = updateFile.FileName
+                        FileName = updateFile.FileName,
+                        NewFile = !fileInfo.Exists
                     };
                     fixFiles.Add(fixFile);
                 }
