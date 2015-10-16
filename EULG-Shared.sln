@@ -37,23 +37,27 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.Support", "Tools\Tool
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{D86D9FD3-D5A9-4A68-B333-81D69B6F003A}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Update.Octodiff", "Update\Update.Octodiff\Update.Octodiff.shproj", "{84174FBC-13E0-4307-8656-24F8068A392E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{d86d9fd3-d5a9-4a68-b333-81d69b6f003a}*SharedItemsImports = 13
-		Shared\Shared.projitems*{4c00bd12-d2c7-470f-9e84-5137af749dba}*SharedItemsImports = 4
+		Update\Update.Octodiff\Update.Octodiff.projitems*{84174fbc-13e0-4307-8656-24f8068a392e}*SharedItemsImports = 13
 		Setup\Shared\Shared.projitems*{4c00bd12-d2c7-470f-9e84-5137af749dba}*SharedItemsImports = 4
-		Shared\Shared.projitems*{0fe2c028-722e-45be-8c98-af20ab09b782}*SharedItemsImports = 4
+		Shared\Shared.projitems*{4c00bd12-d2c7-470f-9e84-5137af749dba}*SharedItemsImports = 4
 		Update\Update.Shared\Update.Shared.projitems*{0fe2c028-722e-45be-8c98-af20ab09b782}*SharedItemsImports = 4
-		Shared\Shared.projitems*{4dda980f-20e0-425b-8ab5-b21a83ed6608}*SharedItemsImports = 4
+		Shared\Shared.projitems*{0fe2c028-722e-45be-8c98-af20ab09b782}*SharedItemsImports = 4
 		Setup\Shared\Shared.projitems*{4dda980f-20e0-425b-8ab5-b21a83ed6608}*SharedItemsImports = 4
-		Shared\Shared.projitems*{088808f1-7d7d-4f26-a3a9-447cb92a5174}*SharedItemsImports = 4
+		Shared\Shared.projitems*{4dda980f-20e0-425b-8ab5-b21a83ed6608}*SharedItemsImports = 4
 		Update\Update.Shared\Update.Shared.projitems*{088808f1-7d7d-4f26-a3a9-447cb92a5174}*SharedItemsImports = 4
+		Shared\Shared.projitems*{088808f1-7d7d-4f26-a3a9-447cb92a5174}*SharedItemsImports = 4
 		Setup\Shared\Shared.projitems*{21e4cdde-8780-42b8-9b78-ef99481c82f0}*SharedItemsImports = 13
-		Shared\Shared.projitems*{f0b5978c-5345-44a0-9a17-fe92c13c33be}*SharedItemsImports = 4
 		Update\Update.Shared\Update.Shared.projitems*{f0b5978c-5345-44a0-9a17-fe92c13c33be}*SharedItemsImports = 4
+		Shared\Shared.projitems*{f0b5978c-5345-44a0-9a17-fe92c13c33be}*SharedItemsImports = 4
 		Update\Update.Shared\Update.Shared.projitems*{e7e1ad85-d333-4d43-a1b5-559b710e6731}*SharedItemsImports = 13
-		Shared\Shared.projitems*{ad481f26-9c36-44ca-9e42-40195062303a}*SharedItemsImports = 4
 		Update\Update.Shared\Update.Shared.projitems*{ad481f26-9c36-44ca-9e42-40195062303a}*SharedItemsImports = 4
+		Update\Update.Octodiff\Update.Octodiff.projitems*{ad481f26-9c36-44ca-9e42-40195062303a}*SharedItemsImports = 4
+		Shared\Shared.projitems*{ad481f26-9c36-44ca-9e42-40195062303a}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -341,5 +345,6 @@ Global
 		{4C00BD12-D2C7-470F-9E84-5137AF749DBA} = {3DE33C8C-478C-4BF3-A4B6-4F42BC9CB130}
 		{AD481F26-9C36-44CA-9E42-40195062303A} = {9747ECAE-5554-4FEC-AD61-6CD9993DA656}
 		{0F72A1CC-3A3D-4855-87D9-5C94423DCD53} = {9405BB41-9B2A-48C1-BEE0-716715937521}
+		{84174FBC-13E0-4307-8656-24F8068A392E} = {9747ECAE-5554-4FEC-AD61-6CD9993DA656}
 	EndGlobalSection
 EndGlobal

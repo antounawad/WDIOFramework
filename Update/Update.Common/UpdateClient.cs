@@ -8,11 +8,13 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Eulg.Shared;
 using Eulg.Update.Common.Helper;
 using Eulg.Update.Shared;
 using Microsoft.Win32;
+using Octodiff.Core;
 
 namespace Eulg.Update.Common
 {
@@ -209,6 +211,55 @@ namespace Eulg.Update.Common
             return NetworkInterface.GetIsNetworkAvailable();
         }
 
+        private void PatchFile(WorkerConfig.WorkerFile diffFile)
+        {
+            var webRequest = WebRequest.CreateHttp(new Uri(new Uri("http://" + UpdateUrl), "FilesUpdateGetDelta"));
+            //webRequest.AllowReadStreamBuffering = false;
+            //webRequest.AllowWriteStreamBuffering = false;
+            webRequest.SendChunked = true;
+            webRequest.Method = "POST";
+            webRequest.Headers.Add("Channel", UpdateChannel.ToString());
+            webRequest.Headers.Add("FileName", diffFile.Source);
+
+            webRequest.ContentType = "application/octet-stream";
+            //webRequest.ContentLength = signature.Length;
+
+            using (var requestStream = webRequest.GetRequestStream())
+            {
+                using (var deflateStream = new DeflateStream(requestStream, CompressionLevel.Optimal))
+                {
+                    using (var sourceFileStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        var signatureBuilder = new SignatureBuilder { ChunkSize = diffChunkSize };
+                        signatureBuilder.Build(sourceFileStream, new SignatureWriter(deflateStream));
+                    }
+                }
+            }
+            var destFile = Path.Combine(DownloadPath, diffFile.Source);
+            using (var response = webRequest.GetResponse())
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    using (var deflateStream = new DeflateStream(responseStream, CompressionMode.Decompress))
+                    {
+                        using (var basisStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            if (!Directory.Exists(Path.GetDirectoryName(destFile))) Directory.CreateDirectory(Path.GetDirectoryName(destFile));
+                            using (var newFileStream = new FileStream(Path.Combine(DownloadPath, diffFile.Source), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+                            {
+                                var delta = new DeltaApplier { SkipHashCheck = false };
+                                delta.Apply(basisStream, new BinaryDeltaReader(deflateStream, null), newFileStream);
+                            }
+                        }
+                    }
+                }
+            }
+            File.SetLastWriteTime(destFile, diffFile.FileDateTime);
+        }
+
+        private const int diffThreshold = 256*1024;
+        private const int diffChunkSize = 8192;
+
         public bool DownloadUpdates()
         {
             DownloadSizeTotal = WorkerConfig.WorkerFiles.Sum(s => s.FileSizeGz);
@@ -298,16 +349,15 @@ namespace Eulg.Update.Common
         {
             try
             {
-                var filteredWorkerFiles = WorkerConfig.WorkerFiles.Where(f =>
-                {
-                    var fileInfo = new FileInfo(Path.Combine(DownloadPath, f.Source));
-                    return !fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, f.FileDateTime) || fileInfo.Length != f.FileSize;
-                }).ToList();
+                var filteredWorkerFilesAll = WorkerConfig.WorkerFiles.Where(f =>
+                   {
+                       var fileInfo = new FileInfo(Path.Combine(DownloadPath, f.Source));
+                       return !fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, f.FileDateTime) || fileInfo.Length != f.FileSize;
+                   }).ToList();
 
-                DownloadSizeTotal = filteredWorkerFiles.Sum(s => s.FileSizeGz);
-                DownloadFilesTotal = filteredWorkerFiles.Count;
-                DownloadSizeCompleted = 0;
-                DownloadFilesCompleted = 0;
+                var diffFiles = filteredWorkerFilesAll.Where(w => !w.NewFile && w.FileSizeGz >= diffThreshold).ToList();
+                var filteredWorkerFiles = filteredWorkerFilesAll.Where(w => w.NewFile || w.FileSizeGz < diffThreshold).ToList();
+
                 if (!Directory.Exists(DownloadPath))
                 {
                     Log(LogTypeEnum.Info, "Create Directory " + DownloadPath);
@@ -321,7 +371,32 @@ namespace Eulg.Update.Common
 
                 GetUpdateClient();
 
-                if (DownloadFilesTotal > 0)
+                //var DownloadSizeTotalAll = filteredWorkerFilesAll.Sum(s => s.FileSizeGz);
+                DownloadSizeTotal = filteredWorkerFilesAll.Sum(s => s.FileSizeGz);
+                DownloadFilesTotal = filteredWorkerFilesAll.Count;
+                DownloadSizeCompleted = 0;
+                DownloadFilesCompleted = 0;
+                var currentFile = 0;
+                var currentFileDiff = 0;
+
+                //Parallel.ForEach(diffFiles, diffFile =>
+                //{
+                //    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, filteredWorkerFilesAll.Count, "DIFF:" + diffFile.FileName);
+                //    PatchFile(diffFile);
+                //    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, filteredWorkerFilesAll.Count, "DIFF:" + diffFile.FileName);
+                //    DownloadSizeCompleted += diffFile.FileSizeGz;
+                //    currentFileDiff++;
+                //});
+
+                foreach (var diffFile in diffFiles)
+                {
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, filteredWorkerFilesAll.Count, diffFile.FileName);
+                    PatchFile(diffFile);
+                    DownloadSizeCompleted += diffFile.FileSizeGz;
+                    currentFileDiff++;
+                }
+
+                if (filteredWorkerFiles.Count > 0)
                 {
                     var baseUri = new Uri("http://" + UpdateUrl);
                     var uri = new Uri(baseUri, "FileUpdateGetFiles");
@@ -353,7 +428,6 @@ namespace Eulg.Update.Common
                         //Console.WriteLine(((HttpWebResponse)response).StatusCode);
                         using (var responseStream = response.GetResponseStream())
                         {
-                            var currentFile = 0;
                             while (currentFile < filteredWorkerFiles.Count)
                             {
                                 var workerFile = filteredWorkerFiles[currentFile];
@@ -368,7 +442,7 @@ namespace Eulg.Update.Common
 
                                 Log(LogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})");
                                 var baseDownloadSize = DownloadSizeCompleted;
-                                NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFile, filteredWorkerFiles.Count, workerFile.FileName);
+                                NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFile + currentFileDiff, filteredWorkerFilesAll.Count, workerFile.FileName);
                                 using (var sw = new FileStream(localFile, FileMode.Create, FileAccess.Write, FileShare.None))
                                 {
                                     using (var view = new SectionStream(responseStream, workerFile.FileSizeGz))
@@ -394,11 +468,11 @@ namespace Eulg.Update.Common
                                 currentFile++;
                                 DownloadFilesCompleted++;
                             }
-                            responseStream.Close();
+                            responseStream?.Close();
                         }
                         response.Close();
 
-                        NotifyProgressChanged(DownloadSizeTotal, DownloadSizeTotal, filteredWorkerFiles.Count, filteredWorkerFiles.Count, string.Empty);
+                        NotifyProgressChanged(DownloadSizeTotal, DownloadSizeTotal, filteredWorkerFilesAll.Count, filteredWorkerFilesAll.Count, string.Empty);
                     }
                 }
                 // Write Worker Config
@@ -469,8 +543,8 @@ namespace Eulg.Update.Common
                 var nvc = new NameValueCollection
                 {
                     {"updateChannel", UpdateChannel.ToString()},
-                    {"userName", (UserNames.Length>0 && !String.IsNullOrWhiteSpace(UserNames[0])) ? UserNames[0] : $"{Environment.UserName}@{Environment.MachineName}" }, 
-                    {"logFileDateTime", $"{File.GetLastWriteTime(LogFile):dd.MM.yyyy HH:mm:ss}" }, 
+                    {"userName", (UserNames.Length>0 && !String.IsNullOrWhiteSpace(UserNames[0])) ? UserNames[0] : $"{Environment.UserName}@{Environment.MachineName}" },
+                    {"logFileDateTime", $"{File.GetLastWriteTime(LogFile):dd.MM.yyyy HH:mm:ss}" },
                     {"logFileContent", CompressStringGz(File.ReadAllText(LogFile))}
                 };
                 _webClient.UploadValues(uri.AbsoluteUri, "POST", nvc);
@@ -501,7 +575,7 @@ namespace Eulg.Update.Common
                 if (obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
                 {
                     if (obsoleteKey.GetValue("KeysMigrated") == null)
-                    return true;
+                        return true;
                 }
             }
 
