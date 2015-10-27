@@ -173,9 +173,18 @@ namespace Eulg.Update.Worker
 
             protected override void DoCommit()
             {
-                if (_haveBackup)
+                if (!_haveBackup)
+                {
+                    return;
+                }
+
+                try
                 {
                     Service.FileDelete(_backup);
+                }
+                catch(Exception ex)
+                {
+                    Log.Write(UpdateWorker.LogTypeEnum.Warning, "Failed to remove backup; non-critical but annoying [{0}: {1}]", ex.GetType().Name, ex.Message);
                 }
             }
 
@@ -236,9 +245,18 @@ namespace Eulg.Update.Worker
                 base.DoCommit();
 
                 Service.FileCopy(_source, _dest, true);
-                if (_haveBackup)
+                if (!_haveBackup)
+                {
+                    return;
+                }
+
+                try
                 {
                     Service.FileDelete(_backup);
+                }
+                catch(Exception ex)
+                {
+                    Log.Write(UpdateWorker.LogTypeEnum.Warning, "Failed to remove backup; non-critical but annoying [{0}: {1}]", ex.GetType().Name, ex.Message);
                 }
             }
 
@@ -319,7 +337,7 @@ namespace Eulg.Update.Worker
                 }
                 catch (Exception ex)
                 {
-                    Log.Write(UpdateWorker.LogTypeEnum.Warning, "Failed to remove backup of delete operation; non-critical but annoying [{0}: {1}]", ex.GetType().Name, ex.Message);
+                    Log.Write(UpdateWorker.LogTypeEnum.Warning, "Failed to remove backup; non-critical but annoying [{0}: {1}]", ex.GetType().Name, ex.Message);
                 }
             }
 
