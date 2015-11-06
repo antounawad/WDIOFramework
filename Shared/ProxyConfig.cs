@@ -40,10 +40,18 @@ namespace Eulg.Shared
                     proxy = null;
                     break;
                 case EProxyType.Manual:
-                    proxy = new WebProxy(Address, HttpPort.GetValueOrDefault(3128));
-                    if (!string.IsNullOrWhiteSpace(Username))
+                    try
                     {
-                        proxy.Credentials = new NetworkCredential(Username, Password, Domain);
+                        proxy = new WebProxy(Address, HttpPort.GetValueOrDefault(3128));
+                        if (!string.IsNullOrWhiteSpace(Username))
+                        {
+                            proxy.Credentials = new NetworkCredential(Username, Password, Domain);
+                        }
+                    }
+                    catch
+                    {
+                        proxy = WebRequest.GetSystemWebProxy();
+                        proxy.Credentials = CredentialCache.DefaultNetworkCredentials;
                     }
                     break;
                 default:
@@ -56,26 +64,33 @@ namespace Eulg.Shared
         {
             Address = Username = Password = Domain = null;
             HttpPort = 0;
-            var keyCuParent = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
-            if (keyCuParent != null)
+            try
             {
-                Address = keyCuParent.GetValue("ProxyAddress", null) as string;
-                HttpPort = (ushort)((keyCuParent.GetValue("ProxyHttpPort", null) as int? ?? 0) & 0xffff);
-                Username = keyCuParent.GetValue("ProxyUsername", null) as string;
-                Password = keyCuParent.GetValue("ProxyPassword", null) as string;
-                Domain = keyCuParent.GetValue("ProxyDomain", null) as string;
-            }
-            if (Address == null)
-            {
-                var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
-                if (keyLmParent != null)
+                var keyCuParent = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+                if (keyCuParent != null)
                 {
-                    Address = keyLmParent.GetValue("ProxyAddress", null) as string;
-                    HttpPort = (ushort)((keyLmParent.GetValue("ProxyHttpPort", null) as int? ?? 0) & 0xffff);
-                    Username = keyLmParent.GetValue("ProxyUsername", null) as string;
-                    Password = keyLmParent.GetValue("ProxyPassword", null) as string;
-                    Domain = keyLmParent.GetValue("ProxyDomain", null) as string;
+                    Address = keyCuParent.GetValue("ProxyAddress", null) as string;
+                    HttpPort = (ushort)((keyCuParent.GetValue("ProxyHttpPort", null) as int? ?? 0) & 0xffff);
+                    Username = keyCuParent.GetValue("ProxyUsername", null) as string;
+                    Password = keyCuParent.GetValue("ProxyPassword", null) as string;
+                    Domain = keyCuParent.GetValue("ProxyDomain", null) as string;
                 }
+                if (Address == null)
+                {
+                    var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+                    if (keyLmParent != null)
+                    {
+                        Address = keyLmParent.GetValue("ProxyAddress", null) as string;
+                        HttpPort = (ushort)((keyLmParent.GetValue("ProxyHttpPort", null) as int? ?? 0) & 0xffff);
+                        Username = keyLmParent.GetValue("ProxyUsername", null) as string;
+                        Password = keyLmParent.GetValue("ProxyPassword", null) as string;
+                        Domain = keyLmParent.GetValue("ProxyDomain", null) as string;
+                    }
+                }
+            }
+            catch
+            {
+                // ignored
             }
             if (Address != null && Address.Equals("*")) Address = null;
             if (Address == null)
