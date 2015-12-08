@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Eulg.Server.Common;
 
 namespace Eulg.Tools.MailTool
 {
@@ -15,43 +15,64 @@ namespace Eulg.Tools.MailTool
         {
             InitializeComponent();
 
-            TextBoxSmtpServer.Text = "ks-software.de";
-            TextBoxSmtpPort.Text = "25";
-            TextBoxSmtpUsername.Text = "klaus.seiler@eulg.de";
-            TextBoxSmtpPassword.Text = "a8Qw43mx";
-            CheckBoxSsl.IsChecked = false;
-            TextBoxFromMail.Text = "klaus.seiler@eulg.de";
-            TextBoxFromName.Text = "Klaus Seiler";
+            TextBoxSmtpServer.Text = "smtp.office365.com";
+            TextBoxSmtpPort.Text = "587";
+            TextBoxSmtpUsername.Text = "kontakt@eulg.de";
+            TextBoxSmtpPassword.Password = "Fh3479asdl%sa";
+            CheckBoxSsl.IsChecked = true;
+            TextBoxFromMail.Text = "kontakt@eulg.de";
+            TextBoxFromName.Text = "EULG - Entgeltumwandlung leicht gemacht";
+
+            //TextBoxMailTo.Text = "gnulpus@gmail.com";
         }
 
         private void ButtonStart_Click(object sender, RoutedEventArgs e)
         {
+            var message = new EulgMailMessage(true) { Subject = TextBoxSubject.Text.Trim() };
+
+            // Ersetze Grußformel, Signatur und Disclaimer
+            var greeting = Mailer.GetMailContent(message.MailGreeting);
+            var signature = Mailer.GetMailContent(message.MailSignature);
+
+            var footerCustom = (message.NewsletterLogout != null) ? message.NewsletterLogout.GetMailBody() : string.Empty;
+            footerCustom = footerCustom.Replace("~/", Settings.Current?.Urls?.UrlVerwaltung ?? "" + "/");
+            var footerHeadOffice = Mailer.GetMailContent(message.FooterHeadOffice);
+            var footerDisclaimer = Mailer.GetMailContent(message.FooterDisclaimer);
+
+            var mailLayout = Mailer.GetMailLayout();
+            mailLayout = mailLayout.Replace("[@Body]", TextBoxContent.Text);
+            mailLayout = mailLayout.Replace("[@Greeting]", greeting);
+            mailLayout = mailLayout.Replace("[@Signature]", signature);
+
+            mailLayout = mailLayout.Replace("[@Footer]", footerCustom);
+            mailLayout = mailLayout.Replace("[@FooterHeadOffice]", footerHeadOffice);
+            mailLayout = mailLayout.Replace("[@FooterDisclaimer]", footerDisclaimer);
+
+            message.Body = PreMailer.Net.PreMailer.MoveCssInline(mailLayout, false, null, Mailer.GetMailResource("EulgMailStyles", ".css"), false, true).Html;
+
             var fromName = TextBoxFromName.Text.Trim();
             var fromMail = TextBoxFromMail.Text.Trim();
 
-            var subject = TextBoxSubject.Text.Trim();
-            var content = TextBoxContent.Text;
+            var smtpClient = new SmtpClient(TextBoxSmtpServer.Text, int.Parse(TextBoxSmtpPort.Text))
+            {
+                Credentials = new NetworkCredential(TextBoxSmtpUsername.Text, TextBoxSmtpPassword.Password),
+                EnableSsl = CheckBoxSsl.IsChecked.GetValueOrDefault(false)
+            };
 
-            var smtpClient = new SmtpClient(TextBoxSmtpServer.Text, Int32.Parse(TextBoxSmtpPort.Text))
-                             {
-                                 Credentials = new NetworkCredential(TextBoxSmtpUsername.Text, TextBoxSmtpPassword.Text),
-                                 EnableSsl = CheckBoxSsl.IsChecked.GetValueOrDefault(false)
-                             };
+            var mailToList = TextBoxMailTo.Text.Split(new[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-            var mailToList = TextBoxMailTo.Text.Split(new[] {Environment.NewLine, "\r", "\n"}, StringSplitOptions.RemoveEmptyEntries);
-
-            var from = new MailAddress(fromMail, fromName);
+            message.From = new MailQueueAddress(fromMail, fromName);
 
             ProgressBar.Maximum = mailToList.Length;
 
             ExpanderLog.IsExpanded = true;
-            TextBoxLog.Text = String.Empty;
+            TextBoxLog.Text = string.Empty;
 
-            var t = new Task(() => DoIt(smtpClient, mailToList, from, subject, content));
+            var t = new Task(() => DoIt(smtpClient, mailToList, message));
             t.Start();
         }
 
-        private void DoIt(SmtpClient smtpClient, IEnumerable<string> mailToList, MailAddress from, string subject, string content)
+        private void DoIt(SmtpClient smtpClient, IEnumerable<string> mailToList, EulgMailMessage message)
         {
             var i = 0;
             foreach (var mailTo in mailToList)
@@ -65,14 +86,9 @@ namespace Eulg.Tools.MailTool
                 var log = mailTo;
                 try
                 {
-                    var to = new MailAddress(mailTo);
-                    var mailMessage = new MailMessage(from, to)
-                                      {
-                                          Subject = subject,
-                                          IsBodyHtml = true,
-                                          Body = content
-                                      };
-                    smtpClient.Send(mailMessage);
+                    message.To.Clear();
+                    message.To.Add(new MailQueueAddress(mailTo));
+                    smtpClient.Send(message.ToMailMessage());
                     log += " OK.";
                 }
                 catch (Exception exception)
@@ -85,37 +101,34 @@ namespace Eulg.Tools.MailTool
             }
         }
 
-        private void ButtonTest_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonPreview_Click(object sender, RoutedEventArgs e)
         {
-            var from = new MailQueueAddress("gnulp@eulg.de", "From Name");
-            var to1 = new MailQueueAddress("gnulp@eulg.de", "To Name 1");
-            var att1 = new MailQueueAttachment(@"C:\Users\holger.mueller\Downloads\logo-eulg.png", MediaTypeNames.Application.Octet);
-            var att2 = new MailQueueAttachment(@"C:\Users\holger.mueller\Downloads\ks-logo.png", MediaTypeNames.Application.Octet);
+            var message = new EulgMailMessage(true) { Subject = TextBoxSubject.Text.Trim() };
 
-            var msg = new MailQueueMessage
-                      {
-                          From = @from,
-                          Subject = "Betreff öäüÖÄÜßâéù",
-                          IsBodyHtml = true,
-                          Body = "<strong>Body öäüÖÄÜßâúè</strong>"
-                      };
+            // Ersetze Grußformel, Signatur und Disclaimer
+            var greeting = Mailer.GetMailContent(message.MailGreeting);
+            var signature = Mailer.GetMailContent(message.MailSignature);
 
-            msg.To.Add(to1);
-            msg.Attachments.Add(att1);
-            msg.Attachments.Add(att2);
+            var footerCustom = (message.NewsletterLogout != null) ? message.NewsletterLogout.GetMailBody() : string.Empty;
+            footerCustom = footerCustom.Replace("~/", Settings.Current?.Urls?.UrlVerwaltung ?? "" + "/");
+            var footerHeadOffice = Mailer.GetMailContent(message.FooterHeadOffice);
+            var footerDisclaimer = Mailer.GetMailContent(message.FooterDisclaimer);
 
-            Console.WriteLine("==============================");
-            Console.WriteLine(msg.GetWithoutAttachmentsJson());
-            Console.WriteLine("==============================");
-            Console.WriteLine(BitConverter.ToString(msg.GetAttachmentsBson(), 0, 100));
+            var mailLayout = Mailer.GetMailLayout();
+            mailLayout = mailLayout.Replace("[@Body]", TextBoxContent.Text);
+            mailLayout = mailLayout.Replace("[@Greeting]", greeting);
+            mailLayout = mailLayout.Replace("[@Signature]", signature);
 
-            var smtpClient = new SmtpClient("mail.eulg.de", 25)
-                             {
-                                 Credentials = new NetworkCredential("gnulp@eulg.de", "leeloo"),
-                                 EnableSsl = false
-                             };
+            mailLayout = mailLayout.Replace("[@Footer]", footerCustom);
+            mailLayout = mailLayout.Replace("[@FooterHeadOffice]", footerHeadOffice);
+            mailLayout = mailLayout.Replace("[@FooterDisclaimer]", footerDisclaimer);
 
-            smtpClient.Send(msg.ToMailMessage());
+            message.Body = PreMailer.Net.PreMailer.MoveCssInline(mailLayout, false, null, Mailer.GetMailResource("EulgMailStyles", ".css"), false, true).Html;
+
+            TabItemHtml.IsSelected = true;
+            Preview.NavigateToString(message.Body);
+
         }
+
     }
 }
