@@ -29,13 +29,38 @@ namespace Tools.KkzbGrabber.Sources
             {
                 var tableMatch = Regex.Match(content, @"<\s*div\s+class=""clearfix module textImage careInsuranceTable""\s*>.*?<\s*div(?:\s+class=""[^""]*"")\s*>.*?<\s*table(?:\s+class=""[^""]*"")\s*>.*?<thead>.*?<\/thead>.*?<tbody>(.+?)<\/tbody>.*?</table>.*?<\/div>.*?<\/div>", RegexOptions.Singleline);
                 var table = tableMatch.Groups[1].Value;
+                var tableRows = Regex.Matches(table, @"<\s*tr\s*>\s*(.*?)\s*<\s*\/\s*tr\s*>", RegexOptions.Singleline).Cast<Match>().Select(m => m.Value).ToList();
 
-                var rowMatches = Regex.Matches(table, @"<tr>.*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?<\/td>.*?<td[^>]*>.*?(\d+),(\d{2})\s*%.*?<\/td>.*?<\/tr>", RegexOptions.Singleline);
-                foreach (var row in rowMatches.Cast<Match>())
+                foreach (var tr in tableRows)
                 {
-                    var name = HttpUtility.HtmlDecode(row.Groups[1].Value.Trim());
-                    var value = row.Groups[2].Value;
-                    var decimals = row.Groups[3].Value;
+                    var match = Regex.Match(tr, @".*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?<\/td>.*?<td[^>]*>.*?(\d+),(\d{2})\s*%.*?<\/td>.*?", RegexOptions.Singleline);
+                    if (!match.Success)
+                    {
+                        match = Regex.Match(tr, @".*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?<\/td>.*?<td[^>]*>(.*?)<\/td>.*?", RegexOptions.Singleline);
+                        if (match.Success)
+                        {
+                            var x1 = HttpUtility.HtmlDecode(match.Groups[1].Value.Trim());
+                            var x2 = HttpUtility.HtmlDecode(match.Groups[2].Value.Trim());
+                            Console.WriteLine("PARSE ERROR '{0}', '{1}'", x1, x2);
+                        }
+                        else
+                        {
+                            var preview = Regex.Replace(tr.Replace("\r", "\\r").Replace("\n", "\\n"), @"\s{2,}", " ");
+                            if (preview.Length > 70)
+                            {
+                                preview = preview.Substring(0, 70);
+                            }
+
+                            Console.WriteLine("PARSE ERROR '{0}'", preview);
+                        }
+
+                        Console.WriteLine();
+                        continue;
+                    }
+
+                    var name = HttpUtility.HtmlDecode(match.Groups[1].Value.Trim());
+                    var value = match.Groups[2].Value;
+                    var decimals = match.Groups[3].Value;
                     var rate = int.Parse(value) * 100 + int.Parse(decimals);
 
                     yield return new Provider(name, new Rate(rate, -4));

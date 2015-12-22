@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Filters\BkkFilter.cs" />
     <Compile Include="Filters\DatabaseFilter.cs" />
     <Compile Include="Formatters\SqlScriptInSystemEditorFormatter.cs" />
     <Compile Include="Formatters\ViewInSystemEditorFormatter.cs" />
