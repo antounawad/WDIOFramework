@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
 
 namespace Tools.KkzbGrabber
 {
     interface IFilter
     {
-        bool Filter(ref KeyValuePair<string, Rate> item);
+        bool Filter(ref Provider item);
+        void ShowAndResetCounters(TextWriter output);
     }
 }

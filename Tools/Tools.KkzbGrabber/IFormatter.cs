@@ -4,6 +4,6 @@ namespace Tools.KkzbGrabber
 {
     interface IFormatter
     {
-        void Write(IEnumerable<KeyValuePair<string, Rate>> data);
+        void Write(IEnumerable<Provider> data);
     }
 }

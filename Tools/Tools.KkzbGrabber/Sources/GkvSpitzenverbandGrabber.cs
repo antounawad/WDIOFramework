@@ -6,13 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Tools.KkzbGrabber.Sources
 {
     [Description("www.gkv-spitzenverband.de")]
     class GkvSpitzenverbandGrabber : IGrabber
     {
-        public IEnumerable<KeyValuePair<string, Rate>> GetBeitraege()
+        public IEnumerable<Provider> GetBeitraege()
         {
             var pages = new List<string>();
 
@@ -32,12 +33,12 @@ namespace Tools.KkzbGrabber.Sources
                 var rowMatches = Regex.Matches(table, @"<tr>.*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?<\/td>.*?<td[^>]*>.*?(\d+),(\d{2})\s*%.*?<\/td>.*?<\/tr>", RegexOptions.Singleline);
                 foreach (var row in rowMatches.Cast<Match>())
                 {
-                    var name = row.Groups[1].Value.Trim();
+                    var name = HttpUtility.HtmlDecode(row.Groups[1].Value.Trim());
                     var value = row.Groups[2].Value;
                     var decimals = row.Groups[3].Value;
                     var rate = int.Parse(value) * 100 + int.Parse(decimals);
 
-                    yield return new KeyValuePair<string, Rate>(name, new Rate(rate, -4));
+                    yield return new Provider(name, new Rate(rate, -4));
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -288,6 +289,38 @@ namespace Eulg.Utilities.Console
                         break;
                 }
             }
+        }
+
+        public static string SqlServerConnectionString(string defaultDataSource = null, string defaultCatalog = null)
+        {
+            var dataSource = defaultDataSource == null
+                ? String("Database instance")
+                : String($"Database instance (default=\"{defaultDataSource}\")", defaultDataSource);
+            var username = String("Username (blank=IntSec)");
+            var password = string.IsNullOrEmpty(username) ? null : Password();
+            var catalog = defaultCatalog == null
+                ? String("Catalog")
+                : String($"Catalog (default=\"{defaultCatalog}\")", defaultCatalog);
+
+            var sqlBuilder = new SqlConnectionStringBuilder
+            {
+                DataSource = dataSource,
+                InitialCatalog = catalog,
+                ConnectTimeout = 20
+            };
+
+            if(string.IsNullOrEmpty(username))
+            {
+                sqlBuilder.IntegratedSecurity = true;
+            }
+            else
+            {
+                sqlBuilder.IntegratedSecurity = false;
+                sqlBuilder.Password = password;
+                sqlBuilder.UserID = username;
+            }
+
+            return sqlBuilder.ToString();
         }
     }
 }

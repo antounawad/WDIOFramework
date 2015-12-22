@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 
 namespace Tools.KkzbGrabber.Filters
 {
@@ -9,14 +9,23 @@ namespace Tools.KkzbGrabber.Filters
     {
         private const string Betriebskrankenkasse = "betriebskrankenkasse";
 
-        public bool Filter(ref KeyValuePair<string, Rate> item)
+        private int _counter;
+
+        public bool Filter(ref Provider item)
         {
-            if (item.Key.EndsWith(Betriebskrankenkasse, StringComparison.OrdinalIgnoreCase))
+            if (item.Name.EndsWith(Betriebskrankenkasse, StringComparison.OrdinalIgnoreCase))
             {
-                item = new KeyValuePair<string, Rate>("BKK " + item.Key.Substring(item.Key.Length - Betriebskrankenkasse.Length).Trim(), item.Value);
+                item = new Provider("BKK " + item.Name.Substring(item.Name.Length - Betriebskrankenkasse.Length).Trim(), item.Rate);
+                ++_counter;
             }
 
             return true;
+        }
+
+        public void ShowAndResetCounters(TextWriter output)
+        {
+            output.WriteLine("{0} replacements made", _counter);
+            _counter = 0;
         }
     }
 }

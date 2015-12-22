@@ -31,34 +31,22 @@ namespace Tools.KkzbGrabber
 
                 var selectedFilterType = Prompt.Select("Select filter to apply", filters, f => f.Key).Value;
                 var filter = (IFilter)Activator.CreateInstance(selectedFilterType);
-                var filtered = new List<KeyValuePair<string, Rate>>();
-
-                var removed = 0;
-                var altered = 0;
+                var filtered = new List<Provider>();
 
                 foreach(var item in beitraege)
                 {
                     var local = item;
-                    var oldKey = local.Key;
 
                     if(filter.Filter(ref local))
                     {
-                        if (local.Key != oldKey)
-                        {
-                            ++altered;
-                        }
-
                         filtered.Add(local);
-                    }
-                    else
-                    {
-                        ++removed;
                     }
                 }
 
                 beitraege = filtered;
 
-                Console.WriteLine("{0} changes, {1} removals", altered, removed);
+                filter.ShowAndResetCounters(Console.Out);
+                Console.WriteLine();
                 Console.WriteLine();
             }
 

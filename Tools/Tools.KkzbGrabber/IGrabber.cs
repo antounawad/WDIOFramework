@@ -4,6 +4,6 @@ namespace Tools.KkzbGrabber
 {
     interface IGrabber
     {
-        IEnumerable<KeyValuePair<string, Rate>> GetBeitraege();
+        IEnumerable<Provider> GetBeitraege();
     }
 }

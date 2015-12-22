@@ -44,5 +44,30 @@ namespace Tools.KkzbGrabber
         {
             return $"{Decimals}*10^{Exponent}";
         }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Rate))
+            {
+                return false;
+            }
+
+            return this == (Rate)obj;
+        }
+
+        public override int GetHashCode()
+        {
+            return Decimals + 23 * Exponent;
+        }
+
+        public static bool operator ==(Rate r1, Rate r2)
+        {
+            return r1.Decimals == r2.Decimals && r1.Exponent == r2.Exponent;
+        }
+
+        public static bool operator !=(Rate r1, Rate r2)
+        {
+            return r1.Decimals != r2.Decimals || r1.Exponent != r2.Exponent;
+        }
     }
 }
