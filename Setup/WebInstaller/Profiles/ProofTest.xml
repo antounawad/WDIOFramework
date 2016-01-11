@@ -5,5 +5,5 @@
   <Registry UserSettingsKey="EULG_VRTest_Intern" MachineSettingsKey="EULG_VRTest_Intern" UninstallKey="EULG_VRTest_Intern" UninstallName="EULG - Versicherertestclient (Test)" />
   <ShellIcons DesktopApp="EULG VR-Test (Test)" StartMenuFolder="EULG VR-Testclient (Test)" StartMenuApp="EULG Client (VR-Testclient Test)" StartMenuSync="EULG Sync-Client (VR-Testclient Test)" StartMenuSupportTool="EULG Support (VR-Testclient Test)" StartMenuFernwartung="EULG Fernwartung" />
   <Update Channel="Proof" UseHttps="false" />
-  <Urls Update="192.168.15.4/Service/Update/" Web="https://192.168.15.4/Service/Api" Sync="192.168.15.4:8888" SyncHttp="192.168.15.4/Service/Sync" />
+  <Urls Update="192.168.0.4/Service/Update/" Web="https://192.168.0.4/Service/Api" Sync="192.168.0.4:8888" SyncHttp="192.168.0.4/Service/Sync" />
 </Branding>
