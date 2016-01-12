@@ -341,7 +341,7 @@ namespace Eulg.Client.SupportTool
                 if (!fileInfo.Exists
                     || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime)
                     || fileInfo.Length != updateFile.FileSize
-                    || (!filePath.Equals("AppDir", StringComparison.CurrentCultureIgnoreCase) ||  !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
+                    || (!filePath.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase) && !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var fixFile = new WorkerConfig.WorkerFile
                     {
