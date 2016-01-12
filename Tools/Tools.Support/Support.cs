@@ -7,6 +7,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Security;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +17,8 @@ using System.Windows;
 using Eulg.Shared;
 using Eulg.Update.Common;
 using Eulg.Update.Shared;
+using Microsoft.Win32;
+using System.Security.Cryptography;
 
 namespace Eulg.Client.SupportTool
 {
@@ -55,7 +60,6 @@ namespace Eulg.Client.SupportTool
             Sync
         }
 
-        public const string UPDATE_SERVICE_NAME = "EulgUpdate";
         public const string FERNWARTUNG_EXECUTABLE_NAME = "EulgFernwartung.exe";
         private const int STREAM_BUFFER_SIZE = 81920;
         private static string _ildasmPath;
@@ -63,6 +67,13 @@ namespace Eulg.Client.SupportTool
         private long _filesProcessed;
         private string _oldMessage;
         private int _oldPercent;
+        private static readonly DateTime _updateServiceDateTimeFixed = new DateTime(2015, 09, 10);
+        private static readonly TimeSpan _serviceTimeout = new TimeSpan(0, 0, 0, 30);
+        private const string UPDATE_SERVICE_NAME = "EulgUpdate";
+        private const string UPDATE_SERVICE_PARENT_PATH = "EULG Software GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE = "KS Software GmbH";
+        private const string UPDATE_SERVICE_PATH = "UpdateService";
+        private const string UPDATE_SERVICE_BINARY = "UpdateService.exe";
 
         public static Branding CurrentBranding { get; set; }
 
@@ -108,6 +119,46 @@ namespace Eulg.Client.SupportTool
 
         #region Update
 
+        private List<Tuple<string, string>> GetLogins()
+        {
+            var accounts = new List<Tuple<string, string>>();
+            using (var key = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\EULG Software GmbH\{Branding.Current.Registry.UserSettingsKey}\Account", false))
+            {
+                if (key == null) return accounts;
+                foreach (var subKey in key.GetSubKeyNames())
+                {
+                    using (var keySubKey = key.OpenSubKey(subKey, false))
+                    {
+                        string password;
+                        if (!TryDecryptPassword(keySubKey.GetValue("LoginPassword") as byte[], out password))
+                        {
+                            password = null;
+                        }
+                        accounts.Add(new Tuple<string, string>(subKey, password));
+                    }
+                }
+            }
+            return accounts;
+        }
+        private static bool TryDecryptPassword(byte[] bytes, out string password)
+        {
+            if (bytes == null)
+            {
+                password = null;
+                return false;
+            }
+            try
+            {
+                password = Encoding.UTF8.GetString(ProtectedData.Unprotect(bytes, null, DataProtectionScope.CurrentUser));
+                return true;
+            }
+            catch
+            {
+                password = null;
+                return false;
+            }
+        }
+
         public void DoUpdateCheck()
         {
             // ReSharper disable once RedundantAssignment
@@ -116,6 +167,7 @@ namespace Eulg.Client.SupportTool
             appPath = @"C:\Program Files (x86)\EulgDeTest";
 #endif
             ProxyConfig.SetDefault();
+            var accounts = GetLogins();
             var updateClient = new UpdateClient
             {
                 UpdateUrl = CurrentBranding.Urls.Update,
@@ -124,8 +176,8 @@ namespace Eulg.Client.SupportTool
                 ApplicationPath = appPath,
                 DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
                 LogFile = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate.log"),
-                UserNames = new[] { "" },
-                Passwords = new[] { "" },
+                UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
+                Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },
                 CheckProcesses = string.Empty, // AppBinary bei SupportTool auch nach KILL, siehe EULG-6189
                 KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server", // "server.exe" is Allianz-RK background process
                 SkipWaitForProcess = true,
@@ -135,7 +187,8 @@ namespace Eulg.Client.SupportTool
             {
                 NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
             };
-            NotifyProgressChanged(-1, "Update-Katalog abrufen...");
+            NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
+            NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
             switch (updateClient.FetchManifest(FingerPrint.ClientId))
             {
                 case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
@@ -171,8 +224,11 @@ namespace Eulg.Client.SupportTool
             _ildasmPath = Path.Combine(Path.GetTempPath(), "ildasm.exe");
             File.WriteAllBytes(_ildasmPath, Disassembler.Ildasm);
 
-            CompareDirectory(updateClient.ApplicationPath, "AppDir", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir").ToArray(), updateClient);
+            CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Setup"), "Setup", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Setup").ToArray(), updateClient);
             CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Support"), "Support", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Support").ToArray(), updateClient);
+            CompareDirectory(updateClient.ApplicationPath, "AppDir", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir").ToArray(), updateClient);
+            CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Plugins"), "Plugins", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Plugins").ToArray(), updateClient);
+
             if (updateClient.WorkerConfig.WorkerFiles.Any() || updateClient.WorkerConfig.WorkerDeletes.Any())
             {
                 var updateSupport = (updateClient.WorkerConfig.WorkerFiles.Any(a => a.Source.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)));
@@ -185,7 +241,7 @@ namespace Eulg.Client.SupportTool
                 {
                     Directory.CreateDirectory(updateClient.DownloadPath);
                 }
-                NotifyProgressChanged(-1, "Programmdateien herunterladen...");
+                NotifyProgressChanged(-1, "*Programmdateien herunterladen...");
                 if (!updateClient.DownloadUpdatesStream())
                 {
                     MessageBox.Show("Fehler beim Download der Programmdateien!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -215,8 +271,9 @@ namespace Eulg.Client.SupportTool
         private void CompareDirectory(string path, string filePath, UpdateConfig.UpdateFile[] updateFiles, UpdateClient updateClient)
         {
             // Delete Extra Files
-            NotifyProgressChanged(-1, "Verzeichnis durchsuchen..");
+            NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
             var localFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+            _filesProcessed = 0;
             var filesTotal = localFiles.LongLength;
             if (filesTotal == 0)
                 filesTotal = 1;
@@ -226,21 +283,20 @@ namespace Eulg.Client.SupportTool
                 NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_filesProcessed) / Convert.ToDecimal(filesTotal)) * 100), file);
                 var fileName = Path.GetFileName(file) ?? string.Empty;
                 var relPath = file.Substring(path.Length + 1);
+
                 if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
-                    && (relPath.StartsWith("Setup\\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith("Support\\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith("Plugins\\", StringComparison.InvariantCultureIgnoreCase)
+                    && (relPath.StartsWith(@"Setup\", StringComparison.InvariantCultureIgnoreCase)
+                        || relPath.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)
+                        || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
                         || fileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)
-                        || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)
-                       ))
-                {
+                        || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
                     continue;
-                }
+
                 if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase)
                                           && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
-                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + relPath);
+                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + file);
                 }
             }
 
@@ -250,17 +306,18 @@ namespace Eulg.Client.SupportTool
             {
                 var relPath = dir.Substring(path.Length + 1);
 
-                if (relPath.Equals(@"Setup", StringComparison.InvariantCultureIgnoreCase)
-                    || relPath.Equals(@"Support", StringComparison.InvariantCultureIgnoreCase)
-                    || relPath.Equals(@"Plugins", StringComparison.InvariantCultureIgnoreCase)
-                    || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
-                    || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase))
+                if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
+                    && (relPath.Equals(@"Setup", StringComparison.InvariantCultureIgnoreCase)
+                        || relPath.Equals(@"Support", StringComparison.InvariantCultureIgnoreCase)
+                        || relPath.Equals(@"Plugins", StringComparison.InvariantCultureIgnoreCase)
+                        || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
+                        || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
                     continue;
 
                 if (!updateFiles.Any(a => a.FileName.StartsWith(relPath)))
                 {
                     updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
-                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + relPath);
+                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
                 }
             }
 
@@ -284,7 +341,7 @@ namespace Eulg.Client.SupportTool
                 if (!fileInfo.Exists
                     || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime)
                     || fileInfo.Length != updateFile.FileSize
-                    || !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase))
+                    || (!filePath.Equals("AppDir", StringComparison.CurrentCultureIgnoreCase) ||  !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var fixFile = new WorkerConfig.WorkerFile
                     {
@@ -507,110 +564,211 @@ namespace Eulg.Client.SupportTool
 
         public static bool CheckUpdateService()
         {
-            if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
+            try
+            {
+                // Service überhaupt installiert?
+                if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME))) return false;
+
+                // Service im richtigen Pfad (oder evtl noch KS...)
+                var pathShould = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH, UPDATE_SERVICE_PATH, UPDATE_SERVICE_BINARY);
+                var pathIs = GetServiceImagePath(UPDATE_SERVICE_NAME);
+                if (!pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase)) return false;
+
+                // Service richtige Version?
+                var fi = new FileInfo(pathIs);
+                if (fi.LastWriteTime < _updateServiceDateTimeFixed) return false;
+
+                // Service lässt sich starten?
+                using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
+                {
+                    if (svc.Status != ServiceControllerStatus.Running)
+                    {
+                        svc.Start();
+                        svc.WaitForStatus(ServiceControllerStatus.Running, _serviceTimeout);
+                    }
+                    var ok = (svc.Status != ServiceControllerStatus.Running);
+                    if (svc.Status != ServiceControllerStatus.Stopped)
+                    {
+                        svc.Stop();
+                    }
+                    return ok;
+                }
+            }
+            catch
             {
                 return false;
             }
-            using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
-            {
-                if (svc.Status != ServiceControllerStatus.Running)
-                {
-                    try
-                    {
-                        svc.Start();
-                        svc.WaitForStatus(ServiceControllerStatus.Running);
-                        return true;
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
+        }
+        private static string GetServiceImagePath(string serviceName)
+        {
+            var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + serviceName);
+            return key?.GetValue("ImagePath").ToString();
         }
 
-        public static bool InstallUpdateService()
+        //public static bool InstallUpdateService()
+        //{
+        //    try
+        //    {
+        //        if (ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
+        //        {
+        //            RemoveUpdateService();
+        //        }
+        //        var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+        //        var p = new Process
+        //        {
+        //            StartInfo =
+        //                    {
+        //                        FileName = exePath,
+        //                        Arguments = "install",
+        //                        Verb = "runas"
+        //                    }
+        //        };
+        //        p.Start();
+        //        p.WaitForExit();
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        //LogException(exception);
+        //    }
+        //    return false;
+        //}
+        internal static bool FixUpdateService()
         {
             try
             {
+                var newImageFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UPDATE_SERVICE_BINARY);
+                if (!File.Exists(newImageFile)) throw new Exception("Datei " + newImageFile + " nicht gefunden.");
+
+                var pathShould = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH, UPDATE_SERVICE_PATH, UPDATE_SERVICE_BINARY);
+
+                // Wenn Service bereits installiert -> zuerst entfernen...
                 if (ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
                 {
-                    RemoveUpdateService();
+                    var pathIs = GetServiceImagePath(UPDATE_SERVICE_NAME);
+
+                    // Stopp
+                    using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
+                    {
+                        if (svc.Status != ServiceControllerStatus.Stopped)
+                        {
+                            svc.Stop();
+                            svc.WaitForStatus(ServiceControllerStatus.Stopped, _serviceTimeout);
+                        }
+                    }
+
+                    // Uninstall
+                    var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                    p.Start();
+                    p.WaitForExit();
+
+                    // Delete
+                    if (pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var pathCurrent = Path.GetDirectoryName(pathIs) ?? string.Empty;
+                        var pathObsolete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE, UPDATE_SERVICE_PATH);
+                        if (pathCurrent.Equals(pathObsolete, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE);
+                            DeleteDirectory(pathToDelete);
+                        }
+                    }
                 }
-                var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
-                var p = new Process
-                {
-                    StartInfo =
-                            {
-                                FileName = exePath,
-                                Arguments = "install",
-                                Verb = "runas"
-                            }
-                };
-                p.Start();
-                p.WaitForExit();
+
+                // Copy new Image
+                var destDir = Path.GetDirectoryName(pathShould) ?? string.Empty;
+                Directory.CreateDirectory(destDir);
+                File.Copy(newImageFile, pathShould, true);
+                SetDirectoryAccessControl(destDir);
+
+                // Install new Service
+                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                pNew.Start();
+                pNew.WaitForExit();
                 return true;
             }
-            catch
+            catch (Exception e)
             {
-                //LogException(exception);
+                MessageBox.Show("Fehler beim Installieren des Update-Dienstes. " + e.GetMessagesTree(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
-            return false;
+        }
+        private static void SetDirectoryAccessControl(string path)
+        {
+            var dirSec = Directory.GetAccessControl(path);
+            dirSec.SetAccessRuleProtection(true, false);
+            var everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            dirSec.AddAccessRule(new FileSystemAccessRule(everyone, FileSystemRights.FullControl, InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, PropagationFlags.None, AccessControlType.Allow));
+            Directory.SetAccessControl(path, dirSec);
+        }
+        private static void DeleteDirectory(string directory)
+        {
+            var files = Directory.GetFiles(directory);
+            var dirs = Directory.GetDirectories(directory);
+            foreach (var file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+            foreach (var dir in dirs)
+            {
+                DeleteDirectory(dir);
+            }
+            Directory.Delete(directory, false);
         }
 
-        public static bool RemoveUpdateService()
-        {
-            if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
-            {
-                return true;
-            }
-            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
-            if (!File.Exists(exePath))
-            {
-                return true;
-            }
-            try
-            {
-                StopService(true);
-                var p = new Process
-                {
-                    StartInfo =
-                            {
-                                FileName = exePath,
-                                Arguments = "uninstall",
-                                Verb = "runas"
-                            }
-                };
-                p.Start();
-                p.WaitForExit();
-                return true;
-            }
-            catch
-            {
-                //LogException(exception);
-            }
-            return false;
-        }
+        //public static bool RemoveUpdateService()
+        //{
+        //    if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
+        //    {
+        //        return true;
+        //    }
+        //    var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+        //    if (!File.Exists(exePath))
+        //    {
+        //        return true;
+        //    }
+        //    try
+        //    {
+        //        StopService(true);
+        //        var p = new Process
+        //        {
+        //            StartInfo =
+        //                    {
+        //                        FileName = exePath,
+        //                        Arguments = "uninstall",
+        //                        Verb = "runas"
+        //                    }
+        //        };
+        //        p.Start();
+        //        p.WaitForExit();
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        //LogException(exception);
+        //    }
+        //    return false;
+        //}
 
-        public static void StopService(bool wait)
-        {
-            if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
-            {
-                return;
-            }
-            using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
-            {
-                if (svc.Status != ServiceControllerStatus.Stopped)
-                {
-                    svc.Stop();
-                }
-                if (wait)
-                {
-                    svc.WaitForStatus(ServiceControllerStatus.Stopped);
-                }
-            }
-        }
+        //public static void StopService(bool wait)
+        //{
+        //    if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
+        //    {
+        //        return;
+        //    }
+        //    using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
+        //    {
+        //        if (svc.Status != ServiceControllerStatus.Stopped)
+        //        {
+        //            svc.Stop();
+        //        }
+        //        if (wait)
+        //        {
+        //            svc.WaitForStatus(ServiceControllerStatus.Stopped);
+        //        }
+        //    }
+        //}
 
         #endregion
 
@@ -633,5 +791,6 @@ namespace Eulg.Client.SupportTool
 
             return !ProcessHelper.IsProcessRunning(PROCESS);
         }
+
     }
 }

@@ -9,7 +9,7 @@ namespace Eulg.Client.SupportTool.Views
             InitializeComponent();
         }
 
-        public void UpdateProgress(int percent, string message)
+        public void UpdateProgress(int percent, string message, string header)
         {
             if (percent < 0)
             {
@@ -21,6 +21,7 @@ namespace Eulg.Client.SupportTool.Views
                 ProgressBar.Value = percent;
             }
             LabelFileCount.Content = message;
+            if (!string.IsNullOrEmpty(header)) LabelProgress.Content = header;
         }
 
     }

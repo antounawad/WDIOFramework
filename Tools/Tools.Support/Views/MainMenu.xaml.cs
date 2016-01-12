@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Eulg.Shared;
-using Eulg.Update.Shared;
 
 namespace Eulg.Client.SupportTool.Views
 {
@@ -46,7 +45,21 @@ namespace Eulg.Client.SupportTool.Views
                 var progressView = new Progress();
                 Pager.NavigateTo(progressView);
                 var support = new Support();
-                support.ProgressChanged += (o, args) => Dispatcher.Invoke(() => progressView.UpdateProgress(args.ProgressPercentage, (args.UserState as string) ?? string.Empty));
+                support.ProgressChanged += (o, args) => Dispatcher.Invoke(() =>
+                {
+                    var a = args.UserState as string;
+                    var header = string.Empty;
+                    var message = string.Empty;
+                    if (a != null)
+                    {
+                        if (a.StartsWith("*", StringComparison.CurrentCultureIgnoreCase))
+                            header = a.Substring(1);
+                        else
+                            message = a;
+                    }
+                    progressView.UpdateProgress(args.ProgressPercentage, message, header);
+                }
+                );
                 var task = new Task(support.DoUpdateCheck);
                 task.ContinueWith(delegate { Pager.NavigateTo(this); });
                 task.Start();
@@ -68,7 +81,21 @@ namespace Eulg.Client.SupportTool.Views
             var progressView = new Progress();
             Pager.NavigateTo(progressView);
             var support = new Support();
-            support.ProgressChanged += (o, args) => Dispatcher.Invoke(() => progressView.UpdateProgress(args.ProgressPercentage, (args.UserState as string) ?? String.Empty));
+            support.ProgressChanged += (o, args) => Dispatcher.Invoke(() =>
+            {
+                var a = args.UserState as string;
+                var header = string.Empty;
+                var message = string.Empty;
+                if (a != null)
+                {
+                    if (a.StartsWith("*", StringComparison.CurrentCultureIgnoreCase))
+                        header = a.Substring(1);
+                    else
+                        message = a;
+                }
+                progressView.UpdateProgress(args.ProgressPercentage, message, header);
+            }
+            );
             var task = new Task(() =>
             {
                 if (support.Upload(log, queue, cache))
@@ -105,7 +132,7 @@ namespace Eulg.Client.SupportTool.Views
             {
                 if (MessageBox.Show("Update Dienst konnte nicht gestartet werden. Dienst wird neu installiert.", "Update-Dienst", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                 {
-                    if (!Support.InstallUpdateService())
+                    if (!Support.FixUpdateService())
                     {
                         MessageBox.Show("Update-Dienst konnte nicht aktiviert werden. Bitte führen Sie Setup erneut aus.", "Update-Dienst", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
