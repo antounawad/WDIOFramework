@@ -283,8 +283,7 @@ namespace Eulg.Client.SupportTool
         {
             if (!Directory.Exists(path))
             {
-                Directory.CreateDirectory(path);
-                SetDirectoryAccessControl(path);
+                return;
             }
             // Delete Extra Files
             NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
