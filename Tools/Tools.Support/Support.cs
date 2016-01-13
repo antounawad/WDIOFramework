@@ -74,6 +74,7 @@ namespace Eulg.Client.SupportTool
         private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE = "KS Software GmbH";
         private const string UPDATE_SERVICE_PATH = "UpdateService";
         private const string UPDATE_SERVICE_BINARY = "UpdateService.exe";
+        private string LogFile { get; } = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate.log");
 
         public static Branding CurrentBranding { get; set; }
 
@@ -161,6 +162,10 @@ namespace Eulg.Client.SupportTool
 
         public void DoUpdateCheck()
         {
+#if !DEBUG
+            try
+            {
+#endif
             // ReSharper disable once RedundantAssignment
             var appPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".."));
 #if DEBUG
@@ -175,7 +180,7 @@ namespace Eulg.Client.SupportTool
                 UpdateChannel = CurrentBranding.Update.Channel,
                 ApplicationPath = appPath,
                 DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
-                LogFile = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate.log"),
+                LogFile = LogFile,
                 UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
                 Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },
                 CheckProcesses = string.Empty, // AppBinary bei SupportTool auch nach KILL, siehe EULG-6189
@@ -214,7 +219,6 @@ namespace Eulg.Client.SupportTool
                     MessageBox.Show("Fehler beim Abrufen der Update-Konfiguration: " + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
             }
-
             if (!updateClient.UpdateConf.UpdateFiles.Any() && updateClient.UpdateConf.UpdateDeletes.Any())
             {
                 MessageBox.Show("Update-Konfiguration enthält keine Dateien.", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -223,7 +227,6 @@ namespace Eulg.Client.SupportTool
 
             _ildasmPath = Path.Combine(Path.GetTempPath(), "ildasm.exe");
             File.WriteAllBytes(_ildasmPath, Disassembler.Ildasm);
-
             CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Setup"), "Setup", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Setup").ToArray(), updateClient);
             CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Support"), "Support", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Support").ToArray(), updateClient);
             CompareDirectory(updateClient.ApplicationPath, "AppDir", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir").ToArray(), updateClient);
@@ -266,10 +269,23 @@ namespace Eulg.Client.SupportTool
             }
             NotifyProgressChanged(-1, "Protokoll übertragen...");
             updateClient.UploadLogfile();
+#if !DEBUG
+            }
+            catch (Exception e)
+            {
+                File.AppendAllText(LogFile, e.GetMessagesTree());
+                throw;
+            }
+#endif
         }
 
         private void CompareDirectory(string path, string filePath, UpdateConfig.UpdateFile[] updateFiles, UpdateClient updateClient)
         {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+                SetDirectoryAccessControl(path);
+            }
             // Delete Extra Files
             NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
             var localFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
@@ -279,7 +295,7 @@ namespace Eulg.Client.SupportTool
                 filesTotal = 1;
             foreach (var file in localFiles)
             {
-                System.Threading.Interlocked.Add(ref _filesProcessed, 1);
+                _filesProcessed++;
                 NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_filesProcessed) / Convert.ToDecimal(filesTotal)) * 100), file);
                 var fileName = Path.GetFileName(file) ?? string.Empty;
                 var relPath = file.Substring(path.Length + 1);

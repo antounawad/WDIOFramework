@@ -134,7 +134,7 @@ namespace Eulg.Update.Common
 
                 var result = new StreamReader(request.GetResponse().GetResponseStream()).ReadToEnd();
 
-                if (String.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE"))
+                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE"))
                 {
                     return EUpdateCheckResult.UpToDate;
                 }
@@ -391,6 +391,7 @@ namespace Eulg.Update.Common
                 foreach (var diffFile in diffFiles)
                 {
                     NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, filteredWorkerFilesAll.Count, diffFile.FileName);
+                    Log(LogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss})");
                     PatchFile(diffFile);
                     DownloadSizeCompleted += diffFile.FileSizeGz;
                     currentFileDiff++;
