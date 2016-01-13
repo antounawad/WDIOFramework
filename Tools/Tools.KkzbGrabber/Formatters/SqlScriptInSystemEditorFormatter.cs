@@ -36,7 +36,7 @@ namespace Tools.KkzbGrabber.Formatters
 
                 foreach(var item in items.OrderBy(i => i.Name))
                 {
-                    var line = $"INSERT INTO dbo.HealthInsuranceSurcharge VALUES ((SELECT [ID] FROM dbo.HealthInsuranceProvider WHERE [Name]='{EscapeSingleQuote(item.Name)}'), {(decimal)item.Rate:f4}, '{availabilityDateFormat} 00:00:01.000');\r\n";
+                    var line = $"INSERT INTO dbo.HealthInsuranceSurcharge VALUES ((SELECT [ID] FROM dbo.HealthInsuranceProvider WHERE [Name]='{EscapeSingleQuote(item.Name)}'), {(decimal)item.Rate:f4}, '{availabilityDateFormat}T00:00:01.000Z');\r\n";
                     var bytes = Encoding.UTF8.GetBytes(line);
                     file.Write(bytes, 0, bytes.Length);
                 }
