@@ -329,7 +329,7 @@ namespace Eulg.Client.SupportTool
                         || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
                     continue;
 
-                if (!updateFiles.Any(a => a.FileName.StartsWith(relPath)))
+                if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
                     updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
