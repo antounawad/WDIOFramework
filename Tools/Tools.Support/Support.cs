@@ -307,8 +307,8 @@ namespace Eulg.Client.SupportTool
                         || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
                     continue;
 
-                if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase)
-                                          && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase))
+                    && !updateClient.UpdateConf.ResetFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
                     updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + file);
@@ -329,7 +329,8 @@ namespace Eulg.Client.SupportTool
                         || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
                     continue;
 
-                if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase))
+                    && !updateClient.UpdateConf.ResetFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
                     updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
