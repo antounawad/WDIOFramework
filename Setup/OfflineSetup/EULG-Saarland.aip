@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="12.0" version="12.5" Modules="enterprise" RootPath="." Language="de" Id="{F3B2EBF5-3DAF-4D97-BCB9-EFF07C08EF8D}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="12.0" version="12.7.2" Modules="enterprise" RootPath="." Language="de" Id="{F3B2EBF5-3DAF-4D97-BCB9-EFF07C08EF8D}">
   <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
     <ROW Name="HiddenItems" Value="MsiJavaComponent;ActSyncAppComponent;SharePointSlnComponent;SilverlightSlnComponent"/>
   </COMPONENT>
@@ -33,22 +33,24 @@
     <ROW Property="LOGIN_USERNAME" Value="unbekannt"/>
     <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:3"/>
     <ROW Property="Manufacturer" Value="EULG Software GmbH"/>
-    <ROW Property="ProductCode" Value="1031:{9EBC8970-8647-4195-BFB1-7179E2C4D0D7} " Type="16"/>
+    <ROW Property="ProductCode" Value="1031:{5EE413DB-1C14-4104-A269-A7D6FF98FB2A} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1031"/>
     <ROW Property="ProductName" Value="EULG - Entgeltumwandlung leicht gemacht"/>
-    <ROW Property="ProductVersion" Value="1.6.5.0" Type="32" TargetFile="EULG_client.exe"/>
+    <ROW Property="ProductVersion" Value="1.7.4.0" Type="32" TargetFile="EULG_client.exe"/>
     <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="RegKeyParent" Value="EULG Software GmbH"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{791A9652-F402-49D4-995A-CA54081B77B5}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows 2000, Windows 2000 Service Pack 1, Windows 2000 Service Pack 2, Windows 2000 Service Pack 3, Windows 2000 Service Pack 4, Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT64" MultiBuildValue="DefaultBuild:Windows XP x64, Windows XP x64 Service Pack 1, Windows XP x64 Service Pack 2, Windows Server 2003 x64, Windows Server 2003 x64 Service Pack 1, Windows Server 2003 x64 Service Pack 2" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT64Display" MultiBuildValue="DefaultBuild:Windows XP x64, Windows Server 2003 x64" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="DefaultBuild:Windows 2000, Windows XP x86, Windows Server 2003 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="DefaultBuild:Windows XP x86, Windows XP x86 Service Pack 1, Windows XP x86 Service Pack 2, Windows XP x86 Service Pack 3, Windows Server 2003 x86, Windows Server 2003 x86 Service Pack 1, Windows Server 2003 x86 Service Pack 2" ValueLocId="-"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1" DirectoryOptions="12"/>
@@ -87,6 +89,7 @@
     <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
     <ROW Directory="Setup_Dir" Directory_Parent="APPDIR" DefaultDir="Setup" DirectoryOptions="12"/>
     <ROW Directory="Support_Dir" Directory_Parent="APPDIR" DefaultDir="Support" DirectoryOptions="12"/>
+    <ROW Directory="SyncDumps_Dir" Directory_Parent="APPDIR" DefaultDir="SYNCDU~1|Sync Dumps" DirectoryOptions="12"/>
     <ROW Directory="SystemV_Dir" Directory_Parent="zi_Dir" DefaultDir="SystemV" DirectoryOptions="12"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="audio_Dir" Directory_Parent="lib_Dir" DefaultDir="audio" DirectoryOptions="12"/>
@@ -156,6 +159,7 @@
     <ROW Component="Casey" ComponentId="{D2BA5004-A398-480C-B84F-55C0D8545DAD}" Directory_="Antarctica_Dir" Attributes="0" KeyPath="Casey" Type="0"/>
     <ROW Component="Channel" ComponentId="{D4BFA14F-8EA1-492D-9D51-89413A7B7A12}" Directory_="APPDIR" Attributes="4" KeyPath="Channel"/>
     <ROW Component="Data" ComponentId="{42BD58A8-BA58-4C46-AE8D-31747D606D4E}" Directory_="Data_Dir" Attributes="0"/>
+    <ROW Component="DocumentFormat.OpenXml.dll" ComponentId="{E2E26B1B-3477-499A-912C-1942448C8EA1}" Directory_="APPDIR" Attributes="0" KeyPath="DocumentFormat.OpenXml.dll"/>
     <ROW Component="EPPlus.dll" ComponentId="{43A716FC-63DD-45DB-BDD7-E7E9785A5F5A}" Directory_="APPDIR" Attributes="0" KeyPath="EPPlus.dll"/>
     <ROW Component="EULG_client.exe" ComponentId="{74D1C29F-1758-4D08-8711-6D61093FCBDD}" Directory_="APPDIR" Attributes="0" KeyPath="EULG_client.exe"/>
     <ROW Component="EULGplugins.dll" ComponentId="{5CE3118C-53DD-487A-8798-529944963C52}" Directory_="APPDIR" Attributes="0" KeyPath="EULGplugins.dll"/>
@@ -206,7 +210,7 @@
     <ROW Component="MarketingForms" ComponentId="{139651EE-D008-44C0-B8BB-868DD99E4FA7}" Directory_="MarketingForms_Dir" Attributes="0"/>
     <ROW Component="Massnahmenkatalog" ComponentId="{6DF5910E-9ACF-4380-B834-F242B4F8B449}" Directory_="Massnahmenkatalog_Dir" Attributes="0"/>
     <ROW Component="Microsoft.Expression.Interactions.dll" ComponentId="{7A9819FB-10AE-474D-83C1-56B1B0BACBD9}" Directory_="APPDIR" Attributes="0" KeyPath="Microsoft.Expression.Interactions.dll"/>
-    <ROW Component="Microsoft.Expression.Interactions.reso_1" ComponentId="{6A01704D-E7CF-492F-A7E8-E0BB956555E0}" Directory_="en_Dir" Attributes="0" KeyPath="Microsoft.Expression.Interactions.resources.dll_1"/>
+    <ROW Component="Microsoft.Expression.Interactions.reso_1" ComponentId="{835BD0DA-4A12-4D9D-9435-FB0F0DF42A11}" Directory_="en_Dir" Attributes="0" KeyPath="Microsoft.Expression.Interactions.resources.dll_1"/>
     <ROW Component="Microsoft.Expression.Interactions.resour" ComponentId="{3D9C91F6-6424-4622-8944-FDD2BB8C6C27}" Directory_="de_Dir" Attributes="0" KeyPath="Microsoft.Expression.Interactions.resources.dll"/>
     <ROW Component="Microsoft.Windows.Design.Extensibility.d" ComponentId="{C8E5085E-B0CA-4595-BCCD-C10AAE1AE439}" Directory_="APPDIR" Attributes="0" KeyPath="Microsoft.Windows.Design.Extensibility.dll"/>
     <ROW Component="Microsoft.Windows.Shell.dll" ComponentId="{51767FB0-0421-49C2-B092-89130BB28CFA}" Directory_="APPDIR" Attributes="0" KeyPath="Microsoft.Windows.Shell.dll"/>
@@ -238,6 +242,7 @@
     <ROW Component="SuperSocket.Facility.dll_1" ComponentId="{01779046-2217-4FA6-A2C8-F618ADB643E6}" Directory_="APPDIR" Attributes="0" KeyPath="SuperSocket.Facility.dll_1"/>
     <ROW Component="SuperSocket.SocketBase.dll_1" ComponentId="{C9EBD81F-4D40-492D-8E20-4B24B6C23899}" Directory_="APPDIR" Attributes="0" KeyPath="SuperSocket.SocketBase.dll_1"/>
     <ROW Component="Support" ComponentId="{DB415E30-361B-4497-A449-0F52D60634D5}" Directory_="Support_Dir" Attributes="0"/>
+    <ROW Component="SyncDumps" ComponentId="{DB013160-4A7D-48D4-9C60-CFB417A52FC9}" Directory_="SyncDumps_Dir" Attributes="0"/>
     <ROW Component="System.Data.SQLite.EF6.dll" ComponentId="{DF47B60E-1D83-4C78-AA16-79A5B2A562BA}" Directory_="APPDIR" Attributes="0" KeyPath="System.Data.SQLite.EF6.dll"/>
     <ROW Component="System.Data.SQLite.Linq.dll" ComponentId="{60106AA3-ABB3-4B4A-A6AB-3E07F057CB34}" Directory_="APPDIR" Attributes="0" KeyPath="System.Data.SQLite.Linq.dll"/>
     <ROW Component="System.Data.SQLite.dll" ComponentId="{9B056310-97DC-47C4-87E9-F350DC537E49}" Directory_="APPDIR" Attributes="0" KeyPath="System.Data.SQLite.dll"/>
@@ -246,7 +251,7 @@
     <ROW Component="System.Windows.Controls.Layout.Toolkit.d" ComponentId="{E0FE95C8-B459-4294-AEAB-3F74CBEE40A0}" Directory_="APPDIR" Attributes="0" KeyPath="System.Windows.Controls.Layout.Toolkit.dll"/>
     <ROW Component="System.Windows.Interactivity.dll" ComponentId="{8D034163-71C3-4C1B-BE24-A8ABFBBCC107}" Directory_="APPDIR" Attributes="0" KeyPath="System.Windows.Interactivity.dll"/>
     <ROW Component="System.Windows.Interactivity.resources.d" ComponentId="{14F3EA9A-7AE4-4B45-A54E-ABEE7D2C4D02}" Directory_="de_Dir" Attributes="0" KeyPath="System.Windows.Interactivity.resources.dll"/>
-    <ROW Component="System.Windows.Interactivity.resources_1" ComponentId="{DB4DFAAD-B3EB-48E7-A509-4EEC88081BBF}" Directory_="en_Dir" Attributes="0" KeyPath="System.Windows.Interactivity.resources.dll_1"/>
+    <ROW Component="System.Windows.Interactivity.resources_1" ComponentId="{DA9B9485-FF18-4BD7-9ECB-DA3ACE2CD5A1}" Directory_="en_Dir" Attributes="0" KeyPath="System.Windows.Interactivity.resources.dll_1"/>
     <ROW Component="SystemV" ComponentId="{2A979D41-9189-412D-A878-9899022AD9A6}" Directory_="SystemV_Dir" Attributes="0"/>
     <ROW Component="Telerik.Reporting.dll" ComponentId="{6850AD78-7A2B-4917-8049-5B7BA720E121}" Directory_="APPDIR" Attributes="0" KeyPath="Telerik.Reporting.dll"/>
     <ROW Component="Telerik.Windows.Controls.Input.dll" ComponentId="{7B85ED9D-B541-4E7A-9D6A-EEF91EC56154}" Directory_="APPDIR" Attributes="0" KeyPath="Telerik.Windows.Controls.Input.dll"/>
@@ -254,12 +259,14 @@
     <ROW Component="Telerik.Windows.Controls.dll" ComponentId="{948D6EAC-E4B0-4FEB-BF2B-F5ACBF1574E8}" Directory_="APPDIR" Attributes="0" KeyPath="Telerik.Windows.Controls.dll"/>
     <ROW Component="Telerik.Windows.Data.dll" ComponentId="{589459DB-C5E2-45F4-8D72-56449828F136}" Directory_="APPDIR" Attributes="0" KeyPath="Telerik.Windows.Data.dll"/>
     <ROW Component="TerminalServer" ComponentId="{5936F928-1432-494F-93B4-3F8D2082CE16}" Directory_="APPDIR" Attributes="4" KeyPath="TerminalServer"/>
+    <ROW Component="Tools.SyncTool.exe" ComponentId="{68447A8D-4437-48FD-9DE4-26547A750DE7}" Directory_="APPDIR" Attributes="0" KeyPath="Tools.SyncTool.exe"/>
     <ROW Component="TrayNotificationManagementWin7.dll" ComponentId="{69D1793C-EB4D-47A1-9516-FEAAAE9991DA}" Directory_="APPDIR" Attributes="0" KeyPath="TrayNotificationManagementWin7.dll"/>
     <ROW Component="TrayNotificationManagementWin8.dll" ComponentId="{35AF41DD-1B8E-4137-89EB-F2A7E40A7802}" Directory_="APPDIR" Attributes="0" KeyPath="TrayNotificationManagementWin8.dll"/>
     <ROW Component="USERNAME" ComponentId="{F6B4C954-DE45-470D-8A4B-DA6CB2C08F43}" Directory_="APPDIR" Attributes="4" KeyPath="USERNAME"/>
     <ROW Component="Update.Fix.exe" ComponentId="{DA8FEA77-FF59-4E5F-BE0A-5B32B4795215}" Directory_="Support_Dir" Attributes="0" KeyPath="Update.Fix.exe"/>
     <ROW Component="UpdateLib.dll" ComponentId="{14B60A35-A20E-4CDF-B7A6-846B88B69F3B}" Directory_="Support_Dir" Attributes="0" KeyPath="UpdateLib.dll"/>
     <ROW Component="UpdateLib.dll_1" ComponentId="{B27F12FB-D1CA-4DCD-99DC-FC4BC2A63FDB}" Directory_="APPDIR" Attributes="0" KeyPath="UpdateLib.dll_1"/>
+    <ROW Component="UpdateService.exe" ComponentId="{53A9CD30-D910-4D58-A07B-BAFF086561C3}" Directory_="Support_Dir" Attributes="0" KeyPath="UpdateService.exe"/>
     <ROW Component="Version" ComponentId="{A4D3304D-7D2C-421B-8B83-98945A999998}" Directory_="APPDIR" Attributes="4" KeyPath="Version_1"/>
     <ROW Component="WPFToolkit.dll" ComponentId="{6953B1EC-5841-44AC-B1FB-00C89EA4535A}" Directory_="APPDIR" Attributes="0" KeyPath="WPFToolkit.dll"/>
     <ROW Component="Xusage.txt" ComponentId="{F8082433-6610-49B5-B65D-8585606914F8}" Directory_="server_Dir" Attributes="0" KeyPath="Xusage.txt_1" Type="0"/>
@@ -296,7 +303,7 @@
     <ROW Component="dt_shmem.dll" ComponentId="{37238713-BD64-4F4B-A09B-E10D8D7B3E70}" Directory_="bin_Dir" Attributes="0" KeyPath="dt_shmem.dll"/>
     <ROW Component="dt_socket.dll" ComponentId="{5084F0E1-9774-445F-B837-E8BB37B9B7FD}" Directory_="bin_Dir" Attributes="0" KeyPath="dt_socket.dll"/>
     <ROW Component="dtplugin" ComponentId="{3CAAAF01-EB18-4BB2-91C9-C296CF010FFF}" Directory_="dtplugin_Dir" Attributes="0"/>
-    <ROW Component="en" ComponentId="{1624BA3C-6F3B-4283-89A8-02D338A29FEF}" Directory_="en_Dir" Attributes="0"/>
+    <ROW Component="en" ComponentId="{5D494562-BF8F-4D8C-9414-FEAEA8E8C218}" Directory_="en_Dir" Attributes="0"/>
     <ROW Component="eula.dll" ComponentId="{EDC6F3C8-569A-4F9D-9B4D-C1D3EDD2B8D3}" Directory_="bin_Dir" Attributes="0" KeyPath="eula.dll"/>
     <ROW Component="ext" ComponentId="{816EF366-A401-4CBD-A4DA-9033E9B25F3B}" Directory_="ext_Dir" Attributes="0"/>
     <ROW Component="ff" ComponentId="{B4C4226D-7883-4250-9705-9208B405E010}" Directory_="ff_Dir" Attributes="0"/>
@@ -361,6 +368,7 @@
     <ROW Component="management" ComponentId="{FB701BD6-BA63-4B35-BF26-AC3486B850F2}" Directory_="management_Dir" Attributes="0"/>
     <ROW Component="management.dll" ComponentId="{5352D868-BF24-4879-8143-824D9542E555}" Directory_="bin_Dir" Attributes="0" KeyPath="management.dll"/>
     <ROW Component="media" ComponentId="{7B515FD9-0172-478E-BB9A-737B3A52E2A0}" Directory_="media_Dir" Attributes="0"/>
+    <ROW Component="merches.sdmp" ComponentId="{41F9A316-8A2F-4115-99BE-0D21E1D5323E}" Directory_="SyncDumps_Dir" Attributes="0" KeyPath="merches.sdmp" Type="0"/>
     <ROW Component="mlib_image.dll" ComponentId="{8CC60563-9294-499D-89D3-38730AB6EF59}" Directory_="bin_Dir" Attributes="0" KeyPath="mlib_image.dll"/>
     <ROW Component="msvcr71.dll" ComponentId="{0CCC4B26-3899-4ACE-8E67-B2E9E5CEB556}" Directory_="bin_Dir" Attributes="0" KeyPath="msvcr71.dll"/>
     <ROW Component="msvcr71.dll_1" ComponentId="{79AFEC08-31F4-46DF-BFDC-98E2EE4C9879}" Directory_="plugin2_Dir" Attributes="0" KeyPath="msvcr71.dll_1"/>
@@ -409,7 +417,7 @@
     <ROW Component="zip.dll" ComponentId="{AC31A237-F1C5-4F9B-8186-010EB5D7C708}" Directory_="bin_Dir" Attributes="0" KeyPath="zip.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify APPDIR AST4 Abidjan Adak Adelaide Aden Africa America Amsterdam Antananarivo Antarctica Apia AppIcon.ico Argentina Asia Atlantic Australia Azores Backup Beulah Branding.xml Branding_DataDir Buenos_Aires CET CIEXYZ.pf COPYRIGHT Casey Channel Data EPPlus.dll EULG_client.exe EULGplugins.dll EntityFramework.SqlServer.dll EntityFramework.SqlServer.resources.dll EntityFramework.dll EntityFramework.resources.dll Etc Eulg.Client.Common.dll Eulg.Client.CrashHelper.exe Eulg.Client.Domain.dll Eulg.Client.Kernel.dll Eulg.Common.Documents.dll Eulg.Common.Domain.dll Eulg.Common.Kernel.dll Eulg.Common.Pdf.dll Eulg.Common.dll Eulg.CommonControls.dll Eulg.Plugins.Saarland.dll Eulg.Plugins.Saarland.dll.config Eulg.Plugins.VorfuehrVR.dll Eulg.Plugins.VorfuehrVR.dll.config Eulg.Reports.dll Eulg.Resources.dll Eulg.Sync.Client.dll Eulg.Sync.Common.dll EulgFernwartung.exe EulgSupport.exe Eulg_sync_client.exe Europe GMT Gma.QrCodeNet.Encoding.dll Images Indian Indiana Indianapolis InstallDate Install_Dir Interop.IWshRuntimeLibrary.dll Interop.IWshRuntimeLibrary.dll_1 Interop.IWshRuntimeLibrary.dll_2 JdbcOdbc.dll Kentucky Kringel Kringel_00000.png Louisville LucidaBrightDemiBold.ttf MarketingForms Massnahmenkatalog Microsoft.Expression.Interactions.dll Microsoft.Expression.Interactions.reso_1 Microsoft.Expression.Interactions.resour Microsoft.Windows.Design.Extensibility.d Microsoft.Windows.Shell.dll Newtonsoft.Json.dll North_Dakota O2S.Components.PDFRender4NET.WPF.dll Pacific Plugins Presentation_AG_final Presentation_AN_final Presentations RK1150 RK9999 Rentenluecke Resources Resources_1 RibbonControlsLibrary.dll SHORTCUTDIR SQLite.Interop.dll SQLite.Interop.dll_1 STPadLibNet.dll Setup Setup.exe Setup.xml SuperSocket.ClientEngine.Common.dll SuperSocket.ClientEngine.Core.dll SuperSocket.ClientEngine.Proxy.dll SuperSocket.Common.dll_1 SuperSocket.Facility.dll_1 SuperSocket.SocketBase.dll_1 Support System.Data.SQLite.EF6.dll System.Data.SQLite.Linq.dll System.Data.SQLite.dll System.Windows.Controls.DataVisualizatio System.Windows.Controls.Input.Toolkit.dl System.Windows.Controls.Layout.Toolkit.d System.Windows.Interactivity.dll System.Windows.Interactivity.resources.d System.Windows.Interactivity.resources_1 SystemV Telerik.Reporting.dll Telerik.Windows.Controls.Input.dll Telerik.Windows.Controls.Navigation.dll Telerik.Windows.Controls.dll Telerik.Windows.Data.dll TerminalServer TrayNotificationManagementWin7.dll TrayNotificationManagementWin8.dll USERNAME Update.Fix.exe UpdateLib.dll UpdateLib.dll_1 Version WPFToolkit.dll Xusage.txt altrt.jar appletouchicon.png appletouchicon.png_1 appletouchicon.png_2 arrowleft.bmp attach.dll audio awt.dll axbridge.dll bin blacklist btnclose.svg chrome chrome.manifest classes.jsa client cmm cmm.dll content cursors cursors.properties data data_1 data_2 dcpr.dll de deploy deploy.dll deployJava1.dll dnsns.jar dt_shmem.dll dt_socket.dll dtplugin en eula.dll ext ff ffjcext.zip fontmanager.dll fonts hpi.dll hprof.dll i386 ie im images indicim.jar instrument.dll ioser12.dll itextsharp.dll j2pcsc.dll j2pkcs11.dll jaas_nt.dll java.dll java.exe java_crw_demo.dll javacpl.cpl javacpl.exe javarmi.exe javaw.exe javaws.exe jawt.dll jbroker.exe jdk_header.png jdwp.dll jkernel.dll jli.dll jmxremote.access jp2iexp.dll jp2launcher.exe jp2native.dll jp2ssv.dll jpeg.dll jpicom.dll jpiexp.dll jpinscp.dll jpioji.dll jpishare.dll jqs jqs.conf jqs.exe jqs_plugin.dll jqsnotify.exe jre jsound.dll jsoundds.dll jvm.cfg jvm.dll jvm.dll_1 keytool.exe kinit.exe klist.exe ktab.exe launcher.exe lib management management.dll media mlib_image.dll msvcr71.dll msvcr71.dll_1 msvcrt.dll net.dll nio.dll npdeployJava1.dll npjp2.dll npjpi160_45.dll npoji610.dll npt.dll orbd.exe overlay.js pack200.exe plugin2 policytool.exe ppl2.png protobufnet.dll_1 regutils.dll rentenluecke_000.png rmi.dll rmid.exe rmiregistry.exe sawindbg.dll security server servertool.exe servicetag soundbank.gm splashscreen.dll ssv.dll ssvagent.exe startscreen sunmscapi.dll sync_set_tray_status tnameserv.exe unicows.dll unpack.dll unpack200.exe verify.dll w2k_lsa_auth.dll wsdetect.dll x64 x86 zi zip.dll"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_DisableModify APPDIR AST4 Abidjan Adak Adelaide Aden Africa America Amsterdam Antananarivo Antarctica Apia AppIcon.ico Argentina Asia Atlantic Australia Azores Backup Beulah Branding.xml Branding_DataDir Buenos_Aires CET CIEXYZ.pf COPYRIGHT Casey Channel Data DocumentFormat.OpenXml.dll EPPlus.dll EULG_client.exe EULGplugins.dll EntityFramework.SqlServer.dll EntityFramework.SqlServer.resources.dll EntityFramework.dll EntityFramework.resources.dll Etc Eulg.Client.Common.dll Eulg.Client.CrashHelper.exe Eulg.Client.Domain.dll Eulg.Client.Kernel.dll Eulg.Common.Documents.dll Eulg.Common.Domain.dll Eulg.Common.Kernel.dll Eulg.Common.Pdf.dll Eulg.Common.dll Eulg.CommonControls.dll Eulg.Plugins.Saarland.dll Eulg.Plugins.Saarland.dll.config Eulg.Plugins.VorfuehrVR.dll Eulg.Plugins.VorfuehrVR.dll.config Eulg.Reports.dll Eulg.Resources.dll Eulg.Sync.Client.dll Eulg.Sync.Common.dll EulgFernwartung.exe EulgSupport.exe Eulg_sync_client.exe Europe GMT Gma.QrCodeNet.Encoding.dll Images Indian Indiana Indianapolis InstallDate Install_Dir Interop.IWshRuntimeLibrary.dll Interop.IWshRuntimeLibrary.dll_1 Interop.IWshRuntimeLibrary.dll_2 JdbcOdbc.dll Kentucky Kringel Kringel_00000.png Louisville LucidaBrightDemiBold.ttf MarketingForms Massnahmenkatalog Microsoft.Expression.Interactions.dll Microsoft.Expression.Interactions.reso_1 Microsoft.Expression.Interactions.resour Microsoft.Windows.Design.Extensibility.d Microsoft.Windows.Shell.dll Newtonsoft.Json.dll North_Dakota O2S.Components.PDFRender4NET.WPF.dll Pacific Plugins Presentation_AG_final Presentation_AN_final Presentations RK1150 RK9999 Rentenluecke Resources Resources_1 RibbonControlsLibrary.dll SHORTCUTDIR SQLite.Interop.dll SQLite.Interop.dll_1 STPadLibNet.dll Setup Setup.exe Setup.xml SuperSocket.ClientEngine.Common.dll SuperSocket.ClientEngine.Core.dll SuperSocket.ClientEngine.Proxy.dll SuperSocket.Common.dll_1 SuperSocket.Facility.dll_1 SuperSocket.SocketBase.dll_1 Support SyncDumps System.Data.SQLite.EF6.dll System.Data.SQLite.Linq.dll System.Data.SQLite.dll System.Windows.Controls.DataVisualizatio System.Windows.Controls.Input.Toolkit.dl System.Windows.Controls.Layout.Toolkit.d System.Windows.Interactivity.dll System.Windows.Interactivity.resources.d System.Windows.Interactivity.resources_1 SystemV Telerik.Reporting.dll Telerik.Windows.Controls.Input.dll Telerik.Windows.Controls.Navigation.dll Telerik.Windows.Controls.dll Telerik.Windows.Data.dll TerminalServer Tools.SyncTool.exe TrayNotificationManagementWin7.dll TrayNotificationManagementWin8.dll USERNAME Update.Fix.exe UpdateLib.dll UpdateLib.dll_1 UpdateService.exe Version WPFToolkit.dll Xusage.txt altrt.jar appletouchicon.png appletouchicon.png_1 appletouchicon.png_2 arrowleft.bmp attach.dll audio awt.dll axbridge.dll bin blacklist btnclose.svg chrome chrome.manifest classes.jsa client cmm cmm.dll content cursors cursors.properties data data_1 data_2 dcpr.dll de deploy deploy.dll deployJava1.dll dnsns.jar dt_shmem.dll dt_socket.dll dtplugin en eula.dll ext ff ffjcext.zip fontmanager.dll fonts hpi.dll hprof.dll i386 ie im images indicim.jar instrument.dll ioser12.dll itextsharp.dll j2pcsc.dll j2pkcs11.dll jaas_nt.dll java.dll java.exe java_crw_demo.dll javacpl.cpl javacpl.exe javarmi.exe javaw.exe javaws.exe jawt.dll jbroker.exe jdk_header.png jdwp.dll jkernel.dll jli.dll jmxremote.access jp2iexp.dll jp2launcher.exe jp2native.dll jp2ssv.dll jpeg.dll jpicom.dll jpiexp.dll jpinscp.dll jpioji.dll jpishare.dll jqs jqs.conf jqs.exe jqs_plugin.dll jqsnotify.exe jre jsound.dll jsoundds.dll jvm.cfg jvm.dll jvm.dll_1 keytool.exe kinit.exe klist.exe ktab.exe launcher.exe lib management management.dll media merches.sdmp mlib_image.dll msvcr71.dll msvcr71.dll_1 msvcrt.dll net.dll nio.dll npdeployJava1.dll npjp2.dll npjpi160_45.dll npoji610.dll npt.dll orbd.exe overlay.js pack200.exe plugin2 policytool.exe ppl2.png protobufnet.dll_1 regutils.dll rentenluecke_000.png rmi.dll rmid.exe rmiregistry.exe sawindbg.dll security server servertool.exe servicetag soundbank.gm splashscreen.dll ssv.dll ssvagent.exe startscreen sunmscapi.dll sync_set_tray_status tnameserv.exe unicows.dll unpack.dll unpack200.exe verify.dll w2k_lsa_auth.dll wsdetect.dll x64 x86 zi zip.dll"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -469,7 +477,7 @@
     <ROW File="Boa_Vista" Component_="Adak" FileName="BOA_VI~1|Boa_Vista" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Boa_Vista" SelfReg="false" NextFile="Bogota"/>
     <ROW File="Bogota" Component_="Adak" FileName="Bogota" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Bogota" SelfReg="false" NextFile="Boise"/>
     <ROW File="Boise" Component_="Adak" FileName="Boise" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Boise" SelfReg="false" NextFile="Cambridge_Bay"/>
-    <ROW File="Branding.xml" Component_="Branding.xml" FileName="Branding.xml" Attributes="0" SourcePath="source\EULG-Saarland\Branding.xml" SelfReg="false"/>
+    <ROW File="Branding.xml" Component_="Branding.xml" FileName="Branding.xml" Attributes="0" SourcePath="source\EULG-Saarland\Branding.xml" SelfReg="false" NextFile="UpdateService.exe"/>
     <ROW File="Brazzaville" Component_="Abidjan" FileName="BRAZZA~1|Brazzaville" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Africa\Brazzaville" SelfReg="false" NextFile="Bujumbura"/>
     <ROW File="Brisbane" Component_="Adelaide" FileName="Brisbane" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Australia\Brisbane" SelfReg="false" NextFile="Broken_Hill"/>
     <ROW File="Broken_Hill" Component_="Adelaide" FileName="BROKEN~1|Broken_Hill" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Australia\Broken_Hill" SelfReg="false" NextFile="Currie"/>
@@ -536,6 +544,7 @@
     <ROW File="Dhaka" Component_="Aden" FileName="Dhaka" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Asia\Dhaka" SelfReg="false" NextFile="Dili"/>
     <ROW File="Dili" Component_="Aden" FileName="Dili" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Asia\Dili" SelfReg="false" NextFile="Dubai"/>
     <ROW File="Djibouti" Component_="Abidjan" FileName="Djibouti" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Africa\Djibouti" SelfReg="false" NextFile="Douala"/>
+    <ROW File="DocumentFormat.OpenXml.dll" Component_="DocumentFormat.OpenXml.dll" FileName="DOCUME~1.DLL|DocumentFormat.OpenXml.dll" Attributes="0" SourcePath="source\EULG-Saarland\DocumentFormat.OpenXml.dll" SelfReg="false" NextFile="Microsoft.Expression.Interactions.resources.dll_1"/>
     <ROW File="Dominica" Component_="Adak" FileName="Dominica" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Dominica" SelfReg="false" NextFile="Edmonton"/>
     <ROW File="Douala" Component_="Abidjan" FileName="Douala" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Africa\Douala" SelfReg="false" NextFile="El_Aaiun"/>
     <ROW File="Dubai" Component_="Aden" FileName="Dubai" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Asia\Dubai" SelfReg="false" NextFile="Dushanbe"/>
@@ -791,8 +800,8 @@
     <ROW File="Metlakatla" Component_="Adak" FileName="METLAK~1|Metlakatla" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Metlakatla" SelfReg="false" NextFile="Mexico_City"/>
     <ROW File="Mexico_City" Component_="Adak" FileName="MEXICO~1|Mexico_City" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Mexico_City" SelfReg="false" NextFile="Miquelon"/>
     <ROW File="Microsoft.Expression.Interactions.dll" Component_="Microsoft.Expression.Interactions.dll" FileName="MICROS~1.DLL|Microsoft.Expression.Interactions.dll" Attributes="0" SourcePath="source\EULG-Saarland\Microsoft.Expression.Interactions.dll" SelfReg="false" NextFile="Microsoft.Windows.Design.Extensibility.dll"/>
-    <ROW File="Microsoft.Expression.Interactions.resources.dll" Component_="Microsoft.Expression.Interactions.resour" FileName="MICROS~1.DLL|Microsoft.Expression.Interactions.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\de\Microsoft.Expression.Interactions.resources.dll" SelfReg="false" NextFile="Microsoft.Expression.Interactions.resources.dll_1"/>
-    <ROW File="Microsoft.Expression.Interactions.resources.dll_1" Component_="Microsoft.Expression.Interactions.reso_1" FileName="MICROS~1.DLL|Microsoft.Expression.Interactions.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\en\Microsoft.Expression.Interactions.resources.dll" SelfReg="false" NextFile="EntityFramework.dll"/>
+    <ROW File="Microsoft.Expression.Interactions.resources.dll" Component_="Microsoft.Expression.Interactions.resour" FileName="MICROS~1.DLL|Microsoft.Expression.Interactions.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\de\Microsoft.Expression.Interactions.resources.dll" SelfReg="false" NextFile="EntityFramework.dll"/>
+    <ROW File="Microsoft.Expression.Interactions.resources.dll_1" Component_="Microsoft.Expression.Interactions.reso_1" FileName="MICROS~1.DLL|Microsoft.Expression.Interactions.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\en\Microsoft.Expression.Interactions.resources.dll" SelfReg="false" NextFile="System.Windows.Interactivity.resources.dll_1"/>
     <ROW File="Microsoft.Windows.Design.Extensibility.dll" Component_="Microsoft.Windows.Design.Extensibility.d" FileName="MICROS~2.DLL|Microsoft.Windows.Design.Extensibility.dll" Attributes="0" SourcePath="source\EULG-Saarland\Microsoft.Windows.Design.Extensibility.dll" SelfReg="false" NextFile="Microsoft.Windows.Shell.dll"/>
     <ROW File="Microsoft.Windows.Shell.dll" Component_="Microsoft.Windows.Shell.dll" FileName="MICROS~3.DLL|Microsoft.Windows.Shell.dll" Attributes="0" SourcePath="source\EULG-Saarland\Microsoft.Windows.Shell.dll" SelfReg="false" NextFile="Newtonsoft.Json.dll"/>
     <ROW File="Midway" Component_="Apia" FileName="Midway" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Pacific\Midway" SelfReg="false" NextFile="Nauru"/>
@@ -937,8 +946,8 @@
     <ROW File="System.Windows.Controls.Input.Toolkit.dll" Component_="System.Windows.Controls.Input.Toolkit.dl" FileName="SYSTEM~5.DLL|System.Windows.Controls.Input.Toolkit.dll" Attributes="0" SourcePath="source\EULG-Saarland\System.Windows.Controls.Input.Toolkit.dll" SelfReg="false" NextFile="System.Windows.Controls.Layout.Toolkit.dll"/>
     <ROW File="System.Windows.Controls.Layout.Toolkit.dll" Component_="System.Windows.Controls.Layout.Toolkit.d" FileName="SYSTEM~6.DLL|System.Windows.Controls.Layout.Toolkit.dll" Attributes="0" SourcePath="source\EULG-Saarland\System.Windows.Controls.Layout.Toolkit.dll" SelfReg="false" NextFile="System.Windows.Interactivity.dll"/>
     <ROW File="System.Windows.Interactivity.dll" Component_="System.Windows.Interactivity.dll" FileName="SYSTEM~7.DLL|System.Windows.Interactivity.dll" Attributes="0" SourcePath="source\EULG-Saarland\System.Windows.Interactivity.dll" SelfReg="false" NextFile="Telerik.Reporting.dll"/>
-    <ROW File="System.Windows.Interactivity.resources.dll" Component_="System.Windows.Interactivity.resources.d" FileName="SYSTEM~1.DLL|System.Windows.Interactivity.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\de\System.Windows.Interactivity.resources.dll" SelfReg="false" NextFile="System.Windows.Interactivity.resources.dll_1"/>
-    <ROW File="System.Windows.Interactivity.resources.dll_1" Component_="System.Windows.Interactivity.resources_1" FileName="SYSTEM~1.DLL|System.Windows.Interactivity.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\en\System.Windows.Interactivity.resources.dll" SelfReg="false" NextFile="Eulg_sync_client.exe.config"/>
+    <ROW File="System.Windows.Interactivity.resources.dll" Component_="System.Windows.Interactivity.resources.d" FileName="SYSTEM~1.DLL|System.Windows.Interactivity.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\de\System.Windows.Interactivity.resources.dll" SelfReg="false" NextFile="Eulg_sync_client.exe.config"/>
+    <ROW File="System.Windows.Interactivity.resources.dll_1" Component_="System.Windows.Interactivity.resources_1" FileName="SYSTEM~1.DLL|System.Windows.Interactivity.resources.dll" Attributes="0" SourcePath="source\EULG-Saarland\en\System.Windows.Interactivity.resources.dll" SelfReg="false" NextFile="merches.sdmp"/>
     <ROW File="THIRDPARTYLICENSEREADME.txt" Component_="COPYRIGHT" FileName="THIRDP~1.TXT|THIRDPARTYLICENSEREADME.txt" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\THIRDPARTYLICENSEREADME.txt" SelfReg="false" NextFile="Welcome.html"/>
     <ROW File="Tahiti" Component_="Apia" FileName="Tahiti" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Pacific\Tahiti" SelfReg="false" NextFile="Tarawa"/>
     <ROW File="Taipei" Component_="Aden" FileName="Taipei" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Asia\Taipei" SelfReg="false" NextFile="Tashkent"/>
@@ -961,6 +970,7 @@
     <ROW File="Tirane" Component_="Amsterdam" FileName="Tirane" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Europe\Tirane" SelfReg="false" NextFile="Uzhgorod"/>
     <ROW File="Tokyo" Component_="Aden" FileName="Tokyo" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Asia\Tokyo" SelfReg="false" NextFile="Ulaanbaatar"/>
     <ROW File="Tongatapu" Component_="Apia" FileName="TONGAT~1|Tongatapu" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Pacific\Tongatapu" SelfReg="false" NextFile="Wake"/>
+    <ROW File="Tools.SyncTool.exe" Component_="Tools.SyncTool.exe" FileName="TOOLSS~1.EXE|Tools.SyncTool.exe" Attributes="0" SourcePath="source\EULG-Saarland\Tools.SyncTool.exe" SelfReg="false"/>
     <ROW File="Toronto" Component_="Adak" FileName="Toronto" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Toronto" SelfReg="false" NextFile="Tortola"/>
     <ROW File="Tortola" Component_="Adak" FileName="Tortola" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Tortola" SelfReg="false" NextFile="Vancouver"/>
     <ROW File="TrayNotificationManagementWin7.dll" Component_="TrayNotificationManagementWin7.dll" FileName="TRAYNO~1.DLL|TrayNotificationManagementWin7.dll" Attributes="0" SourcePath="source\EULG-Saarland\TrayNotificationManagementWin7.dll" SelfReg="false" NextFile="TrayNotificationManagementWin8.dll"/>
@@ -975,6 +985,7 @@
     <ROW File="Update.Fix.exe" Component_="Update.Fix.exe" FileName="UPDATE~1.EXE|Update.Fix.exe" Attributes="0" SourcePath="source\EULG-Saarland\Support\Update.Fix.exe" SelfReg="false" NextFile="UpdateLib.dll"/>
     <ROW File="UpdateLib.dll" Component_="UpdateLib.dll" FileName="UPDATE~1.DLL|UpdateLib.dll" Attributes="0" SourcePath="source\EULG-Saarland\Support\UpdateLib.dll" SelfReg="false" NextFile="Branding.xml"/>
     <ROW File="UpdateLib.dll_1" Component_="UpdateLib.dll_1" FileName="UPDATE~1.DLL|UpdateLib.dll" Attributes="0" SourcePath="source\EULG-Saarland\UpdateLib.dll" SelfReg="false" NextFile="WPFToolkit.dll"/>
+    <ROW File="UpdateService.exe" Component_="UpdateService.exe" FileName="UPDATE~2.EXE|UpdateService.exe" Attributes="0" SourcePath="source\EULG-Saarland\Support\UpdateService.exe" SelfReg="false" NextFile="DocumentFormat.OpenXml.dll"/>
     <ROW File="Urteile.png" Component_="arrowleft.bmp" FileName="Urteile.png" Attributes="0" SourcePath="source\EULG-Saarland\Images\Urteile.png" SelfReg="false" NextFile="Verdicts.png"/>
     <ROW File="Urumqi" Component_="Aden" FileName="Urumqi" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\Asia\Urumqi" SelfReg="false" NextFile="Vientiane"/>
     <ROW File="Ushuaia" Component_="Buenos_Aires" FileName="Ushuaia" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\zi\America\Argentina\Ushuaia" SelfReg="false" NextFile="Aruba"/>
@@ -1481,6 +1492,7 @@
     <ROW File="management.dll" Component_="management.dll" FileName="MANAGE~1.DLL|management.dll" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\bin\management.dll" SelfReg="false" NextFile="mlib_image.dll"/>
     <ROW File="management.properties" Component_="jmxremote.access" FileName="MANAGE~1.PRO|management.properties" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\management\management.properties" SelfReg="false" NextFile="snmp.acl.template"/>
     <ROW File="managementagent.jar" Component_="altrt.jar" FileName="MANAGE~1.JAR|management-agent.jar" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\management-agent.jar" SelfReg="false" NextFile="metaindex_1"/>
+    <ROW File="merches.sdmp" Component_="merches.sdmp" FileName="MERCHE~1.SDM|merches.sdmp" Attributes="0" SourcePath="source\EULG-Saarland\Sync Dumps\merches.sdmp" SelfReg="false" NextFile="training.sdmp"/>
     <ROW File="messages.properties" Component_="ffjcext.zip" FileName="MESSAG~1.PRO|messages.properties" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\deploy\messages.properties" SelfReg="false" NextFile="messages_de.properties"/>
     <ROW File="messages_de.properties" Component_="ffjcext.zip" FileName="MESSAG~2.PRO|messages_de.properties" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\deploy\messages_de.properties" SelfReg="false" NextFile="messages_es.properties"/>
     <ROW File="messages_es.properties" Component_="ffjcext.zip" FileName="MESSAG~3.PRO|messages_es.properties" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\deploy\messages_es.properties" SelfReg="false" NextFile="messages_fr.properties"/>
@@ -1733,6 +1745,7 @@
     <ROW File="svtarifrechner.jar" Component_="Eulg.Plugins.Saarland.dll.config" FileName="SVTARI~1.JAR|svtarifrechner.jar" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\svtarifrechner.jar" SelfReg="false" NextFile="EntityFramework.resources.dll"/>
     <ROW File="thaiim.jar" Component_="indicim.jar" FileName="thaiim.jar" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\im\thaiim.jar" SelfReg="false" NextFile="cursors.properties"/>
     <ROW File="tnameserv.exe" Component_="tnameserv.exe" FileName="TNAMES~1.EXE|tnameserv.exe" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\bin\tnameserv.exe" SelfReg="false" NextFile="unicows.dll"/>
+    <ROW File="training.sdmp" Component_="merches.sdmp" FileName="TRAINI~1.SDM|training.sdmp" Attributes="0" SourcePath="source\EULG-Saarland\Sync Dumps\training.sdmp" SelfReg="false" NextFile="Tools.SyncTool.exe"/>
     <ROW File="trusted.libraries" Component_="blacklist" FileName="TRUSTE~1.LIB|trusted.libraries" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\security\trusted.libraries" SelfReg="false" NextFile="US_export_policy.jar"/>
     <ROW File="tzmappings" Component_="altrt.jar" FileName="TZMAPP~1|tzmappings" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\lib\tzmappings" SelfReg="false" NextFile="Abidjan"/>
     <ROW File="unicows.dll" Component_="unicows.dll" FileName="unicows.dll" Attributes="0" SourcePath="source\EULG-Saarland\Plugins\RK1150\jre\bin\unicows.dll" SelfReg="false" NextFile="unpack.dll"/>
@@ -1829,7 +1842,6 @@
     <ROW Directory_="EULGDataDir" Component_="Branding_DataDir" ManualDelete="true"/>
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
     <ROW Directory_="de_Dir" Component_="de" ManualDelete="false"/>
-    <ROW Directory_="en_Dir" Component_="en" ManualDelete="false"/>
     <ROW Directory_="Images_Dir" Component_="Images" ManualDelete="false"/>
     <ROW Directory_="Kringel_Dir" Component_="Kringel" ManualDelete="false"/>
     <ROW Directory_="Rentenluecke_Dir" Component_="Rentenluecke" ManualDelete="false"/>
@@ -1893,6 +1905,8 @@
     <ROW Directory_="Setup_Dir" Component_="Setup" ManualDelete="false"/>
     <ROW Directory_="Support_Dir" Component_="Support" ManualDelete="false"/>
     <ROW Directory_="Backup_Dir" Component_="Backup" ManualDelete="false"/>
+    <ROW Directory_="en_Dir" Component_="en" ManualDelete="false"/>
+    <ROW Directory_="SyncDumps_Dir" Component_="SyncDumps" ManualDelete="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_AiRemoveFilesCommit" Type="11777" Source="ResourceCleaner.dll" Target="OnAiRemoveFilesCommit" WithoutSeq="true"/>
@@ -1953,16 +1967,16 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
     <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &gt;= 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 1)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR (((VersionNT64 = 502) AND (ServicePackLevel &lt;&gt; 2)) OR (MsiNTProductType &lt;&gt; 1))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &gt;= 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 1)))) AND ((VersionNT64 &lt;&gt; 502) OR ((VersionNT64 = 502) AND ((MsiNTProductType = 1) OR (ServicePackLevel &lt;&gt; 2)))) ) )" Description="[ProductName] kann unter den folgenden Windows-Versionen nicht installiert werden: [WindowsTypeNT64Display]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
-    <ROW Condition="( Version9X OR VersionNT64 OR ( VersionNT AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &gt;= 1))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 1))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 2))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 3))) AND ((VersionNT &lt;&gt; 500) OR ((VersionNT = 500) AND (ServicePackLevel &lt;&gt; 4))) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &gt;= 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 2))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 3))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &gt;= 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &lt;&gt; 2))) OR VersionNT64) ) )" Description="[ProductName] kann unter den folgenden Windows-Versionen nicht installiert werden: [WindowsTypeNTDisplay]" DescriptionLocId="AI.LaunchCondition.NoSpecificNT" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="( Version9X OR VersionNT64 OR ( VersionNT AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &gt;= 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 2))) OR VersionNT64) AND (((VersionNT &lt;&gt; 501) OR ((VersionNT = 501) AND (ServicePackLevel &lt;&gt; 3))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &gt;= 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &lt;&gt; 1))) OR VersionNT64) AND (((VersionNT &lt;&gt; 502) OR ((VersionNT = 502) AND (ServicePackLevel &lt;&gt; 2))) OR VersionNT64) ) )" Description="[ProductName] kann unter den folgenden Windows-Versionen nicht installiert werden: [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT40Display]" DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
-    <ROW Condition="VersionNT" Description="[ProductName] kann unter den folgenden Windows-Versionen nicht installiert werden: [WindowsType9XDisplay]" DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] kann nicht auf [WindowsTypeNT50Display] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="VersionNT" Description="[ProductName] kann nicht auf [WindowsType9XDisplay] installiert werden." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLockPermComponent">
     <ROW LockObject="APPDIR" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="EULGDataDir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="Data_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="de_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
-    <ROW LockObject="en_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="Images_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="Kringel_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="Rentenluecke_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
@@ -2026,6 +2040,8 @@
     <ROW LockObject="Setup_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="Support_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
     <ROW LockObject="Backup_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
+    <ROW LockObject="en_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
+    <ROW LockObject="SyncDumps_Dir" Table="CreateFolder" User="Everyone" Permission="1880096767" Flags="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiMoveFileComponent">
     <ROW FileKey="_" Component_="EULG_client.exe" SourceName="*.*" SourceFolder="Data_Dir" DestFolder="Backup_Dir" Options="0"/>
