@@ -171,7 +171,10 @@ namespace Eulg.Client.SupportTool
 #if DEBUG
             appPath = @"C:\Program Files (x86)\EulgDeTest";
 #endif
-            ProxyConfig.SetDefault();
+            var proxyConfig = new ProxyConfig();
+            proxyConfig.Init();
+            proxyConfig.SetDefault();
+
             var accounts = GetLogins();
             var updateClient = new UpdateClient
             {
@@ -397,7 +400,9 @@ namespace Eulg.Client.SupportTool
 
         public bool Upload(bool log, bool queue, bool cache)
         {
-            ProxyConfig.SetDefault();
+            var proxyConfig = new ProxyConfig();
+            proxyConfig.Init();
+            proxyConfig.SetDefault();
 
             var archiveFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".zip");
             if (File.Exists(archiveFileName))
