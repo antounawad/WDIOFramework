@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace Eulg.Shared
 {
@@ -286,10 +287,23 @@ namespace Eulg.Shared
 
         #region IWebProxy
 
+        private static readonly Regex _uriSchemeRegex = new Regex(@"^([a-z]+):\/\/", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
         Uri IWebProxy.GetProxy(Uri destination)
         {
             string proxyUrl;
-            return GetProxyForUrl(destination, out proxyUrl) ? new Uri(proxyUrl) : destination;
+            if(GetProxyForUrl(destination, out proxyUrl))
+            {
+                if(!_uriSchemeRegex.IsMatch(proxyUrl))
+                {
+                    // Uri scheme is necessary, and we assume HTTP if none is given since we only support HTTP proxies anyway.
+                    proxyUrl = $"http://{proxyUrl}";
+                }
+
+                return new Uri(proxyUrl);
+            }
+
+            return destination;
         }
 
         bool IWebProxy.IsBypassed(Uri host)
