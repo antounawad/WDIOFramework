@@ -167,7 +167,7 @@ namespace Eulg.Shared
         /// <summary>
         /// Proxyeinstellungen werden über WPAD ermittelt.
         /// </summary>
-        public bool IsAutoDetect { get; }
+        public bool IsAutoDetect { get; private set; }
 
         /// <summary>
         /// Niemals Proxy benutzen.
@@ -224,7 +224,7 @@ namespace Eulg.Shared
             }
 
             var proxyList = GetProxyForUrl(url.OriginalString, IsAutoDetect ? null : PacScript.OriginalString);
-            proxyUrls = proxyList.Split(';').Select(_ => _.Trim()).Where(_ => !string.IsNullOrEmpty(_)).ToArray();
+            proxyUrls = proxyList?.Split(';').Select(_ => _.Trim()).Where(_ => !string.IsNullOrEmpty(_)).ToArray() ?? new string[0];
             return proxyUrls.Length > 0;
         }
 
@@ -246,7 +246,7 @@ namespace Eulg.Shared
             return IsAutoDetect ? "wpad" : $"auto-config {PacScript.OriginalString}";
         }
 
-        private static string GetProxyForUrl(string url, string pac)
+        private string GetProxyForUrl(string url, string pac)
         {
             var session = Open("Proxy Discovery", 0, IntPtr.Zero, IntPtr.Zero, 0);
             if(session == null) throw GetLastWin32ErrorException();
@@ -265,6 +265,13 @@ namespace Eulg.Shared
                 if(GetProxyForUrl(session, url, ref options, ref info))
                 {
                     return info.lpszProxy;
+                }
+
+                var errno = Marshal.GetLastWin32Error();
+                if(errno == (int)EWinHttpErrors.AutodetectionFailed)
+                {
+                    IsAutoDetect = false;
+                    return null;
                 }
 
                 throw GetLastWin32ErrorException();
@@ -323,61 +330,62 @@ namespace Eulg.Shared
         private static Exception GetLastWin32ErrorException()
         {
             var error = Marshal.GetLastWin32Error();
-            var winHttpError = (EWinHttpErrors)(error - 12000);
-            return Enum.IsDefined(typeof(EWinHttpErrors), winHttpError)
-                ? new Win32Exception(error, winHttpError.ToString())
+            return Enum.IsDefined(typeof(EWinHttpErrors), error)
+                ? new Win32Exception(error, ((EWinHttpErrors)error).ToString())
                 : new Win32Exception(error);
         }
 
+        private const int WIN_HTTP_ERROR_BASE = 12000;
+
         private enum EWinHttpErrors
         {
-            OutOfHandles = 1,
-            Timeout = 2,
-            InternalError = 4,
-            InvalidUrl = 5,
-            UnrecognizedScheme = 6,
-            NameNotResolved = 7,
-            InvalidOption = 9,
-            OptionNotSettable = 11,
-            Shutdown = 12,
-            LoginFailure = 15,
-            OperationCancelled = 17,
-            IncorrectHandleType = 18,
-            IncorrectHandleState = 19,
-            CannotConnect = 29,
-            ConnectionError = 30,
-            ResendRequest = 32,
-            ClientAuthCertNeeded = 44,
-            CannotCallBeforeOpen = 100,
-            CannotCallBeforeSend = 101,
-            CannotCallAfterSend = 102,
-            CannotCallAfterOpen = 103,
-            HeaderNotFound = 150,
-            InvalidServerResponse = 152,
-            InvalidHeader = 153,
-            InvalidQueryRequest = 154,
-            HeaderAlreadyExists = 155,
-            RedirectFailed = 156,
-            AutoProxyServiceError = 178,
-            BadAutoProxyScript = 166,
-            UnableToDownloadScript = 167,
-            NotInitialized = 172,
-            SecureFailure = 175,
-            SecureCertDateInvalid = 37,
-            SecureCertCnInvalid = 38,
-            SecureInvalidCa = 45,
-            SecureCertRevFailed = 57,
-            SecureChannelError = 157,
-            SecureInvalidCert = 169,
-            SecureCertRevoked = 170,
-            SecureCertWrongUsage = 179,
-            AutodetectionFailed = 180,
-            HeaderCountExceeded = 181,
-            HeaderSizeOverflow = 182,
-            ChunkedEncodingHeaderSizeOverflow = 183,
-            ResponseDrainOverflow = 184,
-            ClientCertNoPrivateKey = 185,
-            ClientCertNoAccessPrivateKey = 186
+            OutOfHandles = WIN_HTTP_ERROR_BASE + 1,
+            Timeout = WIN_HTTP_ERROR_BASE + 2,
+            InternalError = WIN_HTTP_ERROR_BASE + 4,
+            InvalidUrl = WIN_HTTP_ERROR_BASE + 5,
+            UnrecognizedScheme = WIN_HTTP_ERROR_BASE + 6,
+            NameNotResolved = WIN_HTTP_ERROR_BASE + 7,
+            InvalidOption = WIN_HTTP_ERROR_BASE + 9,
+            OptionNotSettable = WIN_HTTP_ERROR_BASE + 11,
+            Shutdown = WIN_HTTP_ERROR_BASE + 12,
+            LoginFailure = WIN_HTTP_ERROR_BASE + 15,
+            OperationCancelled = WIN_HTTP_ERROR_BASE + 17,
+            IncorrectHandleType = WIN_HTTP_ERROR_BASE + 18,
+            IncorrectHandleState = WIN_HTTP_ERROR_BASE + 19,
+            CannotConnect = WIN_HTTP_ERROR_BASE + 29,
+            ConnectionError = WIN_HTTP_ERROR_BASE + 30,
+            ResendRequest = WIN_HTTP_ERROR_BASE + 32,
+            ClientAuthCertNeeded = WIN_HTTP_ERROR_BASE + 44,
+            CannotCallBeforeOpen = WIN_HTTP_ERROR_BASE + 100,
+            CannotCallBeforeSend = WIN_HTTP_ERROR_BASE + 101,
+            CannotCallAfterSend = WIN_HTTP_ERROR_BASE + 102,
+            CannotCallAfterOpen = WIN_HTTP_ERROR_BASE + 103,
+            HeaderNotFound = WIN_HTTP_ERROR_BASE + 150,
+            InvalidServerResponse = WIN_HTTP_ERROR_BASE + 152,
+            InvalidHeader = WIN_HTTP_ERROR_BASE + 153,
+            InvalidQueryRequest = WIN_HTTP_ERROR_BASE + 154,
+            HeaderAlreadyExists = WIN_HTTP_ERROR_BASE + 155,
+            RedirectFailed = WIN_HTTP_ERROR_BASE + 156,
+            AutoProxyServiceError = WIN_HTTP_ERROR_BASE + 178,
+            BadAutoProxyScript = WIN_HTTP_ERROR_BASE + 166,
+            UnableToDownloadScript = WIN_HTTP_ERROR_BASE + 167,
+            NotInitialized = WIN_HTTP_ERROR_BASE + 172,
+            SecureFailure = WIN_HTTP_ERROR_BASE + 175,
+            SecureCertDateInvalid = WIN_HTTP_ERROR_BASE + 37,
+            SecureCertCnInvalid = WIN_HTTP_ERROR_BASE + 38,
+            SecureInvalidCa = WIN_HTTP_ERROR_BASE + 45,
+            SecureCertRevFailed = WIN_HTTP_ERROR_BASE + 57,
+            SecureChannelError = WIN_HTTP_ERROR_BASE + 157,
+            SecureInvalidCert = WIN_HTTP_ERROR_BASE + 169,
+            SecureCertRevoked = WIN_HTTP_ERROR_BASE + 170,
+            SecureCertWrongUsage = WIN_HTTP_ERROR_BASE + 179,
+            AutodetectionFailed = WIN_HTTP_ERROR_BASE + 180,
+            HeaderCountExceeded = WIN_HTTP_ERROR_BASE + 181,
+            HeaderSizeOverflow = WIN_HTTP_ERROR_BASE + 182,
+            ChunkedEncodingHeaderSizeOverflow = WIN_HTTP_ERROR_BASE + 183,
+            ResponseDrainOverflow = WIN_HTTP_ERROR_BASE + 184,
+            ClientCertNoPrivateKey = WIN_HTTP_ERROR_BASE + 185,
+            ClientCertNoAccessPrivateKey = WIN_HTTP_ERROR_BASE + 186
         }
 
         #endregion
