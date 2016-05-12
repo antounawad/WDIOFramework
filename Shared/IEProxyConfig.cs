@@ -197,11 +197,11 @@ namespace Eulg.Shared
         /// <summary>
         /// Ermittelt den zu verwendenden Proxyserver für die angegebene URL. Der Rückgabewert gibt an ob die Verbindung über einen Proxy (<c>true</c>) oder direkt (<c>false</c>) hergestellt werden soll.
         /// </summary>
-        public bool GetProxyForUrl(Uri url, out string proxyUrl)
+        public bool GetProxiesForUrl(Uri url, out string[] proxyUrls)
         {
             if(NeverUseProxy)
             {
-                proxyUrl = null;
+                proxyUrls = new string[0];
                 return false;
             }
 
@@ -209,21 +209,23 @@ namespace Eulg.Shared
             {
                 if(ProxyBypassList.Any(bp => bp.Equals(url.Host, StringComparison.OrdinalIgnoreCase)))
                 {
-                    proxyUrl = null;
+                    proxyUrls = new string[0];
                     return false;
                 }
 
-                proxyUrl = ProxyList.Where(p => p.Key.Equals(url.Scheme, StringComparison.OrdinalIgnoreCase))
+                proxyUrls = ProxyList.Where(p => p.Key.Equals(url.Scheme, StringComparison.OrdinalIgnoreCase))
                     .Concat(ProxyList.Where(p => p.Key == null))
                     .Concat(ProxyList.Where(p => p.Key.Equals("http", StringComparison.OrdinalIgnoreCase)))
                     .Select(p => p.Value)
-                    .FirstOrDefault();
+                    .Take(1)
+                    .ToArray();
 
-                return proxyUrl != null;
+                return proxyUrls.Length > 0;
             }
 
-            proxyUrl = GetProxyForUrl(url.OriginalString, IsAutoDetect ? null : PacScript.OriginalString);
-            return !string.IsNullOrEmpty(proxyUrl);
+            var proxyList = GetProxyForUrl(url.OriginalString, IsAutoDetect ? null : PacScript.OriginalString);
+            proxyUrls = proxyList.Split(';').Select(_ => _.Trim()).Where(_ => !string.IsNullOrEmpty(_)).ToArray();
+            return proxyUrls.Length > 0;
         }
 
         public override string ToString()
@@ -291,16 +293,16 @@ namespace Eulg.Shared
 
         Uri IWebProxy.GetProxy(Uri destination)
         {
-            string proxyUrl;
-            if(GetProxyForUrl(destination, out proxyUrl))
+            string[] proxyUrl;
+            if(GetProxiesForUrl(destination, out proxyUrl))
             {
-                if(!_uriSchemeRegex.IsMatch(proxyUrl))
+                if(!_uriSchemeRegex.IsMatch(proxyUrl[0]))
                 {
                     // Uri scheme is necessary, and we assume HTTP if none is given since we only support HTTP proxies anyway.
-                    proxyUrl = $"http://{proxyUrl}";
+                    proxyUrl[0] = $"http://{proxyUrl[0]}";
                 }
 
-                return new Uri(proxyUrl);
+                return new Uri(proxyUrl[0]);
             }
 
             return destination;
@@ -308,8 +310,8 @@ namespace Eulg.Shared
 
         bool IWebProxy.IsBypassed(Uri host)
         {
-            string proxyUrl;
-            return !GetProxyForUrl(host, out proxyUrl);
+            string[] proxyUrl;
+            return !GetProxiesForUrl(host, out proxyUrl);
         }
 
         ICredentials IWebProxy.Credentials { get; set; }
