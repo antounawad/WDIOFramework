@@ -22,9 +22,6 @@ namespace Eulg.Shared
         /// </summary>
         private const int WINHTTP_AUTOPROXY_CONFIG_URL = 0x2;
 
-        private const int WINHTTP_AUTOPROXY_NO_CACHE_CLIENT = 0x00080000;
-        private const int WINHTTP_AUTOPROXY_NO_CACHE_SVC = 0x00100000;
-
         /// <summary>
         /// Use DHCP to locate the proxy auto-configuration file.
         /// </summary>
@@ -257,7 +254,6 @@ namespace Eulg.Shared
                 var info = new ProxyInfo();
 
                 options.dwFlags = pac == null ? WINHTTP_AUTOPROXY_AUTO_DETECT : WINHTTP_AUTOPROXY_CONFIG_URL;
-                options.dwFlags |= WINHTTP_AUTOPROXY_NO_CACHE_CLIENT | WINHTTP_AUTOPROXY_NO_CACHE_SVC;
                 options.dwAutoDetectFlags = pac == null ? (WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A) : 0;
                 options.lpszAutoConfigUrl = pac;
                 options.fAutoLoginIfChallenged = true;
