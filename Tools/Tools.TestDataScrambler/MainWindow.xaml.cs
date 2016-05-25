@@ -83,7 +83,7 @@ namespace Tools.TestDataScrambler
                                           {
                                               new DbField {Name = "street", Type = typeof(string)},
                                           },
-                                 EmptyFields = {"signature"}
+                                 //EmptyFields = {"signature"}
                              }
                          };
 
