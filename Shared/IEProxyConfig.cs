@@ -23,6 +23,11 @@ namespace Eulg.Shared
         private const int WINHTTP_AUTOPROXY_CONFIG_URL = 0x2;
 
         /// <summary>
+        /// Execute proxy detection in the same process instead of querying a system service.
+        /// </summary>
+        private const int WINHTTP_AUTOPROXY_RUN_INPROCESS = 0x10000;
+
+        /// <summary>
         /// Use DHCP to locate the proxy auto-configuration file.
         /// </summary>
         private const int WINHTTP_AUTO_DETECT_TYPE_DHCP = 0x1;
@@ -253,7 +258,7 @@ namespace Eulg.Shared
                 var options = new AutoProxyOptions();
                 var info = new ProxyInfo();
 
-                options.dwFlags = pac == null ? WINHTTP_AUTOPROXY_AUTO_DETECT : WINHTTP_AUTOPROXY_CONFIG_URL;
+                options.dwFlags = (pac == null ? WINHTTP_AUTOPROXY_AUTO_DETECT : WINHTTP_AUTOPROXY_CONFIG_URL) | WINHTTP_AUTOPROXY_RUN_INPROCESS;
                 options.dwAutoDetectFlags = pac == null ? (WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A) : 0;
                 options.lpszAutoConfigUrl = pac;
                 options.fAutoLoginIfChallenged = true;
@@ -335,6 +340,7 @@ namespace Eulg.Shared
 
         private enum EWinHttpErrors
         {
+            AccessDenied = 5,
             OutOfHandles = WIN_HTTP_ERROR_BASE + 1,
             Timeout = WIN_HTTP_ERROR_BASE + 2,
             InternalError = WIN_HTTP_ERROR_BASE + 4,
