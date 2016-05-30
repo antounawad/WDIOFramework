@@ -6,6 +6,8 @@ namespace Eulg.Shared
 {
     public class ProxyConfig
     {
+        public static readonly ProxyConfig Instance = new ProxyConfig();
+
         public enum EProxyType { Default = 0, None = 1, Manual = 2 }
         public EProxyType ProxyType { get; set; }
         public string Address { get; set; }

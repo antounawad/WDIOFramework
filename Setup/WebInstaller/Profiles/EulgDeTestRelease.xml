@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0"?>
 <Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Info BuildTag="EulgDeTest" BuildDescription="Test-Version für test.eulg.de" IsDemo="false" />
+  <Info BuildTag="EulgDeTest" BuildDescription="Test-Version 2.0 für test.eulg.de" IsDemo="false" />
   <FileSystem AppDir="EulgDeTest" DataDir="EulgDeTest" AppBinary="EULG_client.exe" SyncBinary="Eulg_sync_client.exe" />
   <Registry UserSettingsKey="EulgDeTest" MachineSettingsKey="EulgDeTest" UninstallKey="EulgDeTest" UninstallName="EULG - Test für test.eulg.de" LocalDbInstance="" />
-  <ShellIcons DesktopApp="EULG Client (test.eulg.de)" StartMenuFolder="EULG (test.eulg.de)" StartMenuApp="EULG Client (test.eulg.de)" StartMenuSync="EULG Sync-Client (test.eulg.de)" StartMenuSupportTool="EULG Support (test.eulg.de)" StartMenuFernwartung="EULG Fernwartung" />
+  <ShellIcons DesktopApp="EULG Client 2.0 (test.eulg.de)" StartMenuFolder="EULG 2.0 (test.eulg.de)" StartMenuApp="EULG Client 2.0 (test.eulg.de)" StartMenuSync="EULG Sync-Client 2.0 (test.eulg.de)" StartMenuSupportTool="EULG Support (test.eulg.de)" StartMenuFernwartung="EULG Fernwartung" />
   <Update Channel="Release" UseHttps="true" />
   <Urls Update="test.eulg.de/Service/Update/" Web="https://test.eulg.de/Service/Api" Sync="eulg.de:8889" SyncHttp="test.eulg.de/Service/Sync" DbUpdateUrl="" CertPublicKey="" />
 </Branding>

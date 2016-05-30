@@ -11,13 +11,13 @@ namespace Eulg.Setup.WebInstaller
         {
             InitializeComponent();
 
-            TxtAddress.Text = ProxyConfig.Address;
-            TxtPort.Text = ProxyConfig.HttpPort.GetValueOrDefault(0).ToString(CultureInfo.InvariantCulture);
-            TxtUserName.Text = ProxyConfig.Username;
-            TxtPassword.Text = ProxyConfig.Password;
-            TxtDomain.Text = ProxyConfig.Domain;
+            TxtAddress.Text = ProxyConfig.Instance.Address;
+            TxtPort.Text = ProxyConfig.Instance.HttpPort.GetValueOrDefault(0).ToString(CultureInfo.InvariantCulture);
+            TxtUserName.Text = ProxyConfig.Instance.Username;
+            TxtPassword.Text = ProxyConfig.Instance.Password;
+            TxtDomain.Text = ProxyConfig.Instance.Domain;
 
-            switch (ProxyConfig.ProxyType)
+            switch (ProxyConfig.Instance.ProxyType)
             {
                 case ProxyConfig.EProxyType.Default:
                     rbProxyTypeDefault.Checked = true;
@@ -36,32 +36,32 @@ namespace Eulg.Setup.WebInstaller
         private void BtnOk_Click(object sender, EventArgs e)
         {
             if (rbProxyTypeManual.Checked)
-                ProxyConfig.ProxyType = ProxyConfig.EProxyType.Manual;
+                ProxyConfig.Instance.ProxyType = ProxyConfig.EProxyType.Manual;
             else if (rbProxyTypeNone.Checked)
-                ProxyConfig.ProxyType = ProxyConfig.EProxyType.None;
+                ProxyConfig.Instance.ProxyType = ProxyConfig.EProxyType.None;
             else
-                ProxyConfig.ProxyType = ProxyConfig.EProxyType.Default;
+                ProxyConfig.Instance.ProxyType = ProxyConfig.EProxyType.Default;
 
-            ProxyConfig.Address = TxtAddress.Text.Trim();
+            ProxyConfig.Instance.Address = TxtAddress.Text.Trim();
             ushort port;
             if (ushort.TryParse(TxtPort.Text.Trim(), out port))
             {
-                ProxyConfig.HttpPort = port;
+                ProxyConfig.Instance.HttpPort = port;
             }
-            ProxyConfig.Username = TxtUserName.Text.Trim();
-            ProxyConfig.Password = TxtPassword.Text.Trim();
-            ProxyConfig.Domain = TxtDomain.Text.Trim();
+            ProxyConfig.Instance.Username = TxtUserName.Text.Trim();
+            ProxyConfig.Instance.Password = TxtPassword.Text.Trim();
+            ProxyConfig.Instance.Domain = TxtDomain.Text.Trim();
 
-            if (ProxyConfig.ProxyType == ProxyConfig.EProxyType.Manual &&
-                (string.IsNullOrWhiteSpace(ProxyConfig.Address) || ProxyConfig.HttpPort < 1))
+            if (ProxyConfig.Instance.ProxyType == ProxyConfig.EProxyType.Manual &&
+                (string.IsNullOrWhiteSpace(ProxyConfig.Instance.Address) || ProxyConfig.Instance.HttpPort < 1))
             {
                 MessageBox.Show("Bitte Adresse und Port angeben!", "Hinweis", MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
                 return;
             }
 
-            ProxyConfig.WriteToRegistry();
-            ProxyConfig.SetDefault();
+            ProxyConfig.Instance.WriteToRegistry();
+            ProxyConfig.Instance.SetDefault();
 
             Close();
         }
