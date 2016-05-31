@@ -269,7 +269,7 @@ namespace Eulg.Shared
                 }
 
                 var errno = Marshal.GetLastWin32Error();
-                if(errno == (int)EWinHttpErrors.AutodetectionFailed)
+                if(errno == (int)EWinHttpErrors.AutodetectionFailed || errno == 1168)
                 {
                     IsAutoDetect = false;
                     return null;
