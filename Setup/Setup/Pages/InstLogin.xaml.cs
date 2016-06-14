@@ -86,7 +86,7 @@ namespace Eulg.Setup.Pages
                         return;
 
                     default:
-                        //MessageBox.Show("Fehler beim Manifest-Download!");
+                        MessageBox.Show(string.Join(Environment.NewLine, SetupHelper.UpdateClient.LogErrorMessages), "Fehler beim Download der Manifest-Daten!", MessageBoxButton.OK, MessageBoxImage.Error);
                         LblOnlinAuth.Text = "Fehler beim Download der Daten!";
                         return;
                 }

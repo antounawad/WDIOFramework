@@ -86,11 +86,44 @@ namespace Eulg.Setup
         private static string Identifier(string wmiClass, string wmiProperty, string wmiMustBeTrue)
         {
             string result = "";
-            System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
-            System.Management.ManagementObjectCollection moc = mc.GetInstances();
-            foreach (System.Management.ManagementBaseObject mo in moc)
+            try
             {
-                if (mo[wmiMustBeTrue].ToString() == "True")
+                System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
+                System.Management.ManagementObjectCollection moc = mc.GetInstances();
+                foreach (System.Management.ManagementBaseObject mo in moc)
+                {
+                    if (mo[wmiMustBeTrue].ToString() == "True")
+                    {
+                        //Only get the first one
+                        if (result == "")
+                        {
+                            try
+                            {
+                                result = mo[wmiProperty].ToString();
+                                break;
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return result;
+        }
+
+        //Return a hardware identifier
+        private static string Identifier(string wmiClass, string wmiProperty)
+        {
+            string result = "";
+            try
+            {
+                System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
+                System.Management.ManagementObjectCollection moc = mc.GetInstances();
+                foreach (System.Management.ManagementBaseObject mo in moc)
                 {
                     //Only get the first one
                     if (result == "")
@@ -106,29 +139,8 @@ namespace Eulg.Setup
                     }
                 }
             }
-            return result;
-        }
-
-        //Return a hardware identifier
-        private static string Identifier(string wmiClass, string wmiProperty)
-        {
-            string result = "";
-            System.Management.ManagementClass mc = new System.Management.ManagementClass(wmiClass);
-            System.Management.ManagementObjectCollection moc = mc.GetInstances();
-            foreach (System.Management.ManagementBaseObject mo in moc)
+            catch
             {
-                //Only get the first one
-                if (result == "")
-                {
-                    try
-                    {
-                        result = mo[wmiProperty].ToString();
-                        break;
-                    }
-                    catch
-                    {
-                    }
-                }
             }
             return result;
         }

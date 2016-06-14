@@ -31,7 +31,7 @@ namespace Eulg.Setup.WebInstaller
         }
         // ReSharper restore UnusedMember.Local
 
-        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.EulgDeTestRelease;
+        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.Release;
 
         //public static WebClient WebClient;
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileDeflate";
