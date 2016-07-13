@@ -36,25 +36,25 @@ namespace Eulg.Update.Common
             public string FileName { get; set; }
         }
 
-        public class Plugin
-        {
-            [XmlAttribute]
-            public string Name { get; set; }
-        }
+        //public class Plugin
+        //{
+        //    [XmlAttribute]
+        //    public string Name { get; set; }
+        //}
 
-        public class Account
-        {
-            [XmlAttribute]
-            public string UserName { get; set; }
-            [XmlAttribute]
-            public string AgencyID { get; set; }
-            [XmlAttribute]
-            public string AgencyName { get; set; }
-            [XmlAttribute]
-            public string AgencyNameShort { get; set; }
-            [XmlAttribute]
-            public bool IsDemoUser { get; set; }
-        }
+        //public class Account
+        //{
+        //    [XmlAttribute]
+        //    public string UserName { get; set; }
+        //    [XmlAttribute]
+        //    public string AgencyID { get; set; }
+        //    [XmlAttribute]
+        //    public string AgencyName { get; set; }
+        //    [XmlAttribute]
+        //    public string AgencyNameShort { get; set; }
+        //    [XmlAttribute]
+        //    public bool IsDemoUser { get; set; }
+        //}
 
         public class ResetFile : IUpdateItem
         {
@@ -68,7 +68,7 @@ namespace Eulg.Update.Common
         public readonly List<UpdateDelete> UpdateDeletes = new List<UpdateDelete>();
         public readonly List<ResetFile> ResetFiles = new List<ResetFile>();
 
-        public readonly List<Plugin> Plugins = new List<Plugin>();
-        public readonly List<Account> Accounts = new List<Account>();
+        //public readonly List<Plugin> Plugins = new List<Plugin>();
+        //public readonly List<Account> Accounts = new List<Account>();
     }
 }

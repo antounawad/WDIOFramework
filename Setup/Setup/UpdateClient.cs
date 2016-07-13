@@ -121,7 +121,14 @@ namespace Eulg.Setup
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-                request.Headers.Add("ClientID", FingerPrint.ClientId);
+                try
+                {
+                    request.Headers.Add("ClientID", FingerPrint.ClientId);
+                }
+                catch (Exception e)
+                {
+                    Log(ELogTypeEnum.Warning, e.GetMessagesTree());
+                }
                 request.Headers.Add("ClientOSUsername", Environment.UserName + "@" + Environment.UserDomainName);
                 request.Headers.Add("ClientHostname", Environment.MachineName);
                 request.Headers.Add("ClientUpdateType", "SETUP");
@@ -165,7 +172,7 @@ namespace Eulg.Setup
             catch (Exception ex)
             {
                 LastError = ex.Message;
-                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
+                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message + ": " + ex.StackTrace);
             }
             return EUpdateCheckResult.Error;
         }

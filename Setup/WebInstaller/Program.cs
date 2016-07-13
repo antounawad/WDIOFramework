@@ -31,7 +31,7 @@ namespace Eulg.Setup.WebInstaller
         }
         // ReSharper restore UnusedMember.Local
 
-        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.EulgDeTestRelease;
+        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.Release;
 
         //public static WebClient WebClient;
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileDeflate";
@@ -47,7 +47,7 @@ namespace Eulg.Setup.WebInstaller
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            ProxyConfig.Init();
+            ProxyConfig.Instance.Init();
 
             //WebClient = new WebClient { Encoding = Encoding.UTF8, Headers = {["User-Agent"] = "WebSetup" } };
 

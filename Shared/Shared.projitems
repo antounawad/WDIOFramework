@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Branding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IEProxyConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProxyConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SetupConfig.cs" />
   </ItemGroup>

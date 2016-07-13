@@ -26,7 +26,8 @@ namespace Eulg.Setup
         //public const int REL_NET46_ON_WIN10 = 393295;
         //public const int REL_NET46_ON_WIN_OLD_WIN = 393297;
 
-        public const string DOWNLOAD_URL_NET46 = @"http://download.microsoft.com/download/1/4/A/14A6C422-0D3C-4811-A31F-5EF91A83C368/NDP46-KB3045560-Web.exe";
+        public const string DOWNLOAD_URL_NET461 = @"https://download.microsoft.com/download/3/5/9/35980F81-60F4-4DE3-88FC-8F962B97253B/NDP461-KB3102438-Web.exe";
+        //public const string DOWNLOAD_URL_NET46 = @"http://download.microsoft.com/download/1/4/A/14A6C422-0D3C-4811-A31F-5EF91A83C368/NDP46-KB3045560-Web.exe";
         //public const string DOWNLOAD_URL_NET452 = @"http://download.microsoft.com/download/B/4/1/B4119C11-0423-477B-80EE-7A474314B347/NDP452-KB2901954-Web.exe";
         //public const string DOWNLOAD_URL_NET451 = @"http://download.microsoft.com/download/7/4/0/74078A56-A3A1-492D-BBA9-865684B83C1B/NDP451-KB2859818-Web.exe";
         public const string DOWNLOAD_URL_CPP2008 = @"http://download.microsoft.com/download/5/D/8/5D8C65CB-C849-4025-8E95-C3966CAFD8AE/vcredist_x86.exe";
@@ -324,10 +325,10 @@ namespace Eulg.Setup
 
         public static bool InstallNet46()
         {
-            const string SETUP_FILE_NAME = "NDP46-KB3045560-Web.exe";
+            const string SETUP_FILE_NAME = "NDP461-KB3102438-Web.exe";
             const string ARGUMENTS = "/passive /LCID 1031";
 
-            DoInstall(SETUP_FILE_NAME, ARGUMENTS, DOWNLOAD_URL_NET46, ".NET Framework 4.6");
+            DoInstall(SETUP_FILE_NAME, ARGUMENTS, DOWNLOAD_URL_NET461, ".NET Framework 4.6.1");
 
             return CheckNet451().IsOk();
         }

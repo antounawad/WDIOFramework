@@ -83,7 +83,7 @@ namespace Tools.TestDataScrambler
                                           {
                                               new DbField {Name = "street", Type = typeof(string)},
                                           },
-                                 EmptyFields = {"signature"}
+                                 //EmptyFields = {"signature"}
                              }
                          };
 
@@ -296,7 +296,7 @@ namespace Tools.TestDataScrambler
 
                 #endregion
 
-                #region Documente VN
+                #region Documente VP
 
                 Dispatcher.Invoke(() =>
                 {

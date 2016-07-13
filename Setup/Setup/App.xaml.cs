@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Eulg.Setup.Shared;
 using Eulg.Shared;
 
 namespace Eulg.Setup
@@ -25,7 +24,7 @@ namespace Eulg.Setup
             */
             try
             {
-                ProxyConfig.Init();
+                ProxyConfig.Instance.Init();
                 Environment.CurrentDirectory = Path.GetTempPath();
 
                 if (Environment.GetCommandLineArgs().Any(a => a.Equals("/TS", StringComparison.CurrentCultureIgnoreCase)) || SetupHelper.IsTerminalServerSession())

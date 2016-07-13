@@ -3,22 +3,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Eulg.Shared;
-using Eulg.Update.Shared;
 
 namespace Eulg.Client.SupportTool.Views
 {
     public partial class MainMenu : UserControl
     {
+        private readonly ProxyConfig _proxyConfig;
+
         public MainMenu()
         {
             InitializeComponent();
-            ProxyConfig.Init();
-            TxtProxyAddress.Text = ProxyConfig.Address;
-            TxtProxyPort.Text = ProxyConfig.HttpPort.ToString();
-            TxtProxyUser.Text = ProxyConfig.Username;
-            TxtProxyPassword.Password = ProxyConfig.Password;
-            TxtProxyDomain.Text = ProxyConfig.Domain;
-            switch (ProxyConfig.ProxyType)
+
+            _proxyConfig = new ProxyConfig();
+
+            _proxyConfig.Init();
+            TxtProxyAddress.Text = _proxyConfig.Address;
+            TxtProxyPort.Text = _proxyConfig.HttpPort.ToString();
+            TxtProxyUser.Text = _proxyConfig.Username;
+            TxtProxyPassword.Password = _proxyConfig.Password;
+            TxtProxyDomain.Text = _proxyConfig.Domain;
+            switch (_proxyConfig.ProxyType)
             {
                 case ProxyConfig.EProxyType.Default:
                     RbProxyTypeDefault.IsChecked = true;
@@ -46,7 +50,21 @@ namespace Eulg.Client.SupportTool.Views
                 var progressView = new Progress();
                 Pager.NavigateTo(progressView);
                 var support = new Support();
-                support.ProgressChanged += (o, args) => Dispatcher.Invoke(() => progressView.UpdateProgress(args.ProgressPercentage, (args.UserState as string) ?? string.Empty));
+                support.ProgressChanged += (o, args) => Dispatcher.Invoke(() =>
+                {
+                    var a = args.UserState as string;
+                    var header = string.Empty;
+                    var message = string.Empty;
+                    if (a != null)
+                    {
+                        if (a.StartsWith("*", StringComparison.CurrentCultureIgnoreCase))
+                            header = a.Substring(1);
+                        else
+                            message = a;
+                    }
+                    progressView.UpdateProgress(args.ProgressPercentage, message, header);
+                }
+                );
                 var task = new Task(support.DoUpdateCheck);
                 task.ContinueWith(delegate { Pager.NavigateTo(this); });
                 task.Start();
@@ -68,7 +86,21 @@ namespace Eulg.Client.SupportTool.Views
             var progressView = new Progress();
             Pager.NavigateTo(progressView);
             var support = new Support();
-            support.ProgressChanged += (o, args) => Dispatcher.Invoke(() => progressView.UpdateProgress(args.ProgressPercentage, (args.UserState as string) ?? String.Empty));
+            support.ProgressChanged += (o, args) => Dispatcher.Invoke(() =>
+            {
+                var a = args.UserState as string;
+                var header = string.Empty;
+                var message = string.Empty;
+                if (a != null)
+                {
+                    if (a.StartsWith("*", StringComparison.CurrentCultureIgnoreCase))
+                        header = a.Substring(1);
+                    else
+                        message = a;
+                }
+                progressView.UpdateProgress(args.ProgressPercentage, message, header);
+            }
+            );
             var task = new Task(() =>
             {
                 if (support.Upload(log, queue, cache))
@@ -105,7 +137,7 @@ namespace Eulg.Client.SupportTool.Views
             {
                 if (MessageBox.Show("Update Dienst konnte nicht gestartet werden. Dienst wird neu installiert.", "Update-Dienst", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                 {
-                    if (!Support.InstallUpdateService())
+                    if (!Support.FixUpdateService())
                     {
                         MessageBox.Show("Update-Dienst konnte nicht aktiviert werden. Bitte führen Sie Setup erneut aus.", "Update-Dienst", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
@@ -133,26 +165,25 @@ namespace Eulg.Client.SupportTool.Views
         {
             if (RbProxyTypeManual.IsChecked.GetValueOrDefault(false))
             {
-                ProxyConfig.ProxyType = ProxyConfig.EProxyType.Manual;
-                ProxyConfig.Address = TxtProxyAddress.Text.Trim();
+                _proxyConfig.ProxyType = ProxyConfig.EProxyType.Manual;
+                _proxyConfig.Address = TxtProxyAddress.Text.Trim();
                 ushort port;
                 if (ushort.TryParse(TxtProxyPort.Text, out port))
-                    ProxyConfig.HttpPort = port;
-                ProxyConfig.Username = TxtProxyUser.Text.Trim();
-                ProxyConfig.Password = TxtProxyPassword.Password.Trim();
-                ProxyConfig.Domain = TxtProxyDomain.Text.Trim();
+                    _proxyConfig.HttpPort = port;
+                _proxyConfig.Username = TxtProxyUser.Text.Trim();
+                _proxyConfig.Password = TxtProxyPassword.Password.Trim();
+                _proxyConfig.Domain = TxtProxyDomain.Text.Trim();
             }
             else if (RbProxyTypeNone.IsChecked.GetValueOrDefault(false))
             {
-                ProxyConfig.ProxyType = ProxyConfig.EProxyType.None;
+                _proxyConfig.ProxyType = ProxyConfig.EProxyType.None;
             }
             else
             {
-                ProxyConfig.ProxyType = ProxyConfig.EProxyType.Default;
+                _proxyConfig.ProxyType = ProxyConfig.EProxyType.Default;
             }
-            ProxyConfig.WriteToRegistry();
-            ProxyConfig.SetDefault();
+            _proxyConfig.WriteToRegistry();
+            _proxyConfig.SetDefault();
         }
-
     }
 }

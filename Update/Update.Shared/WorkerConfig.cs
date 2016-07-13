@@ -52,6 +52,9 @@ namespace Eulg.Update.Shared
 
             [XmlIgnore]
             public string FileName { get; set; }
+
+            [XmlIgnore]
+            public bool NewFile { get; set; }
         }
 
         public class WorkerDelete
