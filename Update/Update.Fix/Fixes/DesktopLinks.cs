@@ -8,20 +8,22 @@ namespace Update.Fix.Fixes
 {
     public class DesktopLinks: LinksBase
     {
+        private static readonly string _eulgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CLIENT);
+        private static readonly string _desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        private static readonly string _commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
+        private static readonly string _taskBar = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
+
         internal static bool Check()
         {
             if (Branding != null)
             {
-                var eulgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CLIENT);
-
-                var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-                var commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
-
-                var linksToCheck = Directory.GetFiles(desktop, "*.lnk").Concat(Directory.GetFiles(commonDesktop, "*.lnk"));
+                var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
+                                   .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
+                                   .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
 
                 foreach(var link in linksToCheck)
                 {
-                    if(GetShortcutTargetFile(link) == eulgPath)
+                    if(GetShortcutTargetFile(link) == _eulgPath)
                     {
                         return false;
                     }
@@ -35,21 +37,25 @@ namespace Update.Fix.Fixes
         {
             if (Branding != null)
             {
-                var eulgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CLIENT);
-
-                var desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-                var commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
-
-                var linksToCheck = Directory.GetFiles(desktop, "*.lnk").Concat(Directory.GetFiles(commonDesktop, "*.lnk"));
+                var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
+                                   .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
+                                   .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
 
                 foreach (var link in linksToCheck)
                 {
-                    if (GetShortcutTargetFile(link) == eulgPath)
+                    try
                     {
-                        var newlink = Path.Combine(Path.GetDirectoryName(link), Branding.ShellIcons.DesktopApp + ".lnk");
+                        if (GetShortcutTargetFile(link) == _eulgPath)
+                        {
+                            var newlink = Path.Combine(Path.GetDirectoryName(link), Branding.ShellIcons.DesktopApp + ".lnk");
 
-                        File.Delete(link);
-                        SetLink(newlink, eulgPath);
+                            File.Delete(link);
+                            SetLink(newlink, _eulgPath);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // ignore
                     }
                 }
             }
