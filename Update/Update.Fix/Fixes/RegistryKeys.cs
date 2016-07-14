@@ -1,11 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using System.Linq;
+using Microsoft.Win32;
 
 namespace Update.Fix.Fixes
 {
     internal static class RegistryKeys
     {
-        private const string REGISTRY_GROUP_NAME = @"Software\EULG Software GmbH";
-        private const string REGISTRY_GROUP_NAME_OBSOLETE = @"Software\KS Software GmbH";
+        private const string REGISTRY_GROUP_NAME = @"Software\xbAV Beratungssoftware GmbH";
+        private static string[] REGISTRY_GROUP_NAME_OBSOLETE = new[] { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };
 
         internal static bool Check()
         {
@@ -13,11 +14,14 @@ namespace Update.Fix.Fixes
             {
                 foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
                 {
-                    var obsoleteKey = key.OpenSubKey(REGISTRY_GROUP_NAME_OBSOLETE);
-                    var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME);
-                    if (obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
+                    foreach(var legacyKey in REGISTRY_GROUP_NAME_OBSOLETE)
                     {
-                        return false;
+                        var obsoleteKey = key.OpenSubKey(legacyKey);
+                        var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME);
+                        if(obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
+                        {
+                            return false;
+                        }
                     }
                 }
                 return true;
@@ -32,12 +36,16 @@ namespace Update.Fix.Fixes
         {
             foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
             {
-                var obsoleteKey = key.OpenSubKey(REGISTRY_GROUP_NAME_OBSOLETE);
-                var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree) ?? key.CreateSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                if (obsoleteKey != null)
+                var obsoleteKeyName = REGISTRY_GROUP_NAME_OBSOLETE.FirstOrDefault(k => key.OpenSubKey(k) != null);
+                if(obsoleteKeyName != null)
                 {
-                    CopyRegistryKeyRecursively(obsoleteKey, currentKey);
-                    key.DeleteSubKeyTree(REGISTRY_GROUP_NAME_OBSOLETE, false);
+                    var obsoleteKey = key.OpenSubKey(obsoleteKeyName);
+                    var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree) ?? key.CreateSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                    if(obsoleteKey != null)
+                    {
+                        CopyRegistryKeyRecursively(obsoleteKey, currentKey);
+                        key.DeleteSubKeyTree(obsoleteKeyName, false);
+                    }
                 }
             }
         }

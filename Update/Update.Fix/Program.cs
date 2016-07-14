@@ -38,6 +38,12 @@ namespace Update.Fix
                 // Registry Keys
                 DoCheck("RegistryKeys", RegistryKeys.Check, RegistryKeys.Fix);
 
+                // Startmenu
+                DoCheck("StartMenu", StartMenu.Check, StartMenu.Fix);
+
+                // Desktop links
+                DoCheck("DesktopLinks", DesktopLinks.Check, DesktopLinks.Fix);
+
                 // Update Service
                 DoCheck("UpdateService", UpdateService.Check, UpdateService.Fix);
 
