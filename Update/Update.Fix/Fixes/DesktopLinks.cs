@@ -1,40 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Eulg.Shared;
 using IWshRuntimeLibrary;
-using Shell32;
 using File = System.IO.File;
-using Folder = IWshRuntimeLibrary.Folder;
 
 namespace Update.Fix.Fixes
 {
-    public class DesktopLinks
+    public class DesktopLinks: LinksBase
     {
-        private const string BRANDING_FILE_NAME = "Branding.xml";
-
-        private const string CLIENT = "EULG_client.exe";
-
-        private static Branding _branding;
-        private static Branding Branding
-        {
-            get
-            {
-                if (_branding == null)
-                {
-                    var brandingXmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, BRANDING_FILE_NAME);
-                    if (!File.Exists(brandingXmlFile)) throw new Exception("Datei " + brandingXmlFile + " nicht gefunden.");
-
-                    _branding = Branding.Read(brandingXmlFile);
-                }
-
-                return _branding;
-            }
-        }
-
         internal static bool Check()
         {
             if (Branding != null)
@@ -79,22 +52,6 @@ namespace Update.Fix.Fixes
                         SetLink(newlink, eulgPath);
                     }
                 }
-            }
-        }
-
-        private static void SetLink(string link, string destination)
-        {
-            var shell = new WshShellClass();
-
-            try
-            {
-                var shortcut = (IWshShortcut)shell.CreateShortcut(link);
-                shortcut.TargetPath = destination;
-                shortcut.Save();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
             }
         }
 
