@@ -8,7 +8,7 @@ namespace Update.Fix.Fixes
 {
     public class DesktopLinks: LinksBase
     {
-        private static readonly string _eulgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CLIENT);
+        private static readonly string _eulgPath = Path.Combine(BASEDIRECTORY, CLIENT);
         private static readonly string _desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         private static readonly string _commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
         private static readonly string _taskBar = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");

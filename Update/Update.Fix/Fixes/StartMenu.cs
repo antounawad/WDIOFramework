@@ -10,8 +10,8 @@ namespace Update.Fix.Fixes
         private const string LEGACY_STARTMENUFOLDER = "EULG";
 
         private const string SYNC_CLIENT = "EULG_sync_Client.exe";
-        private const string SUPPORT = "Support\\Support.exe";
-        private const string REMOTE = "Support\\Fernwartung.exe";
+        private const string SUPPORT = "Support\\EulgSupport.exe";
+        private const string REMOTE = "Support\\EulgFernwartung.exe";
 
         internal static bool Check()
         {
@@ -49,7 +49,7 @@ namespace Update.Fix.Fixes
                 if (!string.IsNullOrEmpty(clientStartMenuNew))
                 {
                     var buildTag = Branding.Info.BuildTag;
-                    var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    var baseDirectory = BASEDIRECTORY;
 
                     string[] startMenuGroupNew = new string[0];
                     if (Directory.Exists(clientStartMenuNew))

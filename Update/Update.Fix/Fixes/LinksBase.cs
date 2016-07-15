@@ -12,6 +12,8 @@ namespace Update.Fix.Fixes
 
         protected const string CLIENT = "EULG_client.exe";
 
+        protected static readonly string BASEDIRECTORY = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..");
+
         private static Branding _branding;
         protected static Branding Branding
         {
@@ -19,7 +21,7 @@ namespace Update.Fix.Fixes
             {
                 if (_branding == null)
                 {
-                    var brandingXmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, BRANDING_FILE_NAME);
+                    var brandingXmlFile = Path.Combine(BASEDIRECTORY, BRANDING_FILE_NAME);
                     if (!File.Exists(brandingXmlFile)) throw new Exception("Datei " + brandingXmlFile + " nicht gefunden.");
 
                     _branding = Branding.Read(brandingXmlFile);
