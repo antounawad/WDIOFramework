@@ -13,7 +13,7 @@ namespace Update.Fix.Fixes
         private static readonly string _commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
         private static readonly string _taskBar = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
 
-        internal static bool Check()
+        public static bool Check()
         {
             if (Branding != null)
             {
@@ -33,7 +33,7 @@ namespace Update.Fix.Fixes
             return true;
         }
 
-        internal static void Fix()
+        public static void Fix()
         {
             if (Branding != null)
             {

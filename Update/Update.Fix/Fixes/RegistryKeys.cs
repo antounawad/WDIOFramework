@@ -8,7 +8,7 @@ namespace Update.Fix.Fixes
         private const string REGISTRY_GROUP_NAME = @"Software\xbAV Beratungssoftware GmbH";
         private static string[] REGISTRY_GROUP_NAME_OBSOLETE = new[] { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };
 
-        internal static bool Check()
+        public static bool Check()
         {
             try
             {
@@ -32,7 +32,7 @@ namespace Update.Fix.Fixes
             }
         }
 
-        internal static void Fix()
+        public static void Fix()
         {
             foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
             {

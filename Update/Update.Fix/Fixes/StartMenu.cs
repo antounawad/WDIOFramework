@@ -13,7 +13,7 @@ namespace Update.Fix.Fixes
         private const string SUPPORT = "Support\\EulgSupport.exe";
         private const string REMOTE = "Support\\EulgFernwartung.exe";
 
-        internal static bool Check()
+        public static bool Check()
         {
             if(Branding != null)
             {
@@ -26,7 +26,7 @@ namespace Update.Fix.Fixes
             return true;
         }
 
-        internal static void Fix()
+        public static void Fix()
         {
             if (Branding != null)
             {

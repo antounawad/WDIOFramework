@@ -12,7 +12,7 @@ namespace Update.Fix.Fixes
 
         protected const string CLIENT = "EULG_client.exe";
 
-        protected static readonly string BASEDIRECTORY = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..");
+        protected static readonly string BASEDIRECTORY = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
 
         private static Branding _branding;
         protected static Branding Branding
@@ -31,7 +31,7 @@ namespace Update.Fix.Fixes
             }
         }
 
-        protected static void SetLink(string link, string destination)
+        public static void SetLink(string link, string destination)
         {
             var shell = new WshShellClass();
 
