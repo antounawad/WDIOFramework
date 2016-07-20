@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Eulg.Client.SupportTool.Views;
@@ -25,7 +26,7 @@ namespace Eulg.Client.SupportTool
             Dispatcher.Invoke(() => ViewContainer.Content = view);
         }
 
-        private void CloseIcon_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void CloseIcon_OnMouseLeftButtonDown(object sender, EventArgs e)
         {
             Close();
         }

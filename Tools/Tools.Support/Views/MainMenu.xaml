@@ -9,45 +9,76 @@
              d:DesignWidth="640"
              mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <TabControl SelectionChanged="TabControl_OnSelectionChanged">
+        <TabControl.Resources>
+            <Style TargetType="{x:Type TabItem}">
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Grid Name="Panel">
+                                <ContentPresenter x:Name="ContentSite"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    ContentSource="Header"
+                                    Margin="10,5"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource PrimaryHueMidBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="False">
+                                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource PrimaryHueLightBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Panel" Property="Background" Value="{StaticResource PrimaryHueDarkBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </TabControl.Resources>
 
         <TabItem Header="Allgemein" IsSelected="True">
             <WrapPanel HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Orientation="Vertical">
-                <Button Width="250"
-                        Height="28"
+                <Button Height="28"
                         Margin="10"
                         Click="BtnCheckFiles"
-                        Style="{StaticResource BorderButton}">
+                        >
                     Programmdateien prüfen bzw. aktualisieren
                 </Button>
-                <Button Width="160"
-                        Height="28"
+                <Button Height="28"
                         Margin="10"
                         Click="BtnProtocolViewer"
-                        Style="{StaticResource BorderButton}">
+                        >
                     Protokoll anzeigen
                 </Button>
-                <Button Width="160"
-                        Height="28"
+                <Button Height="28"
                         Margin="10"
                         Click="BtnCheckService_OnClick"
-                        Style="{StaticResource BorderButton}">
+                        >
                     Update-Dienst prüfen
                 </Button>
-                <Button Width="160"
-                        Height="28"
+                <Button Height="28"
                         Margin="10"
-                        Style="{StaticResource BorderButton}"
                         Visibility="Collapsed">
                     System-Info
                 </Button>
-                <Button Width="160"
-                        Height="28"
+                <Button Height="28"
                         Margin="10"
                         Click="BtnFernwartung_OnClick"
-                        Style="{StaticResource BorderButton}">
+                        >
                     Fernwartung starten
                 </Button>
             </WrapPanel>
@@ -74,7 +105,7 @@
                         Margin="10"
                         Click="BtnUpload_OnClick"
                         Content="Upload starten"
-                        Style="{StaticResource BorderButton}" />
+                        />
             </WrapPanel>
         </TabItem>
 
@@ -86,91 +117,83 @@
                     <RowDefinition Height="40" />
                 </Grid.RowDefinitions>
 
-                <Border Grid.Row="0"
-                        Grid.Column="0"
-                        Style="{StaticResource ViewBorder}">
-
+                <StackPanel>
+                        
                     <StackPanel>
-                        
-                        <StackPanel>
-                            <RadioButton x:Name="RbProxyTypeDefault" Content="Proxy-Einstellungen des Systems verwenden" />
-                            <RadioButton x:Name="RbProxyTypeNone" Content="Kein Proxy" />
-                            <RadioButton x:Name="RbProxyTypeManual" Content="Manuelle Proxy-Konfiguration" />
-                        </StackPanel>
-                        
-                        <Grid IsEnabled="{Binding IsChecked, ElementName=RbProxyTypeManual}">
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="140" />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-
-
-
-                            <Label Grid.Row="1"
-                               Grid.Column="0"
-                               Content="Hostname/IP"
-                               Style="{StaticResource DescriptiveLabel}" />
-                            <TextBox x:Name="TxtProxyAddress"
-                                 Grid.Row="1"
-                                 Grid.Column="1"
-                                 Grid.ColumnSpan="2"
-                                 Style="{StaticResource DefaultTextBox}" />
-
-                            <Label Grid.Row="2"
-                               Grid.Column="0"
-                               Content="Port (Http, Socks 5)"
-                               Style="{StaticResource DescriptiveLabel}" />
-                            <TextBox x:Name="TxtProxyPort"
-                                 Grid.Row="2"
-                                 Grid.Column="1"
-                                 Style="{StaticResource DefaultTextBox}" />
-
-                            <Label Grid.Row="3"
-                               Grid.Column="0"
-                               Content="Benutzer"
-                               Style="{StaticResource DescriptiveLabel}" />
-                            <TextBox x:Name="TxtProxyUser"
-                                 Grid.Row="3"
-                                 Grid.Column="1"
-                                 Grid.ColumnSpan="2"
-                                 Style="{StaticResource DefaultTextBox}" />
-
-                            <Label Grid.Row="4"
-                               Grid.Column="0"
-                               Content="Passwort"
-                               Style="{StaticResource DescriptiveLabel}" />
-                            <PasswordBox x:Name="TxtProxyPassword"
-                                     Grid.Row="4"
-                                     Grid.Column="1"
-                                     Grid.ColumnSpan="2"
-                                     Style="{StaticResource DefaultPasswordBox}"
-                                     helpers:PasswordHelper.Attach="True" />
-
-                            <Label Grid.Row="5"
-                               Grid.Column="0"
-                               Content="Domäne"
-                               Style="{StaticResource DescriptiveLabel}" />
-                            <TextBox x:Name="TxtProxyDomain"
-                                 Grid.Row="5"
-                                 Grid.Column="1"
-                                 Grid.ColumnSpan="2"
-                                 Style="{StaticResource DefaultTextBox}" />
-
-
-                        </Grid>
+                        <RadioButton x:Name="RbProxyTypeDefault" Content="Proxy-Einstellungen des Systems verwenden" />
+                        <RadioButton x:Name="RbProxyTypeNone" Content="Kein Proxy" />
+                        <RadioButton x:Name="RbProxyTypeManual" Content="Manuelle Proxy-Konfiguration" />
                     </StackPanel>
-                </Border>
+                        
+                    <Grid IsEnabled="{Binding IsChecked, ElementName=RbProxyTypeManual}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="1"
+                            Grid.Column="0"
+                            Content="Hostname/IP"
+                            Style="{StaticResource DescriptiveLabel}" />
+                        <TextBox x:Name="TxtProxyAddress"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                />
+
+                        <Label Grid.Row="2"
+                            Grid.Column="0"
+                            Content="Port (Http, Socks 5)"
+                            Style="{StaticResource DescriptiveLabel}" />
+                        <TextBox x:Name="TxtProxyPort"
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                />
+
+                        <Label Grid.Row="3"
+                            Grid.Column="0"
+                            Content="Benutzer"
+                            Style="{StaticResource DescriptiveLabel}" />
+                        <TextBox x:Name="TxtProxyUser"
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                />
+
+                        <Label Grid.Row="4"
+                            Grid.Column="0"
+                            Content="Passwort"
+                            Style="{StaticResource DescriptiveLabel}" />
+                        <PasswordBox x:Name="TxtProxyPassword"
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Grid.ColumnSpan="2"
+                                    helpers:PasswordHelper.Attach="True" />
+
+                        <Label Grid.Row="5"
+                            Grid.Column="0"
+                            Content="Domäne"
+                            Style="{StaticResource DescriptiveLabel}" />
+                        <TextBox x:Name="TxtProxyDomain"
+                                Grid.Row="5"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                />
+
+
+                    </Grid>
+                </StackPanel>
 
                 <StackPanel Grid.Row="1"
                             HorizontalAlignment="Right"

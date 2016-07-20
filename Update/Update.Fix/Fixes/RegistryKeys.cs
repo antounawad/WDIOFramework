@@ -3,7 +3,7 @@ using Microsoft.Win32;
 
 namespace Update.Fix.Fixes
 {
-    internal static class RegistryKeys
+    public static class RegistryKeys
     {
         private const string REGISTRY_GROUP_NAME = @"Software\xbAV Beratungssoftware GmbH";
         private static string[] REGISTRY_GROUP_NAME_OBSOLETE = new[] { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };

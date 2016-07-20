@@ -167,5 +167,41 @@ namespace Update.FixTests
 
             Assert.True(StartMenu.Check());
         }
+
+        [Test]
+        public void TestStartMenuPrograms()
+        {
+            SetupStartMenuLinksPrograms();
+
+            Assert.False(StartMenu.Check());
+
+            StartMenu.Fix();
+
+            Assert.True(StartMenu.Check());
+        }
+
+        [Test]
+        public void TestDesktop()
+        {
+            SetupDesktopTestLinks();
+
+            Assert.False(DesktopLinks.Check());
+
+            DesktopLinks.Fix();
+
+            Assert.True(DesktopLinks.Check());
+        }
+
+        [Test]
+        public void TestRegistryEulg()
+        {
+            SetupRegistryEulg();
+
+            Assert.False(RegistryKeys.Check());
+
+            RegistryKeys.Fix();
+
+            Assert.True(RegistryKeys.Check());
+        }
     }
 }
