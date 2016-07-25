@@ -274,9 +274,10 @@ namespace Eulg.Update.Common
                     Directory.CreateDirectory(DownloadPath);
                 }
 
-                if (StartMenuHelper.CheckStartMenuGroup(DownloadPath))
+                var startMenuHelper = new StartMenuHelper();
+                if (startMenuHelper.CheckStartMenuGroup(DownloadPath))
                 {
-                    StartMenuHelper.AddLinks(WorkerConfig.WorkerFiles);
+                    startMenuHelper.AddLinks(WorkerConfig.WorkerFiles);
                 }
 
                 GetUpdateClient();
@@ -364,9 +365,10 @@ namespace Eulg.Update.Common
                     Directory.CreateDirectory(DownloadPath);
                 }
 
-                if (StartMenuHelper.CheckStartMenuGroup(DownloadPath))
+                var startMenuHelper = new StartMenuHelper();
+                if(startMenuHelper.CheckStartMenuGroup(DownloadPath))
                 {
-                    StartMenuHelper.AddLinks(WorkerConfig.WorkerFiles);
+                    startMenuHelper.AddLinks(WorkerConfig.WorkerFiles);
                 }
 
                 GetUpdateClient();

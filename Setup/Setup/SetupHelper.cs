@@ -162,7 +162,7 @@ namespace Eulg.Setup
 
         public static bool CancelRequested { get; set; }
 
-        public const string REGISTRY_GROUP_NAME = "EULG Software GmbH";
+        public const string REGISTRY_GROUP_NAME = "xbAV Beratungssoftware GmbH";
         public const string REGISTRY_GROUP_NAME_OBSOLETE = "KS Software GmbH";
         public static string RegKeyParent { get; set; } = REGISTRY_GROUP_NAME;
 
@@ -172,7 +172,6 @@ namespace Eulg.Setup
         {
             UpdateClient.UpdateChannel = Config.Branding.Update.Channel;
             UpdateClient.UpdateUrl = Config.Branding.Urls.Update;
-            UpdateClient.UseHttps = Config.Branding.Update.UseHttps;
         }
 
         public static UpdateClient.EUpdateCheckResult DownloadManifest()
@@ -285,16 +284,6 @@ namespace Eulg.Setup
 #else
                                     keyAccount.DeleteValue("LoginPasswordDebug", false);
 #endif
-                                }
-                            }
-
-                            // Alte zugangsdaten
-                            if (!string.IsNullOrWhiteSpace(Config.Branding.Registry.LocalDbInstance) && !string.IsNullOrWhiteSpace(UserName))
-                            {
-                                keyEulg.SetValue(Crypt.REG_VAL_NAME_USRNAME, Crypt.EncryptUsername(UserName ?? string.Empty));
-                                if (!string.IsNullOrEmpty(Password))
-                                {
-                                    keyEulg.SetValue(Crypt.REG_VAL_NAME_PASS, Crypt.EncryptPassword(Password));
                                 }
                             }
                         }
@@ -532,8 +521,8 @@ namespace Eulg.Setup
 
                 subKey.SetValue("DisplayName", Config.Branding.Registry.UninstallName, RegistryValueKind.String);
                 subKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Setup", SETUP_EXE), RegistryValueKind.String);
-                subKey.SetValue("Publisher", "EULG Software GmbH", RegistryValueKind.String);
-                subKey.SetValue("URLInfoAbout", "www.eulg.de", RegistryValueKind.String);
+                subKey.SetValue("Publisher", "xbAV Beratungssoftware GmbH", RegistryValueKind.String);
+                subKey.SetValue("URLInfoAbout", "www.xbav-berater.de", RegistryValueKind.String);
                 subKey.SetValue("UninstallString", Path.Combine(InstallPath, "Setup", SETUP_EXE) + " /U", RegistryValueKind.String);
                 subKey.SetValue("InstallDate", $"{DateTime.Now:YYYYMMDD}", RegistryValueKind.String);
                 subKey.SetValue("InstallLocation", InstallPath, RegistryValueKind.String);

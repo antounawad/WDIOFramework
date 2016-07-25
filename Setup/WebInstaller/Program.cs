@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -16,22 +17,25 @@ namespace Eulg.Setup.WebInstaller
 {
     public static class Program
     {
-        // ReSharper disable UnusedMember.Local
-        private enum EBrandingProfile
+        private sealed class BrandingProfile
         {
-            Release,
-            Demo,
-            PreRel,
-            Test,
-            DemoTest,
-            Beta,
-            Proof,
-            ProofTest,
-            EulgDeTestRelease
-        }
-        // ReSharper restore UnusedMember.Local
+            public string ServiceUrl { get; }
+            public Branding.EUpdateChannel Channel { get; }
 
-        private const EBrandingProfile BRANDING_PROFILE = EBrandingProfile.Release;
+            private BrandingProfile(string serviceUrl, Branding.EUpdateChannel channel = Branding.EUpdateChannel.Release)
+            {
+                ServiceUrl = serviceUrl;
+                Channel = channel;
+            }
+
+            // ReSharper disable UnusedMember.Local
+            public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/Update/");
+            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/Update/");
+            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/Update/");
+            // ReSharper restore UnusedMember.Local
+        }
+
+        private static readonly BrandingProfile Profile = BrandingProfile.Release;
 
         //public static WebClient WebClient;
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileDeflate";
@@ -49,13 +53,9 @@ namespace Eulg.Setup.WebInstaller
 
             ProxyConfig.Instance.Init();
 
-            //WebClient = new WebClient { Encoding = Encoding.UTF8, Headers = {["User-Agent"] = "WebSetup" } };
-
-            Branding.Current = GetBranding(BRANDING_PROFILE);
-
             if (Environment.GetCommandLineArgs().Any(_ => _.Equals("/info", StringComparison.InvariantCultureIgnoreCase)))
             {
-                var msg = "BrandingProfile: " + BRANDING_PROFILE + Environment.NewLine + "Tag: " + Branding.Current.Info.BuildTag;
+                var msg = "Service URL: " + Profile.ServiceUrl + Environment.NewLine + "Channel: " + Profile.Channel;
                 MessageBox.Show(msg, "EULG WebInstaller", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -122,23 +122,24 @@ namespace Eulg.Setup.WebInstaller
                     var xser = new XmlSerializer(typeof(SetupConfig));
                     xser.Serialize(file, new SetupConfig
                     {
-                        Version = _updateConfig.Version,
-                        Branding = Branding.Current,
+                        Version = _updateConfig.Version
+                        //TODO
                     });
                 }
 
                 Cursor.Current = Cursors.Default;
                 frmStatus.Close();
-                var p = new Process
+                using (var p = new Process
                 {
                     StartInfo =
-                            {
-                                FileName = Path.Combine(tmpFolder, "Setup.exe"),
-                                Arguments = "/W",
-                                //Verb = "runas"
-                            }
-                };
-                p.Start();
+                    {
+                        FileName = Path.Combine(tmpFolder, "Setup.exe"),
+                        Arguments = "/W",
+                    }
+                })
+                {
+                    p.Start();
+                }
             }
             catch (Exception exception)
             {
@@ -153,23 +154,6 @@ namespace Eulg.Setup.WebInstaller
             Application.Exit();
         }
 
-        private static Branding GetBranding(EBrandingProfile profile)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var res = "Eulg.Setup.WebInstaller.Profiles." + profile + ".xml";
-            using (var stream = assembly.GetManifestResourceStream(res))
-            {
-                if (stream != null)
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        var xmlSerializer = new XmlSerializer(typeof(Branding));
-                        return xmlSerializer.Deserialize(reader) as Branding;
-                    }
-                }
-            }
-            return null;
-        }
         private static bool AlreadyRunning()
         {
             _appInstanceMutex = MutexManager.Instance.Acquire("WebInstaller", TimeSpan.Zero);
@@ -229,7 +213,7 @@ namespace Eulg.Setup.WebInstaller
         {
             var baseUri = new Uri(GetUpdateUrl(true));
             var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
-            var url = uri + "?updateChannel=" + Branding.Current.Update.Channel;
+            var url = uri + "?updateChannel=" + Profile.Channel;
 
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Proxy = WebRequest.DefaultWebProxy;
@@ -277,7 +261,7 @@ namespace Eulg.Setup.WebInstaller
             }
             var baseUri = new Uri(GetUpdateUrl(false));
             var uri = new Uri(baseUri, DOWNLOAD_FILE_METHOD);
-            var url = uri + "?updateChannel=" + Branding.Current.Update.Channel + "&fileName=" + Uri.UnescapeDataString(fileName);
+            var url = uri + "?updateChannel=" + Profile.Channel + "&fileName=" + Uri.UnescapeDataString(fileName);
 
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Proxy = WebRequest.DefaultWebProxy;
@@ -305,13 +289,16 @@ namespace Eulg.Setup.WebInstaller
         }
         private static string GetUpdateUrl(bool httpsIfAvailable)
         {
-            var t = ((httpsIfAvailable && Branding.Current.Update.UseHttps) ? "https://" : "http://") + Branding.Current.Urls.Update;
-            if (!t.EndsWith("/"))
+            var url = Profile.ServiceUrl;
+            if (!httpsIfAvailable)
             {
-                t += "/";
+                url = Regex.Replace(url, @"^https:\/\/", "http://", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             }
-            return t;
+            if (!url.EndsWith("/"))
+            {
+                url += "/";
+            }
+            return url;
         }
-
     }
 }

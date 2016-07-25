@@ -16,7 +16,8 @@ namespace Eulg.Update.Common.Helper
         private const string SUPPORT = "Support\\EulgSupport.exe";
         private const string REMOTE = "Support\\EulgFernwartung.exe";
 
-        private static readonly List<Link> _links = new List<Link>();
+        private readonly List<Link> _links = new List<Link>();
+        private readonly Branding _branding;
 
         private class Link
         {
@@ -32,22 +33,30 @@ namespace Eulg.Update.Common.Helper
             public string LinksTo { get; private set; }
         }
 
-        public static bool CheckStartMenuGroup(string temp)
+        public StartMenuHelper()
         {
             var branding = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Branding.xml");
 
-            if (Branding.Current == null && File.Exists(branding))
+            if(File.Exists(branding))
             {
-                Branding.Current = Branding.Read(branding);
+                _branding = Branding.Read(branding);
             }
+        }
 
+        public StartMenuHelper(Branding branding)
+        {
+            _branding = branding;
+        }
+
+        public bool CheckStartMenuGroup(string temp)
+        {
             _links.Clear();
 
-            if (Branding.Current != null)
+            if (_branding != null)
             {
                 var clientStartMenu = string.Empty;
-                var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Branding.Current.ShellIcons.StartMenuFolder);
-                var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), Branding.Current.ShellIcons.StartMenuFolder);
+                var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), _branding.ShellIcons.StartMenuFolder);
+                var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), _branding.ShellIcons.StartMenuFolder);
 
                 if (Directory.Exists(clientStartMenuMain))
                 {
@@ -61,14 +70,14 @@ namespace Eulg.Update.Common.Helper
                 if (!string.IsNullOrEmpty(clientStartMenu))
                 {
                     var updateSyncLink = false;
-                    var buildTag = Branding.Current.Info.BuildTag;
+                    var buildTag = _branding.Info.BuildTag;
                     var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
                     var startMenuGroup = Directory.GetFiles(clientStartMenu, "*.lnk");
 
-                    var clientLink = !string.IsNullOrEmpty(Branding.Current.ShellIcons.StartMenuApp) ? $"{Branding.Current.ShellIcons.StartMenuApp}.lnk" : $"EULG Client{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
-                    var syncClientLink = !string.IsNullOrEmpty(Branding.Current.ShellIcons.StartMenuSync) ? $"{Branding.Current.ShellIcons.StartMenuSync}.lnk" : $"EULG Sync-Client{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
-                    var supportLink = Branding.Current.ShellIcons.StartMenuSupportTool ?? "EULG Support.lnk";
-                    var remoteLink = Branding.Current.ShellIcons.StartMenuFernwartung ?? "EULG Fernwartung.lnk";
+                    var clientLink = !string.IsNullOrEmpty(_branding.ShellIcons.StartMenuApp) ? $"{_branding.ShellIcons.StartMenuApp}.lnk" : $"xbAV-Berater{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
+                    var syncClientLink = !string.IsNullOrEmpty(_branding.ShellIcons.StartMenuSync) ? $"{_branding.ShellIcons.StartMenuSync}.lnk" : $"Sync-Client{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
+                    var supportLink = _branding.ShellIcons.StartMenuSupportTool ?? "Support.lnk";
+                    var remoteLink = _branding.ShellIcons.StartMenuFernwartung ?? "Fernwartung.lnk";
 
                     if (!startMenuGroup.Contains(Path.Combine(clientStartMenu, clientLink)))
                     {
@@ -102,7 +111,7 @@ namespace Eulg.Update.Common.Helper
             return _links.Any();
         }
 
-        private static void GenerateMissingLinks()
+        private void GenerateMissingLinks()
         {
             foreach (var link in _links)
             {
@@ -110,7 +119,7 @@ namespace Eulg.Update.Common.Helper
             }
         }
 
-        public static void AddLinks(List<WorkerConfig.WorkerFile> workerFiles)
+        public void AddLinks(List<WorkerConfig.WorkerFile> workerFiles)
         {
             foreach (var link in _links)
             {

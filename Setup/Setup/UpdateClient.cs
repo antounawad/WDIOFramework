@@ -46,7 +46,6 @@ namespace Eulg.Setup
         private const int STREAM_BUFFER_SIZE = 81920;
         private const bool UseDeflate = false;
 
-        public bool UseHttps { get; set; }
         public UpdateConfig UpdateConf = new UpdateConfig();
         public readonly WorkerConfig WorkerConfig = new WorkerConfig();
         public Branding.EUpdateChannel UpdateChannel { get; set; }
@@ -81,7 +80,6 @@ namespace Eulg.Setup
         {
             _webClient.Encoding = Encoding.UTF8;
             _webClient.Headers["User-Agent"] = "EulgSetup";
-            UseHttps = false;
         }
 
         public readonly List<string> LogMessages = new List<string>();
@@ -112,7 +110,7 @@ namespace Eulg.Setup
         {
             try
             {
-                var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
+                var baseUri = new Uri(UpdateUrl);
                 var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
                 var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserName ?? String.Empty)
                           + "&password=" + Uri.EscapeDataString(Password ?? String.Empty);
@@ -329,9 +327,8 @@ namespace Eulg.Setup
             {
                 UpdateChannel = SetupHelper.Config.Branding.Update.Channel;
                 UpdateUrl = SetupHelper.Config.Branding.Urls.Update;
-                UseHttps = SetupHelper.Config.Branding.Update.UseHttps;
 
-                var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
+                var baseUri = new Uri(UpdateUrl);
                 var uri = new Uri(baseUri, RESET_CLIENT_ID_METHOD);
 
                 var request = (HttpWebRequest)WebRequest.Create(uri);

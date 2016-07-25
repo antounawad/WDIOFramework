@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace Eulg.Shared
@@ -60,13 +61,12 @@ namespace Eulg.Shared
 
             [XmlAttribute]
             public virtual string UninstallName { get; set; }
-
-            [XmlAttribute]
-            public virtual string LocalDbInstance { get; set; }
         }
 
         [XmlElement]
         public virtual ShellIconsConfig ShellIcons { get; set; }
+
+        [Obsolete("Profil wird aus Theme ermittelt")]
         public class ShellIconsConfig
         {
             [XmlAttribute]
@@ -94,9 +94,6 @@ namespace Eulg.Shared
         {
             [XmlAttribute]
             public virtual EUpdateChannel Channel { get; set; }
-
-            [XmlAttribute]
-            public virtual bool UseHttps { get; set; }
         }
 
         [XmlElement]
@@ -108,18 +105,6 @@ namespace Eulg.Shared
 
             [XmlAttribute]
             public virtual string Web { get; set; }
-
-            [XmlAttribute]
-            public virtual string Sync { get; set; }
-
-            [XmlAttribute]
-            public virtual string SyncHttp { get; set; }
-
-            [XmlAttribute]
-            public virtual string DbUpdateUrl { get; set; }
-
-            [XmlAttribute]
-            public virtual string CertPublicKey { get; set; }
         }
 
         public static Branding Read(string filename)
@@ -138,8 +123,5 @@ namespace Eulg.Shared
                 xmlSerializer.Serialize(fileStream, this);
             }
         }
-
-        public static Branding Current { get; set; }
-
     }
 }

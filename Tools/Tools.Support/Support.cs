@@ -94,7 +94,7 @@ namespace Eulg.Client.SupportTool
             {
                 throw new Exception("Branding nicht gefunden!");
             }
-            Branding.Current = CurrentBranding = Branding.Read(Path.Combine(path, "Branding.xml"));
+            CurrentBranding = Branding.Read(Path.Combine(path, "Branding.xml"));
         }
 
         public static void RunFernwartung()
@@ -123,7 +123,7 @@ namespace Eulg.Client.SupportTool
         private List<Tuple<string, string>> GetLogins()
         {
             var accounts = new List<Tuple<string, string>>();
-            using (var key = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\EULG Software GmbH\{Branding.Current.Registry.UserSettingsKey}\Account", false))
+            using (var key = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\xbAV Beratungssoftware GmbH\{CurrentBranding.Registry.UserSettingsKey}\Account", false))
             {
                 if (key == null) return accounts;
                 foreach (var subKey in key.GetSubKeyNames())
@@ -179,7 +179,6 @@ namespace Eulg.Client.SupportTool
             var updateClient = new UpdateClient
             {
                 UpdateUrl = CurrentBranding.Urls.Update,
-                UseHttps = CurrentBranding.Update.UseHttps,
                 UpdateChannel = CurrentBranding.Update.Channel,
                 ApplicationPath = appPath,
                 DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
@@ -448,7 +447,7 @@ namespace Eulg.Client.SupportTool
                     }
                 }
             }
-            var uri = new Uri((CurrentBranding.Update.UseHttps ? "https://" : "http://") + CurrentBranding.Urls.Update.TrimEnd('/') + "/UploadSupportFile");
+            var uri = new Uri(CurrentBranding.Urls.Update.TrimEnd('/') + "/UploadSupportFile");
             var request = WebRequest.CreateHttp(uri);
             request.Method = "POST";
             request.Headers.Add("UpdateChannel", CurrentBranding.Update.Channel.ToString());
