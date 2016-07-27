@@ -334,8 +334,14 @@ namespace Eulg.Setup
                 var request = (HttpWebRequest)WebRequest.Create(uri);
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-                request.Headers.Add("ClientID", FingerPrint.ClientId);
+                try
+                {
+                    request.Headers.Add("ClientID", FingerPrint.ClientId);
+                }
+                catch
+                {
+                    // ignored
+                }
                 request.Headers.Add("ClientOSUsername", Environment.UserName + "@" + Environment.UserDomainName);
                 request.Headers.Add("ClientHostname", Environment.MachineName);
 

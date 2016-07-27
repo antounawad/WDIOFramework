@@ -196,7 +196,16 @@ namespace Eulg.Client.SupportTool
             };
             NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
             NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
-            switch (updateClient.FetchManifest(FingerPrint.ClientId))
+                var clientId = string.Empty;
+                try
+                {
+                    clientId = FingerPrint.ClientId;
+                }
+                catch (Exception exception)
+                {
+                    updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
+                }
+                switch (updateClient.FetchManifest(clientId))
             {
                 case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
                     break;
