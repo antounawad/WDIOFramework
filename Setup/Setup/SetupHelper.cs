@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.AccessControl;
@@ -22,22 +24,18 @@ using File = System.IO.File;
 
 namespace Eulg.Setup
 {
-    public static class SetupHelper
+    internal class SetupHelper
     {
         private const string SOFTWARE_CURR_VER_REG = @"Software\Microsoft\Windows\CurrentVersion";
         private const string SOFTWARE_UNINSTALL_REG = @"Software\Microsoft\Windows\CurrentVersion\Uninstall";
         private const int KILL_PROCESS_TIMEOUT = 60;
         private const int THREAD_SLEEP_TIME = 500;
+
         public const string REG_KEY_SOFTWARE = "Software";
         public const string APP_DATA_DIR_DATA = "Data";
-        public const string UPDATE_SERVICE_NAME = "EulgUpdate";
-        private const string SETUP_EXE = "Setup.exe";
-        private const string URL_WEBVERWALTUNG = @"https://verwaltung.eulg.de";
-        private const string REGKEY_VERWALTUNG_DESKTOPICON_CREATED = @"VerwaltungDesktopIconCreated";
+        public const string UPDATE_SERVICE_NAME = "EulgUpdate"; //FIXME Erwähnt EULG, allerdings ist es wahrscheinlich nicht clever, hier etwas zu ändern...
 
         public static string DefaultInstallPath;
-        public static readonly UpdateClient UpdateClient = new UpdateClient();
-        public static SetupConfig Config;
         public static Mutex AppInstanceMutex;
 
         public static string InstallPath { get; set; }
@@ -50,36 +48,50 @@ namespace Eulg.Setup
         public static int ExitCode { get; set; }
         public static InstProgress ProgressPage { get; set; }
 
-        public static bool ReadConfig()
+        public SetupConfig Config { get; }
+
+        public Branding Branding { get; }
+
+        public string Version { get; }
+
+        public UpdateClient UpdateClient { get; }
+
+        public SetupHelper(SetupConfig config, Branding branding, string version)
         {
-            if (Config != null)
-            {
-                return true;
-            }
+            Config = config;
+            Branding = branding;
+            Version = version;
+            UpdateClient = new UpdateClient(config.ServiceUrl, config.Channel);
+
+            //if (Config != null)
+            //{
+            //    DefaultInstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), Config.Branding.FileSystem.AppDir);
+            //    InstallPath = DefaultInstallPath;
+
+            //    var version = new Version(Config.Version);
+            //    if (version.Major == 1 && version.Minor == 4)
+            //    {
+            //        if (Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(Config.Branding.Registry.MachineSettingsKey) == null)
+            //        {
+            //            RegKeyParent = REGISTRY_GROUP_NAME_OBSOLETE;
+            //        }
+            //    }
+            //}
+
+            //InitUpdateClient();
+        }
+
+        public static bool ReadConfig(out SetupConfig config)
+        {
+            config = null;
+
             try
             {
                 var xmlSer = new XmlSerializer(typeof(SetupConfig));
                 var configFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Setup.xml");
-                Config = xmlSer.Deserialize(File.OpenRead(configFileName)) as SetupConfig;
+                config = xmlSer.Deserialize(File.OpenRead(configFileName)) as SetupConfig;
 
-                if (Config != null)
-                {
-                    DefaultInstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), Config.Branding.FileSystem.AppDir);
-                    InstallPath = DefaultInstallPath;
-
-                    var version = new Version(Config.Version);
-                    if (version.Major == 1 && version.Minor == 4)
-                    {
-                        if (Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(Config.Branding.Registry.MachineSettingsKey) == null)
-                        {
-                            RegKeyParent = REGISTRY_GROUP_NAME_OBSOLETE;
-                        }
-                    }
-                }
-
-                InitUpdateClient();
-
-                return Config != null;
+                return config != null;
             }
             // ReSharper disable once EmptyGeneralCatchClause
             catch
@@ -88,11 +100,11 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool CheckInstallation()
+        public bool CheckInstallation()
         {
             try
             {
-                var regKey = REG_KEY_SOFTWARE + @"\" + RegKeyParent + @"\" + Config.Branding.Registry.MachineSettingsKey;
+                var regKey = REG_KEY_SOFTWARE + @"\" + RegKeyParent + @"\" + Branding.Registry.MachineSettingsKey;
                 using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(regKey))
                 {
                     var installDir = key?.GetValue("Install_Dir") as string;
@@ -110,11 +122,11 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool CheckRunningProcesses()
+        public bool CheckRunningProcesses()
         {
             try
             {
-                string[] killProcessNames = { Path.GetFileNameWithoutExtension(Config.Branding.FileSystem.AppBinary), Path.GetFileNameWithoutExtension(Config.Branding.FileSystem.SyncBinary) };
+                string[] killProcessNames = { Path.GetFileNameWithoutExtension(Branding.FileSystem.AppBinary), Path.GetFileNameWithoutExtension(Branding.FileSystem.SyncBinary) };
                 var swKill = new Stopwatch();
                 swKill.Start();
                 var killProcesses = GetRunningProcesses(killProcessNames);
@@ -163,18 +175,13 @@ namespace Eulg.Setup
         public static bool CancelRequested { get; set; }
 
         public const string REGISTRY_GROUP_NAME = "xbAV Beratungssoftware GmbH";
-        public const string REGISTRY_GROUP_NAME_OBSOLETE = "KS Software GmbH";
+        public const string REGISTRY_GROUP_NAME_EULG = "EULG Software GmbH";
+        public const string REGISTRY_GROUP_NAME_KS = "KS Software GmbH";
         public static string RegKeyParent { get; set; } = REGISTRY_GROUP_NAME;
 
         #region Install
 
-        public static void InitUpdateClient()
-        {
-            UpdateClient.UpdateChannel = Config.Branding.Update.Channel;
-            UpdateClient.UpdateUrl = Config.Branding.Urls.Update;
-        }
-
-        public static UpdateClient.EUpdateCheckResult DownloadManifest()
+        public UpdateClient.EUpdateCheckResult DownloadManifest()
         {
             UpdateClient.UserName = UserName;
             UpdateClient.Password = Password;
@@ -187,7 +194,7 @@ namespace Eulg.Setup
             return result;
         }
 
-        public static bool DownloadAppDir(bool removeAdditionalFiles = false)
+        public bool DownloadAppDir(bool removeAdditionalFiles = false)
         {
             UpdateClient.ApplicationPath = InstallPath;
             if (!Directory.Exists(InstallPath))
@@ -219,7 +226,7 @@ namespace Eulg.Setup
             if (ok)
             {
                 Tools.SetDirectoryAccessControl(InstallPath);
-                try { Tools.SetDirectoryAccessControl(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH")); } catch { }
+                try { Tools.SetDirectoryAccessControl(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH GmbH")); } catch { }
                 if (removeAdditionalFiles)
                 {
                     // noch nicht implementiert.
@@ -228,7 +235,7 @@ namespace Eulg.Setup
             return ok;
         }
 
-        public static bool PrepareRegistry()
+        public bool PrepareRegistry()
         {
             try
             {
@@ -243,14 +250,14 @@ namespace Eulg.Setup
             return false;
         }
 
-        private static void PrepareHKeyCurrentUserKeys()
+        private void PrepareHKeyCurrentUserKeys()
         {
             // HKEY_CURRENT_USER
             using (var keySoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
             {
                 using (var keyKs = keySoftware.OpenSubKey(RegKeyParent, true) ?? keySoftware.CreateSubKey(RegKeyParent))
                 {
-                    using (var keyEulg = keyKs.OpenSubKey(Config.Branding.Registry.UserSettingsKey, true) ?? keyKs.CreateSubKey(Config.Branding.Registry.UserSettingsKey))
+                    using (var keyEulg = keyKs.OpenSubKey(Branding.Registry.UserSettingsKey, true) ?? keyKs.CreateSubKey(Branding.Registry.UserSettingsKey))
                     {
                         // If master login, don't save user values in registry
                         if (!UserName.Equals("master", StringComparison.InvariantCultureIgnoreCase))
@@ -302,18 +309,18 @@ namespace Eulg.Setup
             }
         }
 
-        private static void PrepareHKeyLokalMachine()
+        private void PrepareHKeyLokalMachine()
         {
             // HKEY_LOCAL_MACHINE
             using (var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
             {
                 using (var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, true) ?? keyLmSoftware.CreateSubKey(RegKeyParent))
                 {
-                    using (var keyLmEulg = keyLmKs.OpenSubKey(Config.Branding.Registry.MachineSettingsKey, true) ?? keyLmKs.CreateSubKey(Config.Branding.Registry.MachineSettingsKey))
+                    using (var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, true) ?? keyLmKs.CreateSubKey(Branding.Registry.MachineSettingsKey))
                     {
                         keyLmEulg.SetValue("Install_Dir", InstallPath, RegistryValueKind.String);
-                        keyLmEulg.SetValue("Version", Config.Version, RegistryValueKind.String);
-                        keyLmEulg.SetValue("Channel", Config.Branding.Update.Channel.ToString(), RegistryValueKind.String);
+                        keyLmEulg.SetValue("Version", Version, RegistryValueKind.String);
+                        keyLmEulg.SetValue("Channel", Branding.Info.Channel.ToString(), RegistryValueKind.String);
                         keyLmEulg.SetValue("TerminalServer", TerminalServer ? 1 : 0, RegistryValueKind.DWord);
                         using (var memoryStream = new MemoryStream())
                         {
@@ -325,7 +332,7 @@ namespace Eulg.Setup
             }
         }
 
-        public static bool InstallUpdateService()
+        public bool InstallUpdateService()
         {
             try
             {
@@ -367,18 +374,18 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool AddShellIcons()
+        public bool AddShellIcons(Profile profile)
         {
             try
             {
-                var file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), Config.Branding.ShellIcons.DesktopApp + ".lnk");
+                var file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), profile.DesktopApp + ".lnk");
                 DeleteIfExists(file);
-                file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Config.Branding.ShellIcons.StartMenuFolder, Config.Branding.ShellIcons.StartMenuApp + ".lnk");
+                file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder, profile.StartMenuApp + ".lnk");
                 DeleteIfExists(file);
-                file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Config.Branding.ShellIcons.StartMenuFolder, Config.Branding.ShellIcons.StartMenuSync + ".lnk");
+                file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder, profile.StartMenuSync + ".lnk");
                 DeleteIfExists(file);
 
-                Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Config.Branding.ShellIcons.StartMenuFolder));
+                Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder));
             }
             // ReSharper disable once EmptyGeneralCatchClause
             catch
@@ -388,79 +395,71 @@ namespace Eulg.Setup
             try
             {
                 IWshShell wsh = new WshShellClass();
-                var shtct = (IWshShortcut)wsh.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory),
-                                                                          Config.Branding.ShellIcons.DesktopApp + ".lnk"));
+                var shtct = (IWshShortcut)wsh.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopApp + ".lnk"));
                 shtct.WindowStyle = 1; //for default window, 3 for maximize, 7 for minimize
-                shtct.TargetPath = Path.Combine(InstallPath, Config.Branding.FileSystem.AppBinary);
-                shtct.IconLocation = Path.Combine(InstallPath, Config.Branding.FileSystem.AppBinary) + ", 0";
+                shtct.TargetPath = Path.Combine(InstallPath, Branding.FileSystem.AppBinary);
+                shtct.IconLocation = Path.Combine(InstallPath, Branding.FileSystem.AppBinary) + ", 0";
                 shtct.Save();
 
-                var startMenuFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Config.Branding.ShellIcons.StartMenuFolder);
+                var startMenuFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), profile.StartMenuFolder);
 
-                if (!String.IsNullOrWhiteSpace(Config.Branding.ShellIcons.StartMenuFolder) &&
+                if (!String.IsNullOrWhiteSpace(profile.StartMenuFolder) &&
                     !Directory.Exists(startMenuFolderPath))
                 {
                     Directory.CreateDirectory(startMenuFolderPath);
                 }
 
-                if (!String.IsNullOrWhiteSpace(Config.Branding.ShellIcons.StartMenuApp))
+                if (!String.IsNullOrWhiteSpace(profile.StartMenuApp))
                 {
                     shtct = (IWshShortcut)wsh.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-                                                                          Config.Branding.ShellIcons.StartMenuFolder,
-                                                                          Config.Branding.ShellIcons.StartMenuApp + ".lnk"));
+                                                                          profile.StartMenuFolder,
+                                                                          profile.StartMenuApp + ".lnk"));
                     shtct.WindowStyle = 1;
-                    shtct.TargetPath = Path.Combine(InstallPath, Config.Branding.FileSystem.AppBinary);
-                    shtct.IconLocation = Path.Combine(InstallPath, Config.Branding.FileSystem.AppBinary) + ", 0";
+                    shtct.TargetPath = Path.Combine(InstallPath, Branding.FileSystem.AppBinary);
+                    shtct.IconLocation = Path.Combine(InstallPath, Branding.FileSystem.AppBinary) + ", 0";
                     shtct.Save();
                 }
 
-                if (!String.IsNullOrWhiteSpace(Config.Branding.ShellIcons.StartMenuSync))
+                if (!String.IsNullOrWhiteSpace(profile.StartMenuSync))
                 {
                     shtct = (IWshShortcut)wsh.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-                                                                          Config.Branding.ShellIcons.StartMenuFolder,
-                                                                          Config.Branding.ShellIcons.StartMenuSync + ".lnk"));
+                                                                          profile.StartMenuFolder,
+                                                                          profile.StartMenuSync + ".lnk"));
                     shtct.WindowStyle = 1;
-                    shtct.TargetPath = Path.Combine(InstallPath, Config.Branding.FileSystem.SyncBinary);
-                    shtct.IconLocation = Path.Combine(InstallPath, Config.Branding.FileSystem.SyncBinary) + ", 0";
+                    shtct.TargetPath = Path.Combine(InstallPath, Branding.FileSystem.SyncBinary);
+                    shtct.IconLocation = Path.Combine(InstallPath, Branding.FileSystem.SyncBinary) + ", 0";
                     shtct.Save();
                 }
 
-                if (!String.IsNullOrWhiteSpace(Config.Branding.ShellIcons.StartMenuSupportTool))
+                if (!String.IsNullOrWhiteSpace(profile.StartMenuSupportTool))
                 {
                     shtct = (IWshShortcut)wsh.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-                                                                          Config.Branding.ShellIcons.StartMenuFolder,
-                                                                          Config.Branding.ShellIcons.StartMenuSupportTool + ".lnk"));
+                                                                          profile.StartMenuFolder,
+                                                                          profile.StartMenuSupportTool + ".lnk"));
                     shtct.WindowStyle = 1;
                     shtct.TargetPath = Path.Combine(InstallPath, "Support", "EulgSupport.exe");
                     shtct.IconLocation = shtct.TargetPath + ", 0";
                     shtct.Save();
                 }
-                if (!String.IsNullOrWhiteSpace(Config.Branding.ShellIcons.StartMenuFernwartung))
+                if (!String.IsNullOrWhiteSpace(profile.StartMenuFernwartung))
                 {
                     shtct = (IWshShortcut)wsh.CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-                                                                          Config.Branding.ShellIcons.StartMenuFolder,
-                                                                          Config.Branding.ShellIcons.StartMenuFernwartung + ".lnk"));
+                                                                          profile.StartMenuFolder,
+                                                                          profile.StartMenuFernwartung + ".lnk"));
                     shtct.WindowStyle = 1;
                     shtct.TargetPath = Path.Combine(InstallPath, "Support", "EulgFernwartung.exe");
                     shtct.IconLocation = shtct.TargetPath + ", 0";
                     shtct.Save();
                 }
                 // Link zur Webverwaltung
-                using (var key = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE + @"\" + RegKeyParent + @"\" + Config.Branding.Registry.UserSettingsKey, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl))
+                var urlWebverwLnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopWeb + ".lnk");
+                if (!File.Exists(urlWebverwLnkFile))
                 {
-                    if (key != null && key.GetValue(REGKEY_VERWALTUNG_DESKTOPICON_CREATED, null) == null)
-                    {
-                        var urlWebverwLnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "Webverwaltung" + ".lnk");
-                        if (!File.Exists(urlWebverwLnkFile))
-                        {
-                            shtct = (IWshShortcut)wsh.CreateShortcut(urlWebverwLnkFile);
-                            shtct.WindowStyle = 3;
-                            shtct.TargetPath = URL_WEBVERWALTUNG;
-                            shtct.IconLocation = Path.Combine(InstallPath, Config.Branding.FileSystem.SyncBinary) + ", 0";
-                            shtct.Save();
-                        }
-                        key.SetValue(REGKEY_VERWALTUNG_DESKTOPICON_CREATED, $"{DateTime.Now:u}", RegistryValueKind.String);
-                    }
+                    shtct = (IWshShortcut)wsh.CreateShortcut(urlWebverwLnkFile);
+                    shtct.WindowStyle = 3;
+                    shtct.TargetPath = null; //URL_WEBVERWALTUNG;
+                    shtct.IconLocation = Path.Combine(InstallPath, Branding.FileSystem.SyncBinary) + ", 0";
+                    shtct.Save();
                 }
                 return true;
             }
@@ -479,7 +478,7 @@ namespace Eulg.Setup
             }
         }
 
-        public static bool InstallUninstaller()
+        public bool InstallUninstaller()
         {
             try
             {
@@ -507,48 +506,50 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool RegisterUninstaller()
+        // var kbNeeded = OfflineInstall ? new FileInfo(OfflineZipFile).Length / 1024 : UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize) / 1024;
+        public bool RegisterUninstaller(Profile profile, long estInstallSizeInKb)
         {
             using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
                                         .OpenSubKey(SOFTWARE_UNINSTALL_REG, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl))
             {
-                var subKey = key.OpenSubKey(Config.Branding.Registry.UninstallKey, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl)
-                             ?? key.CreateSubKey(Config.Branding.Registry.UninstallKey, RegistryKeyPermissionCheck.ReadWriteSubTree);
+                var subKey = key.OpenSubKey(Branding.Registry.MachineSettingsKey, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl)
+                             ?? key.CreateSubKey(Branding.Registry.MachineSettingsKey, RegistryKeyPermissionCheck.ReadWriteSubTree);
                 if (subKey == null)
                 {
                     throw new Exception("Kann Uninstall nicht schreiben!");
                 }
 
-                subKey.SetValue("DisplayName", Config.Branding.Registry.UninstallName, RegistryValueKind.String);
-                subKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Setup", SETUP_EXE), RegistryValueKind.String);
+                var setupExe = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
+
+                subKey.SetValue("DisplayName", profile.DesktopApp, RegistryValueKind.String);
+                subKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Setup", setupExe), RegistryValueKind.String);
                 subKey.SetValue("Publisher", "xbAV Beratungssoftware GmbH", RegistryValueKind.String);
                 subKey.SetValue("URLInfoAbout", "www.xbav-berater.de", RegistryValueKind.String);
-                subKey.SetValue("UninstallString", Path.Combine(InstallPath, "Setup", SETUP_EXE) + " /U", RegistryValueKind.String);
+                subKey.SetValue("UninstallString", Path.Combine(InstallPath, "Setup", setupExe) + " /U", RegistryValueKind.String);
                 subKey.SetValue("InstallDate", $"{DateTime.Now:YYYYMMDD}", RegistryValueKind.String);
                 subKey.SetValue("InstallLocation", InstallPath, RegistryValueKind.String);
-                var kbNeeded = OfflineInstall ? new FileInfo(OfflineZipFile).Length / 1024 : UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize) / 1024;
-                subKey.SetValue("EstimatedSize", kbNeeded, RegistryValueKind.DWord);
+                subKey.SetValue("EstimatedSize", estInstallSizeInKb, RegistryValueKind.DWord);
                 subKey.SetValue("Language", 1033, RegistryValueKind.DWord);
                 subKey.SetValue("NoModify", 0, RegistryValueKind.DWord);
                 subKey.SetValue("NoRepair", 1, RegistryValueKind.DWord);
                 subKey.SetValue("ModifyPath", Path.Combine(InstallPath, "Support", "EulgSupport.exe"), RegistryValueKind.String);
 
-                var tmpVersion = Config.Version;
-                if (!String.IsNullOrWhiteSpace(Config.Branding.Info.BuildTag))
+                var tmpVersion = Version;
+                if (!String.IsNullOrWhiteSpace(Branding.Info.BuildTag))
                 {
-                    tmpVersion += " (" + Config.Branding.Info.BuildTag + ")";
+                    tmpVersion += " (" + Branding.Info.BuildTag + ")";
                 }
                 if (TerminalServer)
                 {
                     tmpVersion += " TerminalServer";
                 }
                 subKey.SetValue("DisplayVersion", tmpVersion, RegistryValueKind.String);
-                Version version;
-                if (Version.TryParse(Config.Version, out version))
+                Version v;
+                if (System.Version.TryParse(Version, out v))
                 {
-                    subKey.SetValue("Version", version.Build, RegistryValueKind.DWord);
-                    subKey.SetValue("VersionMajor", version.Major, RegistryValueKind.DWord);
-                    subKey.SetValue("VersionMinor", version.Minor, RegistryValueKind.DWord);
+                    subKey.SetValue("Version", v.Build, RegistryValueKind.DWord);
+                    subKey.SetValue("VersionMajor", v.Major, RegistryValueKind.DWord);
+                    subKey.SetValue("VersionMinor", v.Minor, RegistryValueKind.DWord);
                 }
             }
             return true;
@@ -561,8 +562,9 @@ namespace Eulg.Setup
                 using (var key = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default)
                                             .OpenSubKey(SOFTWARE_CURR_VER_REG, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl))
                 {
+                    var setupExe = Assembly.GetExecutingAssembly().Location;
                     var keyRunOnce = key.OpenSubKey("RunOnce", true) ?? key.CreateSubKey("RunOnce");
-                    keyRunOnce.SetValue("EulgSetup", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SETUP_EXE) + " /D");
+                    keyRunOnce.SetValue("xbAVSetup", $"\"{setupExe}\" /D");
                 }
             }
             catch
@@ -578,7 +580,7 @@ namespace Eulg.Setup
                                             .OpenSubKey(SOFTWARE_CURR_VER_REG, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl))
                 {
                     var keyRunOnce = key.OpenSubKey("RunOnce", true) ?? key.CreateSubKey("RunOnce");
-                    keyRunOnce.DeleteValue("EulgSetup", false);
+                    keyRunOnce.DeleteValue("xbAVSetup", false);
                 }
             }
             catch
@@ -586,11 +588,11 @@ namespace Eulg.Setup
             }
         }
 
-        public static bool WriteBranding()
+        public bool WriteBranding()
         {
             try
             {
-                Config.Branding.Write(Path.Combine(InstallPath, "Branding.xml"));
+                Branding.Write(Path.Combine(InstallPath, "Branding.xml"));
                 return true;
             }
             catch (Exception exception)
@@ -600,19 +602,62 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool InstallNgen()
+        public void WriteProfile(Profile profile)
+        {
+            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
+            {
+                using(var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, true) ?? keyLmSoftware.CreateSubKey(RegKeyParent))
+                {
+                    using(var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, true) ?? keyLmKs.CreateSubKey(Branding.Registry.MachineSettingsKey))
+                    {
+                        using (var buffer = new MemoryStream())
+                        {
+                            using (var deflate = new DeflateStream(buffer, CompressionMode.Compress, true))
+                            {
+                                new XmlSerializer(typeof(Profile)).Serialize(deflate, profile);
+                            }
+
+                            keyLmEulg.SetValue("Profile", buffer.ToArray(), RegistryValueKind.Binary);
+                        }
+                    }
+                }
+            }
+        }
+
+        public Profile ReadProfile()
+        {
+            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
+            {
+                using(var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, true) ?? keyLmSoftware.CreateSubKey(RegKeyParent))
+                {
+                    using(var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, true) ?? keyLmKs.CreateSubKey(Branding.Registry.MachineSettingsKey))
+                    {
+                        var bytes = (byte[])keyLmEulg.GetValue("Profile", RegistryValueKind.Binary);
+                        using(var buffer = new MemoryStream(bytes))
+                        {
+                            using(var inflate = new DeflateStream(buffer, CompressionMode.Decompress))
+                            {
+                                return (Profile)new XmlSerializer(typeof(Profile)).Deserialize(inflate);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool InstallNgen()
         {
             try
             {
                 var ngenBinary = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), "ngen.exe");
                 RunProcess(ngenBinary, "queue pause", InstallPath);
-                if (!string.IsNullOrWhiteSpace(Config.Branding.FileSystem.AppBinary))
+                if (!string.IsNullOrWhiteSpace(Branding.FileSystem.AppBinary))
                 {
-                    RunProcess(ngenBinary, $"install \"{Path.Combine(InstallPath, Config.Branding.FileSystem.AppBinary)}\" /queue:1", InstallPath);
+                    RunProcess(ngenBinary, $"install \"{Path.Combine(InstallPath, Branding.FileSystem.AppBinary)}\" /queue:1", InstallPath);
                 }
-                if (!string.IsNullOrWhiteSpace(Config.Branding.FileSystem.SyncBinary))
+                if (!string.IsNullOrWhiteSpace(Branding.FileSystem.SyncBinary))
                 {
-                    RunProcess(ngenBinary, $"install \"{Path.Combine(InstallPath, Config.Branding.FileSystem.SyncBinary)}\" /queue:1", InstallPath);
+                    RunProcess(ngenBinary, $"install \"{Path.Combine(InstallPath, Branding.FileSystem.SyncBinary)}\" /queue:1", InstallPath);
                 }
                 RunProcess(ngenBinary, "queue continue", InstallPath);
             }
@@ -623,7 +668,7 @@ namespace Eulg.Setup
             return true;
         }
 
-        public static void ExtractAppDir()
+        public void ExtractAppDir()
         {
             UpdateClient.ApplicationPath = InstallPath;
             if (!Directory.Exists(InstallPath))
@@ -664,7 +709,7 @@ namespace Eulg.Setup
 
         #region Remove
 
-        public static bool RemoveUpdateService()
+        public bool RemoveUpdateService()
         {
             if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
             {
@@ -711,40 +756,36 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool RemoveShellIcons()
+        public static bool RemoveShellIcons(Profile profile)
         {
-            var file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), Config.Branding.ShellIcons.DesktopApp + ".lnk");
+            var file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopApp + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-                                Config.Branding.ShellIcons.StartMenuFolder,
-                                Config.Branding.ShellIcons.StartMenuApp + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopWeb + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-                                Config.Branding.ShellIcons.StartMenuFolder,
-                                Config.Branding.ShellIcons.StartMenuSync + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), profile.StartMenuFolder, profile.StartMenuApp + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), Config.Branding.ShellIcons.DesktopApp + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), profile.StartMenuFolder, profile.StartMenuSync + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
-                                Config.Branding.ShellIcons.StartMenuFolder,
-                                Config.Branding.ShellIcons.StartMenuApp + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), profile.StartMenuFolder, profile.StartMenuSupportTool + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
-                                Config.Branding.ShellIcons.StartMenuFolder,
-                                Config.Branding.ShellIcons.StartMenuSync + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), profile.StartMenuFolder, profile.StartMenuFernwartung + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
-                                Config.Branding.ShellIcons.StartMenuFolder,
-                                Config.Branding.ShellIcons.StartMenuSupportTool + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), profile.DesktopApp + ".lnk");
             DeleteIfExists(file);
-            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
-                                Config.Branding.ShellIcons.StartMenuFolder,
-                                Config.Branding.ShellIcons.StartMenuFernwartung + ".lnk");
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), profile.DesktopWeb + ".lnk");
+            DeleteIfExists(file);
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder, profile.StartMenuApp + ".lnk");
+            DeleteIfExists(file);
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder, profile.StartMenuSync + ".lnk");
+            DeleteIfExists(file);
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder, profile.StartMenuSupportTool + ".lnk");
+            DeleteIfExists(file);
+            file = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder, profile.StartMenuFernwartung + ".lnk");
             DeleteIfExists(file);
 
             try
             {
-                Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Config.Branding.ShellIcons.StartMenuFolder));
+                Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), profile.StartMenuFolder));
             }
             // ReSharper disable once EmptyGeneralCatchClause
             catch
@@ -752,7 +793,7 @@ namespace Eulg.Setup
             }
             try
             {
-                Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Config.Branding.ShellIcons.StartMenuFolder));
+                Directory.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), profile.StartMenuFolder));
             }
             // ReSharper disable once EmptyGeneralCatchClause
             catch
@@ -772,7 +813,7 @@ namespace Eulg.Setup
             return true;
         }
 
-        public static bool ClearReg()
+        public bool ClearReg()
         {
             try
             {
@@ -783,11 +824,15 @@ namespace Eulg.Setup
                     {
                         using (var keyLmKs = keyLmSoftware.OpenSubKey(REGISTRY_GROUP_NAME, true))
                         {
-                            keyLmKs?.DeleteSubKeyTree(Config.Branding.Registry.MachineSettingsKey, false);
+                            keyLmKs?.DeleteSubKeyTree(Branding.Registry.MachineSettingsKey, false);
                         }
-                        using (var keyLmKs = keyLmSoftware.OpenSubKey(REGISTRY_GROUP_NAME_OBSOLETE, true))
+                        using (var keyLmKs = keyLmSoftware.OpenSubKey(REGISTRY_GROUP_NAME_EULG, true))
                         {
-                            keyLmKs?.DeleteSubKeyTree(Config.Branding.Registry.MachineSettingsKey, false);
+                            keyLmKs?.DeleteSubKeyTree(Branding.Registry.MachineSettingsKey, false);
+                        }
+                        using (var keyLmKs = keyLmSoftware.OpenSubKey(REGISTRY_GROUP_NAME_KS, true))
+                        {
+                            keyLmKs?.DeleteSubKeyTree(Branding.Registry.MachineSettingsKey, false);
                         }
                     }
                 }
@@ -800,11 +845,15 @@ namespace Eulg.Setup
                     {
                         using (var keyKs = keySoftware.OpenSubKey(REGISTRY_GROUP_NAME, true))
                         {
-                            keyKs?.DeleteSubKeyTree(Config.Branding.Registry.UserSettingsKey, false);
+                            keyKs?.DeleteSubKeyTree(Branding.Registry.UserSettingsKey, false);
                         }
-                        using (var keyKs = keySoftware.OpenSubKey(REGISTRY_GROUP_NAME_OBSOLETE, true))
+                        using (var keyKs = keySoftware.OpenSubKey(REGISTRY_GROUP_NAME_EULG, true))
                         {
-                            keyKs?.DeleteSubKeyTree(Config.Branding.Registry.UserSettingsKey, false);
+                            keyKs?.DeleteSubKeyTree(Branding.Registry.UserSettingsKey, false);
+                        }
+                        using (var keyKs = keySoftware.OpenSubKey(REGISTRY_GROUP_NAME_KS, true))
+                        {
+                            keyKs?.DeleteSubKeyTree(Branding.Registry.UserSettingsKey, false);
                         }
                     }
                 }
@@ -815,7 +864,7 @@ namespace Eulg.Setup
                     {
                         using (var keyRunOnce = key.OpenSubKey("Run", true) ?? key.CreateSubKey("Run"))
                         {
-                            keyRunOnce?.DeleteValue(Config.Branding.Registry.UserSettingsKey + "-Sync", false);
+                            keyRunOnce?.DeleteValue(Branding.Registry.UserSettingsKey + "-Sync", false);
                         }
                     }
                 }
@@ -829,14 +878,14 @@ namespace Eulg.Setup
             return false;
         }
 
-        public static bool UnregisterUninstall()
+        public bool UnregisterUninstall()
         {
             using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
                                         .OpenSubKey(SOFTWARE_UNINSTALL_REG, RegistryKeyPermissionCheck.ReadWriteSubTree, RegistryRights.FullControl))
             {
-                if (key?.OpenSubKey(Config.Branding.Registry.UninstallKey) != null)
+                if (key?.OpenSubKey(Branding.Registry.MachineSettingsKey) != null)
                 {
-                    key.DeleteSubKeyTree(Config.Branding.Registry.UninstallKey);
+                    key.DeleteSubKeyTree(Branding.Registry.MachineSettingsKey);
                 }
             }
             return true;
@@ -860,20 +909,24 @@ namespace Eulg.Setup
                 }
                 File.Copy(f, Path.Combine(tmpDir, f.Substring(src.Length)), true);
             }
+
+            var brandingSrc = Path.GetFullPath(Path.Combine(src, "..", "Branding.xml"));
+            var brandingDst = Path.Combine(tmpDir, "Branding.xml");
+            File.Copy(brandingSrc, brandingDst);
         }
 
-        public static bool UninstallNgen()
+        public bool UninstallNgen()
         {
             try
             {
                 var ngenBinary = Path.Combine(RuntimeEnvironment.GetRuntimeDirectory(), "ngen.exe");
-                if (!string.IsNullOrWhiteSpace(Config.Branding.FileSystem.AppBinary))
+                if (!string.IsNullOrWhiteSpace(Branding.FileSystem.AppBinary))
                 {
-                    RunProcess(ngenBinary, $"uninstall \"{Path.Combine(InstallPath, Config.Branding.FileSystem.AppBinary)}\"", InstallPath);
+                    RunProcess(ngenBinary, $"uninstall \"{Path.Combine(InstallPath, Branding.FileSystem.AppBinary)}\"", InstallPath);
                 }
-                if (!string.IsNullOrWhiteSpace(Config.Branding.FileSystem.SyncBinary))
+                if (!string.IsNullOrWhiteSpace(Branding.FileSystem.SyncBinary))
                 {
-                    RunProcess(ngenBinary, $"uninstall \"{Path.Combine(InstallPath, Config.Branding.FileSystem.SyncBinary)}\"", InstallPath);
+                    RunProcess(ngenBinary, $"uninstall \"{Path.Combine(InstallPath, Branding.FileSystem.SyncBinary)}\"", InstallPath);
                 }
             }
             // ReSharper disable once EmptyGeneralCatchClause
@@ -898,12 +951,12 @@ namespace Eulg.Setup
             return list.ToArray();
         }
 
-        public static void Log(UpdateClient.ELogTypeEnum logType, string message)
+        public void Log(UpdateClient.ELogTypeEnum logType, string message)
         {
             UpdateClient.Log(logType, message);
         }
 
-        public static void LogException(Exception exception)
+        public void LogException(Exception exception)
         {
             Log(UpdateClient.ELogTypeEnum.Error, exception.GetMessagesTree());
         }
@@ -1007,47 +1060,58 @@ namespace Eulg.Setup
             return new WindowsPrincipal(currentIdentity).IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        //public static void CleanUp()
-        //{
-        //    DelTree(Path.Combine(Path.GetTempPath(), "EulgWebInstaller"));
-        //    DelTree(Path.Combine(Path.GetTempPath(), "EulgSetupTemp"));
-        //}
         private static byte[] EncryptPassword(string str)
         {
             return ProtectedData.Protect(Encoding.UTF8.GetBytes(str), null, DataProtectionScope.CurrentUser);
         }
 
-        private static int RunProcess(string fileName, string arguments, string workingDirectory)
+        private int RunProcess(string fileName, string arguments, string workingDirectory)
         {
-            var process = new Process
+            using (var process = new Process())
             {
-                StartInfo =
-                              {
-                                  FileName = fileName,
-                                  Arguments = arguments,
-                                  WorkingDirectory = workingDirectory,
-                                  CreateNoWindow = true,
-                                  UseShellExecute = false,
-                                  WindowStyle = ProcessWindowStyle.Hidden,
-                                  RedirectStandardError = true,
-                                  RedirectStandardOutput = true
-                              }
-            };
-            process.Start();
-            process.WaitForExit();
-            var err = process.StandardError.ReadToEnd();
+                process.StartInfo = new ProcessStartInfo
+                {
+                    FileName = fileName,
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true
+                };
 
-            if (!String.IsNullOrWhiteSpace(err))
-            {
-                Log(UpdateClient.ELogTypeEnum.Warning, err);
+                process.Start();
+                process.WaitForExit();
+                var err = process.StandardError.ReadToEnd();
+
+                if(!String.IsNullOrWhiteSpace(err))
+                {
+                    Log(UpdateClient.ELogTypeEnum.Warning, err);
+                }
+
+                return process.ExitCode;
             }
-
-            return process.ExitCode;
         }
 
         public static bool IsTerminalServerSession()
         {
             return System.Windows.Forms.SystemInformation.TerminalServerSession;
+        }
+
+        public static Uri GetApi(string serviceUri, string controller, string method, bool forceInsecure = false)
+        {
+            var builder = new UriBuilder(serviceUri.EnsureTrailing("/") + $"{controller}/{method}");
+            if(forceInsecure)
+            {
+                builder.Scheme = "http";
+            }
+            return builder.Uri;
+        }
+
+        public static Uri GetUpdateApi(string serviceUri, string method, bool forceInsecure = false)
+        {
+            return GetApi(serviceUri, "Update", method, forceInsecure);
         }
 
         #endregion

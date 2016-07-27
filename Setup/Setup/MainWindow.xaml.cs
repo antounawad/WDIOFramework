@@ -391,6 +391,7 @@ namespace Eulg.Setup
         #endregion
 
         #region Window Move
+
         [DllImport("user32.dll")]
         private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
         [DllImport("user32.dll")]
@@ -400,7 +401,7 @@ namespace Eulg.Setup
             ReleaseCapture();
             SendMessage(new WindowInteropHelper(this).Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
         }
-        #endregion
 
+        #endregion
     }
 }

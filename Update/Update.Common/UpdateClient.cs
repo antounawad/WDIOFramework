@@ -8,10 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Eulg.Shared;
-using Eulg.Update.Common.Helper;
 using Eulg.Update.Shared;
 using Microsoft.Win32;
 using Octodiff.Core;
@@ -274,12 +272,6 @@ namespace Eulg.Update.Common
                     Directory.CreateDirectory(DownloadPath);
                 }
 
-                var startMenuHelper = new StartMenuHelper();
-                if (startMenuHelper.CheckStartMenuGroup(DownloadPath))
-                {
-                    startMenuHelper.AddLinks(WorkerConfig.WorkerFiles);
-                }
-
                 GetUpdateClient();
 
                 foreach (var workerFile in WorkerConfig.WorkerFiles)
@@ -363,12 +355,6 @@ namespace Eulg.Update.Common
                 {
                     Log(LogTypeEnum.Info, "Create Directory " + DownloadPath);
                     Directory.CreateDirectory(DownloadPath);
-                }
-
-                var startMenuHelper = new StartMenuHelper();
-                if(startMenuHelper.CheckStartMenuGroup(DownloadPath))
-                {
-                    startMenuHelper.AddLinks(WorkerConfig.WorkerFiles);
                 }
 
                 GetUpdateClient();

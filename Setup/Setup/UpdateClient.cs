@@ -48,36 +48,20 @@ namespace Eulg.Setup
 
         public UpdateConfig UpdateConf = new UpdateConfig();
         public readonly WorkerConfig WorkerConfig = new WorkerConfig();
-        public Branding.EUpdateChannel UpdateChannel { get; set; }
+
+        public Branding.EUpdateChannel UpdateChannel { get; }
+        public string ServiceUrl { get; }
+
         public string ApplicationPath { get; set; }
         public string LastError { get; private set; }
 
-        public string UpdateUrl
-        {
-            get { return _updateUrl; }
-            set
-            {
-                _updateUrl = value;
-                if (_updateUrl.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    _updateUrl = _updateUrl.Substring(7);
-                }
-                if (_updateUrl.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    _updateUrl = _updateUrl.Substring(8);
-                }
-                if (!_updateUrl.EndsWith("/"))
-                {
-                    _updateUrl += "/";
-                }
-            }
-        }
-
-        private string _updateUrl;
         private readonly WebClient _webClient = new WebClient();
 
-        public UpdateClient()
+        public UpdateClient(string serviceUrl, Branding.EUpdateChannel channel)
         {
+            ServiceUrl = serviceUrl;
+            UpdateChannel = channel;
+
             _webClient.Encoding = Encoding.UTF8;
             _webClient.Headers["User-Agent"] = "EulgSetup";
         }
@@ -110,8 +94,7 @@ namespace Eulg.Setup
         {
             try
             {
-                var baseUri = new Uri(UpdateUrl);
-                var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
+                var uri = SetupHelper.GetUpdateApi(ServiceUrl, FETCH_UPDATE_DATA_METHOD);
                 var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserName ?? String.Empty)
                           + "&password=" + Uri.EscapeDataString(Password ?? String.Empty);
 
@@ -170,7 +153,7 @@ namespace Eulg.Setup
             catch (Exception ex)
             {
                 LastError = ex.Message;
-                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message + ": " + ex.StackTrace);
+                Log(ELogTypeEnum.Error, ServiceUrl + ": " + ex.Message + ": " + ex.StackTrace);
             }
             return EUpdateCheckResult.Error;
         }
@@ -179,10 +162,10 @@ namespace Eulg.Setup
         {
             if (CompareFiles())
             {
-                Log(ELogTypeEnum.Info, "Setup Files available on " + UpdateUrl);
+                Log(ELogTypeEnum.Info, "Setup Files available on " + ServiceUrl);
                 return EUpdateCheckResult.UpdatesAvailable;
             }
-            Log(ELogTypeEnum.Info, "Setup UpToDate on " + UpdateUrl);
+            Log(ELogTypeEnum.Info, "Setup UpToDate on " + ServiceUrl);
             return EUpdateCheckResult.UpToDate;
         }
 
@@ -203,8 +186,7 @@ namespace Eulg.Setup
 
                 if (DownloadFilesTotal > 0)
                 {
-                    var baseUri = new Uri("http://" + UpdateUrl);
-                    var uri = new Uri(baseUri, DOWNLOAD_FILES_STREAM_METHOD);
+                    var uri = SetupHelper.GetUpdateApi(ServiceUrl, DOWNLOAD_FILES_STREAM_METHOD, true);
 
                     ServicePointManager.Expect100Continue = false;
                     //ServicePointManager.SetTcpKeepAlive(false, 0, 0);
@@ -325,11 +307,7 @@ namespace Eulg.Setup
         {
             try
             {
-                UpdateChannel = SetupHelper.Config.Branding.Update.Channel;
-                UpdateUrl = SetupHelper.Config.Branding.Urls.Update;
-
-                var baseUri = new Uri(UpdateUrl);
-                var uri = new Uri(baseUri, RESET_CLIENT_ID_METHOD);
+                var uri = SetupHelper.GetUpdateApi(ServiceUrl, RESET_CLIENT_ID_METHOD);
 
                 var request = (HttpWebRequest)WebRequest.Create(uri);
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
@@ -374,8 +352,7 @@ namespace Eulg.Setup
                 {
                     return true;
                 }
-                var baseUri = new Uri("http://" + UpdateUrl);
-                var uri = new Uri(baseUri, UPLOAD_LOG_METHOD);
+                var uri = SetupHelper.GetUpdateApi(ServiceUrl, UPLOAD_LOG_METHOD, true);
                 var tmp = LogMessages.Aggregate(string.Empty, (current, logMessage) => current + (logMessage + Environment.NewLine));
 
                 var nvc = new NameValueCollection

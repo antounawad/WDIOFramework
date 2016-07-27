@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -17,6 +16,8 @@ namespace Eulg.Setup.WebInstaller
 {
     public static class Program
     {
+        #region Profiles
+
         private sealed class BrandingProfile
         {
             public string ServiceUrl { get; }
@@ -29,21 +30,42 @@ namespace Eulg.Setup.WebInstaller
             }
 
             // ReSharper disable UnusedMember.Local
-            public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/Update/");
-            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/Update/");
-            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/Update/");
+            public static readonly BrandingProfile Local = new BrandingProfile("http://localhost:1591/");
+            public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/");
+            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/");
+            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/");
             // ReSharper restore UnusedMember.Local
         }
 
+        #endregion
+
+        #region SetupManifest
+
+        public class SetupFile
+        {
+            [XmlAttribute]
+            public string Name { get; set; }
+
+            [XmlAttribute]
+            public int Length { get; set; }
+        }
+
+        public class SetupFiles : List<SetupFile> { }
+
+        [XmlRoot]
+        public class SetupManifest
+        {
+            [XmlAttribute]
+            public string SetupExe { get; set; }
+
+            [XmlElement]
+            public SetupFiles Files { get; set; }
+        }
+
+        #endregion
+
         private static readonly BrandingProfile Profile = BrandingProfile.Release;
-
-        //public static WebClient WebClient;
-        private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileDeflate";
-        private const string FETCH_UPDATE_DATA_METHOD = "FilesUpdateCheck";
-        private const int STREAM_BUFFER_SIZE = 81920;
-
         private static Mutex _appInstanceMutex;
-        private static UpdateConfig _updateConfig = new UpdateConfig();
 
         [STAThread]
         public static void Main()
@@ -75,7 +97,7 @@ namespace Eulg.Setup.WebInstaller
                 Cursor.Current = Cursors.WaitCursor;
 
                 // Temp. Ordner vorbereiten
-                var tmpFolder = Path.Combine(Path.GetTempPath(), "EulgWebInstaller");
+                var tmpFolder = Path.Combine(Path.GetTempPath(), "xbAV_WebInstaller");
                 DelTree(tmpFolder);
                 if (!Directory.Exists(tmpFolder))
                 {
@@ -90,13 +112,12 @@ namespace Eulg.Setup.WebInstaller
                 }
 
                 // Download Manifest
-                var manifestDone = false;
-                while (!manifestDone)
+                SetupManifest manifest = null;
+                while (manifest == null)
                 {
                     try
                     {
-                        DownloadManifest();
-                        manifestDone = true;
+                        manifest = DownloadSetup(tmpFolder);
                     }
                     catch (Exception exception)
                     {
@@ -113,17 +134,14 @@ namespace Eulg.Setup.WebInstaller
                     }
                 }
 
-                // Download Files
-                DownloadFiles(tmpFolder);
-
                 // Write Config File
                 using (var file = File.Create(Path.Combine(tmpFolder, "Setup.xml")))
                 {
                     var xser = new XmlSerializer(typeof(SetupConfig));
                     xser.Serialize(file, new SetupConfig
                     {
-                        Version = _updateConfig.Version
-                        //TODO
+                        ServiceUrl = Profile.ServiceUrl,
+                        Channel = Profile.Channel
                     });
                 }
 
@@ -133,7 +151,7 @@ namespace Eulg.Setup.WebInstaller
                 {
                     StartInfo =
                     {
-                        FileName = Path.Combine(tmpFolder, "Setup.exe"),
+                        FileName = Path.Combine(tmpFolder, manifest.SetupExe),
                         Arguments = "/W",
                     }
                 })
@@ -209,96 +227,62 @@ namespace Eulg.Setup.WebInstaller
         {
             return NetworkInterface.GetIsNetworkAvailable();
         }
-        private static void DownloadManifest()
+        private static SetupManifest DownloadSetup(string tempPath)
         {
-            var baseUri = new Uri(GetUpdateUrl(true));
-            var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
-            var url = uri + "?updateChannel=" + Profile.Channel;
+            var baseUri = GetUpdateUrl(true);
+            var uri = new Uri(baseUri, "WebInstGetSetup");
 
-            var request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Proxy = WebRequest.DefaultWebProxy;
-            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            request.AutomaticDecompression = DecompressionMethods.None;
             var responseStream = request.GetResponse().GetResponseStream();
             if (responseStream == null)
             {
-                return;
+                return null;
             }
-            var result = new StreamReader(responseStream).ReadToEnd();
 
-            if (string.IsNullOrWhiteSpace(result))
+            SetupManifest manifest;
+            using (var package = File.Create(Path.Combine(tempPath, Path.GetRandomFileName()), 8192, FileOptions.DeleteOnClose))
             {
-                return;
-            }
-            var xmlSer = new XmlSerializer(typeof(UpdateConfig));
-            using (var reader = new StringReader(result))
-            {
-                _updateConfig = (UpdateConfig)xmlSer.Deserialize(reader);
-            }
-            if (_updateConfig.BrandingVersion > Branding.BrandingVersion)
-            {
-                const string MSG = "Dieser Installationsassistent ist leider nicht mehr aktuell. " +
-                                   "Bitte verwenden Sie einen aktuellen Assistenten, den Sie in Ihrer Webverwaltung herunterladen können!";
-                MessageBox.Show(MSG, "Hinweis", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                Application.Exit();
-                // ReSharper disable once RedundantJumpStatement
-                return;
-            }
-        }
-        private static void DownloadFiles(string toPath)
-        {
-            foreach (var file in _updateConfig.UpdateFiles.Where(w => w.FilePath.Equals("Setup", StringComparison.CurrentCultureIgnoreCase)))
-            {
-                var localFile = Path.Combine(toPath, file.FileName);
-                DownloadFile(Path.Combine(file.FilePath, file.FileName), localFile, file.FileDateTime);
-            }
-        }
-        private static void DownloadFile(string fileName, string localFile, DateTime dateTime)
-        {
-            if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
-            }
-            var baseUri = new Uri(GetUpdateUrl(false));
-            var uri = new Uri(baseUri, DOWNLOAD_FILE_METHOD);
-            var url = uri + "?updateChannel=" + Profile.Channel + "&fileName=" + Uri.UnescapeDataString(fileName);
-
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.Proxy = WebRequest.DefaultWebProxy;
-            var response = request.GetResponse();
-            using (var sr = response.GetResponseStream())
-            {
-                if (sr == null)
+                using (responseStream)
                 {
-                    throw new Exception("Fehler beim öffnen der URL: " + url);
-                }
-                using (var sw = new FileStream(localFile, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    using (var gz = new DeflateStream(sr, CompressionMode.Decompress))
+                    using(var inflate = new DeflateStream(responseStream, CompressionMode.Decompress))
                     {
-                        var buffer = new byte[STREAM_BUFFER_SIZE];
-                        int read;
-                        while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
-                        {
-                            sw.Write(buffer, 0, read);
-                        }
+                        inflate.CopyTo(package);
+                    }
+                }
+
+                package.Position = 0;
+
+                var manifestLengthBytes = new byte[4];
+                package.Read(manifestLengthBytes, 0, 4);
+
+                var manifestLength = BitConverter.ToInt32(manifestLengthBytes, 0);
+                using (var manifestStream = new MemoryStream(package.Read(manifestLength)))
+                {
+                    manifest = (SetupManifest)new XmlSerializer(typeof(SetupManifest)).Deserialize(manifestStream);
+                }
+
+                foreach (var file in manifest.Files)
+                {
+                    using (var stream = File.Open(Path.Combine(tempPath, file.Name), FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        package.Copy(stream, file.Length);
                     }
                 }
             }
-            File.SetLastWriteTime(localFile, dateTime);
+            return manifest;
         }
-        private static string GetUpdateUrl(bool httpsIfAvailable)
+
+        private static Uri GetUpdateUrl(bool httpsIfAvailable)
         {
-            var url = Profile.ServiceUrl;
+            var uri = new UriBuilder(Profile.ServiceUrl.EnsureTrailing("/"));
             if (!httpsIfAvailable)
             {
-                url = Regex.Replace(url, @"^https:\/\/", "http://", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                uri.Scheme = "http";
             }
-            if (!url.EndsWith("/"))
-            {
-                url += "/";
-            }
-            return url;
+            uri.Path += "Update/";
+            return uri.Uri;
         }
     }
 }

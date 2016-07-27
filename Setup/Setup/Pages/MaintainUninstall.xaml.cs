@@ -11,7 +11,7 @@ namespace Eulg.Setup.Pages
         {
             InitializeComponent();
 
-            PageTitle = "EULG entfernen";
+            PageTitle = "xbAV-Berater entfernen"; //TODO Produktname auf Profile
             HasPrev = false;
             HasNext = true;
         }
@@ -52,25 +52,27 @@ namespace Eulg.Setup.Pages
         }
         private bool DoUninstall()
         {
+            var setup = App.Setup;
+
             SetupHelper.ReportProgress("Laufende Prozesse überprüfen...", "", -1);
-            if (!SetupHelper.CheckRunningProcesses())
+            if (!setup.CheckRunningProcesses())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Update-Dienst stoppen...", "", -1);
             SetupHelper.StopService(true);
             SetupHelper.ReportProgress("Programmsymbole entfernen...", "", -1);
-            if (!SetupHelper.RemoveShellIcons())
+            if (!setup.RemoveShellIcons())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Einstellungen entfernen...", "", -1);
-            if (!SetupHelper.ClearReg())
+            if (!setup.ClearReg())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Native Images entfernen...", "", -1);
-            if (!SetupHelper.UninstallNgen())
+            if (!setup.UninstallNgen())
             {
                 return false;
             }
@@ -81,14 +83,14 @@ namespace Eulg.Setup.Pages
             }
             // ClearAppData
             SetupHelper.ReportProgress("Uninstaller entfernen...", "", -1);
-            if (!SetupHelper.UnregisterUninstall())
+            if (!setup.UnregisterUninstall())
             {
                 return false;
             }
 
             var t = new Task(() =>
             {
-                SetupHelper.UpdateClient.DeleteClientIdOnServer();
+                setup.UpdateClient.DeleteClientIdOnServer();
             });
             t.Start();
             t.Wait(10000);
