@@ -63,7 +63,7 @@
                 </Style.Triggers>
             </Style>
             
-                <DrawingImage xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" x:Key="xbavBeraterLogo">
+                <DrawingImage x:Key="xbavBeraterLogo">
                     <DrawingImage.Drawing>
                         <DrawingGroup>
                             <DrawingGroup.Children>
@@ -137,7 +137,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" Style="{StaticResource MainControlButton}" Margin="0" HorizontalAlignment="Right"
+        <Button Grid.Row="0" Style="{StaticResource MainControlButton}" HorizontalAlignment="Right"
                 Click="CloseIcon_OnMouseLeftButtonDown" WindowChrome.IsHitTestVisibleInChrome="True"
                 Foreground="Black">
             <materialDesign:PackIcon Kind="WindowClose" ToolTip="Schließen" VerticalContentAlignment="Center" 

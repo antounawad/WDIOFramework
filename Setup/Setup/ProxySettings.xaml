@@ -13,9 +13,6 @@
              mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Style.xaml" />
-            </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="DefaultTextBox" TargetType="{x:Type TextBox}">
                 <Setter Property="VerticalAlignment" Value="Center" />
@@ -136,10 +133,10 @@
                      Grid.Row="5"
                      Grid.Column="1"
                      Grid.ColumnSpan="2"
+                     x:FieldModifier="private"
                      IsEnabled="{Binding ProxyTypeManual}"
                      PasswordChanged="OnPasswordChanged"
-                     Style="{StaticResource DefaultPasswordBox}"
-                     x:FieldModifier="private" />
+                     Style="{StaticResource DefaultPasswordBox}" />
         <Button x:Name="ClearPasswordButton"
                 Grid.Row="5"
                 Grid.Column="2"
@@ -148,10 +145,10 @@
                 Margin="0 0 5 0"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
+                x:FieldModifier="private"
                 Background="#00FFFFFF"
                 BorderThickness="0"
-                Click="OnClearPassword"
-                x:FieldModifier="private">
+                Click="OnClearPassword">
             <TextBlock HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        FontFamily="Webdings"

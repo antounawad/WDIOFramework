@@ -6,13 +6,7 @@
              Width="480"
              d:DesignHeight="300"
              mc:Ignorable="d">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Style.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
+
 
 
     <StackPanel x:Name="AreaMaintainChoose">
@@ -20,8 +14,7 @@
                 Width="200"
                 Height="80"
                 Margin="0,20,0,20"
-                Click="BtnMaintainRepair_OnClick"
-                Style="{StaticResource BorderButton}">
+                Click="BtnMaintainRepair_OnClick">
             <StackPanel Orientation="Horizontal">
                 <Image Width="64" Source="Repair.png" />
                 <Label VerticalAlignment="Center"
@@ -33,8 +26,7 @@
         <Button x:Name="BtnMaintainRemove"
                 Width="200"
                 Height="80"
-                Click="BtnMaintainRemove_OnClick"
-                Style="{StaticResource BorderButton}">
+                Click="BtnMaintainRemove_OnClick">
             <StackPanel Orientation="Horizontal">
                 <Image Width="64" Source="Remove.png" />
                 <Label VerticalAlignment="Center"
