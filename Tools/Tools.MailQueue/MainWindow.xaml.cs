@@ -80,11 +80,11 @@ namespace Eulg.Tools.MailTool
             
             
             //msg.Body = message.Body.Replace("[cid]", "cid:" + inline.ContentId);
-            var alternateView = AlternateView.CreateAlternateViewFromString(PreMailer.Net.PreMailer.MoveCssInline(mailLayout, false, null, Mailer.GetMailResource("EulgMailStyles", ".css"), false, true).Html, null, MediaTypeNames.Text.Html);
-            alternateView.LinkedResources.Add(inline);
-            msg.AlternateViews.Add(alternateView);
+            //var alternateView = AlternateView.CreateAlternateViewFromString(PreMailer.Net.PreMailer.MoveCssInline(mailLayout, false, null, Mailer.GetMailResource("EulgMailStyles", ".css"), false, true).Html, null, MediaTypeNames.Text.Html);
+            //alternateView.LinkedResources.Add(inline);
+            //msg.AlternateViews.Add(alternateView);
             
-            //msg.Body = null;
+            msg.Body = mailLayout;
 
             var t = new Task(() => DoIt(smtpClient, mailToList, msg));
             t.Start();
@@ -169,7 +169,7 @@ namespace Eulg.Tools.MailTool
             mailLayout = mailLayout.Replace("[@FooterHeadOffice]", footerHeadOffice);
             mailLayout = mailLayout.Replace("[@FooterDisclaimer]", footerDisclaimer);
 
-            message.Body = PreMailer.Net.PreMailer.MoveCssInline(mailLayout, false, null, Mailer.GetMailResource("EulgMailStyles", ".css"), false, true).Html;
+            //message.Body = PreMailer.Net.PreMailer.MoveCssInline(mailLayout, false, null, Mailer.GetMailResource("EulgMailStyles", ".css"), false, true).Html;
 
             TabItemHtml.IsSelected = true;
             Preview.NavigateToString(message.Body);

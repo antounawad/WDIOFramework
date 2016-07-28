@@ -35,13 +35,14 @@
             <StatusBarItem Grid.Column="3">
                 <Button x:Name="ButtonStart"
                         Click="ButtonStart_Click"
-                        Content="Start" />
+                        Content="Start"
+                        Padding="10,0" />
             </StatusBarItem>
-            <StatusBarItem Grid.Column="4">
+            <!--<StatusBarItem Grid.Column="4">
                 <Button x:Name="ButtonWeihnachten"
                         Click="ButtonWeihnachten_Click"
                         Content="Start" />
-            </StatusBarItem>
+            </StatusBarItem>-->
         </StatusBar>
         <ScrollViewer>
             <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
