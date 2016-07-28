@@ -20,8 +20,8 @@ namespace Eulg.Client.SupportTool.Views
                 ProgressBar.IsIndeterminate = false;
                 ProgressBar.Value = percent;
             }
-            LabelFileCount.Content = message;
-            if (!string.IsNullOrEmpty(header)) LabelProgress.Content = header;
+            LabelFileCount.Text = message;
+            if (!string.IsNullOrEmpty(header)) LabelProgress.Text = header;
         }
 
     }
