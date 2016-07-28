@@ -54,7 +54,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Setup-Eulg.ico</ApplicationIcon>
+    <ApplicationIcon>Setup.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -107,6 +107,11 @@
     <Compile Include="FrmProxySettings.Designer.cs">
       <DependentUpon>FrmProxySettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="FrmShowError.resx">
       <DependentUpon>FrmShowError.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,11 +121,14 @@
     <EmbeddedResource Include="FrmProxySettings.resx">
       <DependentUpon>FrmProxySettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AppIcon.ico" />
     <EmbeddedResource Include="Profiles\Test.xml" />
     <EmbeddedResource Include="Profiles\Beta.xml" />
     <EmbeddedResource Include="Profiles\PreRel.xml" />
@@ -130,7 +138,6 @@
     <EmbeddedResource Include="Profiles\ProofTest.xml" />
     <EmbeddedResource Include="Profiles\Proof.xml" />
     <EmbeddedResource Include="Profiles\EulgDeTestRelease.xml" />
-    <Content Include="Setup-Eulg.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
@@ -153,6 +160,9 @@
       <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Setup.ico" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="..\..\Shared\Shared.projitems" Label="Shared" />
