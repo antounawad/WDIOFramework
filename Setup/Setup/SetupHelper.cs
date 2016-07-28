@@ -1174,7 +1174,18 @@ namespace Eulg.Setup
                         var message = "Die Schnittstelle des zuständigen Serverdienstes für die gewählte Funktion konnte nicht ermittelt werden. Eine Internetverbindung wird benötigt. Systemmeldung:"
                                       + Environment.NewLine + Environment.NewLine
                                       + ex.GetMessagesTree();
-                        Action action = delegate { MessageBox.Show(Application.Current.MainWindow, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning); };
+                        Action action = delegate
+                        {
+                            var window = Application.Current.MainWindow;
+                            if (window == null)
+                            {
+                                MessageBox.Show(message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                            else
+                            {
+                                MessageBox.Show(window, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                        };
                         Application.Current.Dispatcher.Invoke(action);
                     }
 

@@ -8,7 +8,7 @@ namespace Eulg.Setup
     public class BrandingApi
     {
         [XmlRoot]
-        private class Parameters
+        public class Parameters
         {
             [XmlAttribute]
             public string Channel { get; set; }
@@ -56,6 +56,7 @@ namespace Eulg.Setup
         private BrandingInfo Invoke(Parameters parameters)
         {
             var apiUri = SetupHelper.GetUpdateApi(_serviceUrl, _channel, "GetBrandingProfileInfo");
+            if (apiUri == null) return null;
 
             var request = (HttpWebRequest)WebRequest.Create(apiUri);
             request.Method = WebRequestMethods.Http.Post;

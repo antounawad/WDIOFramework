@@ -95,6 +95,8 @@ namespace Eulg.Setup
             try
             {
                 var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, FETCH_UPDATE_DATA_METHOD);
+                if(uri == null) return EUpdateCheckResult.NoService;
+
                 var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserName ?? String.Empty)
                           + "&password=" + Uri.EscapeDataString(Password ?? String.Empty);
 
@@ -187,6 +189,7 @@ namespace Eulg.Setup
                 if (DownloadFilesTotal > 0)
                 {
                     var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, DOWNLOAD_FILES_STREAM_METHOD, true);
+                    if (uri == null) return false;
 
                     ServicePointManager.Expect100Continue = false;
                     //ServicePointManager.SetTcpKeepAlive(false, 0, 0);
@@ -353,6 +356,8 @@ namespace Eulg.Setup
                     return true;
                 }
                 var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, UPLOAD_LOG_METHOD, true);
+                if (uri == null) return false;
+
                 var tmp = LogMessages.Aggregate(string.Empty, (current, logMessage) => current + (logMessage + Environment.NewLine));
 
                 var nvc = new NameValueCollection

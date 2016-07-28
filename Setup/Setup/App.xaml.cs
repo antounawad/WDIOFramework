@@ -107,6 +107,14 @@ namespace Eulg.Setup
                 {
                     var brandingApi = new BrandingApi(config.ServiceUrl, config.Channel);
                     var brandingInfo = brandingApi.GetBranding();
+                    if (brandingInfo == null)
+                    {
+                        // GetBranding liefert nur dann NULL wenn die URL vom UpdateService nicht ermittelt werden konnte; in dem Fall wird von der Methode selbst eine Meldung gezeigt
+                        Current.Shutdown();
+                        // ReSharper disable once RedundantJumpStatement
+                        return;
+                    }
+
                     if(!string.IsNullOrEmpty(brandingInfo.Message))
                     {
                         MessageBox.Show("Fehler beim Abrufen des Anwendungsprofils: " + brandingInfo.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
