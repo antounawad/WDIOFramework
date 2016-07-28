@@ -57,7 +57,7 @@ namespace Eulg.Shared
 
             while(offset < count)
             {
-                var read = stream.Read(buffer, offset, Math.Min(buffer.Length, count - offset));
+                var read = stream.Read(buffer, 0, Math.Min(buffer.Length, count - offset));
                 if(read == 0)
                 {
                     throw new EndOfStreamException();

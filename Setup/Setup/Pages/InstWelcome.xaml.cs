@@ -24,10 +24,11 @@ namespace Eulg.Setup.Pages
 
         public void OnLoad()
         {
-            var tmpVersion = SetupHelper.Config.Version;
-            if (SetupHelper.Config.Channel != Branding.EUpdateChannel.Release)
+            var setup = App.Setup;
+            var tmpVersion = setup.Version;
+            if (setup.Config.Channel != Branding.EUpdateChannel.Release)
             {
-                tmpVersion += " (" + SetupHelper.Config.Channel + ")";
+                tmpVersion += " (" + setup.Config.Channel + ")";
             }
             if (SetupHelper.TerminalServer)
             {

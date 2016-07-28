@@ -35,17 +35,24 @@ namespace Eulg.Setup
         public const string APP_DATA_DIR_DATA = "Data";
         public const string UPDATE_SERVICE_NAME = "EulgUpdate"; //FIXME Erwähnt EULG, allerdings ist es wahrscheinlich nicht clever, hier etwas zu ändern...
 
-        public static string DefaultInstallPath;
         public static Mutex AppInstanceMutex;
 
-        public static string InstallPath { get; set; }
-        public static string UserName { get; set; }
-        public static string Password { get; set; }
-        public static bool TerminalServer { get; set; }
-        public static bool OfflineInstall { get; set; }
-        public static bool NoDependencies { get; set; }
-        public static string OfflineZipFile { get; set; }
-        public static int ExitCode { get; set; }
+        private static readonly Lazy<string[]> _cmdArgs = new Lazy<string[]>(Environment.GetCommandLineArgs, LazyThreadSafetyMode.None);
+        public static string[] CommandLineArgs => _cmdArgs.Value;
+
+        public static string DefaultUsername => CommandLineArgs.Where(a => a.StartsWith("/A:", StringComparison.OrdinalIgnoreCase)).Select(a => a.Substring(3)).FirstOrDefault();
+        public static string DefaultPassword => CommandLineArgs.Where(a => a.StartsWith("/P:", StringComparison.OrdinalIgnoreCase)).Select(a => a.Substring(3)).FirstOrDefault();
+        public static bool TerminalServer => CommandLineArgs.Any(a => a.Equals("/TS", StringComparison.OrdinalIgnoreCase)) || System.Windows.Forms.SystemInformation.TerminalServerSession;
+        public static bool OfflineInstall => CommandLineArgs.Any(a => a.Equals("/O", StringComparison.OrdinalIgnoreCase));
+        public static bool NoDependencies => CommandLineArgs.Any(a => a.Equals("/NODEP", StringComparison.OrdinalIgnoreCase));
+        public static string OfflineZipFile => !OfflineInstall ? null : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "eulg.zip");
+
+        private static IDictionary<EApiResource, Uri> _apiManifest;
+
+        public string DefaultInstallPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), Branding.FileSystem.AppDir);
+        public string InstallPath { get; set; }
+
+        [Obsolete("wtf")]
         public static InstProgress ProgressPage { get; set; }
 
         public SetupConfig Config { get; }
@@ -63,22 +70,31 @@ namespace Eulg.Setup
             Version = version;
             UpdateClient = new UpdateClient(config.ServiceUrl, config.Channel);
 
-            //if (Config != null)
-            //{
-            //    DefaultInstallPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), Config.Branding.FileSystem.AppDir);
-            //    InstallPath = DefaultInstallPath;
+            InstallPath = DefaultInstallPath;
 
-            //    var version = new Version(Config.Version);
-            //    if (version.Major == 1 && version.Minor == 4)
-            //    {
-            //        if (Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(Config.Branding.Registry.MachineSettingsKey) == null)
-            //        {
-            //            RegKeyParent = REGISTRY_GROUP_NAME_OBSOLETE;
-            //        }
-            //    }
-            //}
+            var v = new Version(version);
+            if(v.Major == 1 && v.Minor == 4)
+            {
+                if(Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(branding.Registry.MachineSettingsKey) == null)
+                {
+                    RegKeyParent = REGISTRY_GROUP_NAME_KS;
+                }
+            }
+            else if (v.Major < 2)
+            {
+                if(Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(branding.Registry.MachineSettingsKey) == null)
+                {
+                    RegKeyParent = REGISTRY_GROUP_NAME_EULG;
+                }
+            }
+        }
 
-            //InitUpdateClient();
+        public static void CheckOfflineInstallPackage()
+        {
+            if (!OfflineInstall) return;
+
+            var file = OfflineZipFile;
+            if(!File.Exists(file)) throw new FileNotFoundException("Offline-Zip-Datei nicht gefunden! ", file);
         }
 
         public static bool ReadConfig(out SetupConfig config)
@@ -181,10 +197,10 @@ namespace Eulg.Setup
 
         #region Install
 
-        public UpdateClient.EUpdateCheckResult DownloadManifest()
+        public UpdateClient.EUpdateCheckResult DownloadManifest(string username, string password)
         {
-            UpdateClient.UserName = UserName;
-            UpdateClient.Password = Password;
+            UpdateClient.UserName = username;
+            UpdateClient.Password = password;
             var result = UpdateClient.DownloadManifest();
             if (UpdateClient?.UpdateConf != null && UpdateClient.UpdateConf.BrandingVersion > Branding.BrandingVersion)
             {
@@ -235,11 +251,11 @@ namespace Eulg.Setup
             return ok;
         }
 
-        public bool PrepareRegistry()
+        public bool PrepareRegistry(string username, string password)
         {
             try
             {
-                PrepareHKeyCurrentUserKeys();
+                PrepareHKeyCurrentUserKeys(username, password);
                 PrepareHKeyLokalMachine();
                 return true;
             }
@@ -250,7 +266,7 @@ namespace Eulg.Setup
             return false;
         }
 
-        private void PrepareHKeyCurrentUserKeys()
+        private void PrepareHKeyCurrentUserKeys(string username, string password)
         {
             // HKEY_CURRENT_USER
             using (var keySoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
@@ -260,17 +276,17 @@ namespace Eulg.Setup
                     using (var keyEulg = keyKs.OpenSubKey(Branding.Registry.UserSettingsKey, true) ?? keyKs.CreateSubKey(Branding.Registry.UserSettingsKey))
                     {
                         // If master login, don't save user values in registry
-                        if (!UserName.Equals("master", StringComparison.InvariantCultureIgnoreCase))
+                        if (!username.Equals("master", StringComparison.InvariantCultureIgnoreCase))
                         {
                             HandleSyncTrayIconKey(keyEulg);
 
                             // Account-SubKey
                             var keyAccounts = keyEulg.OpenSubKey("Account", true) ?? keyEulg.CreateSubKey("Account");
 
-                            var account = UpdateClient.UpdateConf.Accounts.FirstOrDefault(f => f.UserName.Equals(UserName, StringComparison.CurrentCultureIgnoreCase));
-                            if (account == null && OfflineInstall && !string.IsNullOrEmpty(UserName))
+                            var account = UpdateClient.UpdateConf.Accounts.FirstOrDefault(f => f.UserName.Equals(username, StringComparison.CurrentCultureIgnoreCase));
+                            if (account == null && OfflineInstall && !string.IsNullOrEmpty(username))
                             {
-                                account = new UpdateConfig.Account { AgencyID = string.Empty, AgencyName = string.Empty, AgencyNameShort = string.Empty, UserName = UserName };
+                                account = new UpdateConfig.Account { AgencyID = string.Empty, AgencyName = string.Empty, AgencyNameShort = string.Empty, UserName = username };
                             }
                             if (account != null)
                             {
@@ -283,11 +299,11 @@ namespace Eulg.Setup
                                     keyAccount.SetValue("AgencyName", account.AgencyName, RegistryValueKind.String);
                                     keyAccount.SetValue("LastLogin", $"{DateTime.Now:yyyyMMddHHmmss}", RegistryValueKind.String);
                                 }
-                                if (!string.IsNullOrEmpty(Password))
+                                if (!string.IsNullOrEmpty(password))
                                 {
-                                    keyAccount.SetValue("LoginPassword", EncryptPassword(Password ?? string.Empty), RegistryValueKind.Binary);
+                                    keyAccount.SetValue("LoginPassword", EncryptPassword(password ?? string.Empty), RegistryValueKind.Binary);
 #if DEBUG
-                                    keyAccount.SetValue("LoginPasswordDebug", Password ?? string.Empty, RegistryValueKind.String);
+                                    keyAccount.SetValue("LoginPasswordDebug", password ?? string.Empty, RegistryValueKind.String);
 #else
                                     keyAccount.DeleteValue("LoginPasswordDebug", false);
 #endif
@@ -340,7 +356,7 @@ namespace Eulg.Setup
                 {
                     RemoveUpdateService();
                 }
-                var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+                var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "ExbAV Beratungssoftware GmbH", "UpdateService", "UpdateService.exe");
                 var p = new Process
                 {
                     StartInfo =
@@ -374,7 +390,7 @@ namespace Eulg.Setup
             return false;
         }
 
-        public bool AddShellIcons(Profile profile)
+        public bool AddShellIcons(Profile profile, string urlVermittlerbereich)
         {
             try
             {
@@ -452,14 +468,17 @@ namespace Eulg.Setup
                     shtct.Save();
                 }
                 // Link zur Webverwaltung
-                var urlWebverwLnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopWeb + ".lnk");
-                if (!File.Exists(urlWebverwLnkFile))
+                if (!string.IsNullOrEmpty(urlVermittlerbereich))
                 {
-                    shtct = (IWshShortcut)wsh.CreateShortcut(urlWebverwLnkFile);
-                    shtct.WindowStyle = 3;
-                    shtct.TargetPath = null; //URL_WEBVERWALTUNG;
-                    shtct.IconLocation = Path.Combine(InstallPath, Branding.FileSystem.SyncBinary) + ", 0";
-                    shtct.Save();
+                    var urlWebverwLnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopWeb + ".lnk");
+                    if(!File.Exists(urlWebverwLnkFile))
+                    {
+                        shtct = (IWshShortcut)wsh.CreateShortcut(urlWebverwLnkFile);
+                        shtct.WindowStyle = 3;
+                        shtct.TargetPath = urlVermittlerbereich;
+                        shtct.IconLocation = Path.Combine(InstallPath, Branding.FileSystem.SyncBinary) + ", 0";
+                        shtct.Save();
+                    }
                 }
                 return true;
             }
@@ -506,7 +525,6 @@ namespace Eulg.Setup
             return false;
         }
 
-        // var kbNeeded = OfflineInstall ? new FileInfo(OfflineZipFile).Length / 1024 : UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize) / 1024;
         public bool RegisterUninstaller(Profile profile, long estInstallSizeInKb)
         {
             using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
@@ -624,15 +642,55 @@ namespace Eulg.Setup
             }
         }
 
-        public Profile ReadProfile()
+        public static string ReadInstalledVersion(string machineSettingsKey)
         {
-            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
+            var parentKeys = new[] { REGISTRY_GROUP_NAME_KS, REGISTRY_GROUP_NAME_EULG, REGISTRY_GROUP_NAME };
+
+            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE))
             {
-                using(var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, true) ?? keyLmSoftware.CreateSubKey(RegKeyParent))
+                foreach (var parentKey in parentKeys)
                 {
-                    using(var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, true) ?? keyLmKs.CreateSubKey(Branding.Registry.MachineSettingsKey))
+                    using(var profileKey = keyLmSoftware.OpenSubKey($"{parentKey}\\{machineSettingsKey}", false))
                     {
-                        var bytes = (byte[])keyLmEulg.GetValue("Profile", RegistryValueKind.Binary);
+                        if (profileKey != null)
+                        {
+                            return profileKey.GetValue("Version").ToString();
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public Profile ReadInstalledProfile()
+        {
+            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE))
+            {
+                using(var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, false))
+                {
+                    using(var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, false))
+                    {
+                        var bytes = (byte[])keyLmEulg?.GetValue("Profile");
+                        if (bytes == null)
+                        {
+                            if (new Version(Version).Major < 2)
+                            {
+                                return new Profile //TODO legacy profile for updated pre-2.0 installations
+                                {
+                                    DesktopApp = "EULG-Client",
+                                    DesktopWeb = "Vermittlerbereich",
+                                    StartMenuApp = "EULG-Client",
+                                    StartMenuFernwartung = "Fernwartung",
+                                    StartMenuFolder = "EULG Software GmbH",
+                                    StartMenuSupportTool = "Support-Tool",
+                                    StartMenuSync = "EULG Sync-Client"
+                                };
+                            }
+
+                            return null;
+                        }
+
                         using(var buffer = new MemoryStream(bytes))
                         {
                             using(var inflate = new DeflateStream(buffer, CompressionMode.Decompress))
@@ -807,7 +865,7 @@ namespace Eulg.Setup
             return true;
         }
 
-        public static bool ClearAppDir()
+        public bool ClearAppDir()
         {
             DelTree(InstallPath);
             return true;
@@ -1094,24 +1152,54 @@ namespace Eulg.Setup
             }
         }
 
-        public static bool IsTerminalServerSession()
+        public bool TryGetApi(EApiResource resource, out Uri uri, bool failQuietly = false)
         {
-            return System.Windows.Forms.SystemInformation.TerminalServerSession;
+            return TryGetApi(Config.ServiceUrl, Config.Channel, resource, out uri, failQuietly);
         }
 
-        public static Uri GetApi(string serviceUri, string controller, string method, bool forceInsecure = false)
+        public static bool TryGetApi(string serviceUrl, Branding.EUpdateChannel channel, EApiResource resource, out Uri uri, bool failQuietly = false)
         {
-            var builder = new UriBuilder(serviceUri.EnsureTrailing("/") + $"{controller}/{method}");
+            if(_apiManifest == null)
+            {
+                var apiClient = new ApiResourceClient(serviceUrl, channel);
+
+                try
+                {
+                    _apiManifest = apiClient.Fetch();
+                }
+                catch(Exception ex)
+                {
+                    if (!failQuietly)
+                    {
+                        var message = "Die Schnittstelle des zuständigen Serverdienstes für die gewählte Funktion konnte nicht ermittelt werden. Eine Internetverbindung wird benötigt. Systemmeldung:"
+                                      + Environment.NewLine + Environment.NewLine
+                                      + ex.GetMessagesTree();
+                        Action action = delegate { MessageBox.Show(Application.Current.MainWindow, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning); };
+                        Application.Current.Dispatcher.Invoke(action);
+                    }
+
+                    uri = null;
+                    return false;
+                }
+            }
+
+            return _apiManifest.TryGetValue(resource, out uri);
+        }
+
+        public static Uri GetUpdateApi(string serviceUri, Branding.EUpdateChannel channel, string method, bool forceInsecure = false)
+        {
+            Uri update;
+            if (!TryGetApi(serviceUri, channel, EApiResource.UpdateService, out update))
+            {
+                return null;
+            }
+
+            var builder = new UriBuilder(update + method);
             if(forceInsecure)
             {
                 builder.Scheme = "http";
             }
             return builder.Uri;
-        }
-
-        public static Uri GetUpdateApi(string serviceUri, string method, bool forceInsecure = false)
-        {
-            return GetApi(serviceUri, "Update", method, forceInsecure);
         }
 
         #endregion

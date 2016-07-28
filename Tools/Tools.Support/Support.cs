@@ -63,6 +63,7 @@ namespace Eulg.Client.SupportTool
         public const string FERNWARTUNG_EXECUTABLE_NAME = "EulgFernwartung.exe";
         private const int STREAM_BUFFER_SIZE = 81920;
         private static string _ildasmPath;
+        private Uri _updateServiceUri;
         private long _sizeProcessed;
         private long _filesProcessed;
         private string _oldMessage;
@@ -160,6 +161,22 @@ namespace Eulg.Client.SupportTool
             }
         }
 
+        public Uri TryGetUpdateServiceUri()
+        {
+            try
+            {
+                return _updateServiceUri ?? (_updateServiceUri = GetUpdateUri());
+            }
+            catch (Exception ex)
+            {
+                var message = "Die Schnittstelle des zuständigen Serverdienstes für die gewählte Funktion konnte nicht ermittelt werden. Eine Internetverbindung wird benötigt. Systemmeldung:"
+                              + Environment.NewLine + Environment.NewLine
+                              + ex.GetMessagesTree();
+                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(Application.Current.MainWindow, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning));
+                return null;
+            }
+        }
+
         public void DoUpdateCheck()
         {
 #if !DEBUG
@@ -175,11 +192,14 @@ namespace Eulg.Client.SupportTool
             proxyConfig.Init();
             proxyConfig.SetDefault();
 
+            var updateServiceUri = TryGetUpdateServiceUri();
+            if (updateServiceUri == null) return;
+
             var accounts = GetLogins();
             var updateClient = new UpdateClient
             {
-                UpdateUrl = CurrentBranding.Urls.Update,
-                UpdateChannel = CurrentBranding.Update.Channel,
+                UpdateUrl = updateServiceUri.AbsoluteUri,
+                UpdateChannel = CurrentBranding.Info.Channel,
                 ApplicationPath = appPath,
                 DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
                 LogFile = LogFile,
@@ -406,11 +426,14 @@ namespace Eulg.Client.SupportTool
 
         #region Upload
 
-        public bool Upload(bool log, bool queue, bool cache)
+        public bool? Upload(bool log, bool queue, bool cache)
         {
             var proxyConfig = new ProxyConfig();
             proxyConfig.Init();
             proxyConfig.SetDefault();
+
+            var updateServiceUri = TryGetUpdateServiceUri();
+            if (updateServiceUri == null) return null;
 
             var archiveFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".zip");
             if (File.Exists(archiveFileName))
@@ -456,10 +479,10 @@ namespace Eulg.Client.SupportTool
                     }
                 }
             }
-            var uri = new Uri(CurrentBranding.Urls.Update.TrimEnd('/') + "/UploadSupportFile");
+            var uri = new Uri(updateServiceUri.AbsoluteUri.TrimEnd('/') + "/UploadSupportFile");
             var request = WebRequest.CreateHttp(uri);
             request.Method = "POST";
-            request.Headers.Add("UpdateChannel", CurrentBranding.Update.Channel.ToString());
+            request.Headers.Add("UpdateChannel", CurrentBranding.Info.Channel.ToString());
             request.Headers.Add("UserName", $"{Environment.UserName}@{Environment.MachineName}");
             using (var reqStream = request.GetRequestStream())
             {
@@ -821,5 +844,24 @@ namespace Eulg.Client.SupportTool
             return !ProcessHelper.IsProcessRunning(PROCESS);
         }
 
+        private static Uri GetUpdateUri()
+        {
+            var keyNames = new[] { "xbAV Beratungssoftware GmbH", "EULG Software GmbH", "KS Software GmbH" };
+            foreach (var parentName in keyNames)
+            {
+                using(var regkey = Registry.CurrentUser.OpenSubKey($"Software\\{parentName}\\{CurrentBranding.Registry.UserSettingsKey}"))
+                {
+                    if (regkey != null)
+                    {
+                        var serviceUrl = regkey.GetValue("Service").ToString();
+                        var apiClient = new ApiResourceClient(serviceUrl, CurrentBranding.Info.Channel);
+
+                        return apiClient.Fetch()[EApiResource.UpdateService];
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

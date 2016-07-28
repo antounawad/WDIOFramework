@@ -117,7 +117,10 @@ namespace Eulg.Setup.WebInstaller
                 {
                     try
                     {
-                        manifest = DownloadSetup(tmpFolder);
+                        var apiClient = new ApiResourceClient(Profile.ServiceUrl, Profile.Channel);
+                        var endpoints = apiClient.Fetch();
+
+                        manifest = DownloadSetup(tmpFolder, endpoints[EApiResource.UpdateService]);
                     }
                     catch (Exception exception)
                     {
@@ -152,7 +155,7 @@ namespace Eulg.Setup.WebInstaller
                     StartInfo =
                     {
                         FileName = Path.Combine(tmpFolder, manifest.SetupExe),
-                        Arguments = "/W",
+                        Arguments = "/W"
                     }
                 })
                 {
@@ -227,10 +230,9 @@ namespace Eulg.Setup.WebInstaller
         {
             return NetworkInterface.GetIsNetworkAvailable();
         }
-        private static SetupManifest DownloadSetup(string tempPath)
+        private static SetupManifest DownloadSetup(string tempPath, Uri updateService)
         {
-            var baseUri = GetUpdateUrl(true);
-            var uri = new Uri(baseUri, "WebInstGetSetup");
+            var uri = new Uri(updateService, "WebInstGetSetup");
 
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Proxy = WebRequest.DefaultWebProxy;
@@ -272,17 +274,6 @@ namespace Eulg.Setup.WebInstaller
                 }
             }
             return manifest;
-        }
-
-        private static Uri GetUpdateUrl(bool httpsIfAvailable)
-        {
-            var uri = new UriBuilder(Profile.ServiceUrl.EnsureTrailing("/"));
-            if (!httpsIfAvailable)
-            {
-                uri.Scheme = "http";
-            }
-            uri.Path += "Update/";
-            return uri.Uri;
         }
     }
 }

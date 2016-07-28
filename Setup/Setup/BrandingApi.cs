@@ -55,7 +55,7 @@ namespace Eulg.Setup
 
         private BrandingInfo Invoke(Parameters parameters)
         {
-            var apiUri = SetupHelper.GetUpdateApi(_serviceUrl, "GetBrandingProfileInfo");
+            var apiUri = SetupHelper.GetUpdateApi(_serviceUrl, _channel, "GetBrandingProfileInfo");
 
             var request = (HttpWebRequest)WebRequest.Create(apiUri);
             request.Method = WebRequestMethods.Http.Post;

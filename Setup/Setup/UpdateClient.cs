@@ -94,7 +94,7 @@ namespace Eulg.Setup
         {
             try
             {
-                var uri = SetupHelper.GetUpdateApi(ServiceUrl, FETCH_UPDATE_DATA_METHOD);
+                var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, FETCH_UPDATE_DATA_METHOD);
                 var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserName ?? String.Empty)
                           + "&password=" + Uri.EscapeDataString(Password ?? String.Empty);
 
@@ -186,7 +186,7 @@ namespace Eulg.Setup
 
                 if (DownloadFilesTotal > 0)
                 {
-                    var uri = SetupHelper.GetUpdateApi(ServiceUrl, DOWNLOAD_FILES_STREAM_METHOD, true);
+                    var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, DOWNLOAD_FILES_STREAM_METHOD, true);
 
                     ServicePointManager.Expect100Continue = false;
                     //ServicePointManager.SetTcpKeepAlive(false, 0, 0);
@@ -307,7 +307,7 @@ namespace Eulg.Setup
         {
             try
             {
-                var uri = SetupHelper.GetUpdateApi(ServiceUrl, RESET_CLIENT_ID_METHOD);
+                var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, RESET_CLIENT_ID_METHOD);
 
                 var request = (HttpWebRequest)WebRequest.Create(uri);
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
@@ -352,7 +352,7 @@ namespace Eulg.Setup
                 {
                     return true;
                 }
-                var uri = SetupHelper.GetUpdateApi(ServiceUrl, UPLOAD_LOG_METHOD, true);
+                var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, UPLOAD_LOG_METHOD, true);
                 var tmp = LogMessages.Aggregate(string.Empty, (current, logMessage) => current + (logMessage + Environment.NewLine));
 
                 var nvc = new NameValueCollection

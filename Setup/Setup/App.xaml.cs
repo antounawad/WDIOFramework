@@ -18,11 +18,8 @@ namespace Eulg.Setup
         private static App This => (App)Current;
 
         internal static string Version => This._version;
-
         internal static string ServiceUrl => This._serviceUrl;
-
         internal static Branding Branding => This._branding;
-
         internal static SetupHelper Setup => This._setup;
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -44,11 +41,6 @@ namespace Eulg.Setup
                 ProxyConfig.Instance.Init();
                 Environment.CurrentDirectory = Path.GetTempPath();
 
-                if (args.Any(a => a.Equals("/TS", StringComparison.OrdinalIgnoreCase)) || SetupHelper.IsTerminalServerSession())
-                {
-                    SetupHelper.TerminalServer = true;
-                }
-
 #if !DEBUG
                 if (!SetupHelper.IsAdministrator())
                 {
@@ -58,16 +50,7 @@ namespace Eulg.Setup
                 }
 #endif
 
-                SetupHelper.UserName = args.Where(a => a.StartsWith("/A:", StringComparison.OrdinalIgnoreCase)).Select(a => a.Substring(3)).FirstOrDefault();
-                SetupHelper.Password = args.Where(a => a.StartsWith("/P:", StringComparison.OrdinalIgnoreCase)).Select(a => a.Substring(3)).FirstOrDefault();
-
-                SetupHelper.OfflineInstall = args.Any(a => a.Equals("/O", StringComparison.OrdinalIgnoreCase));
-                SetupHelper.NoDependencies = args.Any(a => a.Equals("/NODEP", StringComparison.OrdinalIgnoreCase));
-                if (SetupHelper.OfflineInstall)
-                {
-                    SetupHelper.OfflineZipFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "eulg.zip");
-                    if (!File.Exists(SetupHelper.OfflineZipFile)) throw new FileNotFoundException("Offline-Zip-Datei nicht gefunden! ", SetupHelper.OfflineZipFile);
-                }
+                SetupHelper.CheckOfflineInstallPackage();
 
                 if (!args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
                 {
@@ -117,8 +100,8 @@ namespace Eulg.Setup
 
                 if(args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
                 {
-                    _version = ""; //TODO Version aus Client-Exe oder Uninstall-Record lesen
                     _branding = Branding.Read(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Branding.xml"));
+                    _version = SetupHelper.ReadInstalledVersion(_branding.Registry.MachineSettingsKey);
                 }
                 else
                 {
@@ -145,14 +128,6 @@ namespace Eulg.Setup
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }
-        }
-
-        private void Application_Exit(object sender, ExitEventArgs e)
-        {
-            // 0 Setup abgebrochen
-            // 1 Setup erfolgreich
-            // 2 Fehler - siehe Log-Datei
-            e.ApplicationExitCode = SetupHelper.ExitCode;
         }
     }
 }

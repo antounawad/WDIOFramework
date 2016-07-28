@@ -103,11 +103,12 @@ namespace Eulg.Client.SupportTool.Views
             );
             var task = new Task(() =>
             {
-                if (support.Upload(log, queue, cache))
+                var result = support.Upload(log, queue, cache);
+                if (result == true)
                 {
                     MessageBox.Show("Upload erfolgreich!", "Upload", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                else
+                else if(result == false)
                 {
                     MessageBox.Show("Upload fehlgeschlagen!", "Upload", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }

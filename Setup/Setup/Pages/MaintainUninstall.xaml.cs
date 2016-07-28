@@ -2,16 +2,21 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Eulg.Shared;
 
 namespace Eulg.Setup.Pages
 {
     public partial class MaintainUninstall : UserControl, ISetupPageBase
     {
+        private readonly Profile _profile;
+
         public MaintainUninstall()
         {
+            _profile = App.Setup.ReadInstalledProfile();
+
             InitializeComponent();
 
-            PageTitle = "xbAV-Berater entfernen"; //TODO Produktname auf Profile
+            PageTitle = $"{_profile.DesktopApp ?? "Anwendung"} entfernen";
             HasPrev = false;
             HasNext = true;
         }
@@ -62,7 +67,7 @@ namespace Eulg.Setup.Pages
             SetupHelper.ReportProgress("Update-Dienst stoppen...", "", -1);
             SetupHelper.StopService(true);
             SetupHelper.ReportProgress("Programmsymbole entfernen...", "", -1);
-            if (!setup.RemoveShellIcons())
+            if (!SetupHelper.RemoveShellIcons(_profile))
             {
                 return false;
             }
@@ -77,7 +82,7 @@ namespace Eulg.Setup.Pages
                 return false;
             }
             SetupHelper.ReportProgress("Programmdateien entfernen...", "", -1);
-            if (!SetupHelper.ClearAppDir())
+            if (!setup.ClearAppDir())
             {
                 return false;
             }

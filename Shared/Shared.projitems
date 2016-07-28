@@ -9,6 +9,7 @@
     <Import_RootNamespace>Eulg.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ApiResourceClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Branding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BrandingInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />

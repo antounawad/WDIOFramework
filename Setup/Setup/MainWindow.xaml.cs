@@ -58,7 +58,7 @@ namespace Eulg.Setup
                 NavigateToPage(new MaintainUninstall(), false);
                 return;
             }
-            if (!SetupHelper.CheckInstallation())
+            if (!App.Setup.CheckInstallation())
             {
                 NavigateToPage(new InstWelcome(), false);
                 return;

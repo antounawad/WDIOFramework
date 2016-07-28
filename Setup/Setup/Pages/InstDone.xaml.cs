@@ -32,22 +32,24 @@ namespace Eulg.Setup.Pages
         }
         public void OnNext()
         {
-            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgWebInstaller"));
+            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgWebInstaller")); //TODO temp path names
             SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgSetupTemp"));
 
             if (ChkStartEulg.IsChecked ?? false)
             {
+                var setup = App.Setup;
                 var p = new Process
                         {
                             StartInfo =
                             {
                                 FileName = "Explorer.exe",
-                                Arguments = Path.Combine(SetupHelper.InstallPath, "EULG_client.exe")
+                                Arguments = Path.Combine(setup.InstallPath, setup.Branding.FileSystem.AppBinary)
                             }
                         };
                 p.Start();
+                p.Dispose();
             }
-            SetupHelper.ExitCode = 1;
+            Environment.ExitCode = 1;
             MainWindow.Instance.Close();
         }
         public bool OnPrev()

@@ -68,7 +68,7 @@ namespace Eulg.Setup.Pages
                 }
                 catch (Exception exception)
                 {
-                    SetupHelper.LogException(exception);
+                    App.Setup.LogException(exception);
                     Dispatcher.Invoke(new Action(() => MainWindow.Instance.NavigateToPage(new Failed())));
                     return;
                 }
