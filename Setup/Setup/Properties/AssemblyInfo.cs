@@ -5,13 +5,13 @@ using System.Windows;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die mit einer Assembly verknüpft sind.
-[assembly: AssemblyTitle("EULG Setup")]
+[assembly: AssemblyTitle("Setup")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("EULG Software GmbH")]
+[assembly: AssemblyCompany("xbAV Beratungssoftware GmbH")]
 [assembly: AssemblyProduct("Setup")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("EULG")]
+[assembly: AssemblyCopyright("Copyright © 2016 xbAV Beratungssoftware GmbH")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Durch Festlegen von ComVisible auf "false" werden die Typen in dieser Assembly unsichtbar 
@@ -49,5 +49,5 @@ using System.Windows;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.16.0614")]
+[assembly: AssemblyVersion("1.0.16.0728")]
 //[assembly: AssemblyFileVersion("1.0.15")]

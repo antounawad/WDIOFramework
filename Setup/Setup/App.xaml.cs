@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 using Eulg.Shared;
 
@@ -21,6 +22,24 @@ namespace Eulg.Setup
         internal static string ServiceUrl => This._serviceUrl;
         internal static Branding Branding => This._branding;
         internal static SetupHelper Setup => This._setup;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Margins
+        {
+            public int LeftWidth;
+            public int RightWidth;
+            public int TopHeight;
+            public int BottomHeight;
+        }
+
+        #region Dll Imports
+
+        [DllImport("dwmapi.dll", PreserveSig = true)]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
+        #endregion
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -71,10 +90,10 @@ namespace Eulg.Setup
                         var p = new Process
                         {
                             StartInfo =
-                            {
+                                    {
                                 FileName = Path.Combine(dst, Path.GetFileName(Assembly.GetExecutingAssembly().Location)),
-                                Arguments = "/C" + (SetupHelper.OfflineInstall ? " /O" : String.Empty)
-                            }
+                                        Arguments = "/C" + (SetupHelper.OfflineInstall ? " /O" : String.Empty)
+                                    }
                         };
                         p.Start();
                     }
@@ -102,18 +121,18 @@ namespace Eulg.Setup
                 {
                     _branding = Branding.Read(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Branding.xml"));
                     _version = SetupHelper.ReadInstalledVersion(_branding.Registry.MachineSettingsKey);
-                }
+            }
                 else
-                {
+            {
                     var brandingApi = new BrandingApi(config.ServiceUrl, config.Channel);
                     var brandingInfo = brandingApi.GetBranding();
                     if (brandingInfo == null)
                     {
                         // GetBranding liefert nur dann NULL wenn die URL vom UpdateService nicht ermittelt werden konnte; in dem Fall wird von der Methode selbst eine Meldung gezeigt
-                        Current.Shutdown();
-                        // ReSharper disable once RedundantJumpStatement
-                        return;
-                    }
+                Current.Shutdown();
+                // ReSharper disable once RedundantJumpStatement
+                return;
+            }
 
                     if(!string.IsNullOrEmpty(brandingInfo.Message))
                     {
@@ -125,12 +144,12 @@ namespace Eulg.Setup
 
                     _version = brandingInfo.Version;
                     _branding = brandingInfo.Branding;
-                }
+        }
 
                 _setup = new SetupHelper(config, _branding, _version);
             }
             catch (Exception exception)
-            {
+        {
                 MessageBox.Show(exception.GetMessagesTree(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 Current.Shutdown();
                 // ReSharper disable once RedundantJumpStatement

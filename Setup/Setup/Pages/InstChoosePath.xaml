@@ -1,44 +1,64 @@
 ﻿<UserControl x:Class="Eulg.Setup.Pages.InstChoosePath"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      mc:Ignorable="d" 
-      d:DesignHeight="300" Width="480">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Style.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Width="480"
+             d:DesignHeight="300"
+             mc:Ignorable="d">
 
     <StackPanel x:Name="AreaInstChoosePath">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" x:Name="TxtPath" Text="XXX" FontSize="13" TextChanged="TxtPath_TextChanged" KeyDown="TxtPath_KeyDown" VerticalContentAlignment="Center" Height="28" />
-            <Button Grid.Column="1" x:Name="BtnChoosePath" Content="Wählen..." Margin="10,0,0,0" Width="100"
-                    Click="BtnChoosePath_OnClick" Style="{StaticResource BorderButton}" />
+            <TextBox x:Name="TxtPath"
+                     Grid.Column="0"
+                     Height="28"
+                     VerticalContentAlignment="Center"
+                     FontSize="13"
+                     KeyDown="TxtPath_KeyDown"
+                     Text=""
+                     TextChanged="TxtPath_TextChanged" />
+            <Button x:Name="BtnChoosePath"
+                    Grid.Column="1"
+                    Width="100"
+                    Margin="10,0,0,0"
+                    Click="BtnChoosePath_OnClick"
+                    Content="Wählen..." />
         </Grid>
         <Grid Margin="0,20,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
-            <Label Grid.Column="0" Grid.Row="0" Content="Benötigter Speicherplatz auf Festplatte:"/>
-            <Label Grid.Column="1" Grid.Row="0" x:Name="LabelSpaceNeeded" Content="0 MB"/>
-            <Label Grid.Column="0" Grid.Row="1" Content="Verfügbarer Speicherplatz auf Festplatte:"/>
-            <Label Grid.Column="1" Grid.Row="1" x:Name="LabelSpaceAvailabel" Content="0 MB"/>
-            <Label Grid.Column="0" Grid.Row="2" Content="Verbleibender Speicherplatz auf Festplatte:"/>
-            <Label Grid.Column="1" Grid.Row="2" x:Name="LabelSpaceRemaining" Content="0 MB"/>
+            <Label Grid.Row="0"
+                   Grid.Column="0"
+                   Content="Benötigter Speicherplatz auf Festplatte:" />
+            <Label x:Name="LabelSpaceNeeded"
+                   Grid.Row="0"
+                   Grid.Column="1"
+                   Content="0 MB" />
+            <Label Grid.Row="1"
+                   Grid.Column="0"
+                   Content="Verfügbarer Speicherplatz auf Festplatte:" />
+            <Label x:Name="LabelSpaceAvailabel"
+                   Grid.Row="1"
+                   Grid.Column="1"
+                   Content="0 MB" />
+            <Label Grid.Row="2"
+                   Grid.Column="0"
+                   Content="Verbleibender Speicherplatz auf Festplatte:" />
+            <Label x:Name="LabelSpaceRemaining"
+                   Grid.Row="2"
+                   Grid.Column="1"
+                   Content="0 MB" />
         </Grid>
     </StackPanel>
 </UserControl>

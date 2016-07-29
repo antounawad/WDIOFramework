@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -21,12 +19,11 @@ namespace Eulg.Setup
     {
         public static MainWindow Instance;
         public Stack<Type> PreviousPages = new Stack<Type>();
-        private const int WM_NCLBUTTONDOWN = 0xA1;
-        private const int HT_CAPTION = 0x2;
 
         public MainWindow()
         {
             Instance = this;
+            WindowTools.EnableBorderlessWindowDragging(this);
             SetupHelper.ProgressPage = new InstProgress();
             InitializeComponent();
 
@@ -169,7 +166,7 @@ namespace Eulg.Setup
             }
         }
 
-        private void CloseIcon_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void CloseIcon_OnMouseLeftButtonDown(object sender, EventArgs e)
         {
             if (CurrentPage != null)
             {
@@ -192,7 +189,7 @@ namespace Eulg.Setup
         {
             DialogContent.Visibility = Visibility.Collapsed;
 
-            if(icon == null)
+            if (icon == null)
             {
                 DialogIcon.Visibility = Visibility.Collapsed;
             }
@@ -253,13 +250,13 @@ namespace Eulg.Setup
             DialogPanel.Children.Clear();
             DialogPanel.HorizontalAlignment = buttonsAlignment;
 
-            var style = FindResource("BorderButton") as Style;
+            //var style = FindResource("BorderButton") as Style;
             var controls = buttons.Select(b =>
             {
                 var c = new Button
                 {
                     Content = b.Item1,
-                    Style = style,
+                    //Style = style,
                     Width = 80,
                     Height = 26,
                     Margin = new Thickness(6, 0, 6, 0),
@@ -268,15 +265,15 @@ namespace Eulg.Setup
                 return c;
             }).ToArray();
 
-            Action<bool> setStateAll = delegate(bool enabled)
+            Action<bool> setStateAll = delegate (bool enabled)
             {
-                foreach(var c in controls)
+                foreach (var c in controls)
                 {
                     c.IsEnabled = enabled;
                 }
             };
 
-            for(var n = 0; n < buttons.Length; ++n)
+            for (var n = 0; n < buttons.Length; ++n)
             {
                 var index = n;
                 controls[n].Click += delegate
@@ -390,18 +387,44 @@ namespace Eulg.Setup
 
         #endregion
 
-        #region Window Move
+        //#region Window Move
+        //[DllImport("user32.dll")]
+        //private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+        //[DllImport("user32.dll")]
+        //private static extern bool ReleaseCapture();
+        //private void OnMouseButtonDown(object sender, RoutedEventArgs e)
+        //{
+        //    ReleaseCapture();
+        //    SendMessage(new WindowInteropHelper(this).Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+        //}
+        //#endregion
 
-        [DllImport("user32.dll")]
-        private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
-        [DllImport("user32.dll")]
-        private static extern bool ReleaseCapture();
-        private void OnMouseButtonDown(object sender, RoutedEventArgs e)
+        private void MainWindow_OnSourceInitialized(object sender, EventArgs e)
         {
-            ReleaseCapture();
-            SendMessage(new WindowInteropHelper(this).Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            //Window Shadow
+            var hwnd = new WindowInteropHelper(this).Handle;
+            var attrValue = 2;
+
+            var margin = new App.Margins
+            {
+                BottomHeight = -1,
+                LeftWidth = -1,
+                RightWidth = -1,
+                TopHeight = -1
+            };
+
+            try
+            {
+                if (App.DwmSetWindowAttribute(hwnd, 2, ref attrValue, 4) == 0)
+                {
+                    App.DwmExtendFrameIntoClientArea(hwnd, ref margin);
+                }
+            }
+            catch (Exception ex)
+        {
+                Console.WriteLine("DWM-Api not available: Unsupported OS");
+            }
         }
 
-        #endregion
     }
 }
