@@ -7,10 +7,6 @@
              d:DesignHeight="400"
              mc:Ignorable="d">
 
-    <UserControl.Resources>
-        <ResourceDictionary Source="../Style.xaml" />
-    </UserControl.Resources>
-
     <StackPanel>
         <TextBlock FontSize="14" TextWrapping="Wrap">Der Installations-Assistent wird EULG auf Ihrem Computer installieren. Klicken Sie auf Weiter, um mit der Installation fortzufahren oder schließen Sie das Fenster, um den Assistenten zu beenden.</TextBlock>
         <Image Height="256"

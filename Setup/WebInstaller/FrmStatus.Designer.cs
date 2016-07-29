@@ -34,9 +34,9 @@
             // FrmStatus
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.Black;
+            this.BackColor = System.Drawing.Color.White;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
-            this.ClientSize = new System.Drawing.Size(600, 147);
+            this.ClientSize = new System.Drawing.Size(500, 201);
             this.ControlBox = false;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -45,7 +45,6 @@
             this.Name = "FrmStatus";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Setup";
-            this.TransparencyKey = System.Drawing.Color.Black;
             this.UseWaitCursor = true;
             this.ResumeLayout(false);
 

@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SqliteDbPassDecryptor")]
+[assembly: AssemblyTitle("Tools.DbKeyReader")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("EULG Software GmbH")]
-[assembly: AssemblyProduct("SqliteDbPassDecryptor")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("EULG")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Tools.DbKeyReader")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("618b8f7e-78ef-4080-a5f9-78d97ba0f179")]
+[assembly: Guid("86e6816e-a94c-4a6e-ae2b-319a114ea2a4")]
 
 // Version information for an assembly consists of the following four values:
 //
