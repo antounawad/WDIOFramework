@@ -242,7 +242,7 @@ namespace Eulg.Setup
             if (ok)
             {
                 Tools.SetDirectoryAccessControl(InstallPath);
-                try { Tools.SetDirectoryAccessControl(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH GmbH")); } catch { }
+                try { Tools.SetDirectoryAccessControl(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH")); } catch { }
                 if (removeAdditionalFiles)
                 {
                     // noch nicht implementiert.
