@@ -18,6 +18,9 @@ namespace Eulg.Shared
             Proof = 3,
         }
 
+        [XmlAttribute]
+        public virtual int Version { get; set; }
+
         [XmlElement]
         public virtual InfoConfig Info { get; set; }
         public class InfoConfig
@@ -30,6 +33,9 @@ namespace Eulg.Shared
 
             [XmlAttribute]
             public virtual string BuildDescription { get; set; }
+
+            [XmlAttribute]
+            public virtual string ApiManifestUri { get; set; }
         }
 
         [XmlElement]

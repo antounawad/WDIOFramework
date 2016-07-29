@@ -77,7 +77,7 @@ namespace Eulg.Setup.Pages
             using (new Tools.WaitCursor())
             {
                 var setup = App.Setup;
-                var brandingApi = new BrandingApi(setup.Config.ServiceUrl, setup.Config.Channel);
+                var brandingApi = new BrandingApi(setup.Config.ApiManifestUri, setup.Config.Channel);
                 var brandingInfo = brandingApi.GetProfile(username, password);
                 if (!brandingInfo.Authenticated || !string.IsNullOrEmpty(brandingInfo.Message))
                 {

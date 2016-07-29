@@ -67,7 +67,7 @@ namespace Eulg.Shared
 
     public class ApiResourceClient
     {
-        //HACK Um externe Abhängigkeiten zu vermeiden.
+        //HACK Um externe Abhängigkeiten zu vermeiden. In einer der nächsten Versionen NewtonSoft.Json per ILMerge rein?
         private static readonly Regex _manifestParser = new Regex(@"^\{(""Error"":""(.+)""|""Manifest"":\[(,?\{""Api"":(\d+),""Uri"":""(.+?)""\})*\])\}$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         private readonly string _serviceUrl;
@@ -84,7 +84,7 @@ namespace Eulg.Shared
         /// </summary>
         public IDictionary<EApiResource, Uri> Fetch()
         {
-            var request = (HttpWebRequest)WebRequest.Create(_serviceUrl.TrimEnd('/') + $"/ApiManifest/JsonGet?chan={_channel}");
+            var request = (HttpWebRequest)WebRequest.Create(_serviceUrl + $"?chan={_channel}");
             request.Proxy = WebRequest.DefaultWebProxy;
             request.AutomaticDecompression = DecompressionMethods.None;
             request.Method = WebRequestMethods.Http.Get;

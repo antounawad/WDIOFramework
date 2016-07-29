@@ -12,14 +12,12 @@ namespace Eulg.Setup
     public partial class App
     {
         private string _version;
-        private string _serviceUrl;
         private Branding _branding;
         private SetupHelper _setup;
 
         private static App This => (App)Current;
 
         internal static string Version => This._version;
-        internal static string ServiceUrl => This._serviceUrl;
         internal static Branding Branding => This._branding;
         internal static SetupHelper Setup => This._setup;
 
@@ -39,6 +37,7 @@ namespace Eulg.Setup
 
         [DllImport("dwmapi.dll")]
         public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
+
         #endregion
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -90,10 +89,10 @@ namespace Eulg.Setup
                         var p = new Process
                         {
                             StartInfo =
-                                    {
+                            {
                                 FileName = Path.Combine(dst, Path.GetFileName(Assembly.GetExecutingAssembly().Location)),
-                                        Arguments = "/C" + (SetupHelper.OfflineInstall ? " /O" : String.Empty)
-                                    }
+                                Arguments = "/C" + (SetupHelper.OfflineInstall ? " /O" : String.Empty)
+                            }
                         };
                         p.Start();
                     }
@@ -111,47 +110,49 @@ namespace Eulg.Setup
                 {
                     MessageBox.Show("Fehler beim Lesen der Konfigurationsdatei!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     Current.Shutdown();
+
                     // ReSharper disable once RedundantJumpStatement
                     return;
                 }
 
-                _serviceUrl = config.ServiceUrl;
-
-                if(args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
+                if (args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
                 {
                     _branding = Branding.Read(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Branding.xml"));
                     _version = SetupHelper.ReadInstalledVersion(_branding.Registry.MachineSettingsKey);
-            }
+                }
                 else
-            {
-                    var brandingApi = new BrandingApi(config.ServiceUrl, config.Channel);
+                {
+                    var brandingApi = new BrandingApi(config.ApiManifestUri, config.Channel);
                     var brandingInfo = brandingApi.GetBranding();
                     if (brandingInfo == null)
                     {
                         // GetBranding liefert nur dann NULL wenn die URL vom UpdateService nicht ermittelt werden konnte; in dem Fall wird von der Methode selbst eine Meldung gezeigt
-                Current.Shutdown();
-                // ReSharper disable once RedundantJumpStatement
-                return;
-            }
+                        Current.Shutdown();
 
-                    if(!string.IsNullOrEmpty(brandingInfo.Message))
+                        // ReSharper disable once RedundantJumpStatement
+                        return;
+                    }
+
+                    if (!string.IsNullOrEmpty(brandingInfo.Message))
                     {
                         MessageBox.Show("Fehler beim Abrufen des Anwendungsprofils: " + brandingInfo.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                         Current.Shutdown();
+
                         // ReSharper disable once RedundantJumpStatement
                         return;
                     }
 
                     _version = brandingInfo.Version;
                     _branding = brandingInfo.Branding;
-        }
+                }
 
                 _setup = new SetupHelper(config, _branding, _version);
             }
             catch (Exception exception)
-        {
+            {
                 MessageBox.Show(exception.GetMessagesTree(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 Current.Shutdown();
+
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }

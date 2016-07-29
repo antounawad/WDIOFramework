@@ -20,20 +20,20 @@ namespace Eulg.Setup.WebInstaller
 
         private sealed class BrandingProfile
         {
-            public string ServiceUrl { get; }
+            public string ApiManifestUri { get; }
             public Branding.EUpdateChannel Channel { get; }
 
-            private BrandingProfile(string serviceUrl, Branding.EUpdateChannel channel = Branding.EUpdateChannel.Release)
+            private BrandingProfile(string apiManifestUri, Branding.EUpdateChannel channel = Branding.EUpdateChannel.Release)
             {
-                ServiceUrl = serviceUrl;
+                ApiManifestUri = apiManifestUri;
                 Channel = channel;
             }
 
             // ReSharper disable UnusedMember.Local
-            public static readonly BrandingProfile Local = new BrandingProfile("http://localhost:1591/");
-            public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/");
-            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/");
-            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/");
+            public static readonly BrandingProfile Local = new BrandingProfile("http://localhost:1591/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/ApiManifest/JsonGet");
             // ReSharper restore UnusedMember.Local
         }
 
@@ -64,7 +64,7 @@ namespace Eulg.Setup.WebInstaller
 
         #endregion
 
-        private static readonly BrandingProfile Profile = BrandingProfile.Release;
+        private static readonly BrandingProfile Profile = BrandingProfile.Test;
         private static Mutex _appInstanceMutex;
 
         [STAThread]
@@ -77,7 +77,7 @@ namespace Eulg.Setup.WebInstaller
 
             if (Environment.GetCommandLineArgs().Any(_ => _.Equals("/info", StringComparison.InvariantCultureIgnoreCase)))
             {
-                var msg = "Service URL: " + Profile.ServiceUrl + Environment.NewLine + "Channel: " + Profile.Channel;
+                var msg = "API Manifest URL: " + Profile.ApiManifestUri + Environment.NewLine + "Channel: " + Profile.Channel;
                 MessageBox.Show(msg, "EULG WebInstaller", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -117,7 +117,7 @@ namespace Eulg.Setup.WebInstaller
                 {
                     try
                     {
-                        var apiClient = new ApiResourceClient(Profile.ServiceUrl, Profile.Channel);
+                        var apiClient = new ApiResourceClient(Profile.ApiManifestUri, Profile.Channel);
                         var endpoints = apiClient.Fetch();
 
                         manifest = DownloadSetup(tmpFolder, endpoints[EApiResource.UpdateService]);
@@ -143,7 +143,7 @@ namespace Eulg.Setup.WebInstaller
                     var xser = new XmlSerializer(typeof(SetupConfig));
                     xser.Serialize(file, new SetupConfig
                     {
-                        ServiceUrl = Profile.ServiceUrl,
+                        ApiManifestUri = Profile.ApiManifestUri,
                         Channel = Profile.Channel
                     });
                 }

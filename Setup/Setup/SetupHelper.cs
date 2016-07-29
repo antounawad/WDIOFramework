@@ -68,7 +68,7 @@ namespace Eulg.Setup
             Config = config;
             Branding = branding;
             Version = version;
-            UpdateClient = new UpdateClient(config.ServiceUrl, config.Channel);
+            UpdateClient = new UpdateClient(config.ApiManifestUri, config.Channel);
 
             InstallPath = DefaultInstallPath;
 
@@ -251,12 +251,12 @@ namespace Eulg.Setup
             return ok;
         }
 
-        public bool PrepareRegistry(string username, string password)
+        public bool PrepareRegistry(Profile profile, string username, string password)
         {
             try
             {
-                PrepareHKeyCurrentUserKeys(username, password);
-                PrepareHKeyLokalMachine();
+                PrepareHKeyCurrentUserKeys(profile, username, password);
+                PrepareHKeyLokalMachine(profile);
                 return true;
             }
             catch (Exception exception)
@@ -266,7 +266,7 @@ namespace Eulg.Setup
             return false;
         }
 
-        private void PrepareHKeyCurrentUserKeys(string username, string password)
+        private void PrepareHKeyCurrentUserKeys(Profile profile, string username, string password)
         {
             // HKEY_CURRENT_USER
             using (var keySoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
@@ -275,6 +275,8 @@ namespace Eulg.Setup
                 {
                     using (var keyEulg = keyKs.OpenSubKey(Branding.Registry.UserSettingsKey, true) ?? keyKs.CreateSubKey(Branding.Registry.UserSettingsKey))
                     {
+                        keyEulg.SetValue("CurrentTheme", profile.ProfileId, RegistryValueKind.DWord);
+
                         // If master login, don't save user values in registry
                         if (!username.Equals("master", StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -325,7 +327,7 @@ namespace Eulg.Setup
             }
         }
 
-        private void PrepareHKeyLokalMachine()
+        private void PrepareHKeyLokalMachine(Profile profile)
         {
             // HKEY_LOCAL_MACHINE
             using (var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
@@ -343,6 +345,7 @@ namespace Eulg.Setup
                             new BinaryFormatter().Serialize(memoryStream, DateTime.Now);
                             keyLmEulg.SetValue("InstallDate", memoryStream.ToArray(), RegistryValueKind.Binary);
                         }
+                        WriteProfile(keyLmEulg, profile);
                     }
                 }
             }
@@ -508,7 +511,8 @@ namespace Eulg.Setup
                 {
                     Directory.CreateDirectory(dst);
                 }
-                var filesToCopyOver = new[] { "Setup.exe", "Setup.xml", "Interop.IWshRuntimeLibrary.dll" };
+                //FIXME Determine programmatically which files the setup came with, but watch out for temporary files placed in the same folder during installation
+                var filesToCopyOver = new[] { "Setup.exe", "Setup.xml", "Interop.IWshRuntimeLibrary.dll", "MaterialDesignColors.dll", "MaterialDesignThemes.Wpf.dll" };
                 foreach (var fileToCopyOver in filesToCopyOver)
                 {
                     if (File.Exists(Path.Combine(src, fileToCopyOver)))
@@ -620,25 +624,16 @@ namespace Eulg.Setup
             return false;
         }
 
-        public void WriteProfile(Profile profile)
+        private static void WriteProfile(RegistryKey keyLmEulg, Profile profile)
         {
-            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
+            using (var buffer = new MemoryStream())
             {
-                using(var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, true) ?? keyLmSoftware.CreateSubKey(RegKeyParent))
+                using (var deflate = new DeflateStream(buffer, CompressionMode.Compress, true))
                 {
-                    using(var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, true) ?? keyLmKs.CreateSubKey(Branding.Registry.MachineSettingsKey))
-                    {
-                        using (var buffer = new MemoryStream())
-                        {
-                            using (var deflate = new DeflateStream(buffer, CompressionMode.Compress, true))
-                            {
-                                new XmlSerializer(typeof(Profile)).Serialize(deflate, profile);
-                            }
-
-                            keyLmEulg.SetValue("Profile", buffer.ToArray(), RegistryValueKind.Binary);
-                        }
-                    }
+                    new XmlSerializer(typeof(Profile)).Serialize(deflate, profile);
                 }
+
+                keyLmEulg.SetValue("Profile", buffer.ToArray(), RegistryValueKind.Binary);
             }
         }
 
@@ -1154,7 +1149,7 @@ namespace Eulg.Setup
 
         public bool TryGetApi(EApiResource resource, out Uri uri, bool failQuietly = false)
         {
-            return TryGetApi(Config.ServiceUrl, Config.Channel, resource, out uri, failQuietly);
+            return TryGetApi(Config.ApiManifestUri, Config.Channel, resource, out uri, failQuietly);
         }
 
         public static bool TryGetApi(string serviceUrl, Branding.EUpdateChannel channel, EApiResource resource, out Uri uri, bool failQuietly = false)

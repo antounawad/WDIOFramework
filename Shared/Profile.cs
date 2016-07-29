@@ -6,6 +6,9 @@ namespace Eulg.Shared
     public class Profile
     {
         [XmlAttribute]
+        public int ProfileId { get; set; }
+
+        [XmlAttribute]
         public string StartMenuFolder { get; set; }
 
         [XmlAttribute]

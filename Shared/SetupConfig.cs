@@ -6,7 +6,7 @@ namespace Eulg.Shared
     public class SetupConfig
     {
         [XmlAttribute]
-        public string ServiceUrl { get; set; }
+        public string ApiManifestUri { get; set; }
 
         [XmlAttribute]
         public Branding.EUpdateChannel Channel { get; set; }

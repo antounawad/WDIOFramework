@@ -107,7 +107,7 @@ namespace Eulg.Setup.Pages
             var setup = App.Setup;
 
             SetupHelper.CancelRequested = false;
-            setup.UpdateClient.Log(UpdateClient.ELogTypeEnum.Info, $"Setup {setup.Version} ({setup.Branding.Info.BuildTag} / {App.ServiceUrl})");
+            setup.UpdateClient.Log(UpdateClient.ELogTypeEnum.Info, $"Setup {setup.Version} ({setup.Branding.Info.BuildTag} / {setup.Config.ApiManifestUri})");
 
             SetupHelper.ReportProgress("Laufende Prozesse überprüfen...", "", -1);
             if (!setup.CheckRunningProcesses())
@@ -160,7 +160,7 @@ namespace Eulg.Setup.Pages
                 return false;
             }
             SetupHelper.ReportProgress("Einstellungen speichern (Registry)...", "", -1);
-            if (!setup.PrepareRegistry(_username, _password))
+            if (!setup.PrepareRegistry(_profile, _username, _password))
             {
                 return false;
             }
