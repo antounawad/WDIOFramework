@@ -359,16 +359,16 @@ namespace Eulg.Setup
                 {
                     RemoveUpdateService();
                 }
-                var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "ExbAV Beratungssoftware GmbH", "UpdateService", "UpdateService.exe");
+                var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH", "UpdateService", "UpdateService.exe");
                 var p = new Process
                 {
                     StartInfo =
-                            {
-                                FileName = exePath,
-                                Arguments = "install",
-                                UseShellExecute = false,
-                                CreateNoWindow = true
-                            }
+                    {
+                        FileName = exePath,
+                        Arguments = "install",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
                 };
                 p.Start();
                 p.WaitForExit(30 * 1000);
