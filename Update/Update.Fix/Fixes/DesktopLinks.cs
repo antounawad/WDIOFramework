@@ -8,7 +8,7 @@ namespace Update.Fix.Fixes
 {
     public class DesktopLinks: LinksBase
     {
-        private static readonly string _eulgPath = Path.Combine(BASEDIRECTORY, CLIENT);
+        private static readonly string _eulgPath = Path.GetFullPath(Path.Combine(BASEDIRECTORY, CLIENT));
         private static readonly string _desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         private static readonly string _commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
         private static readonly string _taskBar = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
@@ -21,9 +21,9 @@ namespace Update.Fix.Fixes
                                    .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
                                    .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
 
-                foreach(var link in linksToCheck)
+                foreach (var link in linksToCheck)
                 {
-                    if(GetShortcutTargetFile(link) == _eulgPath)
+                    if (GetShortcutTargetFile(link) == _eulgPath)
                     {
                         return false;
                     }
@@ -45,16 +45,19 @@ namespace Update.Fix.Fixes
                 {
                     try
                     {
-                        if (GetShortcutTargetFile(link) == _eulgPath)
+                        var targetlink = GetShortcutTargetFile(link);
+
+                        if (targetlink == _eulgPath)
                         {
-                            var newlink = Path.Combine(Path.GetDirectoryName(link), Branding.ShellIcons.DesktopApp + ".lnk");
+                            var newlink = Path.Combine(Path.GetDirectoryName(link), "xbAV Berater.lnk");
 
                             File.Delete(link);
                             SetLink(newlink, _eulgPath);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Console.WriteLine($"Exception {e}");
                         // ignore
                     }
                 }
