@@ -1,9 +1,0 @@
-﻿<?xml version="1.0"?>
-<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Info BuildTag="PreRel" BuildDescription="Pre-Release für 1.1" IsDemo="false" />
-  <FileSystem AppDir="EULG-PreRel" DataDir="EULG-PreRel" AppBinary="EULG_client.exe" SyncBinary="Eulg_client_sync.exe" />
-  <Registry UserSettingsKey="EULG_PreRel" MachineSettingsKey="EULG_PreRel" UninstallKey="EULG_PreRel" UninstallName="EULG - Pre-Release für 1.1" LocalDbInstance="EulgPreRel" />
-  <ShellIcons DesktopApp="EULG Client (Pre)" StartMenuFolder="EULG (Pre)" StartMenuApp="EULG Client (Pre)" StartMenuSync="EULG Sync-Client (Pre)" StartMenuSupportTool="EULG Support (Pre)" StartMenuFernwartung="EULG Fernwartung" />
-  <Update Channel="Beta" UseHttps="true" />
-  <Urls Update="service.eulg.de/Update/" Web="https://service.eulg.de/Api" Sync="syncservice.eulg.de:443" SyncHttp="service.eulg.de/Sync" DbUpdateUrl="" CertPublicKey="" />
-</Branding>

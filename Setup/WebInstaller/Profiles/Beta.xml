@@ -1,9 +1,0 @@
-﻿<?xml version="1.0"?>
-<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Info BuildTag="Beta" BuildDescription="Test-Version des aktuellen 'branch' (1.1.x)" IsDemo="false" />
-  <FileSystem AppDir="EULG-Beta" DataDir="EULG-Beta" AppBinary="EULG_client.exe" SyncBinary="Eulg_client_sync.exe" />
-  <Registry UserSettingsKey="EULG_Beta" MachineSettingsKey="EULG_Beta" UninstallKey="EULG_Beta" UninstallName="EULG - Interne Beta-Version" LocalDbInstance="" />
-  <ShellIcons DesktopApp="EULG (Beta)" StartMenuFolder="EULG (Beta)" StartMenuApp="EULG Client (Beta)" StartMenuSync="EULG Sync-Client (Beta)" StartMenuSupportTool="EULG Support (Beta)" StartMenuFernwartung="EULG Fernwartung" />
-  <Update Channel="Beta" UseHttps="false" />
-  <Urls Update="192.168.0.4/Service/Update/" Web="https://192.168.0.4/Service/Api" Sync="http://192.168.0.4/Service/Sync" DbUpdateUrl="" CertPublicKey="" />
-</Branding>

@@ -128,17 +128,6 @@
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Profiles\Test.xml" />
-    <None Include="Profiles\Beta.xml" />
-    <None Include="Profiles\PreRel.xml" />
-    <None Include="Profiles\Release.xml" />
-    <None Include="Profiles\Demo.xml" />
-    <None Include="Profiles\DemoTest.xml" />
-    <None Include="Profiles\ProofTest.xml" />
-    <None Include="Profiles\Proof.xml" />
-    <None Include="Profiles\EulgDeTestRelease.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 und x64%29</ProductName>

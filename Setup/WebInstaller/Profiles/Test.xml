@@ -1,9 +1,0 @@
-﻿<?xml version="1.0"?>
-<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Info BuildTag="Test" BuildDescription="Test-Version des aktuellen 1.1" IsDemo="false" />
-  <FileSystem AppDir="EULG-Test" DataDir="EULG-Test" AppBinary="EULG_client.exe" SyncBinary="Eulg_sync_client.exe" />
-  <Registry UserSettingsKey="EULG_Test" MachineSettingsKey="EULG_Test" UninstallKey="EULG_Test" UninstallName="EULG - Interne Test-Version" LocalDbInstance="" />
-  <ShellIcons DesktopApp="EULG (Test)" StartMenuFolder="EULG (Test)" StartMenuApp="EULG Client (Test)" StartMenuSync="EULG Sync-Client (Test)" StartMenuSupportTool="EULG Support (Test)" StartMenuFernwartung="EULG Fernwartung" />
-  <Update Channel="Release" UseHttps="false" />
-  <Urls Update="192.168.0.4/Service/Update/" Web="https://192.168.0.4/Service/Api" Sync="192.168.0.4:8888" SyncHttp="192.168.0.4/Service/Sync" DbUpdateUrl="" CertPublicKey="" />
-</Branding>

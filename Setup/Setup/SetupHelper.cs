@@ -1204,6 +1204,7 @@ namespace Eulg.Setup
             if(forceInsecure)
             {
                 builder.Scheme = "http";
+                builder.Port = 80;
             }
             return builder.Uri;
         }

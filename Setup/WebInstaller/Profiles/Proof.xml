@@ -1,9 +1,0 @@
-﻿<?xml version="1.0"?>
-<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Info BuildTag="Proof" BuildDescription="VR Testclient" />
-  <FileSystem AppDir="EULG-VRTest" DataDir="EULG-VRTest" AppBinary="EULG_client.exe" SyncBinary="Eulg_sync_client.exe" />
-  <Registry UserSettingsKey="EULG_VRTest" MachineSettingsKey="EULG_VRTest" UninstallKey="EULG_VRTest" UninstallName="EULG - Versicherertestclient" />
-  <ShellIcons DesktopApp="EULG VR-Testclient" StartMenuFolder="EULG VR-Testclient" StartMenuApp="EULG Client (VR-Testclient)" StartMenuSync="EULG Sync-Client (VR-Testclient)" StartMenuSupportTool="EULG Support (VR-Testclient)" StartMenuFernwartung="EULG Fernwartung" />
-  <Update Channel="Proof" UseHttps="true" />
-  <Urls Update="service.eulg.de/Update/" Web="https://service.eulg.de/Api" Sync="syncservice.eulg.de:443" SyncHttp="service.eulg.de/Sync" DbUpdateUrl="" CertPublicKey="" />
-</Branding>

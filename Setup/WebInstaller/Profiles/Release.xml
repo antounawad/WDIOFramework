@@ -1,9 +1,0 @@
-﻿<?xml version="1.0"?>
-<Branding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Info BuildTag="" BuildDescription="Release für Lizenznehmer" IsDemo="false" />
-  <FileSystem AppDir="EULG" DataDir="EULG" AppBinary="EULG_client.exe" SyncBinary="Eulg_sync_client.exe" />
-  <Registry UserSettingsKey="EULG" MachineSettingsKey="EULG" UninstallKey="EULG" UninstallName="EULG - Entgeltumwandlung leicht gemacht" LocalDbInstance="" />
-  <ShellIcons DesktopApp="EULG" StartMenuFolder="EULG" StartMenuApp="EULG Client" StartMenuSync="EULG Sync-Client" StartMenuSupportTool="EULG Support" StartMenuFernwartung="EULG Fernwartung" />
-  <Update Channel="Release" UseHttps="true" />
-  <Urls Update="service.eulg.de/Update/" Web="https://service.eulg.de/Api" Sync="syncservice.eulg.de:443" SyncHttp="service.eulg.de/Sync" DbUpdateUrl="" CertPublicKey="" />
-</Branding>
