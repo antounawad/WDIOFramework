@@ -6,7 +6,7 @@ namespace Update.Fix.Fixes
     public static class RegistryKeys
     {
         private const string REGISTRY_GROUP_NAME = @"Software\xbAV Beratungssoftware GmbH";
-        private static string[] REGISTRY_GROUP_NAME_OBSOLETE = new[] { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };
+        private static string[] REGISTRY_GROUP_NAME_OBSOLETE = { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };
 
         public static bool Check()
         {

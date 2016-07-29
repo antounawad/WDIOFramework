@@ -170,7 +170,7 @@ namespace Eulg.Update.Worker
                 UpdateWorker.StopService(true);
             }
 
-            var updateExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+            var updateExe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH", "UpdateService", "UpdateService.exe");
             if (!Directory.Exists(Path.GetDirectoryName(updateExe)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(updateExe));

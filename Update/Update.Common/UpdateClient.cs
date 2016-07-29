@@ -45,9 +45,6 @@ namespace Eulg.Update.Common
         private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
         private const int STREAM_BUFFER_SIZE = 81920;
 
-        internal const string REGISTRY_GROUP_NAME_OBSOLETE = @"Software\KS Software GmbH";
-        internal const string REGISTRY_GROUP_NAME = @"Software\EULG Software GmbH";
-
         public bool UseHttps { get; set; }
         public UpdateConfig UpdateConf = new UpdateConfig();
         public readonly WorkerConfig WorkerConfig = new WorkerConfig();
@@ -318,7 +315,7 @@ namespace Eulg.Update.Common
                 WorkerConfig.TempPath = DownloadPath;
                 WorkerConfig.ApplicationFile = SkipRestartApplication ? null : System.Reflection.Assembly.GetEntryAssembly().Location;
                 WorkerConfig.CommandLineArgs = Tools.GetCommandLineArgs();
-                WorkerConfig.StartProcess = ObsoleteRegistryKeysUsed() ? WorkerProcess.CreateFromProcessStartInfo(new ProcessStartInfo(Path.Combine(ApplicationPath, "Update.Registry.exe"))) : null;
+                WorkerConfig.StartProcess = null;
                 WorkerConfig.WaitForProcess = SkipWaitForProcess ? 0 : Process.GetCurrentProcess().Id;
                 WorkerConfig.CheckProcesses = CheckProcesses;
                 WorkerConfig.KillProcesses = KillProcesses;
@@ -470,7 +467,7 @@ namespace Eulg.Update.Common
                 WorkerConfig.ApplicationFile = SkipRestartApplication ? null : System.Reflection.Assembly.GetEntryAssembly().Location;
                 WorkerConfig.CommandLineArgs = Tools.GetCommandLineArgs();
                 WorkerConfig.WaitForProcess = SkipWaitForProcess ? 0 : Process.GetCurrentProcess().Id;
-                WorkerConfig.StartProcess = ObsoleteRegistryKeysUsed() ? WorkerProcess.CreateFromProcessStartInfo(new ProcessStartInfo(Path.Combine(ApplicationPath, "Update.Registry.exe"))) : null;
+                WorkerConfig.StartProcess = null;
                 WorkerConfig.CheckProcesses = CheckProcesses;
                 WorkerConfig.KillProcesses = KillProcesses;
                 WorkerConfig.LogFile = LogFile;
@@ -546,29 +543,6 @@ namespace Eulg.Update.Common
                 Log(LogTypeEnum.Error, ex.ToString());
                 return false;
             }
-        }
-
-        private static bool ObsoleteRegistryKeysUsed()
-        {
-            var keysToCheck = new[]
-                              {
-                                  Registry.LocalMachine,
-                                  Registry.CurrentUser
-                              };
-
-            foreach (var key in keysToCheck)
-            {
-                var obsoleteKey = key.OpenSubKey(REGISTRY_GROUP_NAME_OBSOLETE);
-                var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME);
-
-                if (obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
-                {
-                    if (obsoleteKey.GetValue("KeysMigrated") == null)
-                        return true;
-                }
-            }
-
-            return false;
         }
 
         private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize, long fileSizeGz)

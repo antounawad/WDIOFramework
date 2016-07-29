@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("EULG Support-Tool")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("EULG Software GmbH")]
-[assembly: AssemblyProduct("EULG")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCompany("xbAV Beratungssoftware GmbH")]
+[assembly: AssemblyProduct("xbAV-Berater")]
+[assembly: AssemblyCopyright("Copyright © 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

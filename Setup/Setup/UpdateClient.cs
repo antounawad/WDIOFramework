@@ -390,8 +390,8 @@ namespace Eulg.Setup
             // AppDir Deletes
             CompareDeletes(ApplicationPath, UpdateConf.UpdateDeletes.Where(w => w.FilePath == "AppDir"));
 
-            var updateService = UpdateConf.UpdateFiles.Where(w => w.FilePath == "" && w.FileName.Equals("UpdateService.exe", StringComparison.CurrentCultureIgnoreCase));
-            CompareDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService"), updateService);
+            var updateService = UpdateConf.UpdateFiles.Where(w => w.FilePath == "" && w.FileName.Equals("UpdateService.exe", StringComparison.OrdinalIgnoreCase));
+            CompareDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH", "UpdateService"), updateService);
 
             return WorkerConfig.WorkerFiles.Any();
         }

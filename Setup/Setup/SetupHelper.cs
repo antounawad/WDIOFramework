@@ -734,7 +734,7 @@ namespace Eulg.Setup
             destinationFolder.CopyHere(compressedFolderContents, 16);
 
             var srcFile = Path.Combine(InstallPath, "UpdateService.exe");
-            var dstPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService");
+            var dstPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH", "UpdateService");
             var dstFile = Path.Combine(dstPath, "UpdateService.exe");
             if (!Directory.Exists(dstPath))
             {
@@ -768,7 +768,7 @@ namespace Eulg.Setup
             {
                 return true;
             }
-            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH", "UpdateService", "UpdateService.exe");
             if (!File.Exists(exePath))
             {
                 return true;

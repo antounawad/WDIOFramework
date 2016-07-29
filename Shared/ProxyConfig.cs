@@ -17,7 +17,7 @@ namespace Eulg.Shared
         public string Domain { get; set; }
 
         private const string REG_KEY_SOFTWARE = "Software";
-        private const string REG_KEY_PARENT = "EULG Software GmbH";
+        private const string REG_KEY_PARENT = "EULG Software GmbH"; //FIXME
 
         public void Init()
         {

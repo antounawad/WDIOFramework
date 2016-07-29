@@ -71,8 +71,9 @@ namespace Eulg.Client.SupportTool
         private static readonly DateTime _updateServiceDateTimeFixed = new DateTime(2015, 09, 10);
         private static readonly TimeSpan _serviceTimeout = new TimeSpan(0, 0, 0, 30);
         private const string UPDATE_SERVICE_NAME = "EulgUpdate";
-        private const string UPDATE_SERVICE_PARENT_PATH = "EULG Software GmbH";
-        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE = "KS Software GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH = "xbAV Beratungssoftware GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE1 = "KS Software GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE2 = "EULG Software GmbH";
         private const string UPDATE_SERVICE_PATH = "UpdateService";
         private const string UPDATE_SERVICE_BINARY = "UpdateService.exe";
         private string LogFile { get; } = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate.log");
@@ -718,10 +719,16 @@ namespace Eulg.Client.SupportTool
                     if (pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase))
                     {
                         var pathCurrent = Path.GetDirectoryName(pathIs) ?? string.Empty;
-                        var pathObsolete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE, UPDATE_SERVICE_PATH);
-                        if (pathCurrent.Equals(pathObsolete, StringComparison.InvariantCultureIgnoreCase))
+                        var pathObsolete1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE1, UPDATE_SERVICE_PATH);
+                        if (pathCurrent.Equals(pathObsolete1, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE);
+                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE1);
+                            DeleteDirectory(pathToDelete);
+                        }
+                        var pathObsolete2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2, UPDATE_SERVICE_PATH);
+                        if(pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2);
                             DeleteDirectory(pathToDelete);
                         }
                     }
