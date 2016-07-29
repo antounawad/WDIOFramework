@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using Eulg.Shared;
@@ -10,6 +11,16 @@ namespace Eulg.Setup
 {
     public partial class App
     {
+        private string _version;
+        private Branding _branding;
+        private SetupHelper _setup;
+
+        private static App This => (App)Current;
+
+        internal static string Version => This._version;
+        internal static Branding Branding => This._branding;
+        internal static SetupHelper Setup => This._setup;
+
         [StructLayout(LayoutKind.Sequential)]
         public struct Margins
         {
@@ -26,6 +37,7 @@ namespace Eulg.Setup
 
         [DllImport("dwmapi.dll")]
         public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref Margins pMarInset);
+
         #endregion
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -41,15 +53,11 @@ namespace Eulg.Setup
              * /P:xxx - Password
              * /NODEP - Abhängigkeiten nicht prüfen (für MSI)
             */
+            var args = Environment.GetCommandLineArgs();
             try
             {
                 ProxyConfig.Instance.Init();
                 Environment.CurrentDirectory = Path.GetTempPath();
-
-                if (Environment.GetCommandLineArgs().Any(a => a.Equals("/TS", StringComparison.CurrentCultureIgnoreCase)) || SetupHelper.IsTerminalServerSession())
-                {
-                    SetupHelper.TerminalServer = true;
-                }
 
 #if !DEBUG
                 if (!SetupHelper.IsAdministrator())
@@ -60,26 +68,9 @@ namespace Eulg.Setup
                 }
 #endif
 
-                var accountFlag = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("/A:", StringComparison.CurrentCultureIgnoreCase));
-                if (accountFlag != null)
-                {
-                    SetupHelper.UserName = accountFlag.Substring(3);
-                }
-                var passwordFlag = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("/P:", StringComparison.CurrentCultureIgnoreCase));
-                if (passwordFlag != null)
-                {
-                    SetupHelper.Password = passwordFlag.Substring(3);
-                }
+                SetupHelper.CheckOfflineInstallPackage();
 
-                SetupHelper.OfflineInstall = Environment.GetCommandLineArgs().Any(a => a.Equals("/O", StringComparison.CurrentCultureIgnoreCase));
-                SetupHelper.NoDependencies = Environment.GetCommandLineArgs().Any(a => a.Equals("/NODEP", StringComparison.CurrentCultureIgnoreCase));
-                if (SetupHelper.OfflineInstall)
-                {
-                    SetupHelper.OfflineZipFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "eulg.zip");
-                    if (!File.Exists(SetupHelper.OfflineZipFile)) throw new FileNotFoundException("Offline-Zip-Datei nicht gefunden! ", SetupHelper.OfflineZipFile);
-                }
-
-                if (!Environment.GetCommandLineArgs().Any(a => a.Equals("/C", StringComparison.CurrentCultureIgnoreCase)))
+                if (!args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
                 {
                     if (SetupHelper.AlreadyRunning())
                     {
@@ -89,19 +80,19 @@ namespace Eulg.Setup
                     }
                 }
 
-                if (Environment.GetCommandLineArgs().Any(a => a.Equals("/U", StringComparison.CurrentCultureIgnoreCase)))
+                if (args.Any(a => a.Equals("/U", StringComparison.OrdinalIgnoreCase)))
                 {
                     try
                     {
-                        var dst = Path.Combine(Path.GetTempPath(), "EulgSetupTemp");
+                        var dst = Path.Combine(Path.GetTempPath(), "xbAVSetupTemp");
                         SetupHelper.MoveUninstallerToTemp(dst);
                         var p = new Process
                         {
                             StartInfo =
-                                    {
-                                        FileName = Path.Combine(dst, "Setup.exe"),
-                                        Arguments = "/C" + (SetupHelper.OfflineInstall ? " /O" : String.Empty)
-                                    }
+                            {
+                                FileName = Path.Combine(dst, Path.GetFileName(Assembly.GetExecutingAssembly().Location)),
+                                Arguments = "/C" + (SetupHelper.OfflineInstall ? " /O" : String.Empty)
+                            }
                         };
                         p.Start();
                     }
@@ -114,30 +105,57 @@ namespace Eulg.Setup
                     return;
                 }
 
-                if (!SetupHelper.ReadConfig())
+                SetupConfig config;
+                if (!SetupHelper.ReadConfig(out config))
                 {
                     MessageBox.Show("Fehler beim Lesen der Konfigurationsdatei!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     Current.Shutdown();
+
                     // ReSharper disable once RedundantJumpStatement
                     return;
                 }
+
+                if (args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
+                {
+                    _branding = Branding.Read(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Branding.xml"));
+                    _version = SetupHelper.ReadInstalledVersion(_branding.Registry.MachineSettingsKey);
+                }
+                else
+                {
+                    var brandingApi = new BrandingApi(config.ApiManifestUri, config.Channel);
+                    var brandingInfo = brandingApi.GetBranding();
+                    if (brandingInfo == null)
+                    {
+                        // GetBranding liefert nur dann NULL wenn die URL vom UpdateService nicht ermittelt werden konnte; in dem Fall wird von der Methode selbst eine Meldung gezeigt
+                        Current.Shutdown();
+
+                        // ReSharper disable once RedundantJumpStatement
+                        return;
+                    }
+
+                    if (!string.IsNullOrEmpty(brandingInfo.Message))
+                    {
+                        MessageBox.Show("Fehler beim Abrufen des Anwendungsprofils: " + brandingInfo.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Current.Shutdown();
+
+                        // ReSharper disable once RedundantJumpStatement
+                        return;
+                    }
+
+                    _version = brandingInfo.Version;
+                    _branding = brandingInfo.Branding;
+                }
+
+                _setup = new SetupHelper(config, _branding, _version);
             }
             catch (Exception exception)
             {
                 MessageBox.Show(exception.GetMessagesTree(), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 Current.Shutdown();
+
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }
         }
-
-        private void Application_Exit(object sender, ExitEventArgs e)
-        {
-            // 0 Setup abgebrochen
-            // 1 Setup erfolgreich
-            // 2 Fehler - siehe Log-Datei
-            e.ApplicationExitCode = SetupHelper.ExitCode;
-        }
-
     }
 }

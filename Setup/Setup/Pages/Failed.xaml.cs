@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Eulg.Setup.Pages
@@ -24,15 +25,15 @@ namespace Eulg.Setup.Pages
         public void OnLoad()
         {
             var tmp = String.Empty;
-            if (SetupHelper.UpdateClient != null)
+            if (App.Setup.UpdateClient != null)
             {
-                foreach (var logMessage in SetupHelper.UpdateClient.LogErrorMessages)
+                foreach (var logMessage in App.Setup.UpdateClient.LogErrorMessages)
                 {
                     tmp += logMessage + Environment.NewLine;
                 }
             }
             TextBlock.Text = tmp;
-            SetupHelper.ExitCode = 2;
+            Environment.ExitCode = 2;
             
         }
         public void OnLoadComplete()

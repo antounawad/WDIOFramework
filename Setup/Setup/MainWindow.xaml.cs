@@ -55,7 +55,7 @@ namespace Eulg.Setup
                 NavigateToPage(new MaintainUninstall(), false);
                 return;
             }
-            if (!SetupHelper.CheckInstallation())
+            if (!App.Setup.CheckInstallation())
             {
                 NavigateToPage(new InstWelcome(), false);
                 return;
@@ -421,7 +421,7 @@ namespace Eulg.Setup
                 }
             }
             catch (Exception ex)
-            {
+        {
                 Console.WriteLine("DWM-Api not available: Unsupported OS");
             }
         }

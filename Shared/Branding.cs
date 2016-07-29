@@ -7,7 +7,8 @@ namespace Eulg.Shared
     public class Branding
     {
         [XmlIgnore]
-        public const int BrandingVersion = 1;
+        // ReSharper disable once InconsistentNaming
+        public const int BrandingVersion = 2;
 
         public enum EUpdateChannel
         {
@@ -17,15 +18,24 @@ namespace Eulg.Shared
             Proof = 3,
         }
 
+        [XmlAttribute]
+        public virtual int Version { get; set; }
+
         [XmlElement]
         public virtual InfoConfig Info { get; set; }
         public class InfoConfig
         {
             [XmlAttribute]
+            public virtual EUpdateChannel Channel { get; set; }
+
+            [XmlAttribute]
             public virtual string BuildTag { get; set; }
 
             [XmlAttribute]
             public virtual string BuildDescription { get; set; }
+
+            [XmlAttribute]
+            public virtual string ApiManifestUri { get; set; }
         }
 
         [XmlElement]
@@ -54,72 +64,6 @@ namespace Eulg.Shared
 
             [XmlAttribute]
             public virtual string MachineSettingsKey { get; set; }
-
-            [XmlAttribute]
-            public virtual string UninstallKey { get; set; }
-
-            [XmlAttribute]
-            public virtual string UninstallName { get; set; }
-
-            [XmlAttribute]
-            public virtual string LocalDbInstance { get; set; }
-        }
-
-        [XmlElement]
-        public virtual ShellIconsConfig ShellIcons { get; set; }
-        public class ShellIconsConfig
-        {
-            [XmlAttribute]
-            public virtual string DesktopApp { get; set; }
-
-            [XmlAttribute]
-            public virtual string StartMenuFolder { get; set; }
-
-            [XmlAttribute]
-            public virtual string StartMenuApp { get; set; }
-
-            [XmlAttribute]
-            public virtual string StartMenuSync { get; set; }
-
-            [XmlAttribute]
-            public virtual string StartMenuSupportTool { get; set; }
-
-            [XmlAttribute]
-            public virtual string StartMenuFernwartung { get; set; }
-        }
-
-        [XmlElement]
-        public virtual UpdateConfig Update { get; set; }
-        public class UpdateConfig
-        {
-            [XmlAttribute]
-            public virtual EUpdateChannel Channel { get; set; }
-
-            [XmlAttribute]
-            public virtual bool UseHttps { get; set; }
-        }
-
-        [XmlElement]
-        public virtual UrlsConfig Urls { get; set; }
-        public class UrlsConfig
-        {
-            [XmlAttribute]
-            public virtual string Update { get; set; }
-
-            [XmlAttribute]
-            public virtual string Web { get; set; }
-
-            [XmlAttribute]
-            public virtual string Sync { get; set; }
-
-            [XmlAttribute]
-            public virtual string SyncHttp { get; set; }
-
-            [XmlAttribute]
-            public virtual string DbUpdateUrl { get; set; }
-
-            [XmlAttribute]
-            public virtual string CertPublicKey { get; set; }
         }
 
         public static Branding Read(string filename)
@@ -138,8 +82,5 @@ namespace Eulg.Shared
                 xmlSerializer.Serialize(fileStream, this);
             }
         }
-
-        public static Branding Current { get; set; }
-
     }
 }

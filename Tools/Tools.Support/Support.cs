@@ -63,6 +63,7 @@ namespace Eulg.Client.SupportTool
         public const string FERNWARTUNG_EXECUTABLE_NAME = "EulgFernwartung.exe";
         private const int STREAM_BUFFER_SIZE = 81920;
         private static string _ildasmPath;
+        private Uri _updateServiceUri;
         private long _sizeProcessed;
         private long _filesProcessed;
         private string _oldMessage;
@@ -70,8 +71,9 @@ namespace Eulg.Client.SupportTool
         private static readonly DateTime _updateServiceDateTimeFixed = new DateTime(2015, 09, 10);
         private static readonly TimeSpan _serviceTimeout = new TimeSpan(0, 0, 0, 30);
         private const string UPDATE_SERVICE_NAME = "EulgUpdate";
-        private const string UPDATE_SERVICE_PARENT_PATH = "EULG Software GmbH";
-        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE = "KS Software GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH = "xbAV Beratungssoftware GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE1 = "KS Software GmbH";
+        private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE2 = "EULG Software GmbH";
         private const string UPDATE_SERVICE_PATH = "UpdateService";
         private const string UPDATE_SERVICE_BINARY = "UpdateService.exe";
         private string LogFile { get; } = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate.log");
@@ -94,7 +96,7 @@ namespace Eulg.Client.SupportTool
             {
                 throw new Exception("Branding nicht gefunden!");
             }
-            Branding.Current = CurrentBranding = Branding.Read(Path.Combine(path, "Branding.xml"));
+            CurrentBranding = Branding.Read(Path.Combine(path, "Branding.xml"));
         }
 
         public static void RunFernwartung()
@@ -123,7 +125,7 @@ namespace Eulg.Client.SupportTool
         private List<Tuple<string, string>> GetLogins()
         {
             var accounts = new List<Tuple<string, string>>();
-            using (var key = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\EULG Software GmbH\{Branding.Current.Registry.UserSettingsKey}\Account", false))
+            using (var key = Registry.CurrentUser.OpenSubKey($@"SOFTWARE\xbAV Beratungssoftware GmbH\{CurrentBranding.Registry.UserSettingsKey}\Account", false))
             {
                 if (key == null) return accounts;
                 foreach (var subKey in key.GetSubKeyNames())
@@ -160,43 +162,61 @@ namespace Eulg.Client.SupportTool
             }
         }
 
+        public Uri TryGetUpdateServiceUri()
+        {
+            try
+            {
+                return _updateServiceUri ?? (_updateServiceUri = GetUpdateUri());
+            }
+            catch (Exception ex)
+            {
+                var message = "Die Schnittstelle des zuständigen Serverdienstes für die gewählte Funktion konnte nicht ermittelt werden. Eine Internetverbindung wird benötigt. Systemmeldung:"
+                              + Environment.NewLine + Environment.NewLine
+                              + ex.GetMessagesTree();
+                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(Application.Current.MainWindow, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning));
+                return null;
+            }
+        }
+
         public void DoUpdateCheck()
         {
 #if !DEBUG
             try
             {
 #endif
-                // ReSharper disable once RedundantAssignment
-                var appPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".."));
+            // ReSharper disable once RedundantAssignment
+            var appPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".."));
 #if DEBUG
             appPath = @"C:\Program Files (x86)\EulgDeTest";
 #endif
-                var proxyConfig = new ProxyConfig();
-                proxyConfig.Init();
-                proxyConfig.SetDefault();
+            var proxyConfig = new ProxyConfig();
+            proxyConfig.Init();
+            proxyConfig.SetDefault();
 
-                var accounts = GetLogins();
-                var updateClient = new UpdateClient
-                {
-                    UpdateUrl = CurrentBranding.Urls.Update,
-                    UseHttps = CurrentBranding.Update.UseHttps,
-                    UpdateChannel = CurrentBranding.Update.Channel,
-                    ApplicationPath = appPath,
-                    DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
-                    LogFile = LogFile,
-                    UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
-                    Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },
-                    CheckProcesses = string.Empty, // AppBinary bei SupportTool auch nach KILL, siehe EULG-6189
-                    KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server", // "server.exe" is Allianz-RK background process
-                    SkipWaitForProcess = true,
-                    SkipRestartApplication = true,
-                };
-                updateClient.ProgressChanged += (sender, args) =>
-                {
-                    NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
-                };
-                NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
-                NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
+            var updateServiceUri = TryGetUpdateServiceUri();
+            if (updateServiceUri == null) return;
+
+            var accounts = GetLogins();
+            var updateClient = new UpdateClient
+            {
+                UpdateUrl = updateServiceUri.AbsoluteUri,
+                UpdateChannel = CurrentBranding.Info.Channel,
+                ApplicationPath = appPath,
+                DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
+                LogFile = LogFile,
+                UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
+                Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },
+                CheckProcesses = string.Empty, // AppBinary bei SupportTool auch nach KILL, siehe EULG-6189
+                KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server", // "server.exe" is Allianz-RK background process
+                SkipWaitForProcess = true,
+                SkipRestartApplication = true,
+            };
+            updateClient.ProgressChanged += (sender, args) =>
+            {
+                NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
+            };
+            NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
+            NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
                 var clientId = string.Empty;
                 try
                 {
@@ -207,80 +227,80 @@ namespace Eulg.Client.SupportTool
                     updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
                 }
                 switch (updateClient.FetchManifest(clientId))
-                {
-                    case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
-                        break;
+            {
+                case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
+                    break;
 
-                    case UpdateClient.EUpdateCheckResult.NoConnection:
-                        MessageBox.Show("Es konnte keine Verbindung zum Update-Server hergestellt werden." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    case UpdateClient.EUpdateCheckResult.UpToDate:
-                        MessageBox.Show("Update-Konfiguration enthält keine Dateien." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        // Result empty or CreateCache im Gange
-                        return;
-                    case UpdateClient.EUpdateCheckResult.AuthFail:
-                        MessageBox.Show("Der Update-Server hat die Zugangsdaten abgelehnt." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    case UpdateClient.EUpdateCheckResult.ClientIdFail:
-                        MessageBox.Show("Der Update-Server hat die Zugangsdaten abgelehnt." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    case UpdateClient.EUpdateCheckResult.NoService:
-                        MessageBox.Show("Der Update-Server-Dienst ist z. Zt. nicht aktiviert. Bitte versuchen Sie es später nochmal." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    case UpdateClient.EUpdateCheckResult.Error:
-                        MessageBox.Show("Fehler beim Abrufen der Update-Konfiguration: " + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                }
-                if (!updateClient.UpdateConf.UpdateFiles.Any() && updateClient.UpdateConf.UpdateDeletes.Any())
+                case UpdateClient.EUpdateCheckResult.NoConnection:
+                    MessageBox.Show("Es konnte keine Verbindung zum Update-Server hergestellt werden." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                case UpdateClient.EUpdateCheckResult.UpToDate:
+                    MessageBox.Show("Update-Konfiguration enthält keine Dateien." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    // Result empty or CreateCache im Gange
+                    return;
+                case UpdateClient.EUpdateCheckResult.AuthFail:
+                    MessageBox.Show("Der Update-Server hat die Zugangsdaten abgelehnt." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                case UpdateClient.EUpdateCheckResult.ClientIdFail:
+                    MessageBox.Show("Der Update-Server hat die Zugangsdaten abgelehnt." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                case UpdateClient.EUpdateCheckResult.NoService:
+                    MessageBox.Show("Der Update-Server-Dienst ist z. Zt. nicht aktiviert. Bitte versuchen Sie es später nochmal." + Environment.NewLine + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                case UpdateClient.EUpdateCheckResult.Error:
+                    MessageBox.Show("Fehler beim Abrufen der Update-Konfiguration: " + updateClient.LastError, "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+            }
+            if (!updateClient.UpdateConf.UpdateFiles.Any() && updateClient.UpdateConf.UpdateDeletes.Any())
+            {
+                MessageBox.Show("Update-Konfiguration enthält keine Dateien.", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            _ildasmPath = Path.Combine(Path.GetTempPath(), "ildasm.exe");
+            File.WriteAllBytes(_ildasmPath, Disassembler.Ildasm);
+            CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Setup"), "Setup", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Setup").ToArray(), updateClient);
+            CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Support"), "Support", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Support").ToArray(), updateClient);
+            CompareDirectory(updateClient.ApplicationPath, "AppDir", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir").ToArray(), updateClient);
+            CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Plugins"), "Plugins", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Plugins").ToArray(), updateClient);
+
+            if (updateClient.WorkerConfig.WorkerFiles.Any() || updateClient.WorkerConfig.WorkerDeletes.Any())
+            {
+                var updateSupport = (updateClient.WorkerConfig.WorkerFiles.Any(a => a.Source.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)));
+                if (updateSupport)
                 {
-                    MessageBox.Show("Update-Konfiguration enthält keine Dateien.", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    updateClient.SkipWaitForProcess = false;
+                    updateClient.SkipRestartApplication = false;
+                }
+                if (!Directory.Exists(updateClient.DownloadPath))
+                {
+                    Directory.CreateDirectory(updateClient.DownloadPath);
+                }
+                NotifyProgressChanged(-1, "*Programmdateien herunterladen...");
+                if (!updateClient.DownloadUpdatesStream())
+                {
+                    MessageBox.Show("Fehler beim Download der Programmdateien!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    NotifyProgressChanged(-1, "Protokoll übertragen...");
+                    updateClient.UploadLogfile();
                     return;
                 }
-
-                _ildasmPath = Path.Combine(Path.GetTempPath(), "ildasm.exe");
-                File.WriteAllBytes(_ildasmPath, Disassembler.Ildasm);
-                CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Setup"), "Setup", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Setup").ToArray(), updateClient);
-                CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Support"), "Support", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Support").ToArray(), updateClient);
-                CompareDirectory(updateClient.ApplicationPath, "AppDir", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "AppDir").ToArray(), updateClient);
-                CompareDirectory(Path.Combine(updateClient.ApplicationPath, "Plugins"), "Plugins", updateClient.UpdateConf.UpdateFiles.Where(w => w.FilePath == "Plugins").ToArray(), updateClient);
-
-                if (updateClient.WorkerConfig.WorkerFiles.Any() || updateClient.WorkerConfig.WorkerDeletes.Any())
+                var workerProcess = updateClient.RunUpdateWorker(!CheckUpdateService());
+                if (updateSupport)
                 {
-                    var updateSupport = (updateClient.WorkerConfig.WorkerFiles.Any(a => a.Source.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)));
-                    if (updateSupport)
-                    {
-                        updateClient.SkipWaitForProcess = false;
-                        updateClient.SkipRestartApplication = false;
-                    }
-                    if (!Directory.Exists(updateClient.DownloadPath))
-                    {
-                        Directory.CreateDirectory(updateClient.DownloadPath);
-                    }
-                    NotifyProgressChanged(-1, "*Programmdateien herunterladen...");
-                    if (!updateClient.DownloadUpdatesStream())
-                    {
-                        MessageBox.Show("Fehler beim Download der Programmdateien!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-                        NotifyProgressChanged(-1, "Protokoll übertragen...");
-                        updateClient.UploadLogfile();
-                        return;
-                    }
-                    var workerProcess = updateClient.RunUpdateWorker(!CheckUpdateService());
-                    if (updateSupport)
-                    {
-                        Environment.Exit(0);
-                    }
-                    else
-                    {
-                        workerProcess?.WaitForExit();
-                        MessageBox.Show("Programmdateien wurden aktualisiert!", "Prüfung", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                    Environment.Exit(0);
                 }
                 else
                 {
-                    MessageBox.Show("Alle Programmdateien sind aktuell!", "Prüfung", MessageBoxButton.OK, MessageBoxImage.Information);
+                    workerProcess?.WaitForExit();
+                    MessageBox.Show("Programmdateien wurden aktualisiert!", "Prüfung", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                NotifyProgressChanged(-1, "Protokoll übertragen...");
-                updateClient.UploadLogfile();
+            }
+            else
+            {
+                MessageBox.Show("Alle Programmdateien sind aktuell!", "Prüfung", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            NotifyProgressChanged(-1, "Protokoll übertragen...");
+            updateClient.UploadLogfile();
 #if !DEBUG
             }
             catch (Exception e)
@@ -407,11 +427,14 @@ namespace Eulg.Client.SupportTool
 
         #region Upload
 
-        public bool Upload(bool log, bool queue, bool cache)
+        public bool? Upload(bool log, bool queue, bool cache)
         {
             var proxyConfig = new ProxyConfig();
             proxyConfig.Init();
             proxyConfig.SetDefault();
+
+            var updateServiceUri = TryGetUpdateServiceUri();
+            if (updateServiceUri == null) return null;
 
             var archiveFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".zip");
             if (File.Exists(archiveFileName))
@@ -457,10 +480,10 @@ namespace Eulg.Client.SupportTool
                     }
                 }
             }
-            var uri = new Uri((CurrentBranding.Update.UseHttps ? "https://" : "http://") + CurrentBranding.Urls.Update.TrimEnd('/') + "/UploadSupportFile");
+            var uri = new Uri(updateServiceUri.AbsoluteUri.TrimEnd('/') + "/UploadSupportFile");
             var request = WebRequest.CreateHttp(uri);
             request.Method = "POST";
-            request.Headers.Add("UpdateChannel", CurrentBranding.Update.Channel.ToString());
+            request.Headers.Add("UpdateChannel", CurrentBranding.Info.Channel.ToString());
             request.Headers.Add("UserName", $"{Environment.UserName}@{Environment.MachineName}");
             using (var reqStream = request.GetRequestStream())
             {
@@ -696,10 +719,16 @@ namespace Eulg.Client.SupportTool
                     if (pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase))
                     {
                         var pathCurrent = Path.GetDirectoryName(pathIs) ?? string.Empty;
-                        var pathObsolete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE, UPDATE_SERVICE_PATH);
-                        if (pathCurrent.Equals(pathObsolete, StringComparison.InvariantCultureIgnoreCase))
+                        var pathObsolete1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE1, UPDATE_SERVICE_PATH);
+                        if (pathCurrent.Equals(pathObsolete1, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE);
+                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE1);
+                            DeleteDirectory(pathToDelete);
+                        }
+                        var pathObsolete2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2, UPDATE_SERVICE_PATH);
+                        if(pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2);
                             DeleteDirectory(pathToDelete);
                         }
                     }
@@ -822,5 +851,24 @@ namespace Eulg.Client.SupportTool
             return !ProcessHelper.IsProcessRunning(PROCESS);
         }
 
+        private static Uri GetUpdateUri()
+        {
+            var keyNames = new[] { "xbAV Beratungssoftware GmbH", "EULG Software GmbH", "KS Software GmbH" };
+            foreach (var parentName in keyNames)
+            {
+                using(var regkey = Registry.CurrentUser.OpenSubKey($"Software\\{parentName}\\{CurrentBranding.Registry.UserSettingsKey}"))
+                {
+                    if (regkey != null)
+                    {
+                        var serviceUrl = regkey.GetValue("Service").ToString();
+                        var apiClient = new ApiResourceClient(serviceUrl, CurrentBranding.Info.Channel);
+
+                        return apiClient.Fetch()[EApiResource.UpdateService];
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

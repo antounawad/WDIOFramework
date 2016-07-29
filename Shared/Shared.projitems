@@ -9,9 +9,12 @@
     <Import_RootNamespace>Eulg.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ApiResourceClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Branding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BrandingInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IEProxyConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Profile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProxyConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SetupConfig.cs" />
   </ItemGroup>

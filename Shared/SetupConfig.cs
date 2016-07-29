@@ -5,10 +5,10 @@ namespace Eulg.Shared
     [XmlRoot]
     public class SetupConfig
     {
-        [XmlElement]
-        public string Version { get; set; }
+        [XmlAttribute]
+        public string ApiManifestUri { get; set; }
 
-        [XmlElement]
-        public Branding Branding { get; set; }
+        [XmlAttribute]
+        public Branding.EUpdateChannel Channel { get; set; }
     }
 }

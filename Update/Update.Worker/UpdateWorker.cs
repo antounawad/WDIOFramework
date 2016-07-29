@@ -327,8 +327,8 @@ namespace Eulg.Update.Worker
             catch (Exception ex)
             {
                 Log.Write(ex, "White trying to start client application");
-                MessageBox.Show("Die Aktualisierung wurde durchgeführt, aber der Beratungsclient konnte leider nicht automatisch gestartet werden. Bitte starten Sie den Client manuell.",
-                    "EULG Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Die Aktualisierung wurde durchgeführt, aber die Anwendung konnte leider nicht automatisch gestartet werden. Bitte starten Sie die Anwendung manuell.",
+                    "xbAV-Berater Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -353,7 +353,7 @@ namespace Eulg.Update.Worker
         {
             if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UpdateServiceName)))
             {
-                throw new ServiceActivationException("Eulg-Update-Service nicht installiert! Bitte starten Sie das EULG Support Tool!");
+                throw new ServiceActivationException("xbAV-Berater Service nicht installiert! Bitte starten Sie das EULG Support Tool!");
             }
             using (var svc = new ServiceController(UpdateServiceName))
             {
@@ -365,7 +365,7 @@ namespace Eulg.Update.Worker
                     }
                     catch (Exception exception)
                     {
-                        throw new ServiceActivationException("Eulg-Update-Service kann nicht gestartet werden. Bitte Dienst 'EULG Update' auf Startart 'Manuell' setzen!", exception);
+                        throw new ServiceActivationException("xbAV-Berater Update-Service kann nicht gestartet werden. Bitte Dienst 'EULG Update' auf Startart 'Manuell' setzen!", exception);
                     }
                 }
                 if (wait)
@@ -400,7 +400,7 @@ namespace Eulg.Update.Worker
             {
                 RemoveUpdateService();
             }
-            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "xbAV Beratungssoftware GmbH", "UpdateService", "UpdateService.exe");
             var p = new Process
             {
                 StartInfo =
@@ -415,11 +415,18 @@ namespace Eulg.Update.Worker
 
         internal static void RemoveUpdateService()
         {
+            RemoveUpdateService("KS Software GmbH");
+            RemoveUpdateService("EULG Software GmbH");
+            RemoveUpdateService("xbAV Beratungssoftware GmbH");
+        }
+
+        internal static void RemoveUpdateService(string parentPath)
+        {
             if (!ServiceController.GetServices().Any(a => a.ServiceName.Equals(UpdateServiceName)))
             {
                 return;
             }
-            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), "EULG Software GmbH", "UpdateService", "UpdateService.exe");
+            var exePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), parentPath, "UpdateService", "UpdateService.exe");
             if (!File.Exists(exePath))
             {
                 return;

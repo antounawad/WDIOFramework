@@ -11,8 +11,15 @@ namespace Eulg.Setup.Pages
 {
     public partial class InstChoosePath : ISetupPageBase
     {
-        public InstChoosePath()
+        private readonly Profile _profile;
+        private readonly string _username;
+        private readonly string _password;
+
+        public InstChoosePath(Profile profile, string username, string password)
         {
+            _profile = profile;
+            _username = username;
+            _password = password;
             InitializeComponent();
 
             PageTitle = "Installations-Verzeichnis";
@@ -28,7 +35,7 @@ namespace Eulg.Setup.Pages
 
         public void OnLoad()
         {
-            TxtPath.Text = SetupHelper.InstallPath;
+            TxtPath.Text = App.Setup.InstallPath;
             CheckDrive();
         }
         public void OnLoadComplete()
@@ -48,7 +55,7 @@ namespace Eulg.Setup.Pages
             }
             var path = TxtPath.Text;
             path = Path.GetFullPath(path);
-            SetupHelper.InstallPath = path;
+            App.Setup.InstallPath = path;
             MainWindow.Instance.NavigateToPage(SetupHelper.ProgressPage);
             new Task(delegate
             {
@@ -77,7 +84,7 @@ namespace Eulg.Setup.Pages
             {
                 var drive = TxtPath.Text.Length > 0 ? TxtPath.Text.Substring(0, 1) : "C";
                 var driveInfo = new DriveInfo(drive);
-                var spaceNeeded = SetupHelper.UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize);
+                var spaceNeeded = App.Setup.UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize);
                 var spaceAvailable = driveInfo.AvailableFreeSpace;
                 var spaceRemaining = spaceAvailable - spaceNeeded;
                 LabelSpaceNeeded.Content = $"{decimal.Round(spaceNeeded / 1024m / 1024m):N0} MB";
@@ -97,71 +104,78 @@ namespace Eulg.Setup.Pages
 
         private bool DoInstall()
         {
+            var setup = App.Setup;
+
             SetupHelper.CancelRequested = false;
-            SetupHelper.UpdateClient.Log(UpdateClient.ELogTypeEnum.Info, "Setup " + SetupHelper.Config.Version + " (" + SetupHelper.Config.Branding.Info.BuildTag + ")");
+            setup.UpdateClient.Log(UpdateClient.ELogTypeEnum.Info, $"Setup {setup.Version} ({setup.Branding.Info.BuildTag} / {setup.Config.ApiManifestUri})");
+
             SetupHelper.ReportProgress("Laufende Prozesse überprüfen...", "", -1);
-            if (!SetupHelper.CheckRunningProcesses())
+            if (!setup.CheckRunningProcesses())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Update-Dienst entfernen...", "", -1);
-            if (!SetupHelper.RemoveUpdateService())
+            if (!setup.RemoveUpdateService())
             {
                 return false;
             }
+
+            long estimatedInstallSize;
             SetupHelper.ReportProgress("Programmdateien installieren...", "", -1);
             if (SetupHelper.OfflineInstall)
             {
-                SetupHelper.ExtractAppDir();
+                estimatedInstallSize = new FileInfo(SetupHelper.OfflineZipFile).Length / 1024;
+                setup.ExtractAppDir();
             }
             else
             {
                 while (true)
                 {
-                    if (SetupHelper.DownloadAppDir(true))
+                    if (setup.DownloadAppDir(true))
                     {
                         break;
                     }
                     if (MessageBox.Show("Beim Download der Programmdateien ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Internet-Verbindung." + Environment.NewLine + Environment.NewLine + "Nochmal versuchen?", "Fehler", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
                     {
-                        SetupHelper.Log(UpdateClient.ELogTypeEnum.Warning, "Setup wurde vom Benutzer abgebrochen!");
+                        setup.Log(UpdateClient.ELogTypeEnum.Warning, "Setup wurde vom Benutzer abgebrochen!");
                         return false;
                     }
                     SetupHelper.CancelRequested = false;
                 }
+                estimatedInstallSize = setup.UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize) / 1024;
             }
             SetupHelper.ReportProgress("Update-Dienst installieren...", "", -1);
-            if (!SetupHelper.InstallUpdateService())
+            if (!setup.InstallUpdateService())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Uninstaller installieren...", "", -1);
-            if (!SetupHelper.InstallUninstaller())
+            if (!setup.InstallUninstaller())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Uninstaller registrieren...", "", -1);
-            if (!SetupHelper.RegisterUninstaller())
+            if (!setup.RegisterUninstaller(_profile, estimatedInstallSize))
             {
                 return false;
             }
             SetupHelper.ReportProgress("Einstellungen speichern (Registry)...", "", -1);
-            if (!SetupHelper.PrepareRegistry())
+            if (!setup.PrepareRegistry(_profile, _username, _password))
             {
                 return false;
             }
             SetupHelper.ReportProgress("Einstellungen speichern (Branding)...", "", -1);
-            if (!SetupHelper.WriteBranding())
+            if (!setup.WriteBranding())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Programmstart beschleunigen...", "", -1);
-            if (!SetupHelper.InstallNgen())
+            if (!setup.InstallNgen())
             {
                 return false;
             }
             SetupHelper.ReportProgress("Protokoll versenden...", "", -1);
-            if (!SetupHelper.UpdateClient.UploadLogfile())
+            if (!setup.UpdateClient.UploadLogfile())
             {
                 if (!SetupHelper.OfflineInstall)
                 {
@@ -169,7 +183,9 @@ namespace Eulg.Setup.Pages
                 }
             }
             SetupHelper.ReportProgress("Programm-Symbole hinzufügen...", "", -1);
-            if (!SetupHelper.AddShellIcons())
+            Uri webverwaltung;
+            var webverwaltungUrl = setup.TryGetApi(EApiResource.WebAdministration, out webverwaltung, true) ? webverwaltung.AbsoluteUri : null;
+            if (!setup.AddShellIcons(_profile, webverwaltungUrl))
             {
                 return false;
             }

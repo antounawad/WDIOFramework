@@ -79,7 +79,6 @@
     <Compile Include="IUpdateItem.cs" />
     <Compile Include="PositionWrapperStream.cs" />
     <Compile Include="SectionStream.cs" />
-    <Compile Include="Helper\StartMenuHelper.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="UpdateClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

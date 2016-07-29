@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using Eulg.Shared;
 
 namespace Eulg.Setup.Pages
 {
@@ -23,10 +24,10 @@ namespace Eulg.Setup.Pages
 
         public void OnLoad()
         {
-            var tmpVersion = SetupHelper.Config.Version;
-            if (!string.IsNullOrWhiteSpace(SetupHelper.Config.Branding.Info.BuildTag))
+            var tmpVersion = App.Setup.Version;
+            if (App.Setup.Config.Channel != Branding.EUpdateChannel.Release)
             {
-                tmpVersion += " (" + SetupHelper.Config.Branding.Info.BuildTag + ")";
+                tmpVersion += " (" + App.Setup.Config.Channel + ")";
             }
             if (SetupHelper.TerminalServer)
             {
