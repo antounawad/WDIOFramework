@@ -30,10 +30,12 @@ namespace Update.Fix.Fixes
         {
             if (Branding != null)
             {
+                var buildTag = Branding.Info.BuildTag;
+
                 var clientStartMenuLegacy = string.Empty;
                 var clientStartMenuNew = string.Empty;
-                var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), LEGACY_STARTMENUFOLDER);
-                var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), LEGACY_STARTMENUFOLDER);
+                var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), $"{LEGACY_STARTMENUFOLDER}{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}");
+                var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), $"{LEGACY_STARTMENUFOLDER}{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}");
 
                 if (Directory.Exists(clientStartMenuMain))
                 {
@@ -48,7 +50,6 @@ namespace Update.Fix.Fixes
 
                 if (!string.IsNullOrEmpty(clientStartMenuNew))
                 {
-                    var buildTag = Branding.Info.BuildTag;
                     var baseDirectory = BASEDIRECTORY;
 
                     string[] startMenuGroupNew = new string[0];
@@ -61,14 +62,10 @@ namespace Update.Fix.Fixes
                         Directory.CreateDirectory(clientStartMenuNew);
                     }
 
-                    var clientLink = !string.IsNullOrEmpty(Branding.ShellIcons.StartMenuApp)
-                                         ? $"{Branding.ShellIcons.StartMenuApp}.lnk"
-                                         : $"xbAV-Berater{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
-                    var syncClientLink = !string.IsNullOrEmpty(Branding.ShellIcons.StartMenuSync)
-                                             ? $"{Branding.ShellIcons.StartMenuSync}.lnk"
-                                             : $"Sync-Client{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
-                    var supportLink = !string.IsNullOrEmpty(Branding.ShellIcons.StartMenuSupportTool) ? $"{Branding.ShellIcons.StartMenuSupportTool}.lnk" : "Support.lnk";
-                    var remoteLink = !string.IsNullOrEmpty(Branding.ShellIcons.StartMenuFernwartung) ? $"{Branding.ShellIcons.StartMenuFernwartung}.lnk" : "Fernwartung.lnk";
+                    var clientLink = $"xbAV-Berater{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
+                    var syncClientLink = $"Sync-Client{(!string.IsNullOrEmpty(buildTag) ? " (" + buildTag + ")" : string.Empty)}.lnk";
+                    var supportLink = "Support.lnk";
+                    var remoteLink = "Fernwartung.lnk";
 
                     if (!startMenuGroupNew.Contains(Path.Combine(clientStartMenuNew, clientLink)))
                     {

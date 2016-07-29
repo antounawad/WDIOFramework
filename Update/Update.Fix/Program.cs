@@ -45,10 +45,10 @@ namespace Update.Fix
                 DoCheck("DesktopLinks", DesktopLinks.Check, DesktopLinks.Fix);
 
                 // Update Service
-                DoCheck("UpdateService", UpdateService.Check, UpdateService.Fix);
+                //DoCheck("UpdateService", UpdateService.Check, UpdateService.Fix);
 
                 // Branding
-                DoCheck("BrandingEntries", BrandingEntries.Check, BrandingEntries.Fix);
+                //DoCheck("BrandingEntries", BrandingEntries.Check, BrandingEntries.Fix);
 
                 if (_numFix > 0) return 2;
                 if (_numDefect > 0) return 1;

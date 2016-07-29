@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.Win32;
 
 namespace Update.Fix.Fixes
@@ -17,7 +18,8 @@ namespace Update.Fix.Fixes
                     foreach(var legacyKey in REGISTRY_GROUP_NAME_OBSOLETE)
                     {
                         var obsoleteKey = key.OpenSubKey(legacyKey);
-                        var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME);
+                        var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadSubTree);
+
                         if(obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
                         {
                             return false;
@@ -26,8 +28,9 @@ namespace Update.Fix.Fixes
                 }
                 return true;
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine($"caught exception {e}");
                 return false;
             }
         }
@@ -37,7 +40,8 @@ namespace Update.Fix.Fixes
             foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
             {
                 var obsoleteKeyName = REGISTRY_GROUP_NAME_OBSOLETE.FirstOrDefault(k => key.OpenSubKey(k) != null);
-                if(obsoleteKeyName != null)
+
+                if (obsoleteKeyName != null)
                 {
                     var obsoleteKey = key.OpenSubKey(obsoleteKeyName);
                     var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree) ?? key.CreateSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree);
