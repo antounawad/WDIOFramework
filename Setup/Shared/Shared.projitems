@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)MutexManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Temp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UpdateConfig.cs" />
   </ItemGroup>
 </Project>

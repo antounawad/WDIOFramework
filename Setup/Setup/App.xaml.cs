@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Eulg.Setup.Shared;
 using Eulg.Shared;
 
 namespace Eulg.Setup
@@ -84,7 +85,7 @@ namespace Eulg.Setup
                 {
                     try
                     {
-                        var dst = Path.Combine(Path.GetTempPath(), "xbAVSetupTemp");
+                        var dst = Path.Combine(Path.GetTempPath(), Temp.SetupTempFolder);
                         SetupHelper.MoveUninstallerToTemp(dst);
                         var p = new Process
                         {

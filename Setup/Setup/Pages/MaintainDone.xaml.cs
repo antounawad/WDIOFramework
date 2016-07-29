@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using Eulg.Setup.Shared;
 using Path = System.IO.Path;
 
 namespace Eulg.Setup.Pages
@@ -29,8 +30,8 @@ namespace Eulg.Setup.Pages
         }
         public void OnNext()
         {
-            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgWebInstaller"));
-            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgSetupTemp"));
+            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), Temp.WebInstTempFolder));
+            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), Temp.SetupTempFolder));
 
             MainWindow.Instance.Close();
         }

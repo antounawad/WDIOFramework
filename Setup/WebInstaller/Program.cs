@@ -97,7 +97,7 @@ namespace Eulg.Setup.WebInstaller
                 Cursor.Current = Cursors.WaitCursor;
 
                 // Temp. Ordner vorbereiten
-                var tmpFolder = Path.Combine(Path.GetTempPath(), "xbAV_WebInstaller");
+                var tmpFolder = Path.Combine(Path.GetTempPath(), Temp.WebInstTempFolder);
                 DelTree(tmpFolder);
                 if (!Directory.Exists(tmpFolder))
                 {

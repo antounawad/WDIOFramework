@@ -76,7 +76,7 @@ namespace Eulg.Client.SupportTool
         private const string UPDATE_SERVICE_PARENT_PATH_OBSOLETE2 = "EULG Software GmbH";
         private const string UPDATE_SERVICE_PATH = "UpdateService";
         private const string UPDATE_SERVICE_BINARY = "UpdateService.exe";
-        private string LogFile { get; } = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate.log");
+        private string LogFile { get; } = Path.Combine(Path.GetTempPath(), "xbAV_SupportUpdate.log");
 
         public static Branding CurrentBranding { get; set; }
 
@@ -202,7 +202,7 @@ namespace Eulg.Client.SupportTool
                 UpdateUrl = updateServiceUri.AbsoluteUri,
                 UpdateChannel = CurrentBranding.Info.Channel,
                 ApplicationPath = appPath,
-                DownloadPath = Path.Combine(Path.GetTempPath(), "EulgSupportUpdate"),
+                DownloadPath = Path.Combine(Path.GetTempPath(), "xbAV_SupportUpdate"),
                 LogFile = LogFile,
                 UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
                 Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },

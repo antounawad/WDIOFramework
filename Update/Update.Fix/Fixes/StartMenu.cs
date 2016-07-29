@@ -17,10 +17,12 @@ namespace Update.Fix.Fixes
         {
             if(Branding != null)
             {
-                var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Branding.ShellIcons.StartMenuFolder);
-                var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Branding.ShellIcons.StartMenuFolder);
+                return false; //TODO
 
-                return Directory.Exists(clientStartMenuMain) || Directory.Exists(clientStartMenuPrograms);
+                //var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Branding.ShellIcons.StartMenuFolder);
+                //var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Branding.ShellIcons.StartMenuFolder);
+
+                //return Directory.Exists(clientStartMenuMain) || Directory.Exists(clientStartMenuPrograms);
             }
 
             return true;
@@ -39,13 +41,15 @@ namespace Update.Fix.Fixes
 
                 if (Directory.Exists(clientStartMenuMain))
                 {
-                    clientStartMenuLegacy = clientStartMenuMain;
-                    clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Branding.ShellIcons.StartMenuFolder);
+                    throw new NotImplementedException();
+                    //clientStartMenuLegacy = clientStartMenuMain;
+                    //clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), Branding.ShellIcons.StartMenuFolder);
                 }
                 else if (Directory.Exists(clientStartMenuPrograms))
                 {
-                    clientStartMenuLegacy = clientStartMenuPrograms;
-                    clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Branding.ShellIcons.StartMenuFolder);
+                    throw new NotImplementedException();
+                    //clientStartMenuLegacy = clientStartMenuPrograms;
+                    //clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), Branding.ShellIcons.StartMenuFolder);
                 }
 
                 if (!string.IsNullOrEmpty(clientStartMenuNew))

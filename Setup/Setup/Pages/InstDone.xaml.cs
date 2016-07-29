@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Controls;
+using Eulg.Setup.Shared;
 using Path = System.IO.Path;
 
 namespace Eulg.Setup.Pages
@@ -32,20 +33,20 @@ namespace Eulg.Setup.Pages
         }
         public void OnNext()
         {
-            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgWebInstaller")); //TODO temp path names
-            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), "EulgSetupTemp"));
+            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), Temp.WebInstTempFolder)); //TODO temp path names
+            SetupHelper.DelTree(Path.Combine(Path.GetTempPath(), Temp.SetupTempFolder));
 
             if (ChkStartEulg.IsChecked ?? false)
             {
                 var setup = App.Setup;
                 var p = new Process
-                        {
-                            StartInfo =
-                            {
-                                FileName = "Explorer.exe",
-                                Arguments = Path.Combine(setup.InstallPath, setup.Branding.FileSystem.AppBinary)
-                            }
-                        };
+                {
+                    StartInfo =
+                    {
+                        FileName = "Explorer.exe",
+                        Arguments = Path.Combine(setup.InstallPath, setup.Branding.FileSystem.AppBinary)
+                    }
+                };
                 p.Start();
                 p.Dispose();
             }

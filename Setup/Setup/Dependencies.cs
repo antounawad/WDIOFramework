@@ -407,10 +407,10 @@ namespace Eulg.Setup
             var p = new Process
             {
                 StartInfo =
-                        {
-                            FileName = setupFile,
-                            Arguments = arguments
-                        }
+                {
+                    FileName = setupFile,
+                    Arguments = arguments
+                }
             };
             SetupHelper.ReportProgress(name, "Installation...", -1);
 #if DEBUG
