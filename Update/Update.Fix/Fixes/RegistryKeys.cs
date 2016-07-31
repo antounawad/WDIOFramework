@@ -1,41 +1,41 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.Win32;
 
 namespace Update.Fix.Fixes
 {
-    public static class RegistryKeys
+    internal class RegistryKeys : IFix
     {
         private const string REGISTRY_GROUP_NAME = @"Software\xbAV Beratungssoftware GmbH";
         private static string[] REGISTRY_GROUP_NAME_OBSOLETE = { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };
 
-        public static bool Check()
-        {
-            try
-            {
-                foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
-                {
-                    foreach(var legacyKey in REGISTRY_GROUP_NAME_OBSOLETE)
-                    {
-                        var obsoleteKey = key.OpenSubKey(legacyKey);
-                        var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadSubTree);
+        private RegistryKeys() { }
 
-                        if(obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
-                        {
-                            return false;
-                        }
+        public static IFix Inst { get; } = new RegistryKeys();
+
+        public string Name => nameof(RegistryKeys);
+
+        public bool? Check()
+        {
+            //FIXME Nur das aktuelle Profil bearbeiten sonst werden parallele 1.x und 2.x Installationen zerstört
+            foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
+            {
+                foreach(var legacyKey in REGISTRY_GROUP_NAME_OBSOLETE)
+                {
+                    var obsoleteKey = key.OpenSubKey(legacyKey);
+                    var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadSubTree);
+
+                    if(obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
+                    {
+                        return false;
                     }
                 }
-                return true;
             }
-            catch(Exception e)
-            {
-                Console.WriteLine($"caught exception {e}");
-                return false;
-            }
+
+            return true;
         }
 
-        public static void Fix()
+        //FIXME Transaktional arbeiten: DeleteSubKeyTree() erst dann ausführen, wenn Migrationsvorgang bei allen Keys erfolgreich
+        public void Apply()
         {
             foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
             {

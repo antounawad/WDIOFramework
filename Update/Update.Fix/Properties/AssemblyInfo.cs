@@ -34,3 +34,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.16.0112")]
 //[assembly: AssemblyFileVersion("1")]
+
+[assembly: InternalsVisibleTo("Update.FixTests")]

@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 namespace Update.Fix.Fixes
 {
-    internal static class UpdateService
+    internal class UpdateService : FixBase, IFix
     {
         private const string UPDATE_SERVICE_NAME = "EulgUpdate";
         private const string UPDATE_SERVICE_PARENT_PATH = "EULG Software GmbH";
@@ -19,7 +19,13 @@ namespace Update.Fix.Fixes
         private static readonly DateTime _updateServiceDateTimeFixed = new DateTime(2015, 09, 10);
         private static readonly TimeSpan _serviceTimeout = new TimeSpan(0, 0, 0, 30);
 
-        internal static bool Check()
+        private UpdateService() { }
+
+        public static IFix Inst { get; } = new UpdateService();
+
+        public string Name => nameof(UpdateService);
+
+        public bool? Check()
         {
             try
             {
@@ -57,7 +63,7 @@ namespace Update.Fix.Fixes
             }
         }
 
-        internal static void Fix()
+        public void Apply()
         {
             var newImageFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UPDATE_SERVICE_BINARY);
             if (!File.Exists(newImageFile)) throw new Exception("Datei " + newImageFile + " nicht gefunden.");

@@ -1,79 +1,77 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using Eulg.Shared;
 
 namespace Update.Fix.Fixes
 {
-    internal static class BrandingEntries
+    internal class BrandingEntries : FixBase, IFix
     {
-        private const string API_MANIFEST_ATTRIBUTE = "ApiManifest";
-        private const string BRANDING_FILE_NAME = "Branding.xml";
+        private BrandingEntries() { }
 
-        internal static bool Check()
+        public static IFix Inst { get; } = new BrandingEntries();
+
+        public string Name => nameof(BrandingEntries);
+
+        public bool? Check()
         {
-            try
-            {
-                return DoIt(false);
-            }
-            catch
-            {
-                return false;
-            }
+            return DoIt(false);
         }
 
-        internal static void Fix()
+        public void Apply()
         {
             DoIt(true);
         }
 
         private static bool DoIt(bool fix)
         {
-            var brandingXmlFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, BRANDING_FILE_NAME);
-            if (!File.Exists(brandingXmlFile)) throw new Exception("Datei " + brandingXmlFile + " nicht gefunden.");
-            var doc = new XmlDocument();
-            doc.Load(brandingXmlFile);
+            var brandingXmlFile = GetBrandingFileName();
 
-            var node = doc.SelectSingleNode("/Branding/Urls");
-            var update_attr = node.Attributes["Update"];
-
-            var newApi = "http://service.eulg.de";
-            if (update_attr.Value.IndexOf("service.eulg.de", StringComparison.InvariantCultureIgnoreCase) >= 0
-             || update_attr.Value.IndexOf("service.entgeltumwandler.de", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            Branding branding;
+            using(var fileStream = File.OpenRead(brandingXmlFile))
             {
-                newApi = "http://service.eulg.de";
-            }
-            else if (update_attr.Value.IndexOf("test.eulg.de", StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                newApi = "http://test.eulg.de/Service";
-            }
-            else if (update_attr.Value.IndexOf("192.168.15.4", StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                newApi = "http://192.168.15.4/Service";
-            }
-            else if (update_attr.Value.IndexOf("192.168.15.5", StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                newApi = "http://192.168.15.5/Service";
+                var xmlSerializer = new XmlSerializer(typeof(Branding));
+                branding = (Branding)xmlSerializer.Deserialize(fileStream);
             }
 
-            var newApiComplete = newApi + "/ApiManifest/Get";
-
-            var api_attr = node.Attributes[API_MANIFEST_ATTRIBUTE];
-            if (api_attr != null && api_attr.Value.Equals(newApiComplete, StringComparison.InvariantCultureIgnoreCase))
+            if (branding.Version >= 2)
             {
                 return true;
             }
+
+            branding.Version = 2;
+
+            var updateUrl = LoadBranding().SelectSingleNode("/Branding/Urls")?.Attributes?["Update"]?.Value;
+            if (updateUrl == null)
+            {
+                throw new Exception("Kann Update-URL nicht bestimmen");
+            }
+
+            if(!updateUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                updateUrl = $"http://{updateUrl}";
+            }
+
+            updateUrl = updateUrl.Replace("/service.entgeltumwandler.de/", "/service.xbav-berater.de/")
+                                 .Replace("/service.eulg.de/", "/service.xbav-berater.de/");
+
+            var manifestUrl = Regex.Replace(updateUrl, @"\/update\/?$", "/ApiManifest/JsonGet", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            if(manifestUrl != updateUrl)
+            {
+                branding.Info.ApiManifestUri = manifestUrl;
+            }
+
             if (!fix)
             {
                 return false;
             }
-            // fix
-            if (api_attr == null)
+
+            using(var fileStream = File.OpenWrite(brandingXmlFile))
             {
-                api_attr = doc.CreateAttribute(API_MANIFEST_ATTRIBUTE);
-                node.Attributes.InsertBefore(api_attr, node.Attributes[0]);
+                var xmlSerializer = new XmlSerializer(typeof(Branding));
+                xmlSerializer.Serialize(fileStream, branding);
             }
-            api_attr.Value = newApiComplete;
-            doc.Save(brandingXmlFile);
 
             return true;
         }

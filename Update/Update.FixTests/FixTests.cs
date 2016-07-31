@@ -161,11 +161,11 @@ namespace Update.FixTests
         {
             SetupStartMenuLinksMain();
 
-            Assert.False(StartMenu.Check());
+            Assert.False(StartMenu.Inst.Check());
 
-            StartMenu.Fix();
+            StartMenu.Inst.Apply();
 
-            Assert.True(StartMenu.Check());
+            Assert.True(StartMenu.Inst.Check());
         }
 
         [Test]
@@ -173,11 +173,11 @@ namespace Update.FixTests
         {
             SetupStartMenuLinksPrograms();
 
-            Assert.False(StartMenu.Check());
+            Assert.False(StartMenu.Inst.Check());
 
-            StartMenu.Fix();
+            StartMenu.Inst.Apply();
 
-            Assert.True(StartMenu.Check());
+            Assert.True(StartMenu.Inst.Check());
         }
 
         [Test]
@@ -185,11 +185,11 @@ namespace Update.FixTests
         {
             SetupDesktopTestLinks();
 
-            Assert.False(DesktopLinks.Check());
+            Assert.False(DesktopLinks.Inst.Check());
 
-            DesktopLinks.Fix();
+            DesktopLinks.Inst.Apply();
 
-            Assert.True(DesktopLinks.Check());
+            Assert.True(DesktopLinks.Inst.Check());
         }
 
         [Test]
@@ -197,11 +197,11 @@ namespace Update.FixTests
         {
             SetupRegistryEulg();
 
-            Assert.False(RegistryKeys.Check());
+            Assert.False(RegistryKeys.Inst.Check());
 
-            RegistryKeys.Fix();
+            RegistryKeys.Inst.Apply();
 
-            Assert.True(RegistryKeys.Check());
+            Assert.True(RegistryKeys.Inst.Check());
         }
     }
 }

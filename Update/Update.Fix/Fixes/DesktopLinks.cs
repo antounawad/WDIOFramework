@@ -6,48 +6,53 @@ using File = System.IO.File;
 
 namespace Update.Fix.Fixes
 {
-    public class DesktopLinks: LinksBase
+    internal class DesktopLinks : LinksBase, IFix
     {
-        private static readonly string _eulgPath = Path.GetFullPath(Path.Combine(BASEDIRECTORY, CLIENT));
         private static readonly string _desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
         private static readonly string _commonDesktop = Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory);
         private static readonly string _taskBar = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
 
-        public static bool Check()
+        private DesktopLinks() { }
+
+        public static IFix Inst { get; } = new DesktopLinks();
+
+        public string Name => nameof(DesktopLinks);
+
+        public bool? Check()
         {
             var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
-                                .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
-                                .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
+                                        .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
+                                        .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
 
+            var executable = GetClientExecutablePath();
             foreach (var link in linksToCheck)
             {
-                if (GetShortcutTargetFile(link) == _eulgPath)
+                if (string.Equals(GetShortcutTargetFile(link), executable, StringComparison.OrdinalIgnoreCase))
                 {
-                    return false;
+                    return null;
                 }
             }
 
             return true;
         }
 
-        public static void Fix()
+        public void Apply()
         {
             var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
-                                .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
-                                .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
+                                        .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
+                                        .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
 
-            foreach (var link in linksToCheck)
+            var executable = GetClientExecutablePath();
+            foreach(var link in linksToCheck)
             {
                 try
                 {
-                    var targetlink = GetShortcutTargetFile(link);
-
-                    if (targetlink == _eulgPath)
+                    if (string.Equals(GetShortcutTargetFile(link), executable, StringComparison.OrdinalIgnoreCase))
                     {
-                        var newlink = Path.Combine(Path.GetDirectoryName(link), "xbAV Berater.lnk");
+                        var newlink = Path.Combine(Path.GetDirectoryName(link), "xbAV-Berater.lnk");
 
                         File.Delete(link);
-                        SetLink(newlink, _eulgPath);
+                        SetLink(newlink, executable);
                     }
                 }
                 catch (Exception e)
@@ -56,6 +61,11 @@ namespace Update.Fix.Fixes
                     // ignore
                 }
             }
+        }
+
+        private string GetClientExecutablePath()
+        {
+            return Path.Combine(GetInstallDir(), CLIENT);
         }
 
         private static string GetShortcutTargetFile(string shortcutFilename)

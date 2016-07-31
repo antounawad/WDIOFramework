@@ -36,19 +36,19 @@ namespace Update.Fix
                 if (args.Length < 1) _all = true;
 
                 // Registry Keys
-                DoCheck("RegistryKeys", RegistryKeys.Check, RegistryKeys.Fix);
+                DoCheck(RegistryKeys.Inst);
 
                 // Startmenu
-                DoCheck("StartMenu", StartMenu.Check, StartMenu.Fix);
+                DoCheck(StartMenu.Inst);
 
                 // Desktop links
-                DoCheck("DesktopLinks", DesktopLinks.Check, DesktopLinks.Fix);
+                DoCheck(DesktopLinks.Inst);
 
                 // Update Service
-                //DoCheck("UpdateService", UpdateService.Check, UpdateService.Fix);
+                //DoCheck(UpdateService.Inst);
 
                 // Branding
-                //DoCheck("BrandingEntries", BrandingEntries.Check, BrandingEntries.Fix);
+                DoCheck(BrandingEntries.Inst);
 
                 if (_numFix > 0) return 2;
                 if (_numDefect > 0) return 1;
@@ -61,32 +61,44 @@ namespace Update.Fix
             }
         }
 
-        private static void DoCheck(string fixName, Check check, Action fix)
+        private static void DoCheck(IFix fix)
         {
-            if (_all || _args.Any(a => a.Equals(fixName, StringComparison.InvariantCultureIgnoreCase)))
+            if(_all || _args.Any(a => a.Equals(fix.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                Console.Write("Prüfe {0}: ", fixName);
+                Console.Write("Prüfe {0}: ", fix.Name);
                 Console.Out.Flush();
-                var checkResult = check();
-                if (checkResult)
+
+                bool? result;
+                try
                 {
-                    Console.Write("OK" + Environment.NewLine);
+                    result = fix.Check();
+                }
+                catch (Exception exception)
+                {
+                    Console.Write("FEHLER!" + Environment.NewLine);
+                    Console.WriteLine(exception.GetMessagesTree());
+                    return;
+                }
+
+                if(result == true)
+                {
+                    Console.WriteLine("OK");
                 }
                 else
                 {
                     _numDefect++;
-                    Console.Write("DEFEKT");
-                    if (_fix)
+                    Console.Write(result == null ? "NICHT FESTSTELLBAR" : "DEFEKT");
+                    if(_fix)
                     {
                         Console.Write(" -> KORREKTUR: ");
                         Console.Out.Flush();
                         try
                         {
-                            fix();
+                            fix.Apply();
                             _numFix++;
                             Console.Write("ERFOLGREICH." + Environment.NewLine);
                         }
-                        catch (Exception exception)
+                        catch(Exception exception)
                         {
                             Console.Write("FEHLER!" + Environment.NewLine);
                             Console.WriteLine(exception.GetMessagesTree());

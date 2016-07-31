@@ -66,12 +66,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FixBase.cs" />
     <Compile Include="Fixes\BrandingEntries.cs" />
     <Compile Include="Fixes\DesktopLinks.cs" />
     <Compile Include="Fixes\LinksBase.cs" />
     <Compile Include="Fixes\StartMenu.cs" />
     <Compile Include="Fixes\UpdateService.cs" />
     <Compile Include="Fixes\RegistryKeys.cs" />
+    <Compile Include="IFix.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

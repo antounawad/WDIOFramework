@@ -6,59 +6,66 @@ using File = System.IO.File;
 
 namespace Update.Fix.Fixes
 {
-    public class StartMenu: LinksBase
+    internal class StartMenu : LinksBase, IFix
     {
         private const string NEW_START_MENU_FOLDER = "xbAV-Berater";
-        private const string SYNC_CLIENT = "EULG_sync_Client.exe";
-        private const string SUPPORT = "Support\\EulgSupport.exe";
-        private const string REMOTE = "Support\\EulgFernwartung.exe";
+        private const string SYNC_CLIENT = "Eulg_sync_client.exe";
+        private const string SUPPORT = "Support\\Support.exe";
+        private const string REMOTE = "Support\\Fernwartung.exe";
 
-        private static readonly Dictionary<string, string> _availableBuildTags = new Dictionary<string, string>()
-                                                                {
-                                                                    { "EULG" , ""},
-                                                                    { "EULG-Test" , " (Test)"},
-                                                                    { "EulgDeTest" , " (test.eulg.de)"},
-                                                                };
-
-        private static readonly Dictionary<string, string> _availableStartMenuFolders = new Dictionary<string, string>()
-                                                                { 
-                                                                    { "EULG" , "EULG"},
-                                                                    { "EULG-Test" , "EULG (Test)"},
-                                                                    { "EulgDeTest" , "EULG (test.eulg.de)"},
-                                                                };
-
-        private static string _legacyStartMenuFolder => _availableStartMenuFolders[BASEDIRECTORYNAME];
-        private static string _buildTag => _availableBuildTags[BASEDIRECTORYNAME];
-
-        public static bool Check()
+        private static readonly Dictionary<string, string> _availableStartMenuFolders = new Dictionary<string, string>
         {
-            var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), _legacyStartMenuFolder);
-            var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), _legacyStartMenuFolder);
+            { "", "EULG" },
+            { "Test", "EULG (Test)" },
+            { "Beta", "EULG (Beta)" },
+            { "PreRel", "EULG (Pre)" },
+            { "EulgDeTest", "EULG (test.eulg.de)" }
+        };
 
-            return !(Directory.Exists(clientStartMenuMain) || Directory.Exists(clientStartMenuPrograms));
+        private StartMenu() { }
+
+        public static IFix Inst { get; } = new StartMenu();
+
+        public string Name => nameof(StartMenu);
+
+        public bool? Check()
+        {
+            var folderName = GetLegacyStartMenuFolder();
+            if (folderName == null) return null;
+
+            var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), folderName);
+            var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), folderName);
+
+            return !(Directory.Exists(clientStartMenuMain) && Directory.Exists(clientStartMenuPrograms));
         }
 
-        public static void Fix()
+        public void Apply()
         {
+            var folderName = GetLegacyStartMenuFolder();
+            if(folderName == null) throw new InvalidOperationException("Kann Order im Startmenü nicht bestimmen");
+
             var clientStartMenuLegacy = string.Empty;
             var clientStartMenuNew = string.Empty;
-            var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), _legacyStartMenuFolder);
-            var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), _legacyStartMenuFolder);
+            var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), folderName);
+            var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), folderName);
+
+            var buildTag = GetBuildTag();
+            var newFolderName = string.IsNullOrEmpty(buildTag) ? NEW_START_MENU_FOLDER : $"{NEW_START_MENU_FOLDER} ({buildTag})";
 
             if (Directory.Exists(clientStartMenuMain))
             {
                 clientStartMenuLegacy = clientStartMenuMain;
-                clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), NEW_START_MENU_FOLDER);
+                clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), newFolderName);
             }
             else if (Directory.Exists(clientStartMenuPrograms))
             {
                 clientStartMenuLegacy = clientStartMenuPrograms;
-                clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), NEW_START_MENU_FOLDER);
+                clientStartMenuNew = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), newFolderName);
             }
 
             if (!string.IsNullOrEmpty(clientStartMenuNew))
             {
-                var baseDirectory = BASEDIRECTORY;
+                var baseDirectory = GetInstallDir();
 
                 string[] startMenuGroupNew = new string[0];
                 if (Directory.Exists(clientStartMenuNew))
@@ -70,8 +77,11 @@ namespace Update.Fix.Fixes
                     Directory.CreateDirectory(clientStartMenuNew);
                 }
 
-                var clientLink = $"xbAV-Berater{_buildTag}.lnk";
-                var syncClientLink = $"Sync-Client{_buildTag}.lnk";
+                var clientName = string.IsNullOrEmpty(buildTag) ? "xbAV-Berater" : $"xbAV-Berater ({buildTag})";
+                var syncName = string.IsNullOrEmpty(buildTag) ? "Sync-Client" : $"Sync-Client ({buildTag})";
+
+                var clientLink = $"{clientName}.lnk";
+                var syncClientLink = $"{syncName}.lnk";
                 var supportLink = "Support.lnk";
                 var remoteLink = "Fernwartung.lnk";
 
@@ -121,6 +131,18 @@ namespace Update.Fix.Fixes
                     // ignore
                 }
             }
+        }
+
+        private static string GetLegacyStartMenuFolder()
+        {
+            var buildTag = GetBuildTag();
+            if (buildTag == null)
+            {
+                return null;
+            }
+
+            string folderName;
+            return _availableStartMenuFolders.TryGetValue(buildTag, out folderName) ? folderName : $"EULG ({buildTag})";
         }
     }
 }
