@@ -15,18 +15,15 @@ namespace Update.Fix.Fixes
 
         public static bool Check()
         {
-            if (Branding != null)
-            {
-                var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
-                                   .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
-                                   .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
+            var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
+                                .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
+                                .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
 
-                foreach (var link in linksToCheck)
+            foreach (var link in linksToCheck)
+            {
+                if (GetShortcutTargetFile(link) == _eulgPath)
                 {
-                    if (GetShortcutTargetFile(link) == _eulgPath)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
 
@@ -35,31 +32,28 @@ namespace Update.Fix.Fixes
 
         public static void Fix()
         {
-            if (Branding != null)
+            var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
+                                .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
+                                .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
+
+            foreach (var link in linksToCheck)
             {
-                var linksToCheck = Directory.GetFiles(_desktop, "*.lnk")
-                                   .Concat(Directory.GetFiles(_commonDesktop, "*.lnk"))
-                                   .Concat(Directory.GetFiles(_taskBar, "*.lnk"));
-
-                foreach (var link in linksToCheck)
+                try
                 {
-                    try
-                    {
-                        var targetlink = GetShortcutTargetFile(link);
+                    var targetlink = GetShortcutTargetFile(link);
 
-                        if (targetlink == _eulgPath)
-                        {
-                            var newlink = Path.Combine(Path.GetDirectoryName(link), "xbAV Berater.lnk");
-
-                            File.Delete(link);
-                            SetLink(newlink, _eulgPath);
-                        }
-                    }
-                    catch (Exception e)
+                    if (targetlink == _eulgPath)
                     {
-                        Console.WriteLine($"Exception {e}");
-                        // ignore
+                        var newlink = Path.Combine(Path.GetDirectoryName(link), "xbAV Berater.lnk");
+
+                        File.Delete(link);
+                        SetLink(newlink, _eulgPath);
                     }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception {e}");
+                    // ignore
                 }
             }
         }

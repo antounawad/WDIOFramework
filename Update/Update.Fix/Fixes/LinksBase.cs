@@ -1,35 +1,16 @@
 ﻿using System;
 using System.IO;
-using Eulg.Shared;
 using IWshRuntimeLibrary;
-using File = System.IO.File;
 
 namespace Update.Fix.Fixes
 {
     public class LinksBase
     {
-        private const string BRANDING_FILE_NAME = "Branding.xml";
-
         protected const string CLIENT = "EULG_client.exe";
 
         protected static readonly string BASEDIRECTORY = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..");
 
-        private static Branding _branding;
-        protected static Branding Branding
-        {
-            get
-            {
-                if (_branding == null)
-                {
-                    var brandingXmlFile = Path.Combine(BASEDIRECTORY, BRANDING_FILE_NAME);
-                    if (!File.Exists(brandingXmlFile)) throw new Exception("Datei " + brandingXmlFile + " nicht gefunden.");
-
-                    _branding = Branding.Read(brandingXmlFile);
-                }
-
-                return _branding;
-            }
-        }
+        protected static readonly string BASEDIRECTORYNAME = Path.GetFileName(Path.GetFullPath(BASEDIRECTORY).TrimEnd(Path.DirectorySeparatorChar));
 
         public static void SetLink(string link, string destination)
         {
