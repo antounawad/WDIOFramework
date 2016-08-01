@@ -164,9 +164,22 @@ namespace Eulg.Client.SupportTool
 
         public Uri TryGetUpdateServiceUri()
         {
+            if (CurrentBranding.Version < 2)
+            {
+                //TODO Update.Fix tool anbieten
+                var message = "Die Anwendungskonfiguration dieser Installation ist veraltet und muss auf den aktuellen Stand gebracht werden, bevor eine Prüfung der Dateien möglich ist.";
+                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(Application.Current.MainWindow, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning));
+                return null;
+            }
+
             try
             {
-                return _updateServiceUri ?? (_updateServiceUri = GetUpdateUri());
+                if (_updateServiceUri == null)
+                {
+                    var apiClient = new ApiResourceClient(CurrentBranding.Info.ApiManifestUri, CurrentBranding.Info.Channel);
+                    _updateServiceUri = apiClient.Fetch()[EApiResource.UpdateService];
+                }
+                return _updateServiceUri;
             }
             catch (Exception ex)
             {
@@ -625,7 +638,7 @@ namespace Eulg.Client.SupportTool
                 // Service im richtigen Pfad (oder evtl noch KS...)
                 var pathShould = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH, UPDATE_SERVICE_PATH, UPDATE_SERVICE_BINARY);
                 var pathIs = GetServiceImagePath(UPDATE_SERVICE_NAME);
-                if (!pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase)) return false;
+                if (!pathIs.Equals(pathShould, StringComparison.OrdinalIgnoreCase)) return false;
 
                 // Service richtige Version?
                 var fi = new FileInfo(pathIs);
@@ -849,26 +862,6 @@ namespace Eulg.Client.SupportTool
             }
 
             return !ProcessHelper.IsProcessRunning(PROCESS);
-        }
-
-        private static Uri GetUpdateUri()
-        {
-            var keyNames = new[] { "xbAV Beratungssoftware GmbH", "EULG Software GmbH", "KS Software GmbH" };
-            foreach (var parentName in keyNames)
-            {
-                using(var regkey = Registry.CurrentUser.OpenSubKey($"Software\\{parentName}\\{CurrentBranding.Registry.UserSettingsKey}"))
-                {
-                    if (regkey != null)
-                    {
-                        var serviceUrl = regkey.GetValue("Service").ToString();
-                        var apiClient = new ApiResourceClient(serviceUrl, CurrentBranding.Info.Channel);
-
-                        return apiClient.Fetch()[EApiResource.UpdateService];
-                    }
-                }
-            }
-
-            return null;
         }
     }
 }

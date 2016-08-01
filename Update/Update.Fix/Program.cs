@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Principal;
 using Eulg.Shared;
@@ -8,13 +10,9 @@ namespace Update.Fix
 {
     internal class Program
     {
-        private static bool _fix;
-        private static bool _all;
-        private static string[] _args;
-        private static int _numDefect;
-        private static int _numFix;
-
-        private delegate bool Check();
+        private readonly string[] _args;
+        private readonly bool _fix;
+        private readonly bool _all;
 
         /* 
             Exit-Codes: 0 - alles I.O.
@@ -24,34 +22,31 @@ namespace Update.Fix
         */
         private static int Main(string[] args)
         {
+            var startAppWhenDone = args.Any(a => a.Equals("STARTAPP", StringComparison.OrdinalIgnoreCase));
+
             try
             {
-                _fix = args.Any(a => a.Equals("FIX", StringComparison.InvariantCultureIgnoreCase));
-                _all = args.Any(a => a.Equals("ALL", StringComparison.InvariantCultureIgnoreCase));
-                _args = args;
-                if (_fix && !IsAdministrator())
-                {
-                    throw new Exception("FIX nur als Administrator möglich!");
-                }
-                if (args.Length < 1) _all = true;
+                var program = new Program(args);
+                var defectsCount = 0;
+                var repairedCount = 0;
 
                 // Registry Keys
-                DoCheck(RegistryKeys.Inst);
+                program.DoCheck(RegistryKeys.Inst, ref defectsCount, ref repairedCount);
 
                 // Startmenu
-                DoCheck(StartMenu.Inst);
+                program.DoCheck(StartMenu.Inst, ref defectsCount, ref repairedCount);
 
                 // Desktop links
-                DoCheck(DesktopLinks.Inst);
+                program.DoCheck(DesktopLinks.Inst, ref defectsCount, ref repairedCount);
 
                 // Update Service
-                //DoCheck(UpdateService.Inst);
+                //program.DoCheck(UpdateService.Inst, ref defectsCount, ref repairedCount);
 
                 // Branding
-                DoCheck(BrandingEntries.Inst);
+                program.DoCheck(BrandingEntries.Inst, ref defectsCount, ref repairedCount);
 
-                if (_numFix > 0) return 2;
-                if (_numDefect > 0) return 1;
+                if (defectsCount > 0) return 2;
+                if (repairedCount > 0) return 1;
                 return 0;
             }
             catch (Exception exception)
@@ -59,9 +54,45 @@ namespace Update.Fix
                 Console.WriteLine(exception.GetMessagesTree());
                 return 9;
             }
+            finally
+            {
+                if (startAppWhenDone)
+                {
+                    var directory = AppDomain.CurrentDomain.BaseDirectory;
+                    var clientExecutable = File.Exists(Path.Combine(directory, "EULG_client.exe"))
+                        ? Path.Combine(directory, "EULG_client.exe")
+                        : Path.Combine(Path.GetDirectoryName(directory), "EULG_client.exe");
+
+                    using (var process = new Process
+                    {
+                        StartInfo = new ProcessStartInfo(clientExecutable)
+                        {
+                            Arguments = "noupdate",
+                            Verb = "run"
+                        }
+                    })
+                    {
+                        process.Start();
+                    }
+                }
+            }
         }
 
-        private static void DoCheck(IFix fix)
+        private Program(string[] args)
+        {
+            _args = args;
+            _fix = args.Any(a => a.Equals("FIX", StringComparison.OrdinalIgnoreCase));
+            _all = args.Any(a => a.Equals("ALL", StringComparison.OrdinalIgnoreCase));
+
+            if(_fix && !IsAdministrator())
+            {
+                throw new Exception("FIX nur als Administrator möglich!");
+            }
+
+            if(args.Length < 1) _all = true;
+        }
+
+        private void DoCheck(IFix fix, ref int defectsCount, ref int repairedCount)
         {
             if(_all || _args.Any(a => a.Equals(fix.Name, StringComparison.OrdinalIgnoreCase)))
             {
@@ -86,7 +117,7 @@ namespace Update.Fix
                 }
                 else
                 {
-                    _numDefect++;
+                    ++defectsCount;
                     Console.Write(result == null ? "NICHT FESTSTELLBAR" : "DEFEKT");
                     if(_fix)
                     {
@@ -95,7 +126,7 @@ namespace Update.Fix
                         try
                         {
                             fix.Apply();
-                            _numFix++;
+                            ++repairedCount;
                             Console.Write("ERFOLGREICH." + Environment.NewLine);
                         }
                         catch(Exception exception)
