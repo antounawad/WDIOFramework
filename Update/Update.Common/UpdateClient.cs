@@ -45,7 +45,7 @@ namespace Eulg.Update.Common
         private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
         private const int STREAM_BUFFER_SIZE = 81920;
 
-        public bool UseHttps { get; set; }
+        public bool UseHttps { get; private set; }
         public UpdateConfig UpdateConf = new UpdateConfig();
         public readonly WorkerConfig WorkerConfig = new WorkerConfig();
         public Branding.EUpdateChannel UpdateChannel { get; set; }
@@ -57,8 +57,16 @@ namespace Eulg.Update.Common
             set
             {
                 _updateUrl = value;
-                if (_updateUrl.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase)) { _updateUrl = _updateUrl.Substring(7); }
-                if (_updateUrl.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase)) { _updateUrl = _updateUrl.Substring(8); }
+                if (_updateUrl.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    _updateUrl = _updateUrl.Substring(7);
+                    UseHttps = false; //HACK Workaround um größere Anpassungen zu vermeiden
+                }
+                if (_updateUrl.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    _updateUrl = _updateUrl.Substring(8);
+                    UseHttps = true; //HACK Workaround um größere Anpassungen zu vermeiden
+                }
                 if (!_updateUrl.EndsWith("/")) { _updateUrl += "/"; }
             }
         }
