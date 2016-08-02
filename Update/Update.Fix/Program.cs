@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Windows.Forms;
 using Eulg.Shared;
 using Update.Fix.Fixes;
 
@@ -10,6 +10,9 @@ namespace Update.Fix
 {
     internal class Program
     {
+        [DllImport("kernel32")]
+        static extern bool AllocConsole();
+
         private readonly string[] _args;
         private readonly bool _fix;
         private readonly bool _all;
@@ -22,11 +25,18 @@ namespace Update.Fix
         */
         private static int Main(string[] args)
         {
-            var startAppWhenDone = args.Any(a => a.Equals("STARTAPP", StringComparison.OrdinalIgnoreCase));
+            var showMsgbox = args.Any(a => a.Equals("UI", StringComparison.OrdinalIgnoreCase));
 
             try
             {
                 var program = new Program(args);
+
+                var showConsole = args.Any(a => a.Equals("TERM", StringComparison.OrdinalIgnoreCase));
+                if (showConsole || !showMsgbox) // Default to console
+                {
+                    AllocConsole();
+                }
+
                 var defectsCount = 0;
                 var repairedCount = 0;
 
@@ -40,42 +50,49 @@ namespace Update.Fix
                 program.DoCheck(DesktopLinks.Inst, ref defectsCount, ref repairedCount);
 
                 // Update Service
-                //program.DoCheck(UpdateService.Inst, ref defectsCount, ref repairedCount);
+                program.DoCheck(UpdateService.Inst, ref defectsCount, ref repairedCount);
 
-                // Branding
-                program.DoCheck(BrandingEntries.Inst, ref defectsCount, ref repairedCount);
+                // Branding (Sonderverhalten für Migration von 1.x nach 2.0; nicht allgemeingültig)
+                if (!program.DoCheck(BrandingEntries.Inst, ref defectsCount, ref repairedCount) && showMsgbox)
+                {
+                    ShowUpdateResultMessage(false);
+                    return 9;
+                }
 
-                if (defectsCount > 0) return 2;
+                if (showMsgbox)
+                {
+                    // Sonderverhalten für Migration von 1.x nach 2.0; solange Aktualisierung der Branding OK ist der Rest egal.
+                    ShowUpdateResultMessage(true);
+                }
+
+                if(defectsCount > 0) return 2;
                 if (repairedCount > 0) return 1;
                 return 0;
             }
             catch (Exception exception)
             {
+                if (showMsgbox)
+                {
+                    ShowUpdateResultMessage(false, exception);
+                }
+
                 Console.WriteLine(exception.GetMessagesTree());
                 return 9;
             }
-            finally
-            {
-                if (startAppWhenDone)
-                {
-                    var directory = AppDomain.CurrentDomain.BaseDirectory;
-                    var clientExecutable = File.Exists(Path.Combine(directory, "EULG_client.exe"))
-                        ? Path.Combine(directory, "EULG_client.exe")
-                        : Path.Combine(Path.GetDirectoryName(directory), "EULG_client.exe");
+        }
 
-                    using (var process = new Process
-                    {
-                        StartInfo = new ProcessStartInfo(clientExecutable)
-                        {
-                            Arguments = "noupdate",
-                            Verb = "run"
-                        }
-                    })
-                    {
-                        process.Start();
-                    }
-                }
+        private static void ShowUpdateResultMessage(bool success, Exception exception = null)
+        {
+            var message = success
+                ? "Die Aktualisierung wurde erfolgreich durchgeführt. Sie können nun den „xbAV-Berater“ über die Desktop-Verknüpfung starten."
+                : "Die Aktualisierung des xbAV-Beraters war leider nicht erfolgreich. Bitte wenden Sie sich an unseren Support unter 0681 2107380.";
+
+            if (!success && exception != null)
+            {
+                message = $"{message}\r\n\r\nSystemmeldung: {exception.Message}";
             }
+
+            MessageBox.Show(message, "xbAV-Berater Update", MessageBoxButtons.OK, success ? MessageBoxIcon.Asterisk : MessageBoxIcon.Exclamation);
         }
 
         private Program(string[] args)
@@ -92,7 +109,7 @@ namespace Update.Fix
             if(args.Length < 1) _all = true;
         }
 
-        private void DoCheck(IFix fix, ref int defectsCount, ref int repairedCount)
+        private bool DoCheck(IFix fix, ref int defectsCount, ref int repairedCount)
         {
             if(_all || _args.Any(a => a.Equals(fix.Name, StringComparison.OrdinalIgnoreCase)))
             {
@@ -108,39 +125,43 @@ namespace Update.Fix
                 {
                     Console.Write("FEHLER!" + Environment.NewLine);
                     Console.WriteLine(exception.GetMessagesTree());
-                    return;
+                    return false;
                 }
 
                 if(result == true)
                 {
                     Console.WriteLine("OK");
+                    return true;
+                }
+
+                ++defectsCount;
+                Console.Write(result == null ? "NICHT FESTSTELLBAR" : "DEFEKT");
+                if(_fix)
+                {
+                    Console.Write(" -> KORREKTUR: ");
+                    Console.Out.Flush();
+                    try
+                    {
+                        fix.Apply();
+                        ++repairedCount;
+                        Console.Write("ERFOLGREICH." + Environment.NewLine);
+                        return true;
+                    }
+                    catch(Exception exception)
+                    {
+                        Console.Write("FEHLER!" + Environment.NewLine);
+                        Console.WriteLine(exception.GetMessagesTree());
+                    }
                 }
                 else
                 {
-                    ++defectsCount;
-                    Console.Write(result == null ? "NICHT FESTSTELLBAR" : "DEFEKT");
-                    if(_fix)
-                    {
-                        Console.Write(" -> KORREKTUR: ");
-                        Console.Out.Flush();
-                        try
-                        {
-                            fix.Apply();
-                            ++repairedCount;
-                            Console.Write("ERFOLGREICH." + Environment.NewLine);
-                        }
-                        catch(Exception exception)
-                        {
-                            Console.Write("FEHLER!" + Environment.NewLine);
-                            Console.WriteLine(exception.GetMessagesTree());
-                        }
-                    }
-                    else
-                    {
-                        Console.Write(Environment.NewLine);
-                    }
+                    Console.Write(Environment.NewLine);
                 }
+
+                return false;
             }
+
+            return true;
         }
 
         private static bool IsAdministrator()
