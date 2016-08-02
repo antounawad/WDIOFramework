@@ -36,6 +36,8 @@ namespace Update.Fix
                 {
                     return path;
                 }
+
+                path = Path.GetDirectoryName(path);
             }
 
             return null;

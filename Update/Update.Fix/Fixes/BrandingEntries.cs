@@ -76,7 +76,7 @@ namespace Update.Fix.Fixes
 
             File.Copy(brandingXmlFile, backupFilename);
 
-            using(var fileStream = File.OpenWrite(brandingXmlFile))
+            using(var fileStream = File.Open(brandingXmlFile, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
                 var xmlSerializer = new XmlSerializer(typeof(Branding));
                 xmlSerializer.Serialize(fileStream, branding);
