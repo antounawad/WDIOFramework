@@ -514,7 +514,7 @@ namespace Eulg.Setup
                 var filesToCopyOver = new DirectoryInfo(src).GetFiles("*.*", SearchOption.TopDirectoryOnly);
                 foreach (var fileToCopyOver in filesToCopyOver)
                 {
-                    File.Copy(src, Path.Combine(dst, fileToCopyOver.Name), true);
+                    File.Copy(fileToCopyOver.FullName, Path.Combine(dst, fileToCopyOver.Name), true);
                 }
                 return true;
             }
