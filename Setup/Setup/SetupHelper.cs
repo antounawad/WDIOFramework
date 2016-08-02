@@ -511,14 +511,10 @@ namespace Eulg.Setup
                 {
                     Directory.CreateDirectory(dst);
                 }
-                //FIXME Determine programmatically which files the setup came with, but watch out for temporary files placed in the same folder during installation
-                var filesToCopyOver = new[] { "Setup.exe", "Setup.xml", "Interop.IWshRuntimeLibrary.dll", "MaterialDesignColors.dll", "MaterialDesignThemes.Wpf.dll" };
+                var filesToCopyOver = new DirectoryInfo(src).GetFiles("*.*", SearchOption.TopDirectoryOnly);
                 foreach (var fileToCopyOver in filesToCopyOver)
                 {
-                    if (File.Exists(Path.Combine(src, fileToCopyOver)))
-                    {
-                        File.Copy(Path.Combine(src, fileToCopyOver), Path.Combine(dst, fileToCopyOver), true);
-                    }
+                    File.Copy(src, Path.Combine(dst, fileToCopyOver.Name), true);
                 }
                 return true;
             }
