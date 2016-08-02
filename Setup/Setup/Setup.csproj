@@ -187,7 +187,6 @@
     <Resource Include="Pages\Inst128.png" />
     <Resource Include="Pages\Remove.png" />
     <Resource Include="Pages\Repair.png" />
-    <Resource Include="Pages\Setup-Eulg.png" />
     <Resource Include="Pages\Green Ball.png" />
     <Resource Include="Pages\Orange Ball.png" />
     <Resource Include="Pages\Red Ball.png" />
@@ -215,6 +214,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Setup.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pages\Setup-xbav.png" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="..\..\Shared\Shared.projitems" Label="Shared" />

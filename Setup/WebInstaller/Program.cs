@@ -97,7 +97,7 @@ namespace Eulg.Setup.WebInstaller
                 Cursor.Current = Cursors.WaitCursor;
 
                 // Temp. Ordner vorbereiten
-                var tmpFolder = Path.Combine(Path.GetTempPath(), Temp.WebInstTempFolder);
+                var tmpFolder = Path.Combine(Path.GetTempPath(), Eulg.Setup.Shared.Temp.WebInstTempFolder);
                 DelTree(tmpFolder);
                 if (!Directory.Exists(tmpFolder))
                 {
@@ -248,7 +248,7 @@ namespace Eulg.Setup.WebInstaller
             {
                 using (responseStream)
                 {
-                    using(var inflate = new DeflateStream(responseStream, CompressionMode.Decompress))
+                    using (var inflate = new DeflateStream(responseStream, CompressionMode.Decompress))
                     {
                         inflate.CopyTo(package);
                     }

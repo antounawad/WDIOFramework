@@ -11,7 +11,7 @@ namespace Eulg.Setup.Pages
         {
             InitializeComponent();
 
-            PageTitle = "Willkommen beim Installations-Assistenten von EULG";
+            PageTitle = "Willkommen beim Installations-Assistenten";
             HasPrev = false;
             HasNext = true;
         }

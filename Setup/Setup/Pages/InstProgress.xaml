@@ -5,7 +5,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              Width="480"
              d:DesignHeight="300"
-             d:DesignWidth="480"
              mc:Ignorable="d">
 
     <StackPanel Name="AreaProgress" HorizontalAlignment="Stretch">
