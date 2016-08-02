@@ -71,12 +71,23 @@ namespace Update.Fix.Fixes
                     && ProfileExists(Registry.LocalMachine, REGISTRY_GROUP_NAME_OBSOLETE[1], hklmProfile)
                     && ProfileExists(Registry.CurrentUser, REGISTRY_GROUP_NAME_OBSOLETE[0], hkcuProfile))
                 {
+                    using (var hklm = Registry.LocalMachine.OpenSubKey($@"Software\{REGISTRY_GROUP_NAME_OBSOLETE[1]}\{hklmProfile}", RegistryKeyPermissionCheck.ReadSubTree))
+                    {
+                        var installDir = (string)hklm?.GetValue("Install_Dir");
+                        var currentDir = GetInstallDir();
+
+                        if (installDir == null || !installDir.TrimEnd('/').Equals(currentDir.TrimEnd('/'), StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new Exception("Kann Registry-Quellschlüssel nicht bestimmen (2)");
+                        }
+                    }
+
                     hklmSourceKeyName = REGISTRY_GROUP_NAME_OBSOLETE[1];
                     hkcuSourceKeyName = REGISTRY_GROUP_NAME_OBSOLETE[0];
                 }
                 else
                 {
-                    throw new Exception("Kann Registry-Quellschlüssel nicht bestimmen");
+                    throw new Exception("Kann Registry-Quellschlüssel nicht bestimmen (1)");
                 }
             }
             else
