@@ -59,7 +59,7 @@ namespace Eulg.Setup
                 if (string.IsNullOrEmpty(TextBoxHttpPort.Text))
                     TextBoxHttpPort.Text = "0";
                 MessageBox.Show(MainWindow.Instance, "Ein oder mehrere Felder enthalten ungültige Eingaben. Bitte überprüfen Sie Ihre Einstellungen.",
-                                "EULG Setup", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                "xbAV-Berater-Setup", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
 
@@ -74,7 +74,7 @@ namespace Eulg.Setup
             {
                 MessageBox.Show(MainWindow.Instance, "Leider wurden Ihre Einstellungen nicht erfolgreich gespeichert. Systemmeldung:" +
                     Environment.NewLine + Environment.NewLine +
-                    ex.GetType().Name + ": " + ex.Message, "EULG Setup", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    ex.GetType().Name + ": " + ex.Message, "xbAV-Berater-Setup", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return false;
             }
         }
@@ -88,7 +88,7 @@ namespace Eulg.Setup
                 || _proxyDomain != ProxyConfig.Domain)
             {
                 return MessageBox.Show(MainWindow.Instance, "Ihre geänderten Einstellungen wurden noch nicht gespeichert! Möchten Sie die Einstellungen wirklich verwerfen?",
-                                       "EULG Setup", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+                                       "xbAV-Berater-Setup", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
             }
 
             return true;

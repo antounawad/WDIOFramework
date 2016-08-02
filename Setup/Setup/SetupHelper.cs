@@ -456,7 +456,7 @@ namespace Eulg.Setup
                                                                           profile.StartMenuFolder,
                                                                           profile.StartMenuSupportTool + ".lnk"));
                     shtct.WindowStyle = 1;
-                    shtct.TargetPath = Path.Combine(InstallPath, "Support", "EulgSupport.exe");
+                    shtct.TargetPath = Path.Combine(InstallPath, "Support", "Support.exe");
                     shtct.IconLocation = shtct.TargetPath + ", 0";
                     shtct.Save();
                 }
@@ -466,7 +466,7 @@ namespace Eulg.Setup
                                                                           profile.StartMenuFolder,
                                                                           profile.StartMenuFernwartung + ".lnk"));
                     shtct.WindowStyle = 1;
-                    shtct.TargetPath = Path.Combine(InstallPath, "Support", "EulgFernwartung.exe");
+                    shtct.TargetPath = Path.Combine(InstallPath, "Support", "Fernwartung.exe");
                     shtct.IconLocation = shtct.TargetPath + ", 0";
                     shtct.Save();
                 }
@@ -546,7 +546,7 @@ namespace Eulg.Setup
                 subKey.SetValue("DisplayName", profile.DesktopApp, RegistryValueKind.String);
                 subKey.SetValue("DisplayIcon", Path.Combine(InstallPath, "Setup", setupExe), RegistryValueKind.String);
                 subKey.SetValue("Publisher", "xbAV Beratungssoftware GmbH", RegistryValueKind.String);
-                subKey.SetValue("URLInfoAbout", "www.xbav-berater.de", RegistryValueKind.String);
+                subKey.SetValue("URLInfoAbout", "berater.xbav.de", RegistryValueKind.String);
                 subKey.SetValue("UninstallString", Path.Combine(InstallPath, "Setup", setupExe) + " /U", RegistryValueKind.String);
                 subKey.SetValue("InstallDate", $"{DateTime.Now:YYYYMMDD}", RegistryValueKind.String);
                 subKey.SetValue("InstallLocation", InstallPath, RegistryValueKind.String);
@@ -554,7 +554,7 @@ namespace Eulg.Setup
                 subKey.SetValue("Language", 1033, RegistryValueKind.DWord);
                 subKey.SetValue("NoModify", 0, RegistryValueKind.DWord);
                 subKey.SetValue("NoRepair", 1, RegistryValueKind.DWord);
-                subKey.SetValue("ModifyPath", Path.Combine(InstallPath, "Support", "EulgSupport.exe"), RegistryValueKind.String);
+                subKey.SetValue("ModifyPath", Path.Combine(InstallPath, "Support", "Support.exe"), RegistryValueKind.String);
 
                 var tmpVersion = Version;
                 if (!String.IsNullOrWhiteSpace(Branding.Info.BuildTag))

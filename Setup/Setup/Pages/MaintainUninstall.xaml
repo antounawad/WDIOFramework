@@ -9,7 +9,7 @@
     <StackPanel>
         <Label x:Name="Label"
                HorizontalAlignment="Center"
-               Content="EULG-Installation entfernen?"
+               Content="xbAV-Berater-Installation entfernen?"
                FontSize="16" />
     </StackPanel>
 </UserControl>

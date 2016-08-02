@@ -60,7 +60,7 @@ namespace Eulg.Client.SupportTool
             Sync
         }
 
-        public const string FERNWARTUNG_EXECUTABLE_NAME = "EulgFernwartung.exe";
+        public const string FERNWARTUNG_EXECUTABLE_NAME = "Fernwartung.exe";
         private const int STREAM_BUFFER_SIZE = 81920;
         private static string _ildasmPath;
         private Uri _updateServiceUri;
