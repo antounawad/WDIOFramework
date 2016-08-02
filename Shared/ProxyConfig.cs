@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Microsoft.Win32;
 
@@ -17,13 +18,47 @@ namespace Eulg.Shared
         public string Domain { get; set; }
 
         private const string REG_KEY_SOFTWARE = "Software";
-        private const string REG_KEY_PARENT = "EULG Software GmbH"; //FIXME
+
+        private readonly string _regKeyParent;
+
+        public ProxyConfig()
+        {
+            const string REG_KEY_PARENT = "xbAV Beratungssoftware GmbH";
+            const string REG_KEY_PARENT_OBSOLETE = "EULG Software GmbH";
+
+            if (CheckForProxySettings(RegistryHive.CurrentUser, REG_KEY_PARENT) || CheckForProxySettings(RegistryHive.LocalMachine, REG_KEY_PARENT))
+            {
+                _regKeyParent = REG_KEY_PARENT;
+            }
+            else if(CheckForProxySettings(RegistryHive.CurrentUser, REG_KEY_PARENT_OBSOLETE) || CheckForProxySettings(RegistryHive.LocalMachine, REG_KEY_PARENT_OBSOLETE))
+            {
+                _regKeyParent = REG_KEY_PARENT_OBSOLETE;
+            }
+            else
+            {
+                _regKeyParent = REG_KEY_PARENT;
+            }
+        }
+
+        private static bool CheckForProxySettings(RegistryHive registryHive, string parentKey)
+        {
+            using(var key = RegistryKey.OpenBaseKey(registryHive, RegistryView.Registry32).OpenSubKey($"{REG_KEY_SOFTWARE}\\{parentKey}", false))
+            {
+                if(key != null && key.GetValueNames().Any(_ => _.StartsWith("Proxy", StringComparison.Ordinal)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public void Init()
         {
             ReadFromRegistry();
             SetDefault();
         }
+
         public void SetDefault()
         {
             WebRequest.DefaultWebProxy = GetWebProxy();
@@ -68,7 +103,7 @@ namespace Eulg.Shared
             HttpPort = 0;
             try
             {
-                var keyCuParent = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+                var keyCuParent = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(_regKeyParent, false);
                 if(keyCuParent != null)
                 {
                     Address = keyCuParent.GetValue("ProxyAddress", null) as string;
@@ -79,7 +114,7 @@ namespace Eulg.Shared
                 }
                 if(Address == null)
                 {
-                    var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+                    var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(_regKeyParent, false);
                     if(keyLmParent != null)
                     {
                         Address = keyLmParent.GetValue("ProxyAddress", null) as string;
@@ -118,7 +153,7 @@ namespace Eulg.Shared
             try
             {
                 keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
-                keyLmParent = keyLmSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyLmSoftware?.CreateSubKey(REG_KEY_PARENT);
+                keyLmParent = keyLmSoftware?.OpenSubKey(_regKeyParent, true) ?? keyLmSoftware?.CreateSubKey(_regKeyParent);
             }
             catch
             {
@@ -126,7 +161,7 @@ namespace Eulg.Shared
             }
 
             var keyCuSoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
-            var keyCuParent = keyCuSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyCuSoftware?.CreateSubKey(REG_KEY_PARENT);
+            var keyCuParent = keyCuSoftware?.OpenSubKey(_regKeyParent, true) ?? keyCuSoftware?.CreateSubKey(_regKeyParent);
 
             switch(ProxyType)
             {
