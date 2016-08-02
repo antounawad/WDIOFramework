@@ -1,12 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Win32;
 
 namespace Update.Fix.Fixes
 {
-    internal class RegistryKeys : IFix
+    internal class RegistryKeys : FixBase, IFix
     {
-        private const string REGISTRY_GROUP_NAME = @"Software\xbAV Beratungssoftware GmbH";
-        private static string[] REGISTRY_GROUP_NAME_OBSOLETE = { @"Software\EULG Software GmbH", @"Software\KS Software GmbH" };
+        private const string REGISTRY_GROUP_NAME = @"xbAV Beratungssoftware GmbH";
+        private static readonly string[] REGISTRY_GROUP_NAME_OBSOLETE = { @"EULG Software GmbH", @"KS Software GmbH" };
 
         private RegistryKeys() { }
 
@@ -16,17 +18,26 @@ namespace Update.Fix.Fixes
 
         public bool? Check()
         {
-            //FIXME Nur das aktuelle Profil bearbeiten sonst werden parallele 1.x und 2.x Installationen zerstört
-            foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
+            var profiles = new[]
             {
-                foreach(var legacyKey in REGISTRY_GROUP_NAME_OBSOLETE)
-                {
-                    var obsoleteKey = key.OpenSubKey(legacyKey);
-                    var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadSubTree);
+                new KeyValuePair<RegistryKey, string>(Registry.CurrentUser, GetHkcuProfileName()),
+                new KeyValuePair<RegistryKey, string>(Registry.LocalMachine, GetHklmProfileName())
+            };
 
-                    if(obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
+            foreach (var profile in profiles)
+            {
+                var key = profile.Key;
+                using (var currentKey = key.OpenSubKey($"Software\\{REGISTRY_GROUP_NAME}\\{profile.Value}", RegistryKeyPermissionCheck.ReadSubTree))
+                {
+                    foreach(var legacyKey in REGISTRY_GROUP_NAME_OBSOLETE)
                     {
-                        return false;
+                        using (var obsoleteKey = key.OpenSubKey($"Software\\{legacyKey}\\{profile.Value}"))
+                        {
+                            if(obsoleteKey != null && (currentKey == null || currentKey.SubKeyCount == 0))
+                            {
+                                return false;
+                            }
+                        }
                     }
                 }
             }
@@ -34,23 +45,77 @@ namespace Update.Fix.Fixes
             return true;
         }
 
-        //FIXME Transaktional arbeiten: DeleteSubKeyTree() erst dann ausführen, wenn Migrationsvorgang bei allen Keys erfolgreich
         public void Apply()
         {
-            foreach (var key in new[] { Registry.LocalMachine, Registry.CurrentUser })
-            {
-                var obsoleteKeyName = REGISTRY_GROUP_NAME_OBSOLETE.FirstOrDefault(k => key.OpenSubKey(k) != null);
+            var hklmProfile = GetHklmProfileName();
+            var hkcuProfile = GetHkcuProfileName();
 
-                if (obsoleteKeyName != null)
+            var profiles = new[]
+            {
+                new KeyValuePair<RegistryKey, string>(Registry.CurrentUser, hkcuProfile),
+                new KeyValuePair<RegistryKey, string>(Registry.LocalMachine, hklmProfile)
+            };
+
+            var sourceKeyName = REGISTRY_GROUP_NAME_OBSOLETE.FirstOrDefault(key =>
+            {
+                return profiles.All(profile => ProfileExists(profile.Key, key, profile.Value));
+            });
+
+            string hklmSourceKeyName;
+            string hkcuSourceKeyName;
+
+            if (sourceKeyName == null)
+            {
+                // Kein Registryschlüssel gefunden, der das selbe Profil sowohl in HKLM als auch HKCU enthält. Es gibt aber noch eine Möglichkeit: HKCU+EULG mit HKLM+KS!
+                if (REGISTRY_GROUP_NAME_OBSOLETE.Length == 2
+                    && ProfileExists(Registry.LocalMachine, REGISTRY_GROUP_NAME_OBSOLETE[1], hklmProfile)
+                    && ProfileExists(Registry.CurrentUser, REGISTRY_GROUP_NAME_OBSOLETE[0], hkcuProfile))
                 {
-                    var obsoleteKey = key.OpenSubKey(obsoleteKeyName);
-                    var currentKey = key.OpenSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree) ?? key.CreateSubKey(REGISTRY_GROUP_NAME, RegistryKeyPermissionCheck.ReadWriteSubTree);
-                    if(obsoleteKey != null)
-                    {
-                        CopyRegistryKeyRecursively(obsoleteKey, currentKey);
-                        key.DeleteSubKeyTree(obsoleteKeyName, false);
-                    }
+                    hklmSourceKeyName = REGISTRY_GROUP_NAME_OBSOLETE[1];
+                    hkcuSourceKeyName = REGISTRY_GROUP_NAME_OBSOLETE[0];
                 }
+                else
+                {
+                    throw new Exception("Kann Registry-Quellschlüssel nicht bestimmen");
+                }
+            }
+            else
+            {
+                hklmSourceKeyName = sourceKeyName;
+                hkcuSourceKeyName = sourceKeyName;
+            }
+
+            using (var hklmSource = Registry.LocalMachine.OpenSubKey($@"Software\{hklmSourceKeyName}\{hklmProfile}", RegistryKeyPermissionCheck.ReadSubTree))
+            {
+                using (var hklmDest = Registry.LocalMachine.CreateSubKey($@"Software\{REGISTRY_GROUP_NAME}\{hklmProfile}", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    CopyRegistryKeyRecursively(hklmSource, hklmDest);
+                }
+            }
+            using (var hkcuSource = Registry.CurrentUser.OpenSubKey($@"Software\{hkcuSourceKeyName}\{hkcuProfile}", RegistryKeyPermissionCheck.ReadSubTree))
+            {
+                using (var hkcuDest = Registry.CurrentUser.CreateSubKey($@"Software\{REGISTRY_GROUP_NAME}\{hkcuProfile}", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                {
+                    CopyRegistryKeyRecursively(hkcuSource, hkcuDest);
+                }
+            }
+
+            // Bis jetzt keine Exception geflogen? Dann altes Profil löschen
+            using (var hklmParent = Registry.LocalMachine.OpenSubKey($@"Software\{hklmSourceKeyName}", RegistryKeyPermissionCheck.ReadWriteSubTree))
+            {
+                hklmParent?.DeleteSubKeyTree(hklmProfile, false);
+            }
+            using (var hkcuParent = Registry.CurrentUser.OpenSubKey($@"Software\{hkcuSourceKeyName}", RegistryKeyPermissionCheck.ReadWriteSubTree))
+            {
+                hkcuParent?.DeleteSubKeyTree(hkcuProfile, false);
+            }
+        }
+
+        private static bool ProfileExists(RegistryKey registryHive, string companyName, string profileName)
+        {
+            using (var regkey = registryHive.OpenSubKey($@"Software\{companyName}\{profileName}", RegistryKeyPermissionCheck.ReadSubTree))
+            {
+                return regkey != null;
             }
         }
 
