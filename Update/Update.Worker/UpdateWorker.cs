@@ -317,8 +317,7 @@ namespace Eulg.Update.Worker
                     StartInfo =
                     {
                         FileName = Config.ApplicationFile,
-                        Arguments = $"{Config.CommandLineArgs} {(bUpdateSuccess ? "updatesuccess" : "updatefail")}",
-                        UseShellExecute = false
+                        Arguments = $"{Config.CommandLineArgs} {(bUpdateSuccess ? "updatesuccess" : "updatefail")}"
                     }
                 })
                 {
