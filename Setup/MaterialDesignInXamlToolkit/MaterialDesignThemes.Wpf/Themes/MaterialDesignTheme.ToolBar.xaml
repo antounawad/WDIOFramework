@@ -116,7 +116,7 @@
     
     <Style x:Key="MaterialDesignToolBar" TargetType="{x:Type ToolBar}">
         <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}"/>
-        <Setter Property="FontFamily" Value="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"/>
+        
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
         <Setter Property="ClipToBounds" Value="True"/>
         <Setter Property="Template">

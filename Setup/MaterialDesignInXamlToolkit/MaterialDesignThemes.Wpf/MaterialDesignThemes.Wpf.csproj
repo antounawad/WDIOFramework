@@ -255,6 +255,10 @@
     <Compile Include="MaterialDataGridComboBoxColumn.cs" />
     <Compile Include="MaterialDataGridTextColumn.cs" />
     <Compile Include="MaterialDateDisplay.cs" />
+    <Compile Include="PackIcon.cs" />
+    <Compile Include="PackIconBase.cs" />
+    <Compile Include="PackIconDataFactory.cs" />
+    <Compile Include="PackIconKind.cs" />
     <Compile Include="PopupBox.cs" />
     <Compile Include="PaletteHelper.cs" />
     <Compile Include="PasswordFieldAssist.cs" />
@@ -294,30 +298,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <Resource Include="Resources\Roboto\RobotoCondensed-Regular.ttf" />
-    <Resource Include="Resources\Roboto\RobotoCondensed-LightItalic.ttf" />
-    <Resource Include="Resources\Roboto\RobotoCondensed-Light.ttf" />
-    <Resource Include="Resources\Roboto\RobotoCondensed-Italic.ttf" />
-    <Resource Include="Resources\Roboto\RobotoCondensed-BoldItalic.ttf" />
-    <Resource Include="Resources\Roboto\RobotoCondensed-Bold.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-ThinItalic.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Thin.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Regular.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-MediumItalic.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Medium.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-LightItalic.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Light.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Italic.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-BoldItalic.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Bold.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-BlackItalic.ttf" />
-    <Resource Include="Resources\Roboto\Roboto-Black.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MaterialDesignColors.Wpf\MaterialDesignColors.Wpf.csproj">
       <Project>{90B53209-C60C-4655-B28D-A1B3E1044BA3}</Project>
       <Name>MaterialDesignColors.Wpf</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
