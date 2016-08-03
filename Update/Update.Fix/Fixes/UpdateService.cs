@@ -70,49 +70,64 @@ namespace Update.Fix.Fixes
 
             var pathShould = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH, UPDATE_SERVICE_PATH, UPDATE_SERVICE_BINARY);
 
-            // Wenn Service bereits installiert -> zuerst entfernen...
-            if (ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
+            try
             {
-                var pathIs = GetServiceImagePath(UPDATE_SERVICE_NAME);
-
-                // Stopp
-                using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
+                // Wenn Service bereits installiert -> zuerst entfernen...
+                if (ServiceController.GetServices().Any(a => a.ServiceName.Equals(UPDATE_SERVICE_NAME)))
                 {
-                    if (svc.Status != ServiceControllerStatus.Stopped)
+                    var pathIs = GetServiceImagePath(UPDATE_SERVICE_NAME);
+
+                    // Stopp
+                    using (var svc = new ServiceController(UPDATE_SERVICE_NAME))
                     {
-                        svc.Stop();
-                        svc.WaitForStatus(ServiceControllerStatus.Stopped, _serviceTimeout);
+                        if (svc.Status != ServiceControllerStatus.Stopped)
+                        {
+                            svc.Stop();
+                            svc.WaitForStatus(ServiceControllerStatus.Stopped, _serviceTimeout);
+                        }
+                    }
+
+                    // Uninstall
+                    using (var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } })
+                    {
+                        p.Start();
+                        p.WaitForExit();
+                    }
+
+                    // Delete
+                    if (pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var pathCurrent = Path.GetDirectoryName(pathIs) ?? string.Empty;
+                        var pathObsolete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE, UPDATE_SERVICE_PATH);
+                        if (pathCurrent.Equals(pathObsolete, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE);
+                            DeleteDirectory(pathToDelete);
+                        }
                     }
                 }
 
-                // Uninstall
-                var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
-                p.Start();
-                p.WaitForExit();
+                // Copy new Image
+                var destDir = Path.GetDirectoryName(pathShould) ?? string.Empty;
+                Directory.CreateDirectory(destDir);
+                File.Copy(newImageFile, pathShould, true);
+                SetDirectoryAccessControl(destDir);
 
-                // Delete
-                if (pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase))
+                // Install new Service
+                using (var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } })
                 {
-                    var pathCurrent = Path.GetDirectoryName(pathIs) ?? string.Empty;
-                    var pathObsolete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE, UPDATE_SERVICE_PATH);
-                    if (pathCurrent.Equals(pathObsolete, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE);
-                        DeleteDirectory(pathToDelete);
-                    }
+                    pNew.Start();
+                    pNew.WaitForExit();
                 }
             }
-
-            // Copy new Image
-            var destDir = Path.GetDirectoryName(pathShould) ?? string.Empty;
-            Directory.CreateDirectory(destDir);
-            File.Copy(newImageFile, pathShould, true);
-            SetDirectoryAccessControl(destDir);
-
-            // Install new Service
-            var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
-            pNew.Start();
-            pNew.WaitForExit();
+            finally
+            {
+                const string INSTALL_LOG = "InstallUtil.InstallLog";
+                if (File.Exists(INSTALL_LOG))
+                {
+                    try { File.Delete(INSTALL_LOG); } catch { /* Versuchen die Logdatei zu entfernen, ist aber nicht schlimm wenn das nicht funktioniert */ }
+                }
+            }
         }
 
         private static void SetDirectoryAccessControl(string path)

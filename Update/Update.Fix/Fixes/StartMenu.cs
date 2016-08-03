@@ -36,7 +36,7 @@ namespace Update.Fix.Fixes
             var clientStartMenuMain = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu), folderName);
             var clientStartMenuPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), folderName);
 
-            return !(Directory.Exists(clientStartMenuMain) && Directory.Exists(clientStartMenuPrograms));
+            return !Directory.Exists(clientStartMenuMain) && !Directory.Exists(clientStartMenuPrograms);
         }
 
         public void Apply()
