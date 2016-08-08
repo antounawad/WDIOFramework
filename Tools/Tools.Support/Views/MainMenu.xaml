@@ -16,11 +16,11 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <TabControl SelectionChanged="TabControl_OnSelectionChanged">
         <TabControl.Resources>
             <Style TargetType="{x:Type TabItem}">
-                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Height" Value="Auto" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TabItem">
@@ -48,26 +48,25 @@
             </Style>
         </TabControl.Resources>
 
-        <TabItem Header="Allgemein" IsSelected="True">
+        <TabItem Foreground="White"
+                 Header="Allgemein"
+                 IsSelected="True">
             <WrapPanel HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Orientation="Vertical">
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnCheckFiles"
-                        >
+                        Click="BtnCheckFiles">
                     Programmdateien prüfen bzw. aktualisieren
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnProtocolViewer"
-                        >
+                        Click="BtnProtocolViewer">
                     Protokoll anzeigen
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnCheckService_OnClick"
-                        >
+                        Click="BtnCheckService_OnClick">
                     Update-Dienst prüfen
                 </Button>
                 <Button Height="28"
@@ -77,14 +76,13 @@
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnFernwartung_OnClick"
-                        >
+                        Click="BtnFernwartung_OnClick">
                     Fernwartung starten
                 </Button>
             </WrapPanel>
         </TabItem>
 
-        <TabItem Header="Upload">
+        <TabItem Foreground="White" Header="Upload">
             <WrapPanel HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Orientation="Vertical">
@@ -104,12 +102,13 @@
                         Height="28"
                         Margin="10"
                         Click="BtnUpload_OnClick"
-                        Content="Upload starten"
-                        />
+                        Content="Upload starten" />
             </WrapPanel>
         </TabItem>
 
-        <TabItem x:Name="TabItemProxy" Header="Proxy">
+        <TabItem x:Name="TabItemProxy"
+                 Foreground="White"
+                 Header="Proxy">
             <Grid>
 
                 <Grid.RowDefinitions>
