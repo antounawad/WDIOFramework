@@ -45,12 +45,23 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="HeaderTemplate">
+                    <Setter.Value>
+                        <DataTemplate DataType="{x:Type TabItem}">
+                            <Border x:Name="grid">
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Text="{TemplateBinding Content}" Foreground="White"/>
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </Border>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </TabControl.Resources>
 
-        <TabItem Foreground="White"
-                 Header="Allgemein"
-                 IsSelected="True">
+        <TabItem Header="Allgemein" IsSelected="True">
             <WrapPanel HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Orientation="Vertical">
@@ -82,7 +93,7 @@
             </WrapPanel>
         </TabItem>
 
-        <TabItem Foreground="White" Header="Upload">
+        <TabItem Header="Upload" IsSelected="False">
             <WrapPanel HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Orientation="Vertical">
@@ -106,9 +117,7 @@
             </WrapPanel>
         </TabItem>
 
-        <TabItem x:Name="TabItemProxy"
-                 Foreground="White"
-                 Header="Proxy">
+        <TabItem x:Name="TabItemProxy" Header="Proxy" IsSelected="False">
             <Grid>
 
                 <Grid.RowDefinitions>
