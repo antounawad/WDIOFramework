@@ -230,16 +230,16 @@ namespace Eulg.Client.SupportTool
             };
             NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
             NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
-                var clientId = string.Empty;
-                try
-                {
-                    clientId = FingerPrint.ClientId;
-                }
-                catch (Exception exception)
-                {
-                    updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
-                }
-                switch (updateClient.FetchManifest(clientId))
+            var clientId = string.Empty;
+            try
+            {
+                clientId = FingerPrint.ClientId;
+            }
+            catch (Exception exception)
+            {
+                updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
+            }
+            switch (updateClient.FetchManifest(clientId))
             {
                 case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
                     break;
@@ -652,7 +652,7 @@ namespace Eulg.Client.SupportTool
                         svc.Start();
                         svc.WaitForStatus(ServiceControllerStatus.Running, _serviceTimeout);
                     }
-                    var ok = (svc.Status != ServiceControllerStatus.Running);
+                    var ok = (svc.Status == ServiceControllerStatus.Running);
                     if (svc.Status != ServiceControllerStatus.Stopped)
                     {
                         svc.Stop();
@@ -668,7 +668,7 @@ namespace Eulg.Client.SupportTool
         private static string GetServiceImagePath(string serviceName)
         {
             var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + serviceName);
-            return key?.GetValue("ImagePath").ToString();
+            return key?.GetValue("ImagePath").ToString().Trim('\"');
         }
 
         //public static bool InstallUpdateService()
@@ -739,7 +739,7 @@ namespace Eulg.Client.SupportTool
                             DeleteDirectory(pathToDelete);
                         }
                         var pathObsolete2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2, UPDATE_SERVICE_PATH);
-                        if(pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
+                        if (pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
                         {
                             var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2);
                             DeleteDirectory(pathToDelete);
@@ -754,7 +754,7 @@ namespace Eulg.Client.SupportTool
                 SetDirectoryAccessControl(destDir);
 
                 // Install new Service
-                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false, Verb = @"runas" } };
                 pNew.Start();
                 pNew.WaitForExit();
                 return true;
