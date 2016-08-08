@@ -553,7 +553,7 @@ namespace Eulg.Setup
                 subKey.SetValue("ModifyPath", Path.Combine(InstallPath, "Support", "Support.exe"), RegistryValueKind.String);
 
                 var tmpVersion = Version;
-                if (!String.IsNullOrWhiteSpace(Branding.Info.BuildTag))
+                if (!string.IsNullOrWhiteSpace(Branding.Info.BuildTag))
                 {
                     tmpVersion += " (" + Branding.Info.BuildTag + ")";
                 }

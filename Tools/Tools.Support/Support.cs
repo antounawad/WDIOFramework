@@ -754,7 +754,7 @@ namespace Eulg.Client.SupportTool
                 SetDirectoryAccessControl(destDir);
 
                 // Install new Service
-                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false, Verb = @"runas" } };
+                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", CreateNoWindow = false, UseShellExecute = true, Verb = "runas" } };
                 pNew.Start();
                 pNew.WaitForExit();
                 return true;
