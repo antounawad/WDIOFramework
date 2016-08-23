@@ -67,16 +67,19 @@
                        Orientation="Vertical">
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnCheckFiles">
+                        Name="BtnCheckFiles"
+                        Click="BtnCheckFiles_OnClick">
                     Programmdateien prüfen bzw. aktualisieren
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnProtocolViewer">
+                        Name="BtnProtocolViewer"
+                        Click="BtnProtocolViewer_OnClick">
                     Protokoll anzeigen
                 </Button>
                 <Button Height="28"
                         Margin="10"
+                        Name="BtnCheckService"
                         Click="BtnCheckService_OnClick">
                     Update-Dienst prüfen
                 </Button>
@@ -87,6 +90,7 @@
                 </Button>
                 <Button Height="28"
                         Margin="10"
+                        Name="BtnFernwartung"
                         Click="BtnFernwartung_OnClick">
                     Fernwartung starten
                 </Button>
