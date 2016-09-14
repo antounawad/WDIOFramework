@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
 using Eulg.Setup.Shared;
 using Eulg.Shared;
 
@@ -43,6 +45,7 @@ namespace Eulg.Setup
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
             /* 
              * Command-Line Args:
              * /U - Uninstall Step 1

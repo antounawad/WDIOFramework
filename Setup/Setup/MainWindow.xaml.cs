@@ -36,6 +36,16 @@ namespace Eulg.Setup
             (FindResource("StoryEndDialog") as Storyboard).Completed += hideDialog;
         }
 
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            var hwndSource = PresentationSource.FromVisual(this) as HwndSource;
+
+            if (hwndSource != null)
+                hwndSource.CompositionTarget.RenderMode = RenderMode.SoftwareOnly;
+
+            base.OnSourceInitialized(e);
+        }
+
         public ISetupPageBase CurrentPage { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
