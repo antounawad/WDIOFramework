@@ -144,6 +144,11 @@ namespace Eulg.Setup.Pages
                             return false;
                         }
                     }
+                    else
+                    {
+                        setup.Log(UpdateClient.ELogTypeEnum.Warning, "Setup wurde vom Benutzer abgebrochen!");
+                        return false;
+                    }
                     SetupHelper.CancelRequested = false;
                 }
                 estimatedInstallSize = setup.UpdateClient.UpdateConf.UpdateFiles.Sum(s => s.FileSize) / 1024;
