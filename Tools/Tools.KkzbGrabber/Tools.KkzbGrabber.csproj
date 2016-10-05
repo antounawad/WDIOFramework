@@ -46,8 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filters\DatabaseFilter.cs" />
-    <Compile Include="Formatters\SqlScriptInSystemEditorFormatter.cs" />
-    <Compile Include="Formatters\ViewInSystemEditorFormatter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

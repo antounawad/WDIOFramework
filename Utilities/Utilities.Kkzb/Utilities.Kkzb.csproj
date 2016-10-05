@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filters\DatabaseFilter.cs" />
+    <Compile Include="Formatters\SqlScriptFormatter.cs" />
+    <Compile Include="Formatters\PreformattedTextFormatter.cs" />
     <Compile Include="IFilter.cs" />
     <Compile Include="IFormatter.cs" />
     <Compile Include="IGrabber.cs" />
