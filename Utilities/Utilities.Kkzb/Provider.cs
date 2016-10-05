@@ -1,6 +1,6 @@
-﻿namespace Tools.KkzbGrabber
+﻿namespace xbAV.Utilities.Kkzb
 {
-    class Provider
+    public class Provider
     {
         public Provider(string name, Rate rate)
         {

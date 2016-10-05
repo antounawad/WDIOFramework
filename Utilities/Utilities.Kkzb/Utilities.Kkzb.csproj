@@ -4,18 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{710439F4-6A02-4FDD-B2CE-982100FE4FDB}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tools.KkzbGrabber</RootNamespace>
-    <AssemblyName>Tools.KkzbGrabber</AssemblyName>
+    <RootNamespace>xbAV.Utilities.Kkzb</RootNamespace>
+    <AssemblyName>Utilities.Kkzb</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -46,23 +43,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filters\DatabaseFilter.cs" />
-    <Compile Include="Formatters\SqlScriptInSystemEditorFormatter.cs" />
-    <Compile Include="Formatters\ViewInSystemEditorFormatter.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="IFilter.cs" />
+    <Compile Include="IFormatter.cs" />
+    <Compile Include="IGrabber.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Utilities\Utilities.Console\Utilities.Console.csproj">
-      <Project>{cede092c-418d-447f-b365-8a429dc772ae}</Project>
-      <Name>Utilities.Console</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Utilities\Utilities.Kkzb\Utilities.Kkzb.csproj">
-      <Project>{71f3f655-bd3f-4d1b-ba44-70d575da1bc0}</Project>
-      <Name>Utilities.Kkzb</Name>
-    </ProjectReference>
+    <Compile Include="Provider.cs" />
+    <Compile Include="Rate.cs" />
+    <Compile Include="Sources\GkvSpitzenverbandGrabber.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

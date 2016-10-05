@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Eulg.Utilities.Console;
+using xbAV.Utilities.Kkzb;
 
 namespace Tools.KkzbGrabber
 {
@@ -31,6 +32,9 @@ namespace Tools.KkzbGrabber
 
                 var selectedFilterType = Prompt.Select("Select filter to apply", filters, f => f.Key).Value;
                 var filter = (IFilter)Activator.CreateInstance(selectedFilterType);
+
+                if(!filter.Initialize()) continue;
+
                 var filtered = new List<Provider>();
 
                 foreach(var item in beitraege)
@@ -62,8 +66,8 @@ namespace Tools.KkzbGrabber
         {
             if(!interfaceType.IsInterface) throw new ArgumentException();
 
-            return interfaceType.Assembly
-                .GetTypes()
+            var types = interfaceType.Assembly.GetExportedTypes().Concat(Assembly.GetExecutingAssembly().GetTypes());
+            return types
                 .Where(t => !t.IsInterface && !t.IsAbstract && interfaceType.IsAssignableFrom(t))
                 .Select(t => new KeyValuePair<DescriptionAttribute, Type>(t.GetCustomAttribute(typeof(DescriptionAttribute), false) as DescriptionAttribute, t))
                 .Where(t => t.Key != null)

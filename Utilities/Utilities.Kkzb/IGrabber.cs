@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Tools.KkzbGrabber
+namespace xbAV.Utilities.Kkzb
 {
-    interface IGrabber
+    public interface IGrabber
     {
         IEnumerable<Provider> GetBeitraege();
     }

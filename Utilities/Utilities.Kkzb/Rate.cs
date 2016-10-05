@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Tools.KkzbGrabber
+namespace xbAV.Utilities.Kkzb
 {
-    struct Rate
+    public struct Rate
     {
         public Rate(int decimals, int exponent)
         {

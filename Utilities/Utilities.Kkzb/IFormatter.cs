@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Tools.KkzbGrabber
+namespace xbAV.Utilities.Kkzb
 {
-    interface IFormatter
+    public interface IFormatter
     {
         void Write(IEnumerable<Provider> data);
     }

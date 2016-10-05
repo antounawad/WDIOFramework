@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.DbKeyReader", "Tools\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Update.Fix", "Update\Update.Fix\Update.Fix.csproj", "{CF904D6E-2C4D-4AAC-B7CE-E48C29DC6C6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities.Kkzb", "Utilities\Utilities.Kkzb\Utilities.Kkzb.csproj", "{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{088808f1-7d7d-4f26-a3a9-447cb92a5174}*SharedItemsImports = 4
@@ -142,6 +144,10 @@ Global
 		{CF904D6E-2C4D-4AAC-B7CE-E48C29DC6C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF904D6E-2C4D-4AAC-B7CE-E48C29DC6C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF904D6E-2C4D-4AAC-B7CE-E48C29DC6C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,5 +172,6 @@ Global
 		{FC2074FA-9589-45A6-855A-228A454BA065} = {9747ECAE-5554-4FEC-AD61-6CD9993DA656}
 		{A5DDE60F-4EC7-4D0F-8D53-72255E2D50FF} = {9405BB41-9B2A-48C1-BEE0-716715937521}
 		{CF904D6E-2C4D-4AAC-B7CE-E48C29DC6C6A} = {9747ECAE-5554-4FEC-AD61-6CD9993DA656}
+		{71F3F655-BD3F-4D1B-BA44-70D575DA1BC0} = {4B4FBEBC-0A99-49F2-8D40-7DEF6BE7258F}
 	EndGlobalSection
 EndGlobal

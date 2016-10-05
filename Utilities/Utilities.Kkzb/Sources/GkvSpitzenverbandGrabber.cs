@@ -8,10 +8,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace Tools.KkzbGrabber.Sources
+namespace xbAV.Utilities.Kkzb.Sources
 {
     [Description("www.gkv-spitzenverband.de")]
-    class GkvSpitzenverbandGrabber : IGrabber
+    public class GkvSpitzenverbandGrabber : IGrabber
     {
         public IEnumerable<Provider> GetBeitraege()
         {

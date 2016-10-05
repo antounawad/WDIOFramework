@@ -1,9 +1,10 @@
 ﻿using System.IO;
 
-namespace Tools.KkzbGrabber
+namespace xbAV.Utilities.Kkzb
 {
-    interface IFilter
+    public interface IFilter
     {
+        bool Initialize();
         bool Filter(ref Provider item);
         void ShowAndResetCounters(TextWriter output);
     }
