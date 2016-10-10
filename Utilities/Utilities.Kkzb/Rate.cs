@@ -57,17 +57,17 @@ namespace xbAV.Utilities.Kkzb
 
         public override int GetHashCode()
         {
-            return Decimals + 23 * Exponent;
+            return Decimals == 0 ? 0 : Decimals + 23 * Exponent;
         }
 
         public static bool operator ==(Rate r1, Rate r2)
         {
-            return r1.Decimals == r2.Decimals && r1.Exponent == r2.Exponent;
+            return (r1.Decimals == r2.Decimals && (r1.Exponent == r2.Exponent)) || (r1.Decimals == 0 && r2.Decimals == 0);
         }
 
         public static bool operator !=(Rate r1, Rate r2)
         {
-            return r1.Decimals != r2.Decimals || r1.Exponent != r2.Exponent;
+            return (r1.Decimals != r2.Decimals || r1.Exponent != r2.Exponent) && (r1.Decimals != 0 || r2.Decimals != 0);
         }
     }
 }
