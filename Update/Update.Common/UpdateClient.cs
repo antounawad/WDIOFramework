@@ -313,7 +313,7 @@ namespace Eulg.Update.Common
                 }
 
                 var log = new List<Tuple<LogTypeEnum, string>>();
-                Parallel.ForEach(filteredWorkerFiles, new ParallelOptions { MaxDegreeOfParallelism = 16 }, workerFile =>
+                Parallel.ForEach(filteredWorkerFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, workerFile =>
                   {
                       var trialNumber = 0;
                       DownloadCurrentFilename = workerFile.FileName;
