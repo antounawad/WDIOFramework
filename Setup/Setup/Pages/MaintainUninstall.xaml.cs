@@ -16,7 +16,7 @@ namespace Eulg.Setup.Pages
 
             InitializeComponent();
 
-            PageTitle = $"{_profile.DesktopApp ?? "Anwendung"} entfernen";
+            PageTitle = $"{_profile?.DesktopApp ?? "Anwendung"} entfernen";
             HasPrev = false;
             HasNext = true;
         }

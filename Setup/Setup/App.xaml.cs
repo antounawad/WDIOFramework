@@ -109,23 +109,24 @@ namespace Eulg.Setup
                     return;
                 }
 
-                SetupConfig config;
-                if (!SetupHelper.ReadConfig(out config))
-                {
-                    MessageBox.Show("Fehler beim Lesen der Konfigurationsdatei!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Current.Shutdown();
-
-                    // ReSharper disable once RedundantJumpStatement
-                    return;
-                }
-
                 if (args.Any(a => a.Equals("/C", StringComparison.OrdinalIgnoreCase)))
                 {
                     _branding = Branding.Read(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Branding.xml"));
                     _version = SetupHelper.ReadInstalledVersion(_branding.Registry.MachineSettingsKey);
+                    _setup = new SetupHelper(new SetupConfig { ApiManifestUri = _branding.Info.ApiManifestUri, Channel = _branding.Info.Channel }, _branding, _version);
                 }
                 else
                 {
+                    SetupConfig config;
+                    if (!SetupHelper.ReadConfig(out config))
+                    {
+                        MessageBox.Show("Fehler beim Lesen der Konfigurationsdatei!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Current.Shutdown();
+
+                        // ReSharper disable once RedundantJumpStatement
+                        return;
+                    }
+
                     var brandingApi = new BrandingApi(config.ApiManifestUri, config.Channel);
                     var brandingInfo = brandingApi.GetBranding();
                     if (brandingInfo == null)
@@ -148,9 +149,8 @@ namespace Eulg.Setup
 
                     _version = brandingInfo.Version;
                     _branding = brandingInfo.Branding;
+                    _setup = new SetupHelper(config, _branding, _version);
                 }
-
-                _setup = new SetupHelper(config, _branding, _version);
             }
             catch (Exception exception)
             {

@@ -73,16 +73,16 @@ namespace Eulg.Setup
             InstallPath = DefaultInstallPath;
 
             var v = new Version(version);
-            if(v.Major == 1 && v.Minor == 4)
+            if (v.Major == 1 && v.Minor == 4)
             {
-                if(Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(branding.Registry.MachineSettingsKey) == null)
+                if (Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(branding.Registry.MachineSettingsKey) == null)
                 {
                     RegKeyParent = REGISTRY_GROUP_NAME_KS;
                 }
             }
             else if (v.Major < 2)
             {
-                if(Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(branding.Registry.MachineSettingsKey) == null)
+                if (Registry.LocalMachine.OpenSubKey(REGISTRY_GROUP_NAME)?.OpenSubKey(branding.Registry.MachineSettingsKey) == null)
                 {
                     RegKeyParent = REGISTRY_GROUP_NAME_EULG;
                 }
@@ -94,7 +94,7 @@ namespace Eulg.Setup
             if (!OfflineInstall) return;
 
             var file = OfflineZipFile;
-            if(!File.Exists(file)) throw new FileNotFoundException("Offline-Zip-Datei nicht gefunden! ", file);
+            if (!File.Exists(file)) throw new FileNotFoundException("Offline-Zip-Datei nicht gefunden! ", file);
         }
 
         public static bool ReadConfig(out SetupConfig config)
@@ -474,7 +474,7 @@ namespace Eulg.Setup
                 if (!string.IsNullOrEmpty(urlVermittlerbereich))
                 {
                     var urlWebverwLnkFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), profile.DesktopWeb + ".lnk");
-                    if(!File.Exists(urlWebverwLnkFile))
+                    if (!File.Exists(urlWebverwLnkFile))
                     {
                         shtct = (IWshShortcut)wsh.CreateShortcut(urlWebverwLnkFile);
                         shtct.WindowStyle = 3;
@@ -637,11 +637,11 @@ namespace Eulg.Setup
         {
             var parentKeys = new[] { REGISTRY_GROUP_NAME_KS, REGISTRY_GROUP_NAME_EULG, REGISTRY_GROUP_NAME };
 
-            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE))
+            using (var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE))
             {
                 foreach (var parentKey in parentKeys)
                 {
-                    using(var profileKey = keyLmSoftware.OpenSubKey($"{parentKey}\\{machineSettingsKey}", false))
+                    using (var profileKey = keyLmSoftware.OpenSubKey($"{parentKey}\\{machineSettingsKey}", false))
                     {
                         if (profileKey != null)
                         {
@@ -656,11 +656,11 @@ namespace Eulg.Setup
 
         public Profile ReadInstalledProfile()
         {
-            using(var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE))
+            using (var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE))
             {
-                using(var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, false))
+                using (var keyLmKs = keyLmSoftware.OpenSubKey(RegKeyParent, false))
                 {
-                    using(var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, false))
+                    using (var keyLmEulg = keyLmKs.OpenSubKey(Branding.Registry.MachineSettingsKey, false))
                     {
                         var bytes = (byte[])keyLmEulg?.GetValue("Profile");
                         if (bytes == null)
@@ -682,9 +682,9 @@ namespace Eulg.Setup
                             return null;
                         }
 
-                        using(var buffer = new MemoryStream(bytes))
+                        using (var buffer = new MemoryStream(bytes))
                         {
-                            using(var inflate = new DeflateStream(buffer, CompressionMode.Decompress))
+                            using (var inflate = new DeflateStream(buffer, CompressionMode.Decompress))
                             {
                                 return (Profile)new XmlSerializer(typeof(Profile)).Deserialize(inflate);
                             }
@@ -943,7 +943,7 @@ namespace Eulg.Setup
         public static void MoveUninstallerToTemp(string tmpDir)
         {
             var src = AppDomain.CurrentDomain.BaseDirectory;
-            DelTree(tmpDir);
+            DelTree(tmpDir, true);
             if (!Directory.Exists(tmpDir))
             {
                 Directory.CreateDirectory(tmpDir);
@@ -1029,7 +1029,7 @@ namespace Eulg.Setup
             }
         }
 
-        public static void DelTree(string path)
+        public static void DelTree(string path, bool leaveRoot = false)
         {
             // ReSharper disable EmptyGeneralCatchClause
             try
@@ -1065,12 +1065,15 @@ namespace Eulg.Setup
             catch
             {
             }
-            try
+            if (!leaveRoot)
             {
-                Directory.Delete(path);
-            }
-            catch
-            {
+                try
+                {
+                    Directory.Delete(path);
+                }
+                catch
+                {
+                }
             }
             // ReSharper enable EmptyGeneralCatchClause
         }
@@ -1134,7 +1137,7 @@ namespace Eulg.Setup
                 process.WaitForExit();
                 var err = process.StandardError.ReadToEnd();
 
-                if(!String.IsNullOrWhiteSpace(err))
+                if (!String.IsNullOrWhiteSpace(err))
                 {
                     Log(UpdateClient.ELogTypeEnum.Warning, err);
                 }
@@ -1150,7 +1153,7 @@ namespace Eulg.Setup
 
         public static bool TryGetApi(string serviceUrl, Branding.EUpdateChannel channel, EApiResource resource, out Uri uri, bool failQuietly = false)
         {
-            if(_apiManifest == null)
+            if (_apiManifest == null)
             {
                 var apiClient = new ApiResourceClient(serviceUrl, channel);
 
@@ -1158,7 +1161,7 @@ namespace Eulg.Setup
                 {
                     _apiManifest = apiClient.Fetch();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     if (!failQuietly)
                     {
@@ -1197,7 +1200,7 @@ namespace Eulg.Setup
             }
 
             var builder = new UriBuilder(update + method);
-            if(forceInsecure)
+            if (forceInsecure)
             {
                 builder.Scheme = "http";
                 builder.Port = 80;
