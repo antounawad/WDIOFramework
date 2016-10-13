@@ -290,7 +290,7 @@ namespace Eulg.Client.SupportTool
                     Directory.CreateDirectory(updateClient.DownloadPath);
                 }
                 NotifyProgressChanged(-1, "*Programmdateien herunterladen...");
-                if (!updateClient.DownloadUpdatesStream())
+                if (!updateClient.DownloadUpdates())
                 {
                     MessageBox.Show("Fehler beim Download der Programmdateien!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     NotifyProgressChanged(-1, "Protokoll übertragen...");
