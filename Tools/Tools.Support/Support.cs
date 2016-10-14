@@ -854,8 +854,8 @@ namespace Eulg.Client.SupportTool
 
             if (ProcessHelper.IsProcessRunning(PROCESS))
             {
-                if (MessageBox.Show("Um die gewünschte Funktion auszuführen, muss der Beratungsclient geschlossen werden.\n\n Wollen Sie den Beratungslient jetzt schließen?",
-                                    "Beratungsclient schließen", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Um die gewünschte Funktion auszuführen, muss der xbAV-Berater geschlossen werden.\n\n Wollen Sie den xbAV-Berater jetzt schließen?",
+                                    "xbAV-Berater schließen", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
                 {
                     ProcessHelper.CloseProcess(PROCESS);
                 }
