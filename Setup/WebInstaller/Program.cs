@@ -34,6 +34,7 @@ namespace Eulg.Setup.WebInstaller
             public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/ApiManifest/JsonGet");
             public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/ApiManifest/JsonGet");
             public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Develop = new BrandingProfile("https://develop.xbav-berater.de/Service/ApiManifest/JsonGet");
             // ReSharper restore UnusedMember.Local
         }
 
@@ -64,7 +65,7 @@ namespace Eulg.Setup.WebInstaller
 
         #endregion
 
-        private static readonly BrandingProfile Profile = BrandingProfile.Release;
+        private static readonly BrandingProfile Profile = BrandingProfile.Develop;
         private static Mutex _appInstanceMutex;
 
         [STAThread]
@@ -232,8 +233,7 @@ namespace Eulg.Setup.WebInstaller
         }
         private static SetupManifest DownloadSetup(string tempPath, Uri updateService)
         {
-            var uri = new Uri(updateService, "WebInstGetSetup");
-
+            var uri = updateService.AbsoluteUri.TrimEnd('/') + "/WebInstGetSetup";
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Proxy = WebRequest.DefaultWebProxy;
             request.AutomaticDecompression = DecompressionMethods.None;

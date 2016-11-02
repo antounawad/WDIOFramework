@@ -1199,7 +1199,7 @@ namespace Eulg.Setup
                 return null;
             }
 
-            var builder = new UriBuilder(update + method);
+            var builder = new UriBuilder(update.AbsoluteUri.TrimEnd('/') + "/" + method);
             if (forceInsecure)
             {
                 builder.Scheme = "http";
