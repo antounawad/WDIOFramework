@@ -60,7 +60,7 @@ namespace Eulg.Client.SupportTool
             Sync
         }
 
-        public const string FERNWARTUNG_EXECUTABLE_NAME = "EulgFernwartung.exe";
+        public const string FERNWARTUNG_EXECUTABLE_NAME = "Fernwartung.exe";
         private const int STREAM_BUFFER_SIZE = 81920;
         private static string _ildasmPath;
         private Uri _updateServiceUri;
@@ -164,9 +164,22 @@ namespace Eulg.Client.SupportTool
 
         public Uri TryGetUpdateServiceUri()
         {
+            if (CurrentBranding.Version < 2)
+            {
+                //TODO Update.Fix tool anbieten
+                var message = "Die Anwendungskonfiguration dieser Installation ist veraltet und muss auf den aktuellen Stand gebracht werden, bevor eine Prüfung der Dateien möglich ist.";
+                Application.Current.Dispatcher.Invoke(() => MessageBox.Show(Application.Current.MainWindow, message, "Kommunikation mit Serverdient nicht möglich", MessageBoxButton.OK, MessageBoxImage.Warning));
+                return null;
+            }
+
             try
             {
-                return _updateServiceUri ?? (_updateServiceUri = GetUpdateUri());
+                if (_updateServiceUri == null)
+                {
+                    var apiClient = new ApiResourceClient(CurrentBranding.Info.ApiManifestUri, CurrentBranding.Info.Channel);
+                    _updateServiceUri = apiClient.Fetch()[EApiResource.UpdateService];
+                }
+                return _updateServiceUri;
             }
             catch (Exception ex)
             {
@@ -217,16 +230,16 @@ namespace Eulg.Client.SupportTool
             };
             NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
             NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
-                var clientId = string.Empty;
-                try
-                {
-                    clientId = FingerPrint.ClientId;
-                }
-                catch (Exception exception)
-                {
-                    updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
-                }
-                switch (updateClient.FetchManifest(clientId))
+            var clientId = string.Empty;
+            try
+            {
+                clientId = FingerPrint.ClientId;
+            }
+            catch (Exception exception)
+            {
+                updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
+            }
+            switch (updateClient.FetchManifest(clientId))
             {
                 case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
                     break;
@@ -277,7 +290,7 @@ namespace Eulg.Client.SupportTool
                     Directory.CreateDirectory(updateClient.DownloadPath);
                 }
                 NotifyProgressChanged(-1, "*Programmdateien herunterladen...");
-                if (!updateClient.DownloadUpdatesStream())
+                if (!updateClient.DownloadUpdates())
                 {
                     MessageBox.Show("Fehler beim Download der Programmdateien!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     NotifyProgressChanged(-1, "Protokoll übertragen...");
@@ -625,7 +638,7 @@ namespace Eulg.Client.SupportTool
                 // Service im richtigen Pfad (oder evtl noch KS...)
                 var pathShould = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH, UPDATE_SERVICE_PATH, UPDATE_SERVICE_BINARY);
                 var pathIs = GetServiceImagePath(UPDATE_SERVICE_NAME);
-                if (!pathIs.Equals(pathShould, StringComparison.InvariantCultureIgnoreCase)) return false;
+                if (!pathIs.Equals(pathShould, StringComparison.OrdinalIgnoreCase)) return false;
 
                 // Service richtige Version?
                 var fi = new FileInfo(pathIs);
@@ -639,7 +652,7 @@ namespace Eulg.Client.SupportTool
                         svc.Start();
                         svc.WaitForStatus(ServiceControllerStatus.Running, _serviceTimeout);
                     }
-                    var ok = (svc.Status != ServiceControllerStatus.Running);
+                    var ok = (svc.Status == ServiceControllerStatus.Running);
                     if (svc.Status != ServiceControllerStatus.Stopped)
                     {
                         svc.Stop();
@@ -655,7 +668,7 @@ namespace Eulg.Client.SupportTool
         private static string GetServiceImagePath(string serviceName)
         {
             var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + serviceName);
-            return key?.GetValue("ImagePath").ToString();
+            return key?.GetValue("ImagePath").ToString().Trim('\"');
         }
 
         //public static bool InstallUpdateService()
@@ -726,7 +739,7 @@ namespace Eulg.Client.SupportTool
                             DeleteDirectory(pathToDelete);
                         }
                         var pathObsolete2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2, UPDATE_SERVICE_PATH);
-                        if(pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
+                        if (pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
                         {
                             var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2);
                             DeleteDirectory(pathToDelete);
@@ -741,7 +754,7 @@ namespace Eulg.Client.SupportTool
                 SetDirectoryAccessControl(destDir);
 
                 // Install new Service
-                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", CreateNoWindow = false, UseShellExecute = true, Verb = "runas" } };
                 pNew.Start();
                 pNew.WaitForExit();
                 return true;
@@ -841,34 +854,14 @@ namespace Eulg.Client.SupportTool
 
             if (ProcessHelper.IsProcessRunning(PROCESS))
             {
-                if (MessageBox.Show("Um die gewünschte Funktion auszuführen, muss der Beratungsclient geschlossen werden.\n\n Wollen Sie den Beratungslient jetzt schließen?",
-                                    "Beratungsclient schließen", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Um die gewünschte Funktion auszuführen, muss der xbAV-Berater geschlossen werden.\n\n Wollen Sie den xbAV-Berater jetzt schließen?",
+                                    "xbAV-Berater schließen", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
                 {
                     ProcessHelper.CloseProcess(PROCESS);
                 }
             }
 
             return !ProcessHelper.IsProcessRunning(PROCESS);
-        }
-
-        private static Uri GetUpdateUri()
-        {
-            var keyNames = new[] { "xbAV Beratungssoftware GmbH", "EULG Software GmbH", "KS Software GmbH" };
-            foreach (var parentName in keyNames)
-            {
-                using(var regkey = Registry.CurrentUser.OpenSubKey($"Software\\{parentName}\\{CurrentBranding.Registry.UserSettingsKey}"))
-                {
-                    if (regkey != null)
-                    {
-                        var serviceUrl = regkey.GetValue("Service").ToString();
-                        var apiClient = new ApiResourceClient(serviceUrl, CurrentBranding.Info.Channel);
-
-                        return apiClient.Fetch()[EApiResource.UpdateService];
-                    }
-                }
-            }
-
-            return null;
         }
     }
 }

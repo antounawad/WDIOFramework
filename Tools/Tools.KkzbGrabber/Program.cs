@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Eulg.Utilities.Console;
+using xbAV.Utilities.Kkzb;
 
 namespace Tools.KkzbGrabber
 {
@@ -31,6 +35,9 @@ namespace Tools.KkzbGrabber
 
                 var selectedFilterType = Prompt.Select("Select filter to apply", filters, f => f.Key).Value;
                 var filter = (IFilter)Activator.CreateInstance(selectedFilterType);
+
+                if(!filter.Initialize()) continue;
+
                 var filtered = new List<Provider>();
 
                 foreach(var item in beitraege)
@@ -53,17 +60,31 @@ namespace Tools.KkzbGrabber
             var selectedFormatterType = Prompt.Select("Select output format", formatters, f => f.Key).Value;
             var formatter = (IFormatter)Activator.CreateInstance(selectedFormatterType);
 
-            formatter.Write(beitraege);
+            FormatAndShowData(beitraege, formatter);
 
             Prompt.Wait();
+        }
+
+        private static void FormatAndShowData(IEnumerable<Provider> data, IFormatter formatter)
+        {
+            var filename = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(Path.GetRandomFileName(), ".txt"));
+            using(var file = File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+            {
+                using (var writer = new StreamWriter(file, Encoding.UTF8))
+                {
+                    formatter.Write(data, writer);
+                }
+            }
+
+            using(Process.Start(filename)) { }
         }
 
         private static KeyValuePair<string, Type>[] GetImplementations(Type interfaceType)
         {
             if(!interfaceType.IsInterface) throw new ArgumentException();
 
-            return interfaceType.Assembly
-                .GetTypes()
+            var types = interfaceType.Assembly.GetExportedTypes().Concat(Assembly.GetExecutingAssembly().GetTypes());
+            return types
                 .Where(t => !t.IsInterface && !t.IsAbstract && interfaceType.IsAssignableFrom(t))
                 .Select(t => new KeyValuePair<DescriptionAttribute, Type>(t.GetCustomAttribute(typeof(DescriptionAttribute), false) as DescriptionAttribute, t))
                 .Where(t => t.Key != null)

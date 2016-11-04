@@ -8,10 +8,10 @@
              mc:Ignorable="d">
 
     <StackPanel>
-        <TextBlock FontSize="14" TextWrapping="Wrap">Der Installations-Assistent wird EULG auf Ihrem Computer installieren. Klicken Sie auf Weiter, um mit der Installation fortzufahren oder schließen Sie das Fenster, um den Assistenten zu beenden.</TextBlock>
+        <TextBlock FontSize="14" TextWrapping="Wrap">Der Installations-Assistent wird den xbAV-Berater auf Ihrem Computer installieren. Klicken Sie auf Weiter, um mit der Installation fortzufahren oder schließen Sie das Fenster, um den Assistenten zu beenden.</TextBlock>
         <Image Height="256"
                Margin="0 30 0 0"
-               Source="Setup-Eulg.png" />
+               Source="Setup-xbav.png" />
 
         <Canvas>
             <!--  OMG HAX bwahaha  -->

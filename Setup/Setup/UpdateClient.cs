@@ -63,7 +63,7 @@ namespace Eulg.Setup
             UpdateChannel = channel;
 
             _webClient.Encoding = Encoding.UTF8;
-            _webClient.Headers["User-Agent"] = "EulgSetup";
+            _webClient.Headers["User-Agent"] = "XbavSetup";
         }
 
         public readonly List<string> LogMessages = new List<string>();

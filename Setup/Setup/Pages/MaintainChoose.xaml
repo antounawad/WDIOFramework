@@ -7,8 +7,6 @@
              d:DesignHeight="300"
              mc:Ignorable="d">
 
-
-
     <StackPanel x:Name="AreaMaintainChoose">
         <Button x:Name="BtnMaintainRepair"
                 Width="200"

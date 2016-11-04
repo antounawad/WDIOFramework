@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tools.KkzbGrabber</RootNamespace>
     <AssemblyName>Tools.KkzbGrabber</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,16 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Filters\DatabaseFilter.cs" />
-    <Compile Include="Formatters\SqlScriptInSystemEditorFormatter.cs" />
-    <Compile Include="Formatters\ViewInSystemEditorFormatter.cs" />
-    <Compile Include="IFilter.cs" />
-    <Compile Include="IFormatter.cs" />
-    <Compile Include="IGrabber.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider.cs" />
-    <Compile Include="Rate.cs" />
-    <Compile Include="Sources\GkvSpitzenverbandGrabber.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -63,6 +56,10 @@
     <ProjectReference Include="..\..\Utilities\Utilities.Console\Utilities.Console.csproj">
       <Project>{cede092c-418d-447f-b365-8a429dc772ae}</Project>
       <Name>Utilities.Console</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\Utilities.Kkzb\Utilities.Kkzb.csproj">
+      <Project>{71f3f655-bd3f-4d1b-ba44-70d575da1bc0}</Project>
+      <Name>Utilities.Kkzb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

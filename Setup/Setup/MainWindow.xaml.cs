@@ -36,6 +36,16 @@ namespace Eulg.Setup
             (FindResource("StoryEndDialog") as Storyboard).Completed += hideDialog;
         }
 
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            var hwndSource = PresentationSource.FromVisual(this) as HwndSource;
+
+            if (hwndSource != null)
+                hwndSource.CompositionTarget.RenderMode = RenderMode.SoftwareOnly;
+
+            base.OnSourceInitialized(e);
+        }
+
         public ISetupPageBase CurrentPage { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -160,10 +170,7 @@ namespace Eulg.Setup
 
         private void BtnNext_OnClick(object sender, RoutedEventArgs e)
         {
-            if (CurrentPage != null)
-            {
-                CurrentPage.OnNext();
-            }
+            CurrentPage?.OnNext();
         }
 
         private void CloseIcon_OnMouseLeftButtonDown(object sender, EventArgs e)
@@ -257,8 +264,8 @@ namespace Eulg.Setup
                 {
                     Content = b.Item1,
                     //Style = style,
-                    Width = 80,
-                    Height = 26,
+                    //Width = 80,
+                    //Height = 26,
                     Margin = new Thickness(6, 0, 6, 0),
                     VerticalAlignment = VerticalAlignment.Bottom
                 };

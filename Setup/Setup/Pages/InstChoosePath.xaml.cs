@@ -135,7 +135,16 @@ namespace Eulg.Setup.Pages
                     {
                         break;
                     }
-                    if (MessageBox.Show("Beim Download der Programmdateien ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Internet-Verbindung." + Environment.NewLine + Environment.NewLine + "Nochmal versuchen?", "Fehler", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
+                    if (!SetupHelper.CancelRequested)
+                    {
+                        if (MessageBox.Show("Beim Download der Programmdateien ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Internet-Verbindung." + Environment.NewLine + Environment.NewLine +
+                                            "Nochmal versuchen?", "Fehler", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.Cancel)
+                        {
+                            setup.Log(UpdateClient.ELogTypeEnum.Warning, "Setup wurde vom Benutzer abgebrochen!");
+                            return false;
+                        }
+                    }
+                    else
                     {
                         setup.Log(UpdateClient.ELogTypeEnum.Warning, "Setup wurde vom Benutzer abgebrochen!");
                         return false;

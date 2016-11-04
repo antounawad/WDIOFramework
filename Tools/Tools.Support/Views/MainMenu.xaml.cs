@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Eulg.Shared;
+using Microsoft.Win32;
 
 namespace Eulg.Client.SupportTool.Views
 {
     public partial class MainMenu : UserControl
     {
         private readonly ProxyConfig _proxyConfig;
+        private const string REG_KEY_SOFTWARE = "Software";
+        private const string REG_KEY_PARENT = "xbAV Beratungssoftware GmbH";
 
         public MainMenu()
         {
@@ -34,6 +37,14 @@ namespace Eulg.Client.SupportTool.Views
                     RbProxyTypeManual.IsChecked = true;
                     break;
             }
+
+            var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+            if (keyLmParent != null && (keyLmParent.GetValue("LimitSupportTool", null) as int? ?? 0) > 0)
+            {
+                BtnCheckFiles.IsEnabled = false;
+                BtnCheckService.IsEnabled = false;
+                BtnFernwartung.IsEnabled = false;
+            }
         }
 
         private void BtnFernwartung_OnClick(object sender, RoutedEventArgs e)
@@ -41,7 +52,7 @@ namespace Eulg.Client.SupportTool.Views
             Support.RunFernwartung();
         }
 
-        private void BtnCheckFiles(object sender, RoutedEventArgs e)
+        private void BtnCheckFiles_OnClick(object sender, RoutedEventArgs e)
         {
 #if !DEBUG
             if (Support.ExitClient())
@@ -108,7 +119,7 @@ namespace Eulg.Client.SupportTool.Views
                 {
                     MessageBox.Show("Upload erfolgreich!", "Upload", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                else if(result == false)
+                else if (result == false)
                 {
                     MessageBox.Show("Upload fehlgeschlagen!", "Upload", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
@@ -117,7 +128,7 @@ namespace Eulg.Client.SupportTool.Views
             task.Start();
         }
 
-        private void BtnProtocolViewer(object sender, RoutedEventArgs e)
+        private void BtnProtocolViewer_OnClick(object sender, RoutedEventArgs e)
         {
             var support = new Support();
             var logViewer = new LogViewer();
@@ -186,5 +197,6 @@ namespace Eulg.Client.SupportTool.Views
             _proxyConfig.WriteToRegistry();
             _proxyConfig.SetDefault();
         }
+
     }
 }

@@ -67,7 +67,7 @@ namespace Update.Fix.Fixes
                 return false;
             }
 
-            using(var fileStream = File.OpenWrite(brandingXmlFile))
+            using(var fileStream = File.Open(brandingXmlFile, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
                 var xmlSerializer = new XmlSerializer(typeof(Branding));
                 xmlSerializer.Serialize(fileStream, branding);
@@ -75,6 +75,5 @@ namespace Update.Fix.Fixes
 
             return true;
         }
-
     }
 }

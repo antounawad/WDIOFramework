@@ -21,6 +21,6 @@
 		<!--<Exec Command="&quot;$(SignTool)&quot; sign /f &quot;$(CertFile)&quot; /p $(CertPassword) &quot;$(TargetPath)&quot;" />-->
 		
 		<!-- Code, um die App per Extended Validation-Zertifikat auf USB-Token zu signieren -->
-		<Exec Command="&quot;$(SignTool)&quot; sign /a /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256 /n &quot;EULG Software GmbH&quot; &quot;$(TargetPath)&quot;" />
+		<Exec Command="&quot;$(SignTool)&quot; sign /a /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256 /n &quot;xbAV Beratungssoftware GmbH&quot; &quot;$(TargetPath)&quot;" />
   </Target>
 </Project>
