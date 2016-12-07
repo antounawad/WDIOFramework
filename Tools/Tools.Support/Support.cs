@@ -220,7 +220,7 @@ namespace Eulg.Client.SupportTool
                 UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
                 Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },
                 CheckProcesses = string.Empty, // AppBinary bei SupportTool auch nach KILL, siehe EULG-6189
-                KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server", // "server.exe" is Allianz-RK background process
+                KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server;javaw", // "server.exe", "javaw.exe" is Allianz-RK background process
                 SkipWaitForProcess = true,
                 SkipRestartApplication = true,
             };
