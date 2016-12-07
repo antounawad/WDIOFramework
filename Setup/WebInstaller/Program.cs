@@ -33,7 +33,7 @@ namespace Eulg.Setup.WebInstaller
             public static readonly BrandingProfile Local = new BrandingProfile("http://localhost:1591/ApiManifest/JsonGet");
             public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/ApiManifest/JsonGet");
             public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/ApiManifest/JsonGet");
-            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.xbav-berater.de/Service/ApiManifest/JsonGet");
             public static readonly BrandingProfile Develop = new BrandingProfile("https://develop.xbav-berater.de/Service/ApiManifest/JsonGet");
             // ReSharper restore UnusedMember.Local
         }
@@ -65,7 +65,7 @@ namespace Eulg.Setup.WebInstaller
 
         #endregion
 
-        private static readonly BrandingProfile Profile = BrandingProfile.Develop;
+        private static readonly BrandingProfile Profile = BrandingProfile.Release;
         private static Mutex _appInstanceMutex;
 
         [STAThread]

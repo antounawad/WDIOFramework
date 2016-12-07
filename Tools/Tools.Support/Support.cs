@@ -724,7 +724,7 @@ namespace Eulg.Client.SupportTool
                     }
 
                     // Uninstall
-                    var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                    var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", CreateNoWindow = false, UseShellExecute = true, Verb = "runas" } };
                     p.Start();
                     p.WaitForExit();
 
