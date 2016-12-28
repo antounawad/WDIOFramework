@@ -281,7 +281,7 @@ namespace Eulg.Update.Common
 
                 GetUpdateClient();
 
-                DownloadSizeTotal = filteredWorkerFilesAll.Sum(s => s.FileSizeGz);
+                DownloadSizeTotal = filteredWorkerFilesAll.Sum(s => s.FileSize);
                 DownloadFilesTotal = filteredWorkerFilesAll.Count;
                 DownloadSizeCompleted = 0;
                 DownloadFilesCompleted = 0;
@@ -299,7 +299,7 @@ namespace Eulg.Update.Common
                         {
                             Log(LogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
                             PatchFile(diffFile);
-                            DownloadSizeCompleted += diffFile.FileSizeGz;
+                            DownloadSizeCompleted += diffFile.FileSize;
                             currentFileDiff++;
                             diffFile.Done = true;
                             break;
@@ -319,8 +319,8 @@ namespace Eulg.Update.Common
                       DownloadCurrentFilename = workerFile.FileName;
                       DownloadCurrentFileSize = workerFile.FileSize;
                       DownloadCurrentFileSizeGz = workerFile.FileSizeGz;
-                      var baseDownloadSize = DownloadSizeCompleted;
-                      NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFile + currentFileDiff, filteredWorkerFilesAll.Count, workerFile.FileName);
+                      //var baseDownloadSize = DownloadSizeCompleted;
+                      NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, currentFile + currentFileDiff, filteredWorkerFilesAll.Count, workerFile.FileName);
                       while (true)
                       {
                           try
@@ -332,7 +332,8 @@ namespace Eulg.Update.Common
                                   Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
                               }
                               DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize, workerFile.FileSizeGz);
-                              DownloadSizeCompleted = baseDownloadSize + workerFile.FileSizeGz;
+                              DownloadSizeCompleted += workerFile.FileSize;
+                              //DownloadSizeCompleted = baseDownloadSize + workerFile.FileSizeGz;
                               workerFile.Done = true;
                               currentFile++;
                               DownloadFilesCompleted++;
@@ -455,6 +456,7 @@ namespace Eulg.Update.Common
             }
         }
 
+        private long _inProgress = 0;
         private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize, long fileSizeGz)
         {
             if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty)) Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
@@ -476,17 +478,20 @@ namespace Eulg.Update.Common
                         {
                             var buffer = new byte[STREAM_BUFFER_SIZE];
                             int read;
-                            var total = 0;
+                            //var total = 0;
                             while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
                             {
                                 sw.Write(buffer, 0, read);
-                                total += read;
+                                //total += read;
+                                _inProgress += read;
                                 //NotifyProgressChanged(DownloadSizeCompleted + (long)Math.Round((double)fileSizeGz / fileSize * total), DownloadSizeTotal);
+                                NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal);
                             }
                         }
                     }
                 }
             }
+            _inProgress -= fileSize;
             File.SetLastWriteTime(localFile, dateTime);
         }
 
@@ -506,15 +511,15 @@ namespace Eulg.Update.Common
                 {
                     Log(LogTypeEnum.Info, $"Download UpdateWorker {binFileInTemp} ({updateFile.FileDateTime:dd.MM.yy HH:mm:ss})");
                     DownloadFilesTotal++;
-                    DownloadSizeTotal += updateFile.FileSizeGz;
+                    DownloadSizeTotal += updateFile.FileSize;
                     DownloadCurrentFilename = updateFile.FileName;
                     DownloadCurrentFileSize = updateFile.FileSize;
                     DownloadCurrentFileSizeGz = updateFile.FileSizeGz;
                     NotifyProgressChanged(0, DownloadSizeTotal, 0, DownloadFilesTotal, updateFile.FileName);
                     DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize, updateFile.FileSizeGz);
-                    DownloadSizeCompleted += updateFile.FileSizeGz;
+                    DownloadSizeCompleted += updateFile.FileSize;
                     DownloadFilesCompleted++;
-                    NotifyProgressChanged(updateFile.FileSizeGz, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
+                    NotifyProgressChanged(updateFile.FileSize, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
                 }
             }
         }
