@@ -200,7 +200,7 @@ namespace Eulg.Client.SupportTool
             // ReSharper disable once RedundantAssignment
             var appPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".."));
 #if DEBUG
-            appPath = @"C:\Program Files (x86)\EulgDeTest";
+            appPath = @"C:\Program Files (x86)\xbAV-Berater";
 #endif
             var proxyConfig = new ProxyConfig();
             proxyConfig.Init();
@@ -350,6 +350,10 @@ namespace Eulg.Client.SupportTool
                         || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
                         || fileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)
                         || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
+                    continue;
+
+                if (filePath.Equals("Setup", StringComparison.InvariantCultureIgnoreCase)
+                    && relPath.StartsWith(@"Setup.xml", StringComparison.InvariantCultureIgnoreCase))
                     continue;
 
                 if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase))
