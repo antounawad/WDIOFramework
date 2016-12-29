@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -52,7 +53,6 @@ namespace Eulg.Setup
         public string DefaultInstallPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), Branding.FileSystem.AppDir);
         public string InstallPath { get; set; }
 
-        [Obsolete("wtf")]
         public static InstProgress ProgressPage { get; set; }
 
         public SetupConfig Config { get; }
@@ -179,11 +179,11 @@ namespace Eulg.Setup
                 }
                 if (line1 != null)
                 {
-                    ProgressPage.LabelProgress.Content = line1;
+                    ProgressPage.LabelProgress.Text = line1;
                 }
                 if (line2 != null)
                 {
-                    ProgressPage.LabelFileCount.Content = line2;
+                    ProgressPage.LabelFileCount.Text = line2;
                 }
             }));
         }
@@ -218,20 +218,21 @@ namespace Eulg.Setup
                 Directory.CreateDirectory(InstallPath);
             }
 
-            UpdateClient.ProgressChanged += (sender1, args) => Application.Current.Dispatcher.Invoke(new Action(delegate
+            UpdateClient.ProgressChanged += (sender1, args) => // Application.Current.Dispatcher.Invoke(new Action(delegate
             {
-                ProgressPage.ProgressBar.IsIndeterminate = false;
-                ProgressPage.ProgressBar.Value = args.ProgressPercentage;
-                ProgressPage.LabelProgress.Content = args.UserState.ToString();
-                ProgressPage.LabelFileCount.Content = $"{Math.Min(UpdateClient.DownloadFilesCompleted + 1, UpdateClient.DownloadFilesTotal)} / {UpdateClient.DownloadFilesTotal}";
-            }));
+                NotifyProgressChanged((int)Math.Floor(args.Progress * 100), $"{args.CompletedItems} von {args.TotalItems}");
+                //ProgressPage.ProgressBar.IsIndeterminate = false;
+                //ProgressPage.ProgressBar.Value = args.Progress;
+                //ProgressPage.LabelProgress.Content = args.CurrentItem;
+                //ProgressPage.LabelFileCount.Content = $"{Math.Min(UpdateClient.DownloadFilesCompleted + 1, UpdateClient.DownloadFilesTotal)} / {UpdateClient.DownloadFilesTotal}";
+            };
 
             var ok = false;
             var result = UpdateClient.CheckForUpdates();
             switch (result)
             {
                 case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
-                    ok = UpdateClient.DownloadUpdatesStream();
+                    ok = UpdateClient.DownloadUpdates();
                     break;
                 case UpdateClient.EUpdateCheckResult.UpToDate:
                     ok = true;
@@ -249,6 +250,47 @@ namespace Eulg.Setup
                 }
             }
             return ok;
+        }
+
+        public event ProgressChangedEventHandler ProgressChanged;
+        private string _oldMessage;
+        private int _oldPercent;
+        private void NotifyProgressChanged(int percent = -1, string message = null)
+        {
+            try
+            {
+                if (percent < -1)
+                {
+                    percent = -1;
+                }
+                if (percent > 100)
+                {
+                    percent = 100;
+                }
+                if (percent == _oldPercent && message == _oldMessage)
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(message))
+                    message = _oldMessage;
+                _oldMessage = message;
+                _oldPercent = percent;
+
+                var header = string.Empty;
+                var message1 = string.Empty;
+                if (message != null)
+                {
+                    if (message.StartsWith("*", StringComparison.CurrentCultureIgnoreCase))
+                        header = message.Substring(1);
+                    else
+                        message1 = message;
+                }
+                ProgressPage.UpdateProgress(percent, message1, header);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public bool PrepareRegistry(Profile profile, string username, string password)

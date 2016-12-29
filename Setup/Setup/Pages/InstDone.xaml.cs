@@ -53,13 +53,8 @@ namespace Eulg.Setup.Pages
             Environment.ExitCode = 1;
             MainWindow.Instance.Close();
         }
-        public bool OnPrev()
-        {
-            return true;
-        }
-        public bool OnClose()
-        {
-            return true;
-        }
+        public bool OnPrev() => true;
+
+        public bool OnClose() => false;
     }
 }

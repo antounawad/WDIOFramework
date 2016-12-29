@@ -76,7 +76,6 @@
     <Compile Include="AssemblyStripStream.cs" />
     <Compile Include="CacheUpdateEvent.cs" />
     <Compile Include="Fingerprint.cs" />
-    <Compile Include="FractionalProgressChangedEventArgs.cs" />
     <Compile Include="IUpdateItem.cs" />
     <Compile Include="PositionWrapperStream.cs" />
     <Compile Include="SectionStream.cs" />

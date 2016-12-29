@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Eulg.Update.Common
+namespace Eulg.Shared
 {
-    public class FractionalProgressChangedEventArgs
+    public class FractionalProgressChangedEventArgs : System.EventArgs
     {
         public double Progress { get; private set; }
 

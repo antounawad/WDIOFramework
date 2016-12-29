@@ -38,12 +38,12 @@ namespace Eulg.Update.Common
 
         private const string UPDATE_WORKER_BIN_FILE = "UpdateWorker.exe";
         private const string UPDATE_WORKER_XML_FILE = "UpdateWorker.xml";
-        private const string RESET_FILE_TAG = ".$EulgReset$";
+        //private const string RESET_FILE_TAG = ".$EulgReset$";
         private const string FETCH_UPDATE_DATA_METHOD = "FilesUpdateCheck";
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileGz";
-        private const string DOWNLOAD_FILES_STREAM_METHOD = "FileUpdateGetFiles";
+        //private const string DOWNLOAD_FILES_STREAM_METHOD = "FileUpdateGetFiles";
         private const string UPLOAD_LOG_METHOD = "FilesUpdateUploadLog";
-        private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
+        //private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
         private const int STREAM_BUFFER_SIZE = 81920;
         private const int diffThreshold = 256 * 1024;
         private const int diffChunkSize = 8192;
@@ -112,7 +112,7 @@ namespace Eulg.Update.Common
             {
                 if (!CheckConnectivity())
                 {
-                    Log(LogTypeEnum.Warning, "NoConnection");
+                    Log(ELogTypeEnum.Warning, "NoConnection");
                     return EUpdateCheckResult.NoConnection;
                 }
                 var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
@@ -162,13 +162,13 @@ namespace Eulg.Update.Common
             catch (WebException ex)
             {
                 LastError = ex.Message;
-                Log(LogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
+                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
                 return EUpdateCheckResult.NoService;
             }
             catch (Exception ex)
             {
                 LastError = ex.Message;
-                Log(LogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
+                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
                 return EUpdateCheckResult.Error;
             }
             return EUpdateCheckResult.UpdatesAvailable;
@@ -186,7 +186,7 @@ namespace Eulg.Update.Common
             }
             finally
             {
-                Log(LogTypeEnum.Info, $"Time to fetch manifest: {DateTime.Now - start}");
+                Log(ELogTypeEnum.Info, $"Time to fetch manifest: {DateTime.Now - start}");
             }
 
             start = DateTime.Now;
@@ -194,14 +194,14 @@ namespace Eulg.Update.Common
             {
                 if (CompareFiles(autoDelete))
                 {
-                    Log(LogTypeEnum.Info, "UpdatesAvailable on " + UpdateUrl);
+                    Log(ELogTypeEnum.Info, "UpdatesAvailable on " + UpdateUrl);
                     return EUpdateCheckResult.UpdatesAvailable;
                 }
                 return EUpdateCheckResult.UpToDate;
             }
             finally
             {
-                Log(LogTypeEnum.Info, $"Time to compare files: {DateTime.Now - start}");
+                Log(ELogTypeEnum.Info, $"Time to compare files: {DateTime.Now - start}");
             }
         }
 
@@ -258,8 +258,6 @@ namespace Eulg.Update.Common
 
         public bool DownloadUpdates()
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
             try
             {
                 #region Outer Try/Catch
@@ -275,7 +273,7 @@ namespace Eulg.Update.Common
 
                 if (!Directory.Exists(DownloadPath))
                 {
-                    Log(LogTypeEnum.Info, "Create Directory " + DownloadPath);
+                    Log(ELogTypeEnum.Info, "Create Directory " + DownloadPath);
                     Directory.CreateDirectory(DownloadPath);
                 }
 
@@ -297,7 +295,7 @@ namespace Eulg.Update.Common
                     {
                         try
                         {
-                            Log(LogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
+                            Log(ELogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
                             PatchFile(diffFile);
                             DownloadSizeCompleted += diffFile.FileSize;
                             currentFileDiff++;
@@ -312,7 +310,7 @@ namespace Eulg.Update.Common
                     }
                 }
 
-                var log = new List<Tuple<LogTypeEnum, string>>();
+                var log = new List<Tuple<ELogTypeEnum, string>>();
                 Parallel.ForEach(filteredWorkerFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, workerFile =>
                   {
                       var trialNumber = 0;
@@ -325,7 +323,7 @@ namespace Eulg.Update.Common
                       {
                           try
                           {
-                              log.Add(new Tuple<LogTypeEnum, string>(LogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
+                              log.Add(new Tuple<ELogTypeEnum, string>(ELogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
                               var localFile = Path.Combine(DownloadPath, workerFile.Source);
                               if (!Directory.Exists(Path.GetDirectoryName(localFile)))
                               {
@@ -368,15 +366,13 @@ namespace Eulg.Update.Common
                 {
                     xmlSer.Serialize(writer, WorkerConfig);
                 }
-                stopwatch.Stop();
-                Console.WriteLine(stopwatch.ElapsedMilliseconds);
                 return true;
                 #endregion
             }
             catch (Exception ex)
             {
                 LastError = ex.Message;
-                Log(LogTypeEnum.Error, ex.ToString());
+                Log(ELogTypeEnum.Error, ex.ToString());
                 return false;
             }
         }
@@ -399,13 +395,12 @@ namespace Eulg.Update.Common
             catch (Exception ex)
             {
                 LastError = ex.Message;
-                Log(LogTypeEnum.Error, ex.ToString());
+                Log(ELogTypeEnum.Error, ex.ToString());
                 return null;
             }
         }
 
-        public enum LogTypeEnum { Info, Warning, Error }
-        public void Log(LogTypeEnum logType, string message)
+        public void Log(ELogTypeEnum logType, string message)
         {
             File.AppendAllText(LogFile, $"{DateTime.Now:dd.MM.yyyy HH:mm:ss}: {logType.ToString().PadRight(7)}: UpdateClient: {message.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", " ")}" + Environment.NewLine);
         }
@@ -451,7 +446,7 @@ namespace Eulg.Update.Common
             catch (Exception ex)
             {
                 LastError = ex.Message;
-                Log(LogTypeEnum.Error, ex.ToString());
+                Log(ELogTypeEnum.Error, ex.ToString());
                 return false;
             }
         }
@@ -478,13 +473,10 @@ namespace Eulg.Update.Common
                         {
                             var buffer = new byte[STREAM_BUFFER_SIZE];
                             int read;
-                            //var total = 0;
                             while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
                             {
                                 sw.Write(buffer, 0, read);
-                                //total += read;
                                 _inProgress += read;
-                                //NotifyProgressChanged(DownloadSizeCompleted + (long)Math.Round((double)fileSizeGz / fileSize * total), DownloadSizeTotal);
                                 NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal);
                             }
                         }
@@ -509,7 +501,7 @@ namespace Eulg.Update.Common
                 var fileInfo = new FileInfo(binFileInTemp);
                 if (!fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime) || fileInfo.Length != updateFile.FileSize)
                 {
-                    Log(LogTypeEnum.Info, $"Download UpdateWorker {binFileInTemp} ({updateFile.FileDateTime:dd.MM.yy HH:mm:ss})");
+                    Log(ELogTypeEnum.Info, $"Download UpdateWorker {binFileInTemp} ({updateFile.FileDateTime:dd.MM.yy HH:mm:ss})");
                     DownloadFilesTotal++;
                     DownloadSizeTotal += updateFile.FileSize;
                     DownloadCurrentFilename = updateFile.FileName;
@@ -660,14 +652,8 @@ namespace Eulg.Update.Common
             WorkerConfig.WorkerDeletes.AddRange(deletePaths.Select(p => new WorkerConfig.WorkerDelete { Path = p }));
         }
 
-        private void NotifyProgressChanged(long position, long total)
-        {
-            ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total));
-        }
-        private void NotifyProgressChanged(long position, long total, long currentFile, long totalFiles, string fileName)
-        {
-            ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total, currentFile, totalFiles, fileName));
-        }
+        private void NotifyProgressChanged(long position, long total) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total));
+        private void NotifyProgressChanged(long position, long total, long currentFile, long totalFiles, string fileName) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total, currentFile, totalFiles, fileName));
 
         public event EventHandler<FractionalProgressChangedEventArgs> ProgressChanged;
 

@@ -74,8 +74,7 @@ namespace Eulg.Client.SupportTool.Views
                             message = a;
                     }
                     progressView.UpdateProgress(args.ProgressPercentage, message, header);
-                }
-                );
+                });
                 var task = new Task(support.DoUpdateCheck);
                 task.ContinueWith(delegate { Pager.NavigateTo(this); });
                 task.Start();

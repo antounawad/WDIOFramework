@@ -236,7 +236,7 @@ namespace Eulg.Client.SupportTool
             }
             catch (Exception exception)
             {
-                updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
+                updateClient.Log(UpdateClient.ELogTypeEnum.Error, exception.GetMessagesTree());
             }
             switch (updateClient.FetchManifest(clientId))
             {
@@ -357,7 +357,7 @@ namespace Eulg.Client.SupportTool
                         && !updateClient.UpdateConf.ResetFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
-                        updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + file);
+                        updateClient.Log(UpdateClient.ELogTypeEnum.Info, "Delete Extra File: " + file);
                     }
                 }
 
@@ -379,7 +379,7 @@ namespace Eulg.Client.SupportTool
                         && !updateClient.UpdateConf.ResetFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
-                        updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
+                        updateClient.Log(UpdateClient.ELogTypeEnum.Info, "Delete Extra Dir: " + dir);
                     }
                 }
             }

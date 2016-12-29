@@ -39,6 +39,8 @@ namespace Eulg.Setup
             public long FileSizeGz { get; set; }
             [XmlIgnore]
             public string FileName { get; set; }
+            [XmlIgnore]
+            public bool Done { get; set; }
         }
         public class WorkerDelete
         {
