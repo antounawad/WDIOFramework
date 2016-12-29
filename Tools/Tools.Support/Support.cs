@@ -7,7 +7,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Security;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.ServiceProcess;
@@ -326,63 +325,62 @@ namespace Eulg.Client.SupportTool
 
         private void CompareDirectory(string path, string filePath, UpdateConfig.UpdateFile[] updateFiles, UpdateClient updateClient)
         {
-            if (!Directory.Exists(path))
+            if (Directory.Exists(path))
             {
-                return;
-            }
-            // Delete Extra Files
-            NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
-            var localFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
-            _filesProcessed = 0;
-            var filesTotal = localFiles.LongLength;
-            if (filesTotal == 0)
-                filesTotal = 1;
-            foreach (var file in localFiles)
-            {
-                _filesProcessed++;
-                NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_filesProcessed) / Convert.ToDecimal(filesTotal)) * 100), file);
-                var fileName = Path.GetFileName(file) ?? string.Empty;
-                var relPath = file.Substring(path.Length + 1);
-
-                if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
-                    && (relPath.StartsWith(@"Setup\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
-                        || fileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)
-                        || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
-                    continue;
-
-                if (filePath.Equals("Setup", StringComparison.InvariantCultureIgnoreCase)
-                    && relPath.StartsWith(@"Setup.xml", StringComparison.InvariantCultureIgnoreCase))
-                    continue;
-
-                if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase))
-                    && !updateClient.UpdateConf.ResetFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                // Delete Extra Files
+                NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
+                var localFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                _filesProcessed = 0;
+                var filesTotal = localFiles.LongLength;
+                if (filesTotal == 0)
+                    filesTotal = 1;
+                foreach (var file in localFiles)
                 {
-                    updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
-                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + file);
+                    _filesProcessed++;
+                    NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_filesProcessed) / Convert.ToDecimal(filesTotal)) * 100), file);
+                    var fileName = Path.GetFileName(file) ?? string.Empty;
+                    var relPath = file.Substring(path.Length + 1);
+
+                    if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
+                        && (relPath.StartsWith(@"Setup\", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
+                            || fileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)
+                            || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
+                        continue;
+
+                    if (filePath.Equals("Setup", StringComparison.InvariantCultureIgnoreCase)
+                        && relPath.StartsWith(@"Setup.xml", StringComparison.InvariantCultureIgnoreCase))
+                        continue;
+
+                    if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase))
+                        && !updateClient.UpdateConf.ResetFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
+                        updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + file);
+                    }
                 }
-            }
 
-            // Delete Extra Directories?!?
-            var dirs = Directory.GetDirectories(path, "*.*", SearchOption.AllDirectories);
-            foreach (var dir in dirs)
-            {
-                var relPath = dir.Substring(path.Length + 1);
-
-                if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
-                    && (relPath.Equals(@"Setup", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.Equals(@"Support", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.Equals(@"Plugins", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
-                    continue;
-
-                if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase))
-                    && !updateClient.UpdateConf.ResetFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                // Delete Extra Directories?!?
+                var dirs = Directory.GetDirectories(path, "*.*", SearchOption.AllDirectories);
+                foreach (var dir in dirs)
                 {
-                    updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
-                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
+                    var relPath = dir.Substring(path.Length + 1);
+
+                    if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
+                        && (relPath.Equals(@"Setup", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.Equals(@"Support", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.Equals(@"Plugins", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
+                        continue;
+
+                    if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase))
+                        && !updateClient.UpdateConf.ResetFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
+                        updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
+                    }
                 }
             }
 

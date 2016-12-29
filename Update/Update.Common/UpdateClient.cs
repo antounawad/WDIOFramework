@@ -70,7 +70,7 @@ namespace Eulg.Update.Common
                     _updateUrl = _updateUrl.Substring(8);
                     UseHttps = true; //HACK Workaround um größere Anpassungen zu vermeiden
                 }
-                if (!_updateUrl.EndsWith("/")) { _updateUrl += "/"; }
+                if (!_updateUrl.EndsWith("/", StringComparison.Ordinal)) { _updateUrl += "/"; }
             }
         }
 
@@ -133,15 +133,15 @@ namespace Eulg.Update.Common
 
                 var result = new StreamReader(request.GetResponse().GetResponseStream()).ReadToEnd();
 
-                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE"))
+                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE", StringComparison.Ordinal))
                 {
                     return EUpdateCheckResult.UpToDate;
                 }
-                if (result.StartsWith("AUTHFAIL"))
+                if (result.StartsWith("AUTHFAIL", StringComparison.Ordinal))
                 {
                     return EUpdateCheckResult.AuthFail;
                 }
-                if (result.StartsWith("CLIENTIDFAIL"))
+                if (result.StartsWith("CLIENTIDFAIL", StringComparison.Ordinal))
                 {
                     var used = result.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                     if (used.Length > 3)
@@ -327,11 +327,11 @@ namespace Eulg.Update.Common
                           {
                               log.Add(new Tuple<LogTypeEnum, string>(LogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
                               var localFile = Path.Combine(DownloadPath, workerFile.Source);
-                              if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty))
+                              if (!Directory.Exists(Path.GetDirectoryName(localFile)))
                               {
-                                  Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
+                                  Directory.CreateDirectory(Path.GetDirectoryName(localFile));
                               }
-                              DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize, workerFile.FileSizeGz);
+                              DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize);
                               DownloadSizeCompleted += workerFile.FileSize;
                               //DownloadSizeCompleted = baseDownloadSize + workerFile.FileSizeGz;
                               workerFile.Done = true;
@@ -456,8 +456,8 @@ namespace Eulg.Update.Common
             }
         }
 
-        private long _inProgress = 0;
-        private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize, long fileSizeGz)
+        private long _inProgress;
+        private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize)
         {
             if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty)) Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
             var baseUri = new Uri("http://" + UpdateUrl);
@@ -516,7 +516,7 @@ namespace Eulg.Update.Common
                     DownloadCurrentFileSize = updateFile.FileSize;
                     DownloadCurrentFileSizeGz = updateFile.FileSizeGz;
                     NotifyProgressChanged(0, DownloadSizeTotal, 0, DownloadFilesTotal, updateFile.FileName);
-                    DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize, updateFile.FileSizeGz);
+                    DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize);
                     DownloadSizeCompleted += updateFile.FileSize;
                     DownloadFilesCompleted++;
                     NotifyProgressChanged(updateFile.FileSize, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
