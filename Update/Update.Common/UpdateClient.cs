@@ -60,17 +60,17 @@ namespace Eulg.Update.Common
             set
             {
                 _updateUrl = value;
-                if (_updateUrl.StartsWith("http://", StringComparison.CurrentCultureIgnoreCase))
+                if (_updateUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
                 {
                     _updateUrl = _updateUrl.Substring(7);
                     UseHttps = false; //HACK Workaround um größere Anpassungen zu vermeiden
                 }
-                if (_updateUrl.StartsWith("https://", StringComparison.CurrentCultureIgnoreCase))
+                if (_updateUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
                 {
                     _updateUrl = _updateUrl.Substring(8);
                     UseHttps = true; //HACK Workaround um größere Anpassungen zu vermeiden
                 }
-                if (!_updateUrl.EndsWith("/", StringComparison.Ordinal)) { _updateUrl += "/"; }
+                if (!_updateUrl.EndsWith("/", StringComparison.InvariantCultureIgnoreCase)) { _updateUrl += "/"; }
             }
         }
 
@@ -117,7 +117,7 @@ namespace Eulg.Update.Common
                 }
                 var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
                 var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
-                var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserNames.Length > 0 ? String.Join("\t", UserNames) : "") + "&password=" + Uri.EscapeDataString(Passwords.Length > 0 ? String.Join("\t", Passwords) : "");
+                var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserNames.Length > 0 ? string.Join("\t", UserNames) : "") + "&password=" + Uri.EscapeDataString(Passwords.Length > 0 ? string.Join("\t", Passwords) : "");
 
                 var request = (HttpWebRequest)WebRequest.Create(url);
                 request.KeepAlive = false;
@@ -126,22 +126,22 @@ namespace Eulg.Update.Common
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-                request.Headers.Add("ClientID", clientId);
+                if (!string.IsNullOrEmpty(clientId)) request.Headers.Add("ClientID", clientId);
                 request.Headers.Add("ClientOSUsername", Environment.UserName + "@" + Environment.UserDomainName);
                 request.Headers.Add("ClientHostname", Environment.MachineName);
                 request.Headers.Add("ClientUpdateType", "UPDATE");
 
                 var result = new StreamReader(request.GetResponse().GetResponseStream()).ReadToEnd();
 
-                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE", StringComparison.Ordinal))
+                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return EUpdateCheckResult.UpToDate;
                 }
-                if (result.StartsWith("AUTHFAIL", StringComparison.Ordinal))
+                if (result.StartsWith("AUTHFAIL", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return EUpdateCheckResult.AuthFail;
                 }
-                if (result.StartsWith("CLIENTIDFAIL", StringComparison.Ordinal))
+                if (result.StartsWith("CLIENTIDFAIL", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var used = result.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                     if (used.Length > 3)
@@ -172,37 +172,6 @@ namespace Eulg.Update.Common
                 return EUpdateCheckResult.Error;
             }
             return EUpdateCheckResult.UpdatesAvailable;
-        }
-        public EUpdateCheckResult CheckForUpdates(string clientId, bool autoDelete)
-        {
-            var start = DateTime.Now;
-            try
-            {
-                var result = FetchManifest(clientId);
-                if (result != EUpdateCheckResult.UpdatesAvailable)
-                {
-                    return result;
-                }
-            }
-            finally
-            {
-                Log(ELogTypeEnum.Info, $"Time to fetch manifest: {DateTime.Now - start}");
-            }
-
-            start = DateTime.Now;
-            try
-            {
-                if (CompareFiles(autoDelete))
-                {
-                    Log(ELogTypeEnum.Info, "UpdatesAvailable on " + UpdateUrl);
-                    return EUpdateCheckResult.UpdatesAvailable;
-                }
-                return EUpdateCheckResult.UpToDate;
-            }
-            finally
-            {
-                Log(ELogTypeEnum.Info, $"Time to compare files: {DateTime.Now - start}");
-            }
         }
 
         public static bool CheckConnectivity()
@@ -290,7 +259,7 @@ namespace Eulg.Update.Common
                 foreach (var diffFile in diffFiles)
                 {
                     var trialNumber = 0;
-                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, filteredWorkerFilesAll.Count, diffFile.FileName);
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, DownloadFilesTotal, diffFile.FileName);
                     while (true)
                     {
                         try
@@ -312,41 +281,46 @@ namespace Eulg.Update.Common
 
                 var log = new List<Tuple<ELogTypeEnum, string>>();
                 Parallel.ForEach(filteredWorkerFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, workerFile =>
-                  {
-                      var trialNumber = 0;
-                      DownloadCurrentFilename = workerFile.FileName;
-                      DownloadCurrentFileSize = workerFile.FileSize;
-                      DownloadCurrentFileSizeGz = workerFile.FileSizeGz;
-                      //var baseDownloadSize = DownloadSizeCompleted;
-                      NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, currentFile + currentFileDiff, filteredWorkerFilesAll.Count, workerFile.FileName);
-                      while (true)
-                      {
-                          try
-                          {
-                              log.Add(new Tuple<ELogTypeEnum, string>(ELogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
-                              var localFile = Path.Combine(DownloadPath, workerFile.Source);
-                              if (!Directory.Exists(Path.GetDirectoryName(localFile)))
-                              {
-                                  Directory.CreateDirectory(Path.GetDirectoryName(localFile));
-                              }
-                              DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize);
-                              DownloadSizeCompleted += workerFile.FileSize;
-                              //DownloadSizeCompleted = baseDownloadSize + workerFile.FileSizeGz;
-                              workerFile.Done = true;
-                              currentFile++;
-                              DownloadFilesCompleted++;
-                              break;
-                          }
-                          catch (Exception)
-                          {
-                              if (trialNumber++ > 2)
-                              {
-                                  foreach (var l in log) Log(l.Item1, l.Item2); log.Clear();
-                                  throw;
-                              }
-                          }
-                      }
-                  });
+                {
+                    var trialNumber = 0;
+                    var tmpFile = Path.Combine(DownloadPath, workerFile.Source);
+                    DownloadCurrentFilename = workerFile.FileName;
+                    DownloadCurrentFileSize = workerFile.FileSize;
+                    DownloadCurrentFileSizeGz = workerFile.FileSizeGz;
+                    NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, currentFile + currentFileDiff, DownloadFilesTotal, workerFile.FileName);
+
+                    var fileInfo = new FileInfo(tmpFile);
+                    if (!fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, workerFile.FileDateTime) || fileInfo.Length != workerFile.FileSize)
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+                                log.Add(new Tuple<ELogTypeEnum, string>(ELogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
+                                var localFile = Path.Combine(DownloadPath, workerFile.Source);
+                                if (!Directory.Exists(Path.GetDirectoryName(localFile)))
+                                {
+                                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+                                }
+                                DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize);
+                                DownloadSizeCompleted += workerFile.FileSize;
+                                workerFile.Done = true;
+                                currentFile++;
+                                DownloadFilesCompleted++;
+                                break;
+                            }
+                            catch (Exception)
+                            {
+                                if (trialNumber++ > 2)
+                                {
+                                    foreach (var l in log) Log(l.Item1, l.Item2);
+                                    log.Clear();
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+                });
                 foreach (var l in log) Log(l.Item1, l.Item2); log.Clear();
                 NotifyProgressChanged(DownloadSizeTotal, DownloadSizeTotal, filteredWorkerFilesAll.Count, filteredWorkerFilesAll.Count, string.Empty);
 
@@ -495,7 +469,7 @@ namespace Eulg.Update.Common
             {
                 File.Copy(binFileInAppPath, binFileInTemp);
             }
-            var updateFile = UpdateConf.UpdateFiles.FirstOrDefault(f => f.FilePath == string.Empty && f.FileName.Equals(UPDATE_WORKER_BIN_FILE, StringComparison.CurrentCultureIgnoreCase));
+            var updateFile = UpdateConf.UpdateFiles.FirstOrDefault(f => f.FilePath == string.Empty && f.FileName.Equals(UPDATE_WORKER_BIN_FILE, StringComparison.InvariantCultureIgnoreCase));
             if (updateFile != null)
             {
                 var fileInfo = new FileInfo(binFileInTemp);
@@ -511,151 +485,16 @@ namespace Eulg.Update.Common
                     DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize);
                     DownloadSizeCompleted += updateFile.FileSize;
                     DownloadFilesCompleted++;
-                    NotifyProgressChanged(updateFile.FileSize, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
                 }
             }
-        }
-
-        private bool CompareFiles(bool autoDelete)
-        {
-            WorkerConfig.WorkerFiles.Clear();
-            // AppDir
-            CompareDirectory("AppDir", ApplicationPath, UpdateConf.UpdateFiles, autoDelete);
-            // Support
-            CompareDirectory("Support", Path.Combine(ApplicationPath, "Support"), UpdateConf.UpdateFiles, autoDelete);
-            // Plugins
-            CompareDirectory("Plugins", Path.Combine(ApplicationPath, "Plugins"), UpdateConf.UpdateFiles, autoDelete);
-            // AppDir Deletes
-            CompareDeletes(ApplicationPath, UpdateConf.UpdateDeletes.Where(w => w.FilePath == "AppDir"));
-            // Support Deletes
-            CompareDeletes(Path.Combine(ApplicationPath, "Support"), UpdateConf.UpdateDeletes.Where(w => w.FilePath == "Support"));
-            // Plugin Deletes
-            CompareDeletes(Path.Combine(ApplicationPath, "Plugins"), UpdateConf.UpdateDeletes.Where(w => w.FilePath == "Plugins"));
-
-            return WorkerConfig.WorkerFiles.Any() || WorkerConfig.WorkerDeletes.Any();
-        }
-        private void CompareDirectory(string filePath, string path, IEnumerable<UpdateConfig.UpdateFile> updateFiles, bool autoDelete)
-        {
-            foreach (var updateFile in updateFiles.Where(f => f.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                var localFile = Path.Combine(path, updateFile.FileName);
-                CompareFile(updateFile, localFile);
-            }
-
-            if (!autoDelete)
-            {
-                return;
-            }
-
-            //HACK Temporäre Implementierung, diesen Code nicht übernehmen wenn das Update neu geschrieben wird!
-            if (filePath.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase))
-            {
-                // Sonderbehandlung für FilePath=Plugins: Ausschließlich Pluginverzeichnisse von Plugins aufräumen, die auch ausgeliefert werden
-                var pluginPaths = updateFiles.Where(f => f.FileName.Length == 17 && f.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && f.FileName.EndsWith("plugin.xml", StringComparison.InvariantCultureIgnoreCase))
-                                             .Select(f => f.FileName.Substring(0, 6)).ToList();
-
-                foreach (var pluginPath in pluginPaths.Where(p => Directory.Exists(Path.Combine(path, p))))
-                {
-                    foreach (var absoluteFile in Directory.EnumerateFiles(Path.Combine(path, pluginPath), "*.*", SearchOption.TopDirectoryOnly))
-                    {
-                        var filename = absoluteFile.Substring(path.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                        if (updateFiles.Any(f => f.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && f.FileName.Equals(filename, StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            continue;
-                        }
-
-                        WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = absoluteFile });
-                    }
-                }
-            }
-            else if (Directory.Exists(path) && filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var addFolder = new[]
-                                {
-                                    "Demo\\Web\\bin",
-                                    "Demo\\Web\\Images",
-                                    "Demo\\Web\\Scripts",
-                                    "Demo\\Web\\Views\\Shared",
-                                    "Demo\\Web\\Views\\Vp",
-                                    "Demo\\Web\\Views\\Vp\\ChangeForm"
-                                };
-                var filesToCheck = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly);
-
-                foreach (var folderPath in addFolder)
-                {
-                    var concatPath = Path.Combine(path, folderPath);
-                    if (Directory.Exists(concatPath))
-                    {
-                        filesToCheck = filesToCheck.Concat(Directory.EnumerateFiles(concatPath, "*.*", SearchOption.TopDirectoryOnly));
-                    }
-                }
-
-                foreach (var absoluteFile in filesToCheck)
-                {
-                    var filename = absoluteFile.Substring(path.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                    if (((filename.Equals("branding.xml", StringComparison.InvariantCultureIgnoreCase) || filename.Equals("updateworker.exe", StringComparison.InvariantCultureIgnoreCase) || filename.Equals("updateservice.exe", StringComparison.InvariantCultureIgnoreCase)))
-                        || (updateFiles.Any(f => f.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && f.FileName.Equals(filename, StringComparison.InvariantCultureIgnoreCase))))
-                    {
-                        continue;
-                    }
-
-                    WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = absoluteFile });
-                }
-            }
-        }
-        private void CompareFile(UpdateConfig.UpdateFile updateFile, string localFile)
-        {
-            // Wenn Branding.xml lokal schon vorhanden - auf keinen fall überschreiben!!!
-            if (updateFile.FilePath.Equals("AppDir", StringComparison.CurrentCultureIgnoreCase) && updateFile.FileName.Equals("Branding.xml", StringComparison.CurrentCultureIgnoreCase) && File.Exists(localFile)) return;
-
-            var fileInfo = new FileInfo(localFile);
-            if (!fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime) || fileInfo.Length != updateFile.FileSize)
-            {
-                //Log(LogTypeEnum.Info, updateFile.FileName + " " + updateFile.FileSize);
-                WorkerConfig.WorkerFiles.Add(new WorkerConfig.WorkerFile
-                {
-                    Source = Path.Combine(updateFile.FilePath, updateFile.FileName),
-                    Destination = localFile,
-                    FileDateTime = updateFile.FileDateTime,
-                    FileSize = updateFile.FileSize,
-                    FileSizeGz = updateFile.FileSizeGz,
-                    FileName = updateFile.FileName
-                });
-                //if (updateFile.FileName.EndsWith(ResetFileTag, StringComparison.InvariantCultureIgnoreCase))
-                //{
-                //    _workerConfig.WorkerFiles.Add(new WorkerConfig.WorkerFile
-                //    {
-                //        Source = Path.Combine(updateFile.FilePath, updateFile.FileName),
-                //        Destination = localFile.Substring(0, localFile.Length - ResetFileTag.Length),
-                //        FileDateTime = updateFile.FileDateTime,
-                //        FileSize = updateFile.FileSize,
-                //        FileSizeGz = updateFile.FileSizeGz,
-                //        FileName = updateFile.FileName
-                //    });
-                //}
-            }
-        }
-        private void CompareDeletes(string path, IEnumerable<UpdateConfig.UpdateDelete> updateDeletes)
-        {
-            var deletePaths = new HashSet<string>(WorkerConfig.WorkerDeletes.Select(c => c.Path), StringComparer.InvariantCultureIgnoreCase);
-
-            foreach (var updateDelete in updateDeletes)
-            {
-                var localPath = Path.Combine(path, updateDelete.FileName);
-                if (File.Exists(localPath) || Directory.Exists(localPath))
-                {
-                    deletePaths.Add(localPath);
-                }
-            }
-
-            WorkerConfig.WorkerDeletes.Clear();
-            WorkerConfig.WorkerDeletes.AddRange(deletePaths.Select(p => new WorkerConfig.WorkerDelete { Path = p }));
         }
 
         private void NotifyProgressChanged(long position, long total) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total));
         private void NotifyProgressChanged(long position, long total, long currentFile, long totalFiles, string fileName) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total, currentFile, totalFiles, fileName));
 
         public event EventHandler<FractionalProgressChangedEventArgs> ProgressChanged;
+        public event EventHandler<string> CheckingFile;
 
         private static string CompressStringGz(string s)
         {

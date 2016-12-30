@@ -96,7 +96,7 @@ namespace Eulg.Setup
             try
             {
                 var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, FETCH_UPDATE_DATA_METHOD);
-                if(uri == null) return EUpdateCheckResult.NoService;
+                if (uri == null) return EUpdateCheckResult.NoService;
 
                 var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserName ?? String.Empty)
                           + "&password=" + Uri.EscapeDataString(Password ?? String.Empty);
@@ -217,7 +217,7 @@ namespace Eulg.Setup
                                 Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
                             }
                             DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize);
-                            if(SetupHelper.CancelRequested) break;
+                            if (SetupHelper.CancelRequested) break;
                             DownloadSizeCompleted += workerFile.FileSize;
                             workerFile.Done = true;
                             currentFile++;
@@ -268,14 +268,11 @@ namespace Eulg.Setup
                         {
                             var buffer = new byte[STREAM_BUFFER_SIZE];
                             int read;
-                            //var total = 0;
                             while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
                             {
                                 sw.Write(buffer, 0, read);
-                                //total += read;
                                 _inProgress += read;
-                                //NotifyProgressChanged(DownloadSizeCompleted + (long)Math.Round((double)fileSizeGz / fileSize * total), DownloadSizeTotal);
-                                NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, DownloadFilesCompleted, DownloadFilesTotal,fileName);
+                                NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, DownloadFilesCompleted, DownloadFilesTotal, fileName);
                             }
                         }
                     }
@@ -284,141 +281,6 @@ namespace Eulg.Setup
             _inProgress -= fileSize;
             File.SetLastWriteTime(localFile, dateTime);
         }
-
-        //public bool DownloadUpdatesStream()
-        //{
-        //    try
-        //    {
-        //        var filteredWorkerFiles = WorkerConfig.WorkerFiles.Where(f =>
-        //        {
-        //            var fileInfo = new FileInfo(f.Destination);
-        //            return !fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, f.FileDateTime) || fileInfo.Length != f.FileSize;
-        //        }).ToList();
-
-        //        DownloadSizeTotal = filteredWorkerFiles.Sum(s => s.FileSizeGz - (UseDeflate ? 18 : 0));
-        //        DownloadFilesTotal = filteredWorkerFiles.Count;
-        //        DownloadSizeCompleted = 0;
-        //        DownloadFilesCompleted = 0;
-
-        //        if (DownloadFilesTotal > 0)
-        //        {
-        //            var uri = SetupHelper.GetUpdateApi(ServiceUrl, UpdateChannel, DOWNLOAD_FILES_STREAM_METHOD, true);
-        //            if (uri == null) return false;
-
-        //            ServicePointManager.Expect100Continue = false;
-        //            //ServicePointManager.SetTcpKeepAlive(false, 0, 0);
-
-        //            var webRequest = (HttpWebRequest)WebRequest.Create(uri);
-        //            //webRequest.KeepAlive = false;
-        //            //webRequest.AllowWriteStreamBuffering = false;
-        //            //webRequest.ProtocolVersion = HttpVersion.Version10;
-
-        //            webRequest.Method = "POST";
-        //            webRequest.Headers.Add("Channel", UpdateChannel.ToString());
-        //            webRequest.Headers.Add("ManifestTimestamp", $"{DateTime.Now:yyyyMMddHHmmss}");
-        //            webRequest.Headers.Add("CompressionType", (UseDeflate ? "Deflate" : "GZipHack"));
-        //            webRequest.Headers.Add("ContentLength", DownloadSizeTotal.ToString());
-
-        //            var byteArray = CompressStringDeflate(string.Join(";", filteredWorkerFiles.Select(_ => _.Source).ToArray()));
-        //            webRequest.ContentType = "application/octet-stream";
-        //            webRequest.ContentLength = byteArray.Length;
-        //            using (var requestStream = webRequest.GetRequestStream())
-        //            {
-        //                requestStream.Write(byteArray, 0, byteArray.Length);
-        //                requestStream.Close();
-        //            }
-
-        //            using (var response = webRequest.GetResponse())
-        //            {
-        //                //Console.WriteLine(((HttpWebResponse)response).StatusCode);
-        //                using (var responseStream = response.GetResponseStream())
-        //                {
-        //                    var currentFile = 0;
-        //                    while (currentFile < filteredWorkerFiles.Count)
-        //                    {
-        //                        var workerFile = filteredWorkerFiles[currentFile];
-        //                        DownloadCurrentFilename = workerFile.FileName;
-        //                        DownloadCurrentFileSize = workerFile.FileSize;
-        //                        DownloadCurrentFileSizeGz = workerFile.FileSizeGz;
-        //                        NotifyProgressChanged();
-        //                        var localFile = workerFile.Destination;
-        //                        if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty))
-        //                        {
-        //                            Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
-        //                        }
-        //                        var baseDownloadSize = DownloadSizeCompleted;
-        //                        using (var sw = new FileStream(localFile, FileMode.Create, FileAccess.Write, FileShare.None))
-        //                        {
-        //                            using (var view = new SectionStream(responseStream, workerFile.FileSizeGz - (UseDeflate ? 18 : 0), !UseDeflate))
-        //                            {
-        //                                if (UseDeflate)
-        //                                {
-        //                                    using (var gz = new DeflateStream(view, CompressionMode.Decompress))
-        //                                    {
-        //                                        var buffer = new byte[STREAM_BUFFER_SIZE];
-        //                                        var total = 0;
-        //                                        while (total < workerFile.FileSize)
-        //                                        {
-        //                                            var read = gz.Read(buffer, 0, Math.Min(STREAM_BUFFER_SIZE, (int)workerFile.FileSize - total));
-        //                                            sw.Write(buffer, 0, read);
-        //                                            total += read;
-        //                                            DownloadSizeCompleted = baseDownloadSize + view.Position;
-        //                                            NotifyProgressChanged(view.Position);
-        //                                            if (SetupHelper.CancelRequested)
-        //                                            {
-        //                                                return false;
-        //                                            }
-        //                                        }
-        //                                    }
-        //                                }
-        //                                else
-        //                                {
-        //                                    using (var gz = new GZipStream(view, CompressionMode.Decompress))
-        //                                    {
-        //                                        var buffer = new byte[STREAM_BUFFER_SIZE];
-        //                                        var total = 0;
-        //                                        while (total < workerFile.FileSize)
-        //                                        {
-        //                                            var read = gz.Read(buffer, 0, Math.Min(STREAM_BUFFER_SIZE, (int)workerFile.FileSize - total));
-        //                                            sw.Write(buffer, 0, read);
-        //                                            total += read;
-        //                                            DownloadSizeCompleted = baseDownloadSize + view.Position;
-        //                                            NotifyProgressChanged(view.Position);
-        //                                            if (SetupHelper.CancelRequested)
-        //                                            {
-        //                                                return false;
-        //                                            }
-        //                                        }
-        //                                    }
-        //                                }
-        //                                DownloadSizeCompleted = baseDownloadSize + workerFile.FileSizeGz;
-        //                                NotifyProgressChanged(view.Position);
-        //                            }
-        //                        }
-        //                        File.SetLastWriteTime(localFile, workerFile.FileDateTime);
-        //                        currentFile++;
-        //                        DownloadFilesCompleted++;
-        //                        // Reset-Files:
-        //                        if (workerFile.Destination.EndsWith(RESET_FILE_TAG, StringComparison.InvariantCultureIgnoreCase))
-        //                        {
-        //                            var activeFile = localFile.Substring(0, localFile.Length - RESET_FILE_TAG.Length);
-        //                            File.Copy(localFile, activeFile, true);
-        //                        }
-        //                    }
-        //                    //responseStream.Close();
-        //                }
-        //                //response.Close();
-        //            }
-        //        }
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        LastError = ex.Message;
-        //        Log(ELogTypeEnum.Error, ex.ToString());
-        //        return false;
-        //    }
-        //}
 
         public void DeleteClientIdOnServer()
         {
@@ -558,32 +420,6 @@ namespace Eulg.Setup
             }
         }
 
-        //private int _oldPercentage;
-
-        //private void NotifyProgressChanged(long currentFilePosition = 0)
-        //{
-        //    try
-        //    {
-        //        if (ProgressChanged != null)
-        //        {
-        //            if (currentFilePosition == 0)
-        //            {
-        //                _oldPercentage = 0;
-        //            }
-        //            var percent = Convert.ToInt32(100f * DownloadSizeCompleted / DownloadSizeTotal);
-        //            if (currentFilePosition == 0 || percent != _oldPercentage)
-        //            {
-        //                ProgressChanged(this, new ProgressChangedEventArgs(percent, DownloadCurrentFilename));
-        //            }
-        //            _oldPercentage = percent;
-        //        }
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        Log(ELogTypeEnum.Error, exception.Message);
-        //    }
-        //}
-        private void NotifyProgressChanged(long position, long total) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total));
         private void NotifyProgressChanged(long position, long total, long currentFile, long totalFiles, string fileName) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total, currentFile, totalFiles, fileName));
 
         public event EventHandler<FractionalProgressChangedEventArgs> ProgressChanged;

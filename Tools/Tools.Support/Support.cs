@@ -223,10 +223,7 @@ namespace Eulg.Client.SupportTool
                 SkipWaitForProcess = true,
                 SkipRestartApplication = true,
             };
-            updateClient.ProgressChanged += (sender, args) =>
-            {
-                NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
-            };
+            updateClient.ProgressChanged += (sender, args) => NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
             NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
             NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
             var clientId = string.Empty;
