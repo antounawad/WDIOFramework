@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -31,7 +32,8 @@ namespace xbAV.Utilities.Kkzb.Formatters
 
             foreach(var item in items.OrderBy(i => i.Name))
             {
-                buffer.WriteLine($"INSERT INTO dbo.HealthInsuranceSurcharge VALUES ((SELECT [ID] FROM dbo.HealthInsuranceProvider WHERE [Name]='{EscapeSingleQuote(item.Name)}'), {(decimal)item.Rate:f4}, '{availabilityDateFormat}T00:00:01.000Z');");
+                var rate = ((decimal)item.Rate).ToString("f4", CultureInfo.InvariantCulture);
+                buffer.WriteLine($"INSERT INTO dbo.HealthInsuranceSurcharge VALUES ((SELECT [ID] FROM dbo.HealthInsuranceProvider WHERE [Name]='{EscapeSingleQuote(item.Name)}'), {rate}, '{availabilityDateFormat}T00:00:01.000Z');");
             }
         }
 

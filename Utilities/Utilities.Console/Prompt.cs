@@ -338,7 +338,7 @@ namespace Eulg.Utilities.Console
             var dataSource = defaultDataSource == null
                 ? String("Database instance")
                 : String($"Database instance (default=\"{defaultDataSource}\")", defaultDataSource);
-            var username = String("Username (blank=IntSec)");
+            var username = String("Username (blank=IntSec)", "");
             var password = string.IsNullOrEmpty(username) ? null : Password();
             var catalog = defaultCatalog == null
                 ? String("Catalog")
