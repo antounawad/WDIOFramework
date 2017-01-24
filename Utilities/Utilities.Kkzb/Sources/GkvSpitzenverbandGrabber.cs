@@ -27,13 +27,13 @@ namespace xbAV.Utilities.Kkzb.Sources
 
             foreach (var content in pages)
             {
-                var tableMatch = Regex.Match(content, @"<\s*div\s+class=""clearfix module textImage careInsuranceTable""\s*>.*?<\s*div(?:\s+class=""[^""]*"")\s*>.*?<\s*table(?:\s+class=""[^""]*"")\s*>.*?<thead>.*?<\/thead>.*?<tbody>(.+?)<\/tbody>.*?</table>.*?<\/div>.*?<\/div>", RegexOptions.Singleline);
+                var tableMatch = Regex.Match(content, @"<\s*table\s+class=""complexTable tablesaw-swipe"".*>.*?<thead>.*?<\/thead>.*?<tbody>(.+?)<\/tbody>.*?</table>", RegexOptions.Singleline);
                 var table = tableMatch.Groups[1].Value;
                 var tableRows = Regex.Matches(table, @"<\s*tr\s*>\s*(.*?)\s*<\s*\/\s*tr\s*>", RegexOptions.Singleline).Cast<Match>().Select(m => m.Value).ToList();
 
                 foreach (var tr in tableRows)
                 {
-                    var match = Regex.Match(tr, @".*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?<\/td>.*?<td[^>]*>.*?(\d+),(\d{2})\s*%.*?<\/td>.*?", RegexOptions.Singleline);
+                    var match = Regex.Match(tr, @".*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?(\d+),(\d{2}).*?<\/td>.*?", RegexOptions.Singleline);
                     if (!match.Success)
                     {
                         match = Regex.Match(tr, @".*?<th[^>]*>.*?<a[^>]*>(.+?)<\/a>.*?<\/th>.*?<td[^>]*>.*?<\/td>.*?<td[^>]*>(.*?)<\/td>.*?", RegexOptions.Singleline);
@@ -77,7 +77,7 @@ namespace xbAV.Utilities.Kkzb.Sources
         {
             var content = GetUriContent("https://www.gkv-spitzenverband.de/service/versicherten_service/krankenkassenliste/krankenkassen.jsp");
 
-            var pagerMatches = Regex.Matches(content, @"<\s*div\s+class=""clearfix pagingModule careInsurancePagingModule""\s*>.+?<\s*div\s+class=""clearfix pager""\s*>(.+)<\/div>", RegexOptions.Singleline);
+            var pagerMatches = Regex.Matches(content, @"<\s*nav\s+class=""clearfix pagingModule top""\s*>.+?<\s*div\s+class=""clearfix pager""\s*>(.+)<\/div>", RegexOptions.Singleline);
             var pagers = string.Join(Environment.NewLine, pagerMatches.Cast<Match>().Select(m => m.Groups[1].Value));
 
             var pageNoMatches = Regex.Matches(pagers, @"href=""\/[^""]+pageNo=(\d+)(?>\D)");
