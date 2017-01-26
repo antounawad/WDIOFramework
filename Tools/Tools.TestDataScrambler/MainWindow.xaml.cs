@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace Tools.TestDataScrambler
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         public class DbField
         {
@@ -22,8 +22,7 @@ namespace Tools.TestDataScrambler
             public string Name { get; set; }
             public List<DbField> Fields = new List<DbField>();
             public List<string> EmptyFields = new List<string>();
-            public string ExcludeDemoAgencyField { get; set; }
-            public string ExcludeDemoVnField { get; set; }
+            public string AddressIdFieldName { get; set; }
         }
 
         public MainWindow()
@@ -59,15 +58,13 @@ namespace Tools.TestDataScrambler
                              new DbTable
                              {
                                  Name = "ContactMenge",
-                                 ExcludeDemoAgencyField = "Address_ID",
-                                 ExcludeDemoVnField = "Address_ID",
+                                 AddressIdFieldName = "Address_ID",
                                  Fields = new List<DbField>
                                           {
                                               new DbField {Name = "degree", Type = typeof(string)},
                                               new DbField {Name = "name", Type = typeof(string)},
                                               new DbField {Name = "surname", Type = typeof(string)},
                                               new DbField {Name = "birthdate", Type = typeof(DateTime)},
-                                              //new DbField {Name = "email", Type = typeof(string)},
                                               new DbField {Name = "telephone", Type = typeof(string)},
                                               new DbField {Name = "fax", Type = typeof(string)},
                                               new DbField {Name = "mobilephone", Type = typeof(string)},
@@ -77,13 +74,11 @@ namespace Tools.TestDataScrambler
                              new DbTable
                              {
                                  Name = "AddressMenge",
-                                 ExcludeDemoAgencyField = "ID",
-                                 ExcludeDemoVnField = "ID",
+                                 AddressIdFieldName = "ID",
                                  Fields = new List<DbField>
                                           {
                                               new DbField {Name = "street", Type = typeof(string)},
                                           },
-                                 //EmptyFields = {"signature"}
                              }
                          };
 
@@ -94,29 +89,26 @@ namespace Tools.TestDataScrambler
                 LabelStatus.Content = "Datenbank öffnen";
                 ProgressBar.IsIndeterminate = true;
             });
+
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                //new SqlCommand("BEGIN TRAN;", conn).ExecuteNonQuery();
-
+                
                 #region Demo-Agenturen
 
-                var demoAgencies = new List<Guid>();
-                using (var rdr = (new SqlCommand("SELECT Address_ID FROM AgencyMenge WHERE AgencyCustomerType=3", conn)).ExecuteReader())
+                var excludeAddressIDs = new List<Guid>(); // Daten von Demo-Agenturen und VRs sollen nicht gescrambelt werden
+                var sqlCommand = "SELECT Address_ID" +
+                                 "  FROM AgencyMenge" +
+                                 " WHERE AgencyCustomerType = 3" +
+                                 "    OR Address_ID IN (SELECT Address_ID from VRMenge)";
+                using (var rdr = new SqlCommand(sqlCommand, conn).ExecuteReader())
                 {
                     while (rdr.Read())
                     {
-                        demoAgencies.Add(rdr.GetFieldValue<Guid>(0));
+                        excludeAddressIDs.Add(rdr.GetFieldValue<Guid>(0));
                     }
                 }
-                var demoVns = new List<Guid>();
-                using (var rdr = (new SqlCommand("SELECT v.ID FROM VNMenge v JOIN AgencyMenge a ON a.Address_ID=v.Agency_ID WHERE a.AgencyCustomerType=3", conn)).ExecuteReader())
-                {
-                    while (rdr.Read())
-                    {
-                        demoVns.Add(rdr.GetFieldValue<Guid>(0));
-                    }
-                }
+                
 
                 #endregion
 
@@ -129,43 +121,49 @@ namespace Tools.TestDataScrambler
                             LabelStatus.Content = $"Lese {field.Name} in Tabelle {table.Name}";
                             ProgressBar.IsIndeterminate = true;
                         });
+
                         using (var rdr = (new SqlCommand(string.Format("SELECT [{1}] FROM [{0}] WHERE [{1}]<>'' AND [{1}] IS NOT NULL GROUP BY [{1}]", table.Name, field.Name), conn)).ExecuteReader())
                         {
                             while (rdr.Read())
                             {
-                                //if (!String.IsNullOrEmpty(table.ExcludeDemoAgencyField) && demoAgencies.Contains(rdr.GetFieldValue<Guid>(rdr.GetOrdinal(table.ExcludeDemoVnField)))) continue;
-                                //if (!String.IsNullOrEmpty(table.ExcludeDemoVnField) && demoAgencies.Contains(rdr.GetFieldValue<Guid>(rdr.GetOrdinal(table.ExcludeDemoVnField)))) continue;
                                 field.List.Add(rdr[0]);
                             }
                         }
+
                         Dispatcher.Invoke(() =>
                         {
                             LabelStatus.Content = $"Sortiere {field.Name} in Tabelle {table.Name}  ";
                             ProgressBar.IsIndeterminate = true;
                         });
+
                         Shuffle(field.List);
                     }
                 }
 
                 #region E-Mail-Adressen
+
                 Dispatcher.Invoke(() =>
                 {
                     LabelStatus.Content = "E-Mail-Adressen...";
                     ProgressBar.IsIndeterminate = true;
                 });
+
                 var daMail = new SqlDataAdapter("SELECT Address_ID, email FROM ContactMenge WHERE email IS NOT NULL AND email<>''", conn);
                 new SqlCommandBuilder(daMail);
                 var dtMail = new DataTable();
                 daMail.Fill(dtMail);
+
                 var daUser = new SqlDataAdapter("SELECT ID, username FROM UserMenge", conn);
                 new SqlCommandBuilder(daUser);
                 var dtUser = new DataTable();
                 daUser.Fill(dtUser);
+
                 foreach (DataRow row in dtMail.Rows)
                 {
                     var m = row.Field<string>("email");
                     if(m.EndsWith("eulg.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("xbav.de", StringComparison.InvariantCultureIgnoreCase)
+                        || m.EndsWith("xbav-berater.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("entgeltumwandler.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("ks-software.de", StringComparison.InvariantCultureIgnoreCase))
                     continue;
@@ -175,8 +173,10 @@ namespace Tools.TestDataScrambler
                     {
                         prefix += (char)_rng.Next('a', 'z');
                     }
+
                     var n = $"{prefix}@service.eulg.de";
                     row.SetField("email", n);
+
                     foreach (DataRow rowUser in dtUser.Rows)
                     {
                         if (rowUser.Field<string>("username").Equals(m, StringComparison.InvariantCultureIgnoreCase))
@@ -186,9 +186,12 @@ namespace Tools.TestDataScrambler
                         }
                     }
                 }
+
                 daMail.Update(dtMail);
                 daUser.Update(dtUser);
+                
                 #endregion
+
 
                 foreach (var table in tables)
                 {
@@ -205,14 +208,15 @@ namespace Tools.TestDataScrambler
 
                     foreach (DataRow row in dt.Rows)
                     {
-                        if (!string.IsNullOrEmpty(table.ExcludeDemoAgencyField) && demoAgencies.Contains(row.Field<Guid>(table.ExcludeDemoAgencyField))) continue;
-                        if (!string.IsNullOrEmpty(table.ExcludeDemoVnField) && demoAgencies.Contains(row.Field<Guid>(table.ExcludeDemoVnField))) continue;
+                        if (!string.IsNullOrEmpty(table.AddressIdFieldName) && excludeAddressIDs.Contains(row.Field<Guid>(table.AddressIdFieldName))) continue;
+
                         foreach (var field in table.Fields)
                         {
                             if (row.IsNull(field.Name))
                             {
                                 continue;
                             }
+
                             if (field.Type == typeof(string))
                             {
                                 if (string.IsNullOrEmpty(row.Field<string>(field.Name)))
@@ -220,133 +224,100 @@ namespace Tools.TestDataScrambler
                                     continue;
                                 }
                             }
+
                             row.SetField(field.Name, field.List[field.ListIndex]);
                             field.ListIndex++;
+
                             if (field.ListIndex >= field.List.Count)
                             {
                                 field.ListIndex = 0;
                             }
                         }
+
                         foreach (var emptyField in table.EmptyFields)
                         {
                             row[emptyField] = null;
                         }
                     }
+
+
                     Dispatcher.Invoke(() =>
                     {
                         LabelStatus.Content = $"Speichere Tabelle {table.Name}";
                         ProgressBar.IsIndeterminate = true;
                     });
+
                     da.Update(dt);
                 }
 
-                #region Dokumente Consultation
 
+
+                #region Agentur-Namen
+
+                // dadurch dass die ContactMenge angepasst wurde, stimmt der Agenturnamen nicht mehr mit dem zugewiesenen Kontakt überein => anpassen
                 Dispatcher.Invoke(() =>
                 {
-                    LabelStatus.Content = "Lösche Consultation-Dokumente";
+                    LabelStatus.Content = "Passe Agentur-Namen an";
                     ProgressBar.IsIndeterminate = true;
                 });
 
-                var daDoc = new SqlDataAdapter("SELECT d.ID FROM DocumentMenge d JOIN ConsultationMenge c ON c.AdviceData_ID = d.Consultation_ID JOIN AgencyMenge a ON a.Address_ID = c.Agency_ID WHERE a.AgencyCustomerType<>3", conn);
-                new SqlCommandBuilder(daDoc);
-                var dtDoc = new DataTable();
-                daDoc.Fill(dtDoc);
-
-                Dispatcher.Invoke(() =>
-                {
-                    LabelStatus.Content = $"Lösche Consultation-Dokumente ({dtDoc.Rows.Count:n})";
-                    ProgressBar.IsIndeterminate = false;
-                });
-                for (var i = 0; i < dtDoc.Rows.Count; i++)
-                {
-                    Dispatcher.Invoke(() => { ProgressBar.Value = 100d * i / dtDoc.Rows.Count; });
-                    new SqlCommand($"UPDATE DocumentMenge SET [data]='', notice=null WHERE ID='{dtDoc.Rows[i][0]}'", conn).ExecuteNonQuery();
-                    //dtDoc.Rows[i]["data"] = null;
-                    //dtDoc.Rows[i]["notice"] = null;
-                }
-                Dispatcher.Invoke(() => { ProgressBar.IsIndeterminate = true; });
+                sqlCommand =
+                    "UPDATE ag SET ag.name = (SELECT COALESCE(c.name + ' ' + c.surname, a.name) FROM ContactMenge c, AgencyMenge a " +
+                                               "WHERE c.Address_Id = a.Address_Id AND a.Address_Id = ag.Address_Id)" +
+                    "  FROM AgencyMenge ag";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
 
                 #endregion
 
-                #region Documente VN
 
-                Dispatcher.Invoke(() =>
-                {
-                    LabelStatus.Content = "Lösche VN-Dokumente";
-                    ProgressBar.IsIndeterminate = true;
-                });
+                #region Dokumente
 
-                daDoc = new SqlDataAdapter("SELECT d.ID FROM DocumentMenge d JOIN VnMenge v ON v.ID = d.VN_ID JOIN AgencyMenge a ON a.Address_ID = v.Agency_ID WHERE a.AgencyCustomerType<>3", conn);
-                new SqlCommandBuilder(daDoc);
-                dtDoc = new DataTable();
-                daDoc.Fill(dtDoc);
+                sqlCommand = "Consultation_Id IN (SELECT a.Address_Id FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id and a.AgencyCustomerType<>3)";
+                UpdateDocuments("Consultation", sqlCommand, conn);
 
-                Dispatcher.Invoke(() =>
-                {
-                    LabelStatus.Content = $"Lösche VN-Dokumente ({dtDoc.Rows.Count:n})";
-                    ProgressBar.IsIndeterminate = false;
-                });
-                for (var i = 0; i < dtDoc.Rows.Count; i++)
-                {
-                    Dispatcher.Invoke(() => { ProgressBar.Value = 100d * i / dtDoc.Rows.Count; });
-                    new SqlCommand($"UPDATE DocumentMenge SET [data]='', notice=null WHERE ID='{dtDoc.Rows[i][0]}'", conn).ExecuteNonQuery();
-                }
-                Dispatcher.Invoke(() => { ProgressBar.IsIndeterminate = true; });
+                sqlCommand = "Vn_Id IN (SELECT vn.Id FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3)";
+                UpdateDocuments("VN", sqlCommand, conn);
+
+                sqlCommand = "Vp_Id IN (SELECT vp.Address_Id FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id and a.AgencyCustomerType <> 3)";
+                UpdateDocuments("VP", sqlCommand, conn);
 
                 #endregion
 
-                #region Documente VP
-
-                Dispatcher.Invoke(() =>
-                {
-                    LabelStatus.Content = "Lösche VP-Dokumente";
-                    ProgressBar.IsIndeterminate = true;
-                });
-
-                daDoc = new SqlDataAdapter("SELECT d.ID FROM DocumentMenge d JOIN VpMenge v ON v.Address_ID = d.VP_ID JOIN AgencyMenge a ON a.Address_ID = v.Agency_ID WHERE a.AgencyCustomerType<>3", conn);
-                new SqlCommandBuilder(daDoc);
-                dtDoc = new DataTable();
-                daDoc.Fill(dtDoc);
-
-                Dispatcher.Invoke(() =>
-                {
-                    LabelStatus.Content = $"Lösche VP-Dokumente ({dtDoc.Rows.Count:n})";
-                    ProgressBar.IsIndeterminate = false;
-                });
-                for (var i = 0; i < dtDoc.Rows.Count; i++)
-                {
-                    Dispatcher.Invoke(() => { ProgressBar.Value = 100d * i / dtDoc.Rows.Count; });
-                    new SqlCommand($"UPDATE DocumentMenge SET [data]='', notice=null WHERE ID='{dtDoc.Rows[i][0]}'", conn).ExecuteNonQuery();
-                }
-                Dispatcher.Invoke(() => { ProgressBar.IsIndeterminate = true; });
-
-                #endregion
-
-                //Dispatcher.Invoke(() => { LabelStatus.Content = "Transaktion übernehmen.."; });
-                //new SqlCommand("COMMIT TRAN;", conn).ExecuteNonQuery();
 
                 var t = string.Format("ALTER DATABASE {0} SET RECOVERY SIMPLE WITH NO_WAIT;" + Environment.NewLine
                     + "DBCC SHRINKDATABASE(N'{0}', 0);" + Environment.NewLine
                     + "DBCC SHRINKDATABASE(N'{0}', TRUNCATEONLY);" + Environment.NewLine
                     + "ALTER DATABASE {0} SET RECOVERY FULL WITH NO_WAIT;" + Environment.NewLine
                     + "GO", conn.Database);
-
-
-
+                
                 conn.Close();
                 Dispatcher.Invoke(() =>
-            {
-                Clipboard.Clear(); Clipboard.SetText(t);
+                {
+                    Clipboard.Clear(); Clipboard.SetText(t);
 
-                LabelStatus.Content = "Habe fertig.";
-                ProgressBar.IsIndeterminate = false;
-                ProgressBar.Value = 100;
-                MessageBox.Show("Bitte anschliessend folgens Script in Toad ausführen: " + Environment.NewLine + t + Environment.NewLine + "(ist in der Zwischenablage)", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Information);
-            });
+                    LabelStatus.Content = "Habe fertig.";
+                    ProgressBar.IsIndeterminate = false;
+                    ProgressBar.Value = 100;
+                    MessageBox.Show("Bitte anschliessend folgens Script in Toad ausführen: " + Environment.NewLine + t + Environment.NewLine + "(ist in der Zwischenablage)", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
 
             }
 
+        }
+
+      
+        private void UpdateDocuments(string caption, string sqlWherePart, SqlConnection conn)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LabelStatus.Content = $"Lösche {caption}-Dokumente";
+                ProgressBar.IsIndeterminate = true;
+            });
+
+            var sqlCommand = "UPDATE DocumentMenge" +
+                             "   SET [data]='', notice=null" +
+                             " WHERE " + sqlWherePart;
+            new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
         }
 
         #region Shuffle
