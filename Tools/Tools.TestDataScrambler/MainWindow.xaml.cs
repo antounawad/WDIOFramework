@@ -45,7 +45,23 @@ namespace Tools.TestDataScrambler
                 if (MessageBox.Show(t1, "Achtung", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             }
 
-            var t = new Thread(() => { DoIt(connectionString); });
+            ButtonStart.IsEnabled = false;
+            var t = new Thread(() =>
+            {
+                try
+                {
+                    DoIt(connectionString);
+                }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ButtonStart.IsEnabled = true;
+                        ProgressBar.IsIndeterminate = false;
+                        ProgressBar.Value = 100;
+                    });
+                }
+            });
             t.Start();
         }
 
@@ -293,16 +309,13 @@ namespace Tools.TestDataScrambler
                 conn.Close();
                 Dispatcher.Invoke(() =>
                 {
-                    Clipboard.Clear(); Clipboard.SetText(t);
+                    Clipboard.Clear();
+                    Clipboard.SetText(t);
 
                     LabelStatus.Content = "Habe fertig.";
-                    ProgressBar.IsIndeterminate = false;
-                    ProgressBar.Value = 100;
                     MessageBox.Show("Bitte anschliessend folgens Script in Toad ausführen: " + Environment.NewLine + t + Environment.NewLine + "(ist in der Zwischenablage)", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
-
             }
-
         }
 
       
