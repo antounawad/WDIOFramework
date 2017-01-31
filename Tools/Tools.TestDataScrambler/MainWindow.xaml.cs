@@ -288,7 +288,7 @@ namespace Tools.TestDataScrambler
 
                 #region Dokumente
 
-                sqlCommand = "Consultation_Id IN (SELECT a.Address_Id FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id and a.AgencyCustomerType<>3)";
+                sqlCommand = "Consultation_Id IN (SELECT c.AdviceData_Id FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id and a.AgencyCustomerType<>3)";
                 UpdateDocuments("Consultation", sqlCommand, conn);
 
                 sqlCommand = "Vn_Id IN (SELECT vn.Id FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3)";
