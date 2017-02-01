@@ -109,7 +109,7 @@ namespace Tools.TestDataScrambler
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                
+
                 #region Demo-Agenturen
 
                 var excludeAddressIDs = new List<Guid>(); // Daten von Demo-Agenturen und VRs sollen nicht gescrambelt werden
@@ -124,7 +124,7 @@ namespace Tools.TestDataScrambler
                         excludeAddressIDs.Add(rdr.GetFieldValue<Guid>(0));
                     }
                 }
-                
+
 
                 #endregion
 
@@ -177,12 +177,12 @@ namespace Tools.TestDataScrambler
                 foreach (DataRow row in dtMail.Rows)
                 {
                     var m = row.Field<string>("email");
-                    if(m.EndsWith("eulg.de", StringComparison.InvariantCultureIgnoreCase)
+                    if (m.EndsWith("eulg.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("xbav.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("xbav-berater.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("entgeltumwandler.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("ks-software.de", StringComparison.InvariantCultureIgnoreCase))
-                    continue;
+                        continue;
 
                     var prefix = string.Empty;
                     for (var i = 0; i < 8; i++)
@@ -205,7 +205,7 @@ namespace Tools.TestDataScrambler
 
                 daMail.Update(dtMail);
                 daUser.Update(dtUser);
-                
+
                 #endregion
 
 
@@ -305,7 +305,7 @@ namespace Tools.TestDataScrambler
                     + "DBCC SHRINKDATABASE(N'{0}', TRUNCATEONLY);" + Environment.NewLine
                     + "ALTER DATABASE {0} SET RECOVERY FULL WITH NO_WAIT;" + Environment.NewLine
                     + "GO", conn.Database);
-                
+
                 conn.Close();
                 Dispatcher.Invoke(() =>
                 {
@@ -318,7 +318,7 @@ namespace Tools.TestDataScrambler
             }
         }
 
-      
+
         private void UpdateDocuments(string caption, string sqlWherePart, SqlConnection conn)
         {
             Dispatcher.Invoke(() =>
@@ -330,7 +330,7 @@ namespace Tools.TestDataScrambler
             var sqlCommand = "UPDATE DocumentMenge" +
                              "   SET [data]='', notice=null" +
                              " WHERE " + sqlWherePart;
-            new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+            new SqlCommand(sqlCommand, conn) { CommandTimeout = 600 }.ExecuteNonQuery();
         }
 
         #region Shuffle
