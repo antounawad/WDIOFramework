@@ -297,6 +297,16 @@ namespace Tools.TestDataScrambler
                 sqlCommand = "EXISTS (SELECT 1 FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vp.Address_Id = d.Vp_Id)";
                 UpdateDocuments("VP", sqlCommand, conn);
 
+
+                Dispatcher.Invoke(() =>
+                {
+                    LabelStatus.Content = "Entferne gelöschte Dokumente";
+                    ProgressBar.IsIndeterminate = true;
+                });
+
+                sqlCommand = "DELETE FROM DocumentMenge WHERE deleted = 1";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+
                 #endregion
 
 
