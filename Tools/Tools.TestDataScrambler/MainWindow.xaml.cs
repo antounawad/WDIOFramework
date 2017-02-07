@@ -288,13 +288,13 @@ namespace Tools.TestDataScrambler
 
                 #region Dokumente
 
-                sqlCommand = "Consultation_Id IN (SELECT c.AdviceData_Id FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id and a.AgencyCustomerType<>3)";
+                sqlCommand = "EXISTS (SELECT 1 FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id AND a.AgencyCustomerType<>3 AND c.AdviceData_Id = d.Consultation_Id)";
                 UpdateDocuments("Consultation", sqlCommand, conn);
 
-                sqlCommand = "Vn_Id IN (SELECT vn.Id FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3)";
+                sqlCommand = "EXISTS (SELECT 1 FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vn.Id = d.Vn_Id)";
                 UpdateDocuments("VN", sqlCommand, conn);
 
-                sqlCommand = "Vp_Id IN (SELECT vp.Address_Id FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id and a.AgencyCustomerType <> 3)";
+                sqlCommand = "EXISTS (SELECT 1 FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vp.Address_Id = d.Vp_Id)";
                 UpdateDocuments("VP", sqlCommand, conn);
 
                 #endregion
@@ -327,10 +327,11 @@ namespace Tools.TestDataScrambler
                 ProgressBar.IsIndeterminate = true;
             });
 
-            var sqlCommand = "UPDATE DocumentMenge" +
+            var sqlCommand = "UPDATE d" +
                              "   SET [data]='', notice=null" +
+                             "  FROM DocumentMenge d" +
                              " WHERE " + sqlWherePart;
-            new SqlCommand(sqlCommand, conn) { CommandTimeout = 600 }.ExecuteNonQuery();
+            new SqlCommand(sqlCommand, conn) { CommandTimeout = 1200 }.ExecuteNonQuery();
         }
 
         #region Shuffle
