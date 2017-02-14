@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Tools.TestDataScrambler
@@ -313,7 +314,7 @@ namespace Tools.TestDataScrambler
                 var t = string.Format("ALTER DATABASE {0} SET RECOVERY SIMPLE WITH NO_WAIT;" + Environment.NewLine
                     + "DBCC SHRINKDATABASE(N'{0}', 0);" + Environment.NewLine
                     + "DBCC SHRINKDATABASE(N'{0}', TRUNCATEONLY);" + Environment.NewLine
-                    + "ALTER DATABASE {0} SET RECOVERY FULL WITH NO_WAIT;" + Environment.NewLine
+                    + "// ALTER DATABASE {0} SET RECOVERY FULL WITH NO_WAIT; (nicht mehr nötig)" + Environment.NewLine
                     + "GO", conn.Database);
 
                 conn.Close();
@@ -378,5 +379,93 @@ namespace Tools.TestDataScrambler
 
         #endregion
 
+
+        #region Documente konvertieren
+
+        public long DocumentsCompleted;
+        public long DocumentsTotal;
+        private void ButtonDocConvert_Click(object sender, RoutedEventArgs e)
+        {
+            var connectionString = TextBoxConnectionString.Text;
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var t1 = $"Documente in Datenbank {conn.Database} auf Server {conn.DataSource} konvertieren?";
+                if (MessageBox.Show(t1, "Achtung", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
+            }
+
+            ButtonStart.IsEnabled = false;
+            ButtonDocConvert.IsEnabled = false;
+            var t = new Thread(() =>
+            {
+                try
+                {
+                    var docIds = GetDocumentList(connectionString);
+                    DocumentsTotal = docIds.Count;
+
+                    Parallel.ForEach(docIds, new ParallelOptions { MaxDegreeOfParallelism = 16 }, id =>
+                    {
+                        using (var conn = new SqlConnection(connectionString))
+                        {
+                            conn.Open();
+                            var cmdRead = new SqlCommand("SELECT [data] FROM [dbo].[DocumentMenge] WHERE ID=@ID", conn);
+                            cmdRead.Parameters.AddWithValue("@ID", id);
+                            var dataBase64 = cmdRead.ExecuteScalar() as string;
+                            //var cmdWrite = new SqlCommand("INSERT INTO [dbo].[DocumentData] ([DocumentMenge_ID], [Data])"
+                            //    + " SELECT [ID], CAST(CAST(N'' AS XML).value('xs:base64Binary(sql:column(\"data\"))', 'VARCHAR(MAX)') AS VARBINARY(MAX))"
+                            //    + " FROM [dbo].[DocumentMenge] WHERE ID=@ID", conn);
+
+                            byte[] data = System.Convert.FromBase64String(dataBase64);
+
+                            var cmdWrite = new SqlCommand("INSERT INTO [dbo].[DocumentData] ([DocumentMenge_ID], [Data]) VALUES (@ID, @Data)", conn);
+                            cmdWrite.Parameters.AddWithValue("@ID", id);
+                            cmdWrite.Parameters.AddWithValue("@Data", data);
+                            cmdWrite.ExecuteNonQuery();
+                            Interlocked.Add(ref DocumentsCompleted, 1);
+
+                            Dispatcher.Invoke(() =>
+                            {
+                                LabelStatus.Content = $"Konvertiere Dokumente {DocumentsCompleted} von {DocumentsTotal}";
+                                ProgressBar.IsIndeterminate = false;
+                                ProgressBar.Value = 100 * DocumentsCompleted / DocumentsTotal;
+                            });
+
+                        }
+                    });
+                }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ButtonStart.IsEnabled = true;
+                        ButtonDocConvert.IsEnabled = true;
+                        ProgressBar.IsIndeterminate = false;
+                        ProgressBar.Value = 100;
+                    });
+                }
+            });
+            t.Start();
+        }
+
+        private static List<Guid> GetDocumentList(string connectionString)
+        {
+            using (var conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                var docIds = new List<Guid>();
+                using (var rdr = new SqlCommand("SELECT ID FROM DocumentMenge WHERE [deleted]=0 AND [data] IS NOT NULL AND LEN([data])>0 AND NOT EXISTS (SELECT 1 FROM [dbo].[DocumentData] WHERE [DocumentMenge_ID]=[ID])", conn).ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        docIds.Add(rdr.GetFieldValue<Guid>(0));
+                    }
+                }
+                return docIds;
+            }
+        }
+
+        #endregion
+
     }
 }
+
