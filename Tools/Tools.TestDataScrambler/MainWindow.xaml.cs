@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -400,38 +401,60 @@ namespace Tools.TestDataScrambler
             {
                 try
                 {
-                    var docIds = GetDocumentList(connectionString);
-                    DocumentsTotal = docIds.Count;
+                    var documents = GetDocumentList(connectionString);
+                    DocumentsTotal = documents.Count;
 
-                    Parallel.ForEach(docIds, new ParallelOptions { MaxDegreeOfParallelism = 16 }, id =>
+                    Parallel.ForEach(documents, new ParallelOptions { MaxDegreeOfParallelism = 16 }, doc =>
                     {
+                        var id = doc.Item1;
+                        var useInsert = doc.Item2;
+
                         using (var conn = new SqlConnection(connectionString))
                         {
                             conn.Open();
-                            var cmdRead = new SqlCommand("SELECT [data] FROM [dbo].[DocumentMenge] WHERE ID=@ID", conn);
-                            cmdRead.Parameters.AddWithValue("@ID", id);
-                            var dataBase64 = cmdRead.ExecuteScalar() as string;
-                            //var cmdWrite = new SqlCommand("INSERT INTO [dbo].[DocumentData] ([DocumentMenge_ID], [Data])"
-                            //    + " SELECT [ID], CAST(CAST(N'' AS XML).value('xs:base64Binary(sql:column(\"data\"))', 'VARCHAR(MAX)') AS VARBINARY(MAX))"
-                            //    + " FROM [dbo].[DocumentMenge] WHERE ID=@ID", conn);
 
-                            byte[] data = System.Convert.FromBase64String(dataBase64);
+                            byte[] data;
+                            using (var cmdRead = new SqlCommand("SELECT [data] FROM [dbo].[DocumentMenge] WHERE ID=@ID", conn))
+                            {
+                                cmdRead.Parameters.AddWithValue("@ID", id);
+                                data = Convert.FromBase64String((string)cmdRead.ExecuteScalar());
+                            }
 
-                            var cmdWrite = new SqlCommand("INSERT INTO [dbo].[DocumentData] ([DocumentMenge_ID], [Data]) VALUES (@ID, @Data)", conn);
-                            cmdWrite.Parameters.AddWithValue("@ID", id);
-                            cmdWrite.Parameters.AddWithValue("@Data", data);
-                            cmdWrite.ExecuteNonQuery();
+                            var command = useInsert
+                                ? "INSERT INTO [dbo].[DocumentData] ([DocumentMenge_ID], [Data]) VALUES (@ID, @Data)"
+                                : "UPDATE [dbo].[DocumentData] SET [Data]=@Data WHERE [DocumentMenge_ID]=@ID";
+                            using (var cmdWrite = new SqlCommand(command, conn))
+                            {
+                                cmdWrite.Parameters.AddWithValue("@ID", id);
+                                cmdWrite.Parameters.AddWithValue("@Data", data);
+                                cmdWrite.ExecuteNonQuery();
+                            }
+
                             Interlocked.Add(ref DocumentsCompleted, 1);
 
                             Dispatcher.Invoke(() =>
                             {
                                 LabelStatus.Content = $"Konvertiere Dokumente {DocumentsCompleted} von {DocumentsTotal}";
                                 ProgressBar.IsIndeterminate = false;
-                                ProgressBar.Value = 100 * DocumentsCompleted / DocumentsTotal;
+                                ProgressBar.Value = 100d * DocumentsCompleted / DocumentsTotal;
                             });
-
                         }
                     });
+
+                    var maxTimestamp = documents.Max(d => d.Item3);
+                    using (var conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        using (var command = new SqlCommand("DELETE FROM [dbo].[DBConfigMenge] WHERE [sysname]='ts_document_conversion'", conn))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                        using(var command = new SqlCommand("INSERT INTO [dbo].[DBConfigMenge] ([sysname], [value]) VALUES ('ts_document_conversion', @timestamp)", conn))
+                        {
+                            command.Parameters.Add(new SqlParameter("@timestamp", SqlDbType.VarChar) { Value = maxTimestamp.ToString() });
+                            command.ExecuteNonQuery();
+                        }
+                    }
                 }
                 finally
                 {
@@ -447,25 +470,67 @@ namespace Tools.TestDataScrambler
             t.Start();
         }
 
-        private static List<Guid> GetDocumentList(string connectionString)
+        private static List<Tuple<Guid, bool, ulong>> GetDocumentList(string connectionString)
         {
             using (var conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                var docIds = new List<Guid>();
-                using (var rdr = new SqlCommand("SELECT ID FROM DocumentMenge WHERE [deleted]=0 AND [data] IS NOT NULL AND LEN([data])>0 AND NOT EXISTS (SELECT 1 FROM [dbo].[DocumentData] WHERE [DocumentMenge_ID]=[ID])", conn).ExecuteReader())
+
+                ulong timestamp;
+                using (var command = new SqlCommand("SELECT [value] FROM [dbo].[DBConfigMenge] WHERE [sysname]='ts_document_conversion'", conn))
                 {
-                    while (rdr.Read())
+                    using (var reader = command.ExecuteReader())
                     {
-                        docIds.Add(rdr.GetFieldValue<Guid>(0));
+                        timestamp = reader.Read() ? ulong.Parse(reader.GetString(0)) : 0;
                     }
                 }
+
+                var docIds = new List<Tuple<Guid, bool, ulong>>();
+                using (var command = new SqlCommand("SELECT d.[ID], dd.[DocumentMenge_ID], t.[__LastChange] " +
+                                                    "FROM [dbo].[DocumentMenge] d JOIN [sync].[DocumentMenge] t ON d.[ID]=t.[ID] LEFT OUTER JOIN [dbo].[DocumentData] dd ON d.[ID]=dd.[DocumentMenge_ID] " +
+                                                    "WHERE d.[deleted]=0 AND d.[data] IS NOT NULL AND LEN(d.[data])>0 AND (dd.[DocumentMenge_ID] IS NULL OR t.[__LastChange]>@timestamp)", conn))
+                {
+                    command.Parameters.Add(new SqlParameter("@timestamp", SqlDbType.Binary) { Value = ToBinary(timestamp) });
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            docIds.Add(Tuple.Create(reader.GetGuid(0), reader.IsDBNull(1), ToInteger(reader.GetFieldValue<byte[]>(2))));
+                        }
+                    }
+                }
+
                 return docIds;
             }
         }
 
-        #endregion
+        private static byte[] ToBinary(ulong timestamp)
+        {
+            var result = new byte[8];
+            for(var n = 0; n < 8; ++n)
+            {
+                result[n] = (byte)((timestamp & (0xfful << 8 * (7 - n))) >> 8 * (7 - n));
+            }
+            return result;
+        }
 
+        private static ulong ToInteger(byte[] timestamp)
+        {
+            if(timestamp == null || timestamp.Length != 8)
+            {
+                throw new ArgumentException();
+            }
+
+            ulong result = 0x0;
+            for(var n = 7; n >= 0; --n)
+            {
+                result |= (ulong)timestamp[7 - n] << n * 8;
+            }
+
+            return result;
+        }
+
+        #endregion
     }
 }
-
