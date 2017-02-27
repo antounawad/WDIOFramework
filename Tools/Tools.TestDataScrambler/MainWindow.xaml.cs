@@ -404,7 +404,7 @@ namespace Tools.TestDataScrambler
                     var documents = GetDocumentList(connectionString);
                     DocumentsTotal = documents.Count;
 
-                    Parallel.ForEach(documents, new ParallelOptions { MaxDegreeOfParallelism = 16 }, doc =>
+                    Parallel.ForEach(documents, new ParallelOptions { MaxDegreeOfParallelism = 6 }, doc =>
                     {
                         var id = doc.Item1;
                         var useInsert = doc.Item2;
@@ -486,9 +486,10 @@ namespace Tools.TestDataScrambler
                 }
 
                 var docIds = new List<Tuple<Guid, bool, ulong>>();
-                using (var command = new SqlCommand("SELECT d.[ID], dd.[DocumentMenge_ID], t.[__LastChange] " +
+                using (var command = new SqlCommand("SELECT TOP 5000 d.[ID], dd.[DocumentMenge_ID], t.[__LastChange] " +
                                                     "FROM [dbo].[DocumentMenge] d JOIN [sync].[DocumentMenge] t ON d.[ID]=t.[ID] LEFT OUTER JOIN [dbo].[DocumentData] dd ON d.[ID]=dd.[DocumentMenge_ID] " +
-                                                    "WHERE d.[deleted]=0 AND d.[data] IS NOT NULL AND LEN(d.[data])>0 AND (dd.[DocumentMenge_ID] IS NULL OR t.[__LastChange]>@timestamp)", conn))
+                                                    "WHERE d.[deleted]=0 AND d.[data] IS NOT NULL AND LEN(d.[data])>0 AND (dd.[DocumentMenge_ID] IS NULL OR t.[__LastChange]>@timestamp) " +
+                                                    "ORDER BY t.[__LastChange] ASC", conn))
                 {
                     command.Parameters.Add(new SqlParameter("@timestamp", SqlDbType.Binary) { Value = ToBinary(timestamp) });
 
