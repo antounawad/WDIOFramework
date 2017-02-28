@@ -306,10 +306,26 @@ namespace Tools.TestDataScrambler
                     ProgressBar.IsIndeterminate = true;
                 });
 
-                sqlCommand = "DELETE FROM DocumentMenge WHERE deleted = 1";
+                sqlCommand = "DELETE FROM DocumentData WHERE DocumentMenge_ID in (SELECT id FROM DocumentMenge WHERE deleted = 1 AND id NOT IN (SELECT document_id FROM ChangeFormMenge))";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+
+                sqlCommand = "DELETE FROM DocumentMenge WHERE deleted = 1 AND id NOT IN (SELECT document_id FROM ChangeFormMenge)";
                 new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
 
                 #endregion
+
+
+
+                Dispatcher.Invoke(() =>
+                {
+                    LabelStatus.Content = "Stutze AuditLog-Tabelle";
+                    ProgressBar.IsIndeterminate = true;
+                });
+
+                sqlCommand = "TRUNCATE TABLE AuditLog";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+
+
 
 
                 var t = string.Format("ALTER DATABASE {0} SET RECOVERY SIMPLE WITH NO_WAIT;" + Environment.NewLine
@@ -339,11 +355,16 @@ namespace Tools.TestDataScrambler
                 ProgressBar.IsIndeterminate = true;
             });
 
-            var sqlCommand = "UPDATE d" +
-                             "   SET [data]='', notice=null" +
-                             "  FROM DocumentMenge d" +
-                             " WHERE " + sqlWherePart;
-            new SqlCommand(sqlCommand, conn) { CommandTimeout = 1200 }.ExecuteNonQuery();
+            var sqlCommand = "UPDATE dd" +
+                             "   SET [data]=@EMPTYDATA" +
+                             "  FROM DocumentData dd, DocumentMenge d" +
+                             " WHERE dd.DocumentMenge_ID = d.ID AND " + sqlWherePart;
+
+            var emptyDataParam = new SqlParameter("@EMPTYDATA", SqlDbType.Binary) { Value = new byte[0] };
+            var updateCommand = new SqlCommand(sqlCommand, conn) { CommandTimeout = 1200 };
+            updateCommand.Parameters.Add(emptyDataParam);
+
+            updateCommand.ExecuteNonQuery();
         }
 
         #region Shuffle
