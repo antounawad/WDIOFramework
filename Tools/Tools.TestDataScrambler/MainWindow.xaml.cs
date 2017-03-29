@@ -325,7 +325,8 @@ namespace Tools.TestDataScrambler
                 sqlCommand = "TRUNCATE TABLE AuditLog";
                 new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
 
-
+				sqlCommand = "TRUNCATE TABLE MailQueue";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
 
 
                 var t = string.Format("ALTER DATABASE {0} SET RECOVERY SIMPLE WITH NO_WAIT;" + Environment.NewLine
