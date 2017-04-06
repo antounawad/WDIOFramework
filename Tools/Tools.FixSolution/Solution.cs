@@ -69,11 +69,17 @@ namespace Tools.FixSolution
                     Debug.WriteLine($"{project.Name}: {dbl} doppelt");
                 foreach (var dbl in projectReferences.GroupBy(g => g.EvaluatedInclude).Where(w => w.Count() > 1))
                     Debug.WriteLine($"{project.Name}: {dbl} doppelt");
+
+                //var q = project.Project.Items.GroupBy(g => g.ItemType).Select(s => s.Key);
+
+                foreach (var dbl in project.Project.Items.Where(w => new[]{ "Compile", "Content", "None", "Resource", "Page", "EmbeddedResource", "AppDesigner", "PublishFile", "ApplicationManifest" }.Contains( w.ItemType)).GroupBy(g => g.EvaluatedInclude).Where(w => w.Count() > 1))
+                    Debug.WriteLine($"{project.Name}: {dbl} doppelt");
+
                 foreach (var r in references)
                 {
                     var hintPath = r.DirectMetadata.SingleOrDefault(a => a.Name.Equals("HintPath"))?.EvaluatedValue;
                     if (hintPath == null) continue;
-                    if (!hintPath.StartsWith("..\\") || !allowedHintPaths.Any(a => hintPath.Contains(a)))
+                    if (!hintPath.Contains("..\\") || !allowedHintPaths.Any(a => hintPath.Contains(a)))
                     {
                         Debug.WriteLine($"{project.Name}: Illegal Hint Path: {hintPath}");
                     }
