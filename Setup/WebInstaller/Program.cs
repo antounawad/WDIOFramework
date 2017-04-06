@@ -67,7 +67,7 @@ namespace Eulg.Setup.WebInstaller
 
         #endregion
 
-        private static readonly BrandingProfile Profile = BrandingProfile.Rc;
+        private static readonly BrandingProfile Profile = BrandingProfile.Release;
         private static Mutex _appInstanceMutex;
 
         [STAThread]
