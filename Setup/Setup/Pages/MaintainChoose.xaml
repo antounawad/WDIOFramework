@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="Eulg.Setup.Pages.MaintainChoose"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Width="480"
+             d:DesignHeight="300"
+             mc:Ignorable="d">
+
+    <StackPanel x:Name="AreaMaintainChoose">
+        <Button x:Name="BtnMaintainRepair"
+                Width="200"
+                Height="80"
+                Margin="0,20,0,20"
+                Click="BtnMaintainRepair_OnClick">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="64" Source="Repair.png" />
+                <Label VerticalAlignment="Center"
+                       Content="Reparieren"
+                       FontSize="20"
+                       FontWeight="Medium" />
+            </StackPanel>
+        </Button>
+        <Button x:Name="BtnMaintainRemove"
+                Width="200"
+                Height="80"
+                Click="BtnMaintainRemove_OnClick">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="64" Source="Remove.png" />
+                <Label VerticalAlignment="Center"
+                       Content="Entfernen"
+                       FontSize="20"
+                       FontWeight="Medium" />
+            </StackPanel>
+        </Button>
+
+
+        <Canvas>
+            <StackPanel Margin="0 28 0 0">
+                <Label x:Name="LblVersion"
+                       Content="1.2.3"
+                       FontSize="10"
+                       Foreground="#D08080"
+                       Padding="0 2" />
+            </StackPanel>
+        </Canvas>
+    </StackPanel>
+
+</UserControl>

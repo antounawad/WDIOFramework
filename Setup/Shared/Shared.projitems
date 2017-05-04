@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>21e4cdde-8780-42b8-9b78-ef99481c82f0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Eulg.Setup.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)MutexManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Temp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UpdateConfig.cs" />
+  </ItemGroup>
+</Project>

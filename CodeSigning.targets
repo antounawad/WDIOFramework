@@ -1,0 +1,26 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Target Name="GetSignSdkPath">
+		<!-- did not work, returned the wrong path
+		<GetFrameworkSdkPath>
+			<Output TaskParameter="Path" PropertyName="SignToolSdkPath" />
+		</GetFrameworkSdkPath>
+		-->
+		<PropertyGroup>
+			<SignToolSdkPath>C:\Program Files (x86)\Windows Kits\8.1\bin\x64\</SignToolSdkPath>
+		</PropertyGroup>
+  </Target>
+  <Target Name="GetCertSignValues" DependsOnTargets="GetSignSdkPath">
+    <PropertyGroup>
+		<SignTool>$(SignToolSdkPath)signtool.exe</SignTool>
+		<CertFile>$(SolutionRootDir)OS201406125225.pfx</CertFile>
+		<CertPassword>DhTum1LvEw4zY4HAxxiK</CertPassword>
+    </PropertyGroup>
+  </Target>
+  <Target Name="SignApp" DependsOnTargets="GetCertSignValues">
+		<!-- Code, um die App per Software-Zertifikat zu signieren -->
+		<!--<Exec Command="&quot;$(SignTool)&quot; sign /f &quot;$(CertFile)&quot; /p $(CertPassword) &quot;$(TargetPath)&quot;" />-->
+		
+		<!-- Code, um die App per Extended Validation-Zertifikat auf USB-Token zu signieren -->
+		<Exec Command="&quot;$(SignTool)&quot; sign /a /tr http://timestamp.globalsign.com/?signature=sha2 /td SHA256 /n &quot;xbAV Beratungssoftware GmbH&quot; &quot;$(TargetPath)&quot;" />
+  </Target>
+</Project>

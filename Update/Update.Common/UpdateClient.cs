@@ -1,0 +1,527 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+using Eulg.Shared;
+using Eulg.Update.Shared;
+using Octodiff.Core;
+using System.Web;
+
+namespace Eulg.Update.Common
+{
+    public class UpdateClient
+    {
+        public enum EUpdateCheckResult
+        {
+            NoConnection,
+            NoService,
+            Error,
+            AuthFail,
+            UpToDate,
+            UpdatesAvailable,
+            ClientIdFail
+        }
+        public enum ELogTypeEnum
+        {
+            Info,
+            Warning,
+            Error
+        }
+
+        private const string UPDATE_WORKER_BIN_FILE = "UpdateWorker.exe";
+        private const string UPDATE_WORKER_XML_FILE = "UpdateWorker.xml";
+        //private const string RESET_FILE_TAG = ".$EulgReset$";
+        private const string FETCH_UPDATE_DATA_METHOD = "FilesUpdateCheck";
+        private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileGz";
+        //private const string DOWNLOAD_FILES_STREAM_METHOD = "FileUpdateGetFiles";
+        private const string UPLOAD_LOG_METHOD = "FilesUpdateUploadLog";
+        //private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
+        private const int STREAM_BUFFER_SIZE = 81920;
+        private const int diffThreshold = 256 * 1024;
+        private const int diffChunkSize = 8192;
+
+        public bool UseHttps { get; private set; }
+        public UpdateConfig UpdateConf = new UpdateConfig();
+        public readonly WorkerConfig WorkerConfig = new WorkerConfig();
+        public Branding.EUpdateChannel UpdateChannel { get; set; }
+        public string ApplicationPath { get; set; }
+        public string LastError { get; private set; }
+        public string UpdateUrl
+        {
+            get { return _updateUrl; }
+            set
+            {
+                _updateUrl = value;
+                if (_updateUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _updateUrl = _updateUrl.Substring(7);
+                    UseHttps = false; //HACK Workaround um größere Anpassungen zu vermeiden
+                }
+                if (_updateUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _updateUrl = _updateUrl.Substring(8);
+                    UseHttps = true; //HACK Workaround um größere Anpassungen zu vermeiden
+                }
+                if (!_updateUrl.EndsWith("/", StringComparison.InvariantCultureIgnoreCase)) { _updateUrl += "/"; }
+            }
+        }
+
+        private string _updateUrl;
+
+        public UpdateClient()
+        {
+            UseHttps = true;
+            ApplicationPath = AppDomain.CurrentDomain.BaseDirectory;
+            LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Update.log");
+        }
+
+        public string DownloadPath { get; set; }
+        public string CheckProcesses { get; set; }
+        public string KillProcesses { get; set; }
+        public string LogFile { get; set; }
+
+        public string[] UserNames { get; set; }
+        public string[] Passwords { get; set; }
+
+        // Progress indication
+        public long DownloadSizeTotal { get; private set; }
+        public long DownloadSizeCompleted { get; private set; }
+        public long DownloadFilesTotal { get; private set; }
+        public long DownloadFilesCompleted { get; private set; }
+        public long DownloadCurrentFileSize { get; private set; }
+        public long DownloadCurrentFileSizeGz { get; private set; }
+        public string DownloadCurrentFilename { get; private set; }
+        public bool SkipWaitForProcess { get; set; }
+        public bool SkipRestartApplication { get; set; }
+
+        public DateTime? ClientIdUsedDateTime { get; private set; }
+        public string ClientIdUsedOsUsername { get; private set; }
+        public string ClientIdUsedHostname { get; private set; }
+
+        public EUpdateCheckResult FetchManifest(string clientId)
+        {
+            try
+            {
+                if (!CheckConnectivity())
+                {
+                    Log(ELogTypeEnum.Warning, "NoConnection");
+                    return EUpdateCheckResult.NoConnection;
+                }
+                var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
+                var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
+                var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserNames.Length > 0 ? string.Join("\t", UserNames) : "") + "&password=" + Uri.EscapeDataString(Passwords.Length > 0 ? string.Join("\t", Passwords) : "");
+
+                var request = (HttpWebRequest)WebRequest.Create(url);
+                request.KeepAlive = false;
+                request.AllowReadStreamBuffering = false;
+                request.AllowWriteStreamBuffering = false;
+                request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+                if (!string.IsNullOrEmpty(clientId)) request.Headers.Add("ClientID", clientId);
+                request.Headers.Add("ClientOSUsername", Environment.UserName + "@" + Environment.UserDomainName);
+                request.Headers.Add("ClientHostname", Environment.MachineName);
+                request.Headers.Add("ClientUpdateType", "UPDATE");
+
+                var result = new StreamReader(request.GetResponse().GetResponseStream()).ReadToEnd();
+
+                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return EUpdateCheckResult.UpToDate;
+                }
+                if (result.StartsWith("AUTHFAIL", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return EUpdateCheckResult.AuthFail;
+                }
+                if (result.StartsWith("CLIENTIDFAIL", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var used = result.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (used.Length > 3)
+                    {
+                        DateTime dt;
+                        if (DateTime.TryParse(used[1], out dt)) ClientIdUsedDateTime = dt;
+                        ClientIdUsedOsUsername = used[2];
+                        ClientIdUsedHostname = used[3];
+                    }
+                    return EUpdateCheckResult.ClientIdFail;
+                }
+                var xmlSer = new XmlSerializer(typeof(UpdateConfig));
+                using (var reader = new StringReader(result))
+                {
+                    UpdateConf = (UpdateConfig)xmlSer.Deserialize(reader);
+                }
+            }
+            catch (WebException ex)
+            {
+                LastError = ex.Message;
+                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
+                return EUpdateCheckResult.NoService;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                Log(ELogTypeEnum.Error, UpdateUrl + ": " + ex.Message);
+                return EUpdateCheckResult.Error;
+            }
+            return EUpdateCheckResult.UpdatesAvailable;
+        }
+
+        public static bool CheckConnectivity()
+        {
+            return NetworkInterface.GetIsNetworkAvailable();
+        }
+
+        private void PatchFile(WorkerConfig.WorkerFile diffFile)
+        {
+            var webRequest = WebRequest.CreateHttp(new Uri(new Uri("http://" + UpdateUrl), "FilesUpdateGetDelta"));
+            //webRequest.AllowReadStreamBuffering = false;
+            //webRequest.AllowWriteStreamBuffering = false;
+            webRequest.SendChunked = true;
+            webRequest.Method = "POST";
+            webRequest.Headers.Add("Channel", UpdateChannel.ToString());
+            webRequest.Headers.Add("FileName", diffFile.Source);
+
+            webRequest.ContentType = "application/octet-stream";
+            //webRequest.ContentLength = signature.Length;
+
+            using (var requestStream = webRequest.GetRequestStream())
+            {
+                using (var deflateStream = new DeflateStream(requestStream, CompressionLevel.Optimal))
+                {
+                    using (var sourceFileStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        var signatureBuilder = new SignatureBuilder { ChunkSize = diffChunkSize };
+                        signatureBuilder.Build(sourceFileStream, new SignatureWriter(deflateStream));
+                    }
+                }
+            }
+            var destFile = Path.Combine(DownloadPath, diffFile.Source);
+            using (var response = webRequest.GetResponse())
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    using (var deflateStream = new DeflateStream(responseStream, CompressionMode.Decompress))
+                    {
+                        using (var basisStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            if (!Directory.Exists(Path.GetDirectoryName(destFile))) Directory.CreateDirectory(Path.GetDirectoryName(destFile));
+                            using (var newFileStream = new FileStream(Path.Combine(DownloadPath, diffFile.Source), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+                            {
+                                var delta = new DeltaApplier { SkipHashCheck = false };
+                                delta.Apply(basisStream, new BinaryDeltaReader(deflateStream, null), newFileStream);
+                            }
+                        }
+                    }
+                }
+            }
+            File.SetLastWriteTime(destFile, diffFile.FileDateTime);
+        }
+
+        public bool DownloadUpdates()
+        {
+            try
+            {
+                #region Outer Try/Catch
+
+                var filteredWorkerFilesAll = WorkerConfig.WorkerFiles.Where(f =>
+                {
+                    var fileInfo = new FileInfo(Path.Combine(DownloadPath, f.Source));
+                    return !fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, f.FileDateTime) || fileInfo.Length != f.FileSize;
+                }).ToList();
+
+                var diffFiles = filteredWorkerFilesAll.Where(w => !w.NewFile && w.FileSizeGz >= diffThreshold).ToList();
+                var filteredWorkerFiles = filteredWorkerFilesAll.Where(w => w.NewFile || w.FileSizeGz < diffThreshold).ToList();
+
+                if (!Directory.Exists(DownloadPath))
+                {
+                    Log(ELogTypeEnum.Info, "Create Directory " + DownloadPath);
+                    Directory.CreateDirectory(DownloadPath);
+                }
+
+                GetUpdateClient();
+
+                DownloadSizeTotal = filteredWorkerFilesAll.Sum(s => s.FileSize);
+                DownloadFilesTotal = filteredWorkerFilesAll.Count;
+                DownloadSizeCompleted = 0;
+                DownloadFilesCompleted = 0;
+                var currentFile = 0;
+                var currentFileDiff = 0;
+
+
+                foreach (var diffFile in diffFiles)
+                {
+                    var trialNumber = 0;
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, DownloadFilesTotal, diffFile.FileName);
+                    while (true)
+                    {
+                        try
+                        {
+                            Log(ELogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
+                            PatchFile(diffFile);
+                            DownloadSizeCompleted += diffFile.FileSize;
+                            currentFileDiff++;
+                            diffFile.Done = true;
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            if (trialNumber++ > 2)
+                                throw;
+                        }
+                    }
+                }
+
+                var log = new List<Tuple<ELogTypeEnum, string>>();
+                Parallel.ForEach(filteredWorkerFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, workerFile =>
+                {
+                    var trialNumber = 0;
+                    var tmpFile = Path.Combine(DownloadPath, workerFile.Source);
+                    DownloadCurrentFilename = workerFile.FileName;
+                    DownloadCurrentFileSize = workerFile.FileSize;
+                    DownloadCurrentFileSizeGz = workerFile.FileSizeGz;
+                    NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, currentFile + currentFileDiff, DownloadFilesTotal, workerFile.FileName);
+
+                    var fileInfo = new FileInfo(tmpFile);
+                    if (!fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, workerFile.FileDateTime) || fileInfo.Length != workerFile.FileSize)
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+                                log.Add(new Tuple<ELogTypeEnum, string>(ELogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
+                                var localFile = Path.Combine(DownloadPath, workerFile.Source);
+                                if (!Directory.Exists(Path.GetDirectoryName(localFile)))
+                                {
+                                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+                                }
+                                DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize);
+                                DownloadSizeCompleted += workerFile.FileSize;
+                                workerFile.Done = true;
+                                currentFile++;
+                                DownloadFilesCompleted++;
+                                break;
+                            }
+                            catch (Exception)
+                            {
+                                if (trialNumber++ > 2)
+                                {
+                                    foreach (var l in log) Log(l.Item1, l.Item2);
+                                    log.Clear();
+                                    throw;
+                                }
+                            }
+                        }
+                    }
+                });
+                foreach (var l in log) Log(l.Item1, l.Item2); log.Clear();
+                NotifyProgressChanged(DownloadSizeTotal, DownloadSizeTotal, filteredWorkerFilesAll.Count, filteredWorkerFilesAll.Count, string.Empty);
+
+                // Write Worker Config
+                WorkerConfig.AppPath = ApplicationPath;
+                WorkerConfig.TempPath = DownloadPath;
+                WorkerConfig.ApplicationFile = SkipRestartApplication ? null : System.Reflection.Assembly.GetEntryAssembly().Location;
+                WorkerConfig.CommandLineArgs = Tools.GetCommandLineArgs();
+                WorkerConfig.WaitForProcess = SkipWaitForProcess ? 0 : Process.GetCurrentProcess().Id;
+                WorkerConfig.StartProcess = null;
+                WorkerConfig.CheckProcesses = CheckProcesses;
+                WorkerConfig.KillProcesses = KillProcesses;
+                WorkerConfig.LogFile = LogFile;
+
+                var xmlSer = new XmlSerializer(typeof(WorkerConfig));
+                using (var writer = new StreamWriter(Path.Combine(DownloadPath, UPDATE_WORKER_XML_FILE)))
+                {
+                    xmlSer.Serialize(writer, WorkerConfig);
+                }
+                return true;
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                Log(ELogTypeEnum.Error, ex.ToString());
+                return false;
+            }
+        }
+
+        public Process RunUpdateWorker(bool runAs = false)
+        {
+            try
+            {
+                var p = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = Path.Combine(DownloadPath, UPDATE_WORKER_BIN_FILE),
+                        Verb = runAs ? "runas" : null
+                    }
+                };
+                p.Start();
+                return p;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                Log(ELogTypeEnum.Error, ex.ToString());
+                return null;
+            }
+        }
+
+        public void Log(ELogTypeEnum logType, string message)
+        {
+            File.AppendAllText(LogFile, $"{DateTime.Now:dd.MM.yyyy HH:mm:ss}: {logType.ToString().PadRight(7)}: UpdateClient: {message.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", " ")}" + Environment.NewLine);
+        }
+        public bool UploadLogfile()
+        {
+            try
+            {
+                if (!File.Exists(LogFile)) return true;
+                if (!CheckConnectivity()) return true;
+
+                var baseUri = new Uri("http://" + UpdateUrl);
+                var uri = new Uri(baseUri, UPLOAD_LOG_METHOD);
+
+                var nvc = new NameValueCollection
+                {
+                    {"updateChannel", UpdateChannel.ToString()},
+                    {"userName", UserNames.Length>0 && !string.IsNullOrWhiteSpace(UserNames[0]) ? UserNames[0] : $"{Environment.UserName}@{Environment.MachineName}" },
+                    {"logFileDateTime", $"{File.GetLastWriteTime(LogFile):dd.MM.yyyy HH:mm:ss}" },
+                    {"logFileContent", CompressStringGz(File.ReadAllText(LogFile))}
+                };
+                var parameters = new StringBuilder();
+                foreach (string key in nvc.Keys)
+                {
+                    parameters.AppendFormat("{0}={1}&", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(nvc[key]));
+                }
+                parameters.Length -= 1;
+
+                var webRequest = WebRequest.CreateHttp(uri);
+                webRequest.Method = "POST";
+                using (var requestStream = webRequest.GetRequestStream())
+                {
+                    using (var deflateStream = new GZipStream(requestStream, CompressionLevel.Optimal))
+                    {
+                        using (var writer = new StreamWriter(deflateStream))
+                        {
+                            writer.Write(parameters.ToString());
+                        }
+                    }
+                }
+                File.Delete(LogFile);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LastError = ex.Message;
+                Log(ELogTypeEnum.Error, ex.ToString());
+                return false;
+            }
+        }
+
+        private long _inProgress;
+        private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty)) Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
+            var baseUri = new Uri("http://" + UpdateUrl);
+            var uri = new Uri(baseUri, DOWNLOAD_FILE_METHOD);
+            var url = uri + "?updateChannel=" + UpdateChannel + "&fileName=" + Uri.EscapeDataString(fileName);
+
+            var webRequest = WebRequest.CreateHttp(url);
+            webRequest.AllowReadStreamBuffering = false;
+            using (var response = webRequest.GetResponse())
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    if (responseStream == null) throw new Exception("Fehler beim öffnen der URL: " + url);
+                    using (var sw = new FileStream(localFile, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        sw.SetLength(fileSize); // Wichtig damit die Dateien auf nicht fragmentiert werden!
+                        using (var gz = new GZipStream(responseStream, CompressionMode.Decompress))
+                        {
+                            var buffer = new byte[STREAM_BUFFER_SIZE];
+                            int read;
+                            while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
+                            {
+                                sw.Write(buffer, 0, read);
+                                _inProgress += read;
+                                NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal);
+                            }
+                        }
+                    }
+                }
+            }
+            _inProgress -= fileSize;
+            File.SetLastWriteTime(localFile, dateTime);
+        }
+
+        private void GetUpdateClient()
+        {
+            var binFileInAppPath = Path.Combine(ApplicationPath, UPDATE_WORKER_BIN_FILE);
+            var binFileInTemp = Path.Combine(DownloadPath, UPDATE_WORKER_BIN_FILE);
+            if (File.Exists(binFileInAppPath) && !File.Exists(binFileInTemp))
+            {
+                File.Copy(binFileInAppPath, binFileInTemp);
+            }
+            var updateFile = UpdateConf.UpdateFiles.FirstOrDefault(f => f.FilePath == string.Empty && f.FileName.Equals(UPDATE_WORKER_BIN_FILE, StringComparison.InvariantCultureIgnoreCase));
+            if (updateFile != null)
+            {
+                var fileInfo = new FileInfo(binFileInTemp);
+                if (!fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime) || fileInfo.Length != updateFile.FileSize)
+                {
+                    Log(ELogTypeEnum.Info, $"Download UpdateWorker {binFileInTemp} ({updateFile.FileDateTime:dd.MM.yy HH:mm:ss})");
+                    DownloadFilesTotal++;
+                    DownloadSizeTotal += updateFile.FileSize;
+                    DownloadCurrentFilename = updateFile.FileName;
+                    DownloadCurrentFileSize = updateFile.FileSize;
+                    DownloadCurrentFileSizeGz = updateFile.FileSizeGz;
+                    NotifyProgressChanged(0, DownloadSizeTotal, 0, DownloadFilesTotal, updateFile.FileName);
+                    DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize);
+                    DownloadSizeCompleted += updateFile.FileSize;
+                    DownloadFilesCompleted++;
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
+                }
+            }
+        }
+
+        private void NotifyProgressChanged(long position, long total) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total));
+        private void NotifyProgressChanged(long position, long total, long currentFile, long totalFiles, string fileName) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total, currentFile, totalFiles, fileName));
+
+        public event EventHandler<FractionalProgressChangedEventArgs> ProgressChanged;
+        public event EventHandler<string> CheckingFile;
+
+        private static string CompressStringGz(string s)
+        {
+            var bytes = Encoding.Unicode.GetBytes(s);
+            using (var msi = new MemoryStream(bytes))
+            using (var mso = new MemoryStream())
+            {
+                using (var gs = new GZipStream(mso, CompressionLevel.Optimal))
+                {
+                    msi.CopyTo(gs);
+                }
+                return Convert.ToBase64String(mso.ToArray());
+            }
+        }
+        private static byte[] CompressStringDeflate(string s)
+        {
+            var bytes = Encoding.Unicode.GetBytes(s);
+            using (var msi = new MemoryStream(bytes))
+            using (var mso = new MemoryStream())
+            {
+                using (var gs = new DeflateStream(mso, CompressionLevel.Optimal))
+                {
+                    msi.CopyTo(gs);
+                }
+                return mso.ToArray();
+            }
+        }
+
+    }
+}

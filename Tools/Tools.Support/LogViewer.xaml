@@ -1,0 +1,19 @@
+﻿<Window x:Class="Eulg.Client.SupportTool.LogViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LogViewer">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Client" IsSelected="True">
+                <TextBox x:Name="TextBoxClient" IsReadOnly="True" TextWrapping="NoWrap"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                 FontFamily="Consolas" FontSize="12" Text=""/>
+            </TabItem>
+            <TabItem Header="Sync">
+                <TextBox x:Name="TextBoxSync" IsReadOnly="True" TextWrapping="NoWrap"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                 FontFamily="Consolas" FontSize="12" Text=""/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

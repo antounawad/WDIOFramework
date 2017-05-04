@@ -1,0 +1,145 @@
+﻿<telerik:RadRibbonWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+        x:Class="Eulg.Tools.QueryPad.MainWindow"
+        IsTitleVisible="False" ResizeMode="CanResizeWithGrip" Icon="QueryPad.ico">
+
+    <DockPanel>
+
+        <telerik:RadRibbonView x:Name="RibbonView" DockPanel.Dock="Top" 
+                               ApplicationName="New &amp; Shiny QueryPad" Title=""
+                               IsBackstageOpen="False" IsApplicationMenuOpen="False" 
+                               ApplicationButtonContent="Klick!"
+                               MinimizeButtonVisibility="Visible" 
+                               HelpButtonVisibility="Visible" TitleBarVisibility="Visible"
+                               WindowIconVisibility="Visible">
+
+            <telerik:RadRibbonView.ApplicationMenu>
+                <telerik:ApplicationMenu>
+                    <Button>Beenden</Button>
+                </telerik:ApplicationMenu>
+            </telerik:RadRibbonView.ApplicationMenu>
+
+            <!--<telerik:RadRibbonView.Backstage>
+                <telerik:RadRibbonBackstage BackstagePosition="Office2013">
+                    <telerik:RadRibbonBackstageItem>
+                        <TextBox>Hallo</TextBox>
+                    </telerik:RadRibbonBackstageItem>
+                    <telerik:RadRibbonBackstageItem>
+                        <Button>Test</Button>
+                    </telerik:RadRibbonBackstageItem>
+                </telerik:RadRibbonBackstage>
+            </telerik:RadRibbonView.Backstage>-->
+
+            <telerik:RadRibbonView.QuickAccessToolBar>
+                <telerik:QuickAccessToolBar>
+                    <telerik:RadRibbonButton Text="Option 1" />
+                </telerik:QuickAccessToolBar>
+            </telerik:RadRibbonView.QuickAccessToolBar>
+            
+
+            <telerik:RadRibbonTab Header="Baum">
+                <telerik:RadRibbonGroup Header="Reiter 1">
+                    <telerik:RadRibbonButton x:Name="ButtonNeuerEditor" Text="Neuer Editor" Size="Large"
+                                             Click="ButtonNeuerEditor_Click"
+                                             telerik:ScreenTip.Title="Neuer Editor Titel"
+                                             telerik:ScreenTip.Description="Neuer Editor (Strg + N)" LargeImage="Icons/Editor.png" SmallImage="Icons/Editor.png"/>
+
+
+                    <telerik:RadRibbonSplitButton Text="Theme" Size="Large" 
+                                                  telerik:ScreenTip.Title="Thema wählen"
+                                                  telerik:ScreenTip.Description="blubb">
+                        <telerik:RadRibbonSplitButton.DropDownContent>
+                            <telerik:RadContextMenu x:Name="MenuChangeTheme" BorderThickness="0" />
+                        </telerik:RadRibbonSplitButton.DropDownContent>
+                    </telerik:RadRibbonSplitButton>
+                </telerik:RadRibbonGroup>
+            </telerik:RadRibbonTab>
+
+            <telerik:RadRibbonTab Header="Xxx" ContextualGroupName="ContextualGroupEditor">
+                <telerik:RadRibbonGroup Header="Reiter 1">
+                    <telerik:RadRibbonButton x:Name="ButtonAusfuehren" Text="Ausführen" Size="Large"
+                                             Click="ButtonAusfuehren_Click"
+                                             telerik:ScreenTip.Title="Ausführen Titel"
+                                             telerik:ScreenTip.Description="Ausführen (F5)" SmallImage="Icons/Start.png" LargeImage="Icons/Start.png"/>
+                </telerik:RadRibbonGroup>
+            </telerik:RadRibbonTab>
+
+            <telerik:RadRibbonTab Header="Yyy" ContextualGroupName="ContextualGroupGrid">
+            </telerik:RadRibbonTab>
+
+            <telerik:RadRibbonView.ContextualGroups>
+                <telerik:RadRibbonContextualGroup x:Name="ContextualGroupEditor" Header="Editor" IsActive="True"/>
+                <telerik:RadRibbonContextualGroup x:Name="ContextualGroupGrid" Header="Grid" IsActive="True"/>
+            </telerik:RadRibbonView.ContextualGroups>
+
+        </telerik:RadRibbonView>
+
+        <StatusBar DockPanel.Dock="Bottom" Height="24">
+            <StatusBarItem Content="Bereit"/>
+            <StatusBarItem Content="Tja"/>
+        </StatusBar>
+
+
+        <telerik:RadDocking>
+
+            <telerik:RadDocking.DocumentHost>
+
+                <telerik:RadSplitContainer Orientation="Vertical">
+
+                    <telerik:RadPaneGroup>
+                        <telerik:RadPane Header="Editor" CanUserClose="False">
+                            <telerik:RadDocking CloseButtonPosition="InPaneAndGroup">
+                                <telerik:RadDocking.DocumentHost>
+                                    <telerik:RadSplitContainer>
+                                        <telerik:RadPaneGroup x:Name="PaneGroupEditors">
+                                            <!--<telerik:RadPane Header="Editor 1" CanUserClose="True">
+                                                <TextBlock>Editor 1 Content</TextBlock>
+                                            </telerik:RadPane>
+                                            <telerik:RadPane Header="Editor 2" CanUserClose="True">
+                                                <TextBlock>Editor 2 Content</TextBlock>
+                                            </telerik:RadPane>-->
+                                        </telerik:RadPaneGroup>
+                                    </telerik:RadSplitContainer>
+                                </telerik:RadDocking.DocumentHost>
+                            </telerik:RadDocking>
+                        </telerik:RadPane>
+                    </telerik:RadPaneGroup>
+
+                    <telerik:RadPaneGroup TabStripPlacement="Bottom">
+                        <telerik:RadPane Header="Grid" CanUserClose="False">
+                            <telerik:RadDocking CloseButtonPosition="InPaneAndGroup">
+                                <telerik:RadDocking.DocumentHost>
+                                    <telerik:RadSplitContainer>
+                                        <telerik:RadPaneGroup x:Name="PaneGroupResults">
+                                            <!--<telerik:RadPane Header="Grid 1" CanUserClose="True">
+                                            <TextBlock>Grid 1 Content</TextBlock>
+                                        </telerik:RadPane>
+                                        <telerik:RadPane Header="Grid 2" CanUserClose="True">
+                                            <TextBlock>Grid 2 Content</TextBlock>
+                                        </telerik:RadPane>-->
+                                        </telerik:RadPaneGroup>
+                                    </telerik:RadSplitContainer>
+                                </telerik:RadDocking.DocumentHost>
+                            </telerik:RadDocking>
+                        </telerik:RadPane>
+                    </telerik:RadPaneGroup>
+
+                </telerik:RadSplitContainer>
+
+            </telerik:RadDocking.DocumentHost>
+
+            <telerik:RadSplitContainer InitialPosition="DockedLeft">
+                <telerik:RadPaneGroup>
+                    <telerik:RadPane Header="Baum" CanUserClose="False">
+                        <telerik:RadTreeView x:Name="TreeViewBrowser" />
+                    </telerik:RadPane>
+                </telerik:RadPaneGroup>
+            </telerik:RadSplitContainer>
+
+        </telerik:RadDocking>
+
+    </DockPanel>
+
+</telerik:RadRibbonWindow>

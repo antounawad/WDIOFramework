@@ -1,0 +1,18 @@
+﻿<Application x:Class="Eulg.Tools.QueryPad.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/VisualStudio2013/System.Windows.xaml" />
+                <ResourceDictionary Source="Themes/VisualStudio2013/Telerik.Windows.Controls.xaml" />
+                <ResourceDictionary Source="Themes/VisualStudio2013/Telerik.Windows.Controls.Docking.xaml" />
+                <ResourceDictionary Source="Themes/VisualStudio2013/Telerik.Windows.Controls.GridView.xaml" />
+                <ResourceDictionary Source="Themes/VisualStudio2013/Telerik.Windows.Controls.Input.xaml" />
+                <ResourceDictionary Source="Themes/VisualStudio2013/Telerik.Windows.Controls.Navigation.xaml" />
+                <ResourceDictionary Source="Themes/VisualStudio2013/Telerik.Windows.Controls.RibbonView.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
