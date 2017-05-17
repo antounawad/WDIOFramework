@@ -390,32 +390,40 @@ namespace Eulg.Client.SupportTool
                 updateFilesToCheck = updateFilesToCheck.Where(_ => !_.FileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)).ToArray();
             }
             var totalSize = updateFilesToCheck.Sum(_ => _.FileSize);
-            Parallel.ForEach(updateFilesToCheck, updateFile =>
-            {
-                System.Threading.Interlocked.Add(ref _sizeProcessed, updateFile.FileSize);
-                NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_sizeProcessed) / Convert.ToDecimal(totalSize)) * 100), $"{updateFile.FilePath}\\{updateFile.FileName}");
-                var localFile = Path.Combine(path, updateFile.FileName);
+            Parallel.ForEach(updateFilesToCheck, new ParallelOptions { MaxDegreeOfParallelism = 4 }, updateFile =>
+              {
+                  System.Threading.Interlocked.Add(ref _sizeProcessed, updateFile.FileSize);
+                  NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_sizeProcessed) / Convert.ToDecimal(totalSize)) * 100), $"{updateFile.FilePath}\\{updateFile.FileName}");
+                  var localFile = Path.Combine(path, updateFile.FileName);
 
-                var fileInfo = new FileInfo(localFile);
+                  var fileInfo = new FileInfo(localFile);
 
-                if (!fileInfo.Exists
-                    || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime)
-                    || fileInfo.Length != updateFile.FileSize
-                    || (!filePath.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase) && !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    var fixFile = new WorkerConfig.WorkerFile
-                    {
-                        Source = Path.Combine(updateFile.FilePath, updateFile.FileName),
-                        Destination = localFile,
-                        FileDateTime = updateFile.FileDateTime,
-                        FileSize = updateFile.FileSize,
-                        FileSizeGz = updateFile.FileSizeGz,
-                        FileName = updateFile.FileName,
-                        NewFile = !fileInfo.Exists
-                    };
-                    fixFiles.Add(fixFile);
-                }
-            });
+                  if (!fileInfo.Exists
+                      || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime)
+                      || fileInfo.Length != updateFile.FileSize
+                      || (!filePath.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase) && !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
+                  {
+                      var fixFile = new WorkerConfig.WorkerFile
+                      {
+                          Source = Path.Combine(updateFile.FilePath, updateFile.FileName),
+                          Destination = localFile,
+                          FileDateTime = updateFile.FileDateTime,
+                          FileSize = updateFile.FileSize,
+                          FileSizeGz = updateFile.FileSizeGz,
+                          FileName = updateFile.FileName,
+                          NewFile = !fileInfo.Exists
+                      };
+                      fixFiles.Add(fixFile);
+                  }
+                  else if (updateFile.FileName.EndsWith(UpdateClient.RESET_FILE_TAG, StringComparison.InvariantCultureIgnoreCase))
+                  {
+                      var fileWithoutReset = localFile.Substring(0, localFile.Length - UpdateClient.RESET_FILE_TAG.Length);
+                      if (!File.Exists(fileWithoutReset))
+                      {
+                          File.Copy(localFile, fileWithoutReset);
+                      }
+                  }
+              });
             updateClient.WorkerConfig.WorkerFiles.AddRange(fixFiles);
         }
 

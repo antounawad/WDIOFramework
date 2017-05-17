@@ -8,12 +8,13 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Serialization;
 using Eulg.Shared;
 using Eulg.Update.Shared;
 using Octodiff.Core;
-using System.Web;
 
 namespace Eulg.Update.Common
 {
@@ -27,7 +28,8 @@ namespace Eulg.Update.Common
             AuthFail,
             UpToDate,
             UpdatesAvailable,
-            ClientIdFail
+            ClientIdFail,
+            ServiceBusy
         }
         public enum ELogTypeEnum
         {
@@ -38,17 +40,17 @@ namespace Eulg.Update.Common
 
         private const string UPDATE_WORKER_BIN_FILE = "UpdateWorker.exe";
         private const string UPDATE_WORKER_XML_FILE = "UpdateWorker.xml";
-        //private const string RESET_FILE_TAG = ".$EulgReset$";
+        public const string RESET_FILE_TAG = ".$EulgReset$";
         private const string FETCH_UPDATE_DATA_METHOD = "FilesUpdateCheck";
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileGz";
-        //private const string DOWNLOAD_FILES_STREAM_METHOD = "FileUpdateGetFiles";
+        private const string DOWNLOAD_FILES_STREAM_METHOD = "FileUpdateGetFiles";
         private const string UPLOAD_LOG_METHOD = "FilesUpdateUploadLog";
-        //private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
+        private const string RESET_CLIENT_ID_METHOD = "FilesUpdateResetClientId";
         private const int STREAM_BUFFER_SIZE = 81920;
         private const int diffThreshold = 256 * 1024;
         private const int diffChunkSize = 8192;
 
-        public bool UseHttps { get; private set; }
+        public bool UseHttps { get; set; }
         public UpdateConfig UpdateConf = new UpdateConfig();
         public readonly WorkerConfig WorkerConfig = new WorkerConfig();
         public Branding.EUpdateChannel UpdateChannel { get; set; }
@@ -56,7 +58,7 @@ namespace Eulg.Update.Common
         public string LastError { get; private set; }
         public string UpdateUrl
         {
-            get { return _updateUrl; }
+            get => _updateUrl;
             set
             {
                 _updateUrl = value;
@@ -75,9 +77,15 @@ namespace Eulg.Update.Common
         }
 
         private string _updateUrl;
+        private readonly bool _forceNoShortcuts;
 
-        public UpdateClient()
+        /// <summary>
+        /// <paramref name="forceNoShortcuts"/> erzwingt eine vollständige Prüfung aller Dateien ohne Optimierungen und Abkürzungen.
+        /// </summary>
+        public UpdateClient(bool forceNoShortcuts = false)
         {
+            _forceNoShortcuts = forceNoShortcuts;
+
             UseHttps = true;
             ApplicationPath = AppDomain.CurrentDomain.BaseDirectory;
             LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Update.log");
@@ -92,12 +100,13 @@ namespace Eulg.Update.Common
         public string[] Passwords { get; set; }
 
         // Progress indication
-        public long DownloadSizeTotal { get; private set; }
-        public long DownloadSizeCompleted { get; private set; }
-        public long DownloadFilesTotal { get; private set; }
-        public long DownloadFilesCompleted { get; private set; }
-        public long DownloadCurrentFileSize { get; private set; }
-        public long DownloadCurrentFileSizeGz { get; private set; }
+        public long DownloadSizeTotal;
+        public long DownloadSizeTotalGz;
+        public long DownloadSizeCompleted;
+        public long DownloadFilesTotal;
+        public long DownloadFilesCompleted;
+        public long DownloadCurrentFileSize;
+        public long DownloadCurrentFileSizeGz;
         public string DownloadCurrentFilename { get; private set; }
         public bool SkipWaitForProcess { get; set; }
         public bool SkipRestartApplication { get; set; }
@@ -119,7 +128,7 @@ namespace Eulg.Update.Common
                 var uri = new Uri(baseUri, FETCH_UPDATE_DATA_METHOD);
                 var url = uri + "?updateChannel=" + UpdateChannel + "&userName=" + Uri.EscapeDataString(UserNames.Length > 0 ? string.Join("\t", UserNames) : "") + "&password=" + Uri.EscapeDataString(Passwords.Length > 0 ? string.Join("\t", Passwords) : "");
 
-                var request = (HttpWebRequest)WebRequest.Create(url);
+                var request = WebRequest.CreateHttp(url);
                 request.KeepAlive = false;
                 request.AllowReadStreamBuffering = false;
                 request.AllowWriteStreamBuffering = false;
@@ -133,15 +142,15 @@ namespace Eulg.Update.Common
 
                 var result = new StreamReader(request.GetResponse().GetResponseStream()).ReadToEnd();
 
-                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE", StringComparison.InvariantCultureIgnoreCase))
+                if (string.IsNullOrWhiteSpace(result) || result.StartsWith("CREATECACHE", StringComparison.Ordinal))
                 {
-                    return EUpdateCheckResult.UpToDate;
+                    return _forceNoShortcuts ? EUpdateCheckResult.ServiceBusy : EUpdateCheckResult.UpToDate;
                 }
-                if (result.StartsWith("AUTHFAIL", StringComparison.InvariantCultureIgnoreCase))
+                if (result.StartsWith("AUTHFAIL", StringComparison.Ordinal) || result.StartsWith("INITIALPASSWORDNOTSET", StringComparison.Ordinal))
                 {
                     return EUpdateCheckResult.AuthFail;
                 }
-                if (result.StartsWith("CLIENTIDFAIL", StringComparison.InvariantCultureIgnoreCase))
+                if (result.StartsWith("CLIENTIDFAIL", StringComparison.Ordinal))
                 {
                     var used = result.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                     if (used.Length > 3)
@@ -179,28 +188,31 @@ namespace Eulg.Update.Common
             return NetworkInterface.GetIsNetworkAvailable();
         }
 
-        private void PatchFile(WorkerConfig.WorkerFile diffFile)
+        private void PatchFile(WorkerConfig.WorkerFile diffFile, out long signatureSize, out long deltaSize)
         {
-            var webRequest = WebRequest.CreateHttp(new Uri(new Uri("http://" + UpdateUrl), "FilesUpdateGetDelta"));
-            //webRequest.AllowReadStreamBuffering = false;
-            //webRequest.AllowWriteStreamBuffering = false;
+            var webRequest = WebRequest.CreateHttp(new Uri(new Uri((UseHttps ? "https://" : "http://") + UpdateUrl), "FilesUpdateGetDelta"));
             webRequest.SendChunked = true;
             webRequest.Method = "POST";
             webRequest.Headers.Add("Channel", UpdateChannel.ToString());
             webRequest.Headers.Add("FileName", diffFile.Source);
-
+            webRequest.Headers.Add("GZip", "true");
             webRequest.ContentType = "application/octet-stream";
-            //webRequest.ContentLength = signature.Length;
 
             using (var requestStream = webRequest.GetRequestStream())
             {
-                using (var deflateStream = new DeflateStream(requestStream, CompressionLevel.Optimal))
+                using (var memoryStream = new MemoryStream())
                 {
-                    using (var sourceFileStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var deflateStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
                     {
-                        var signatureBuilder = new SignatureBuilder { ChunkSize = diffChunkSize };
-                        signatureBuilder.Build(sourceFileStream, new SignatureWriter(deflateStream));
+                        using (var sourceFileStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        {
+                            var signatureBuilder = new SignatureBuilder { ChunkSize = diffChunkSize };
+                            signatureBuilder.Build(sourceFileStream, new SignatureWriter(deflateStream));
+                        }
                     }
+                    var ms = memoryStream.ToArray();
+                    requestStream.Write(ms, 0, ms.Length);
+                    signatureSize = ms.Length;
                 }
             }
             var destFile = Path.Combine(DownloadPath, diffFile.Source);
@@ -208,15 +220,21 @@ namespace Eulg.Update.Common
             {
                 using (var responseStream = response.GetResponseStream())
                 {
-                    using (var deflateStream = new DeflateStream(responseStream, CompressionMode.Decompress))
+                    using (var memoryStream = new MemoryStream())
                     {
-                        using (var basisStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        responseStream.CopyTo(memoryStream);
+                        memoryStream.Position = 0;
+                        deltaSize = memoryStream.Length;
+                        using (var deflateStream = new GZipStream(memoryStream, CompressionMode.Decompress))
                         {
-                            if (!Directory.Exists(Path.GetDirectoryName(destFile))) Directory.CreateDirectory(Path.GetDirectoryName(destFile));
-                            using (var newFileStream = new FileStream(Path.Combine(DownloadPath, diffFile.Source), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+                            using (var basisStream = new FileStream(diffFile.Destination, FileMode.Open, FileAccess.Read, FileShare.Read))
                             {
-                                var delta = new DeltaApplier { SkipHashCheck = false };
-                                delta.Apply(basisStream, new BinaryDeltaReader(deflateStream, null), newFileStream);
+                                if (!Directory.Exists(Path.GetDirectoryName(destFile))) Directory.CreateDirectory(Path.GetDirectoryName(destFile));
+                                using (var newFileStream = new FileStream(Path.Combine(DownloadPath, diffFile.Source), FileMode.Create, FileAccess.ReadWrite, FileShare.Read))
+                                {
+                                    var delta = new DeltaApplier { SkipHashCheck = false };
+                                    delta.Apply(basisStream, new BinaryDeltaReader(deflateStream, null), newFileStream);
+                                }
                             }
                         }
                     }
@@ -225,7 +243,7 @@ namespace Eulg.Update.Common
             File.SetLastWriteTime(destFile, diffFile.FileDateTime);
         }
 
-        public bool DownloadUpdates()
+        public bool DownloadUpdates(string startAppAfterUpdate = null, string appAfterUpdateCmdLine = null)
         {
             try
             {
@@ -236,9 +254,16 @@ namespace Eulg.Update.Common
                     var fileInfo = new FileInfo(Path.Combine(DownloadPath, f.Source));
                     return !fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, f.FileDateTime) || fileInfo.Length != f.FileSize;
                 }).ToList();
-
                 var diffFiles = filteredWorkerFilesAll.Where(w => !w.NewFile && w.FileSizeGz >= diffThreshold).ToList();
                 var filteredWorkerFiles = filteredWorkerFilesAll.Where(w => w.NewFile || w.FileSizeGz < diffThreshold).ToList();
+
+                DownloadSizeTotal = filteredWorkerFilesAll.Sum(s => s.FileSize);
+                DownloadSizeTotalGz = filteredWorkerFilesAll.Sum(s => s.FileSizeGz);
+                DownloadFilesTotal = filteredWorkerFilesAll.Count;
+                DownloadSizeCompleted = 0;
+                DownloadFilesCompleted = 0;
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
 
                 if (!Directory.Exists(DownloadPath))
                 {
@@ -248,38 +273,36 @@ namespace Eulg.Update.Common
 
                 GetUpdateClient();
 
-                DownloadSizeTotal = filteredWorkerFilesAll.Sum(s => s.FileSize);
-                DownloadFilesTotal = filteredWorkerFilesAll.Count;
-                DownloadSizeCompleted = 0;
-                DownloadFilesCompleted = 0;
-                var currentFile = 0;
-                var currentFileDiff = 0;
-
-
-                foreach (var diffFile in diffFiles)
+                Parallel.ForEach(diffFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, diffFile =>
                 {
                     var trialNumber = 0;
-                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, currentFileDiff, DownloadFilesTotal, diffFile.FileName);
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadFilesCompleted, diffFile.FileName);
                     while (true)
                     {
                         try
                         {
-                            Log(ELogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
-                            PatchFile(diffFile);
-                            DownloadSizeCompleted += diffFile.FileSize;
-                            currentFileDiff++;
+                            Log(ELogTypeEnum.Info, $"Diff/Patch {diffFile.Source} ({diffFile.FileDateTime:dd.MM.yy HH:mm:ss}, {diffFile.FileSizeGz:N0} -> {diffFile.FileSize:N0}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
+                            long signatureSize;
+                            long deltaSize;
+                            PatchFile(diffFile, out signatureSize, out deltaSize);
+#if DEBUG
+                            Log(ELogTypeEnum.Info, $"{(signatureSize + deltaSize):N0} = {(100 * (signatureSize + deltaSize)) / diffFile.FileSizeGz}% ({signatureSize:N0} + {deltaSize:N0})");
+#endif
                             diffFile.Done = true;
+                            Interlocked.Add(ref DownloadFilesCompleted, 1);
                             break;
                         }
-                        catch (Exception)
+                        catch (Exception exception)
                         {
+                            Log(ELogTypeEnum.Warning, exception.GetMessagesTree());
                             if (trialNumber++ > 2)
+                            {
                                 throw;
+                            }
                         }
                     }
-                }
+                });
 
-                var log = new List<Tuple<ELogTypeEnum, string>>();
                 Parallel.ForEach(filteredWorkerFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, workerFile =>
                 {
                     var trialNumber = 0;
@@ -287,7 +310,7 @@ namespace Eulg.Update.Common
                     DownloadCurrentFilename = workerFile.FileName;
                     DownloadCurrentFileSize = workerFile.FileSize;
                     DownloadCurrentFileSizeGz = workerFile.FileSizeGz;
-                    NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal, currentFile + currentFileDiff, DownloadFilesTotal, workerFile.FileName);
+                    NotifyProgressChanged(DownloadSizeCompleted, DownloadFilesCompleted, workerFile.FileName);
 
                     var fileInfo = new FileInfo(tmpFile);
                     if (!fileInfo.Exists || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, workerFile.FileDateTime) || fileInfo.Length != workerFile.FileSize)
@@ -296,41 +319,42 @@ namespace Eulg.Update.Common
                         {
                             try
                             {
-                                log.Add(new Tuple<ELogTypeEnum, string>(ELogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss})"));
-                                var localFile = Path.Combine(DownloadPath, workerFile.Source);
-                                if (!Directory.Exists(Path.GetDirectoryName(localFile)))
-                                {
-                                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
-                                }
-                                DownloadFile(workerFile.Source, localFile, workerFile.FileDateTime, workerFile.FileSize);
-                                DownloadSizeCompleted += workerFile.FileSize;
+                                Log(ELogTypeEnum.Info, $"Download {workerFile.Source} ({workerFile.FileDateTime:dd.MM.yy HH:mm:ss}, {workerFile.FileSizeGz:N0} -> {workerFile.FileSize:N0}) {(trialNumber > 0 ? $"Trial: {trialNumber + 1}" : "")}");
+                                DownloadFile(workerFile.Source, Path.Combine(DownloadPath, workerFile.Source), workerFile.FileDateTime, workerFile.FileSize, workerFile.Checksum);
                                 workerFile.Done = true;
-                                currentFile++;
-                                DownloadFilesCompleted++;
+                                Interlocked.Add(ref DownloadFilesCompleted, 1);
                                 break;
                             }
-                            catch (Exception)
+                            catch (Exception exception)
                             {
+                                Log(ELogTypeEnum.Warning, exception.GetMessagesTree());
                                 if (trialNumber++ > 2)
                                 {
-                                    foreach (var l in log) Log(l.Item1, l.Item2);
-                                    log.Clear();
                                     throw;
                                 }
                             }
                         }
                     }
                 });
-                foreach (var l in log) Log(l.Item1, l.Item2); log.Clear();
-                NotifyProgressChanged(DownloadSizeTotal, DownloadSizeTotal, filteredWorkerFilesAll.Count, filteredWorkerFilesAll.Count, string.Empty);
+                stopWatch.Stop();
+                if (stopWatch.Elapsed.TotalSeconds > 0) Log(ELogTypeEnum.Info, $"{((DownloadSizeTotalGz / 1024.0) / stopWatch.Elapsed.TotalSeconds):N0} kB/s");
+
+                NotifyProgressChanged(DownloadSizeTotal, filteredWorkerFilesAll.Count, string.Empty);
 
                 // Write Worker Config
                 WorkerConfig.AppPath = ApplicationPath;
                 WorkerConfig.TempPath = DownloadPath;
-                WorkerConfig.ApplicationFile = SkipRestartApplication ? null : System.Reflection.Assembly.GetEntryAssembly().Location;
-                WorkerConfig.CommandLineArgs = Tools.GetCommandLineArgs();
+                if (startAppAfterUpdate == null && appAfterUpdateCmdLine == null)
+                {
+                    WorkerConfig.ApplicationFile = SkipRestartApplication ? null : System.Reflection.Assembly.GetEntryAssembly().Location;
+                    WorkerConfig.CommandLineArgs = Tools.GetCommandLineArgs();
+                }
+                else
+                {
+                    WorkerConfig.ApplicationFile = startAppAfterUpdate;
+                    WorkerConfig.CommandLineArgs = appAfterUpdateCmdLine;
+                }
                 WorkerConfig.WaitForProcess = SkipWaitForProcess ? 0 : Process.GetCurrentProcess().Id;
-                WorkerConfig.StartProcess = null;
                 WorkerConfig.CheckProcesses = CheckProcesses;
                 WorkerConfig.KillProcesses = KillProcesses;
                 WorkerConfig.LogFile = LogFile;
@@ -343,12 +367,13 @@ namespace Eulg.Update.Common
                 return true;
                 #endregion
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                LastError = ex.Message;
-                Log(ELogTypeEnum.Error, ex.ToString());
+                LastError = exception.Message;
+                Log(ELogTypeEnum.Error, exception.GetMessagesTree());
                 return false;
             }
+
         }
 
         public Process RunUpdateWorker(bool runAs = false)
@@ -374,10 +399,15 @@ namespace Eulg.Update.Common
             }
         }
 
+        private readonly object _logFileLock = new object();
         public void Log(ELogTypeEnum logType, string message)
         {
-            File.AppendAllText(LogFile, $"{DateTime.Now:dd.MM.yyyy HH:mm:ss}: {logType.ToString().PadRight(7)}: UpdateClient: {message.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", " ")}" + Environment.NewLine);
+            lock (_logFileLock)
+            {
+                File.AppendAllText(LogFile, $"{DateTime.Now:dd.MM.yyyy HH:mm:ss}: {logType.ToString().PadRight(7)}: UpdateClient: {message.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", " ")}" + Environment.NewLine);
+            }
         }
+
         public bool UploadLogfile()
         {
             try
@@ -385,7 +415,7 @@ namespace Eulg.Update.Common
                 if (!File.Exists(LogFile)) return true;
                 if (!CheckConnectivity()) return true;
 
-                var baseUri = new Uri("http://" + UpdateUrl);
+                var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
                 var uri = new Uri(baseUri, UPLOAD_LOG_METHOD);
 
                 var nvc = new NameValueCollection
@@ -425,13 +455,13 @@ namespace Eulg.Update.Common
             }
         }
 
-        private long _inProgress;
-        private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize)
+        private void DownloadFile(string fileName, string localFile, DateTime dateTime, long fileSize, string checksum)
         {
             if (!Directory.Exists(Path.GetDirectoryName(localFile) ?? string.Empty)) Directory.CreateDirectory(Path.GetDirectoryName(localFile) ?? string.Empty);
-            var baseUri = new Uri("http://" + UpdateUrl);
+            var baseUri = new Uri((UseHttps ? "https://" : "http://") + UpdateUrl);
             var uri = new Uri(baseUri, DOWNLOAD_FILE_METHOD);
             var url = uri + "?updateChannel=" + UpdateChannel + "&fileName=" + Uri.EscapeDataString(fileName);
+            if (!string.IsNullOrWhiteSpace(checksum)) url = url + "&v=" + Uri.EscapeDataString(checksum);
 
             var webRequest = WebRequest.CreateHttp(url);
             webRequest.AllowReadStreamBuffering = false;
@@ -446,18 +476,27 @@ namespace Eulg.Update.Common
                         using (var gz = new GZipStream(responseStream, CompressionMode.Decompress))
                         {
                             var buffer = new byte[STREAM_BUFFER_SIZE];
-                            int read;
-                            while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
+                            var total = 0;
+                            try
                             {
-                                sw.Write(buffer, 0, read);
-                                _inProgress += read;
-                                NotifyProgressChanged(DownloadSizeCompleted + _inProgress, DownloadSizeTotal);
+                                int read;
+                                while ((read = gz.Read(buffer, 0, buffer.Length)) != 0)
+                                {
+                                    sw.Write(buffer, 0, read);
+                                    total += read;
+                                    Interlocked.Add(ref DownloadSizeCompleted, read);
+                                    NotifyProgressChanged(DownloadSizeCompleted, DownloadFilesCompleted, fileName);
+                                }
+                            }
+                            catch
+                            {
+                                Interlocked.Add(ref DownloadSizeCompleted, -total);
+                                throw;
                             }
                         }
                     }
                 }
             }
-            _inProgress -= fileSize;
             File.SetLastWriteTime(localFile, dateTime);
         }
 
@@ -477,24 +516,24 @@ namespace Eulg.Update.Common
                 {
                     Log(ELogTypeEnum.Info, $"Download UpdateWorker {binFileInTemp} ({updateFile.FileDateTime:dd.MM.yy HH:mm:ss})");
                     DownloadFilesTotal++;
-                    DownloadSizeTotal += updateFile.FileSize;
+                    DownloadSizeTotal += updateFile.FileSizeGz;
                     DownloadCurrentFilename = updateFile.FileName;
                     DownloadCurrentFileSize = updateFile.FileSize;
                     DownloadCurrentFileSizeGz = updateFile.FileSizeGz;
-                    NotifyProgressChanged(0, DownloadSizeTotal, 0, DownloadFilesTotal, updateFile.FileName);
-                    DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize);
-                    DownloadSizeCompleted += updateFile.FileSize;
-                    DownloadFilesCompleted++;
-                    NotifyProgressChanged(DownloadSizeCompleted, DownloadSizeTotal, 1, DownloadFilesTotal, string.Empty);
+                    NotifyProgressChanged(0, 0, updateFile.FileName);
+                    DownloadFile(UPDATE_WORKER_BIN_FILE, binFileInTemp, updateFile.FileDateTime, updateFile.FileSize, updateFile.CheckSum);
+                    Interlocked.Add(ref DownloadFilesCompleted, 1);
+                    NotifyProgressChanged(DownloadSizeCompleted, 1, string.Empty);
                 }
             }
         }
 
-        private void NotifyProgressChanged(long position, long total) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total));
-        private void NotifyProgressChanged(long position, long total, long currentFile, long totalFiles, string fileName) => ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(position, total, currentFile, totalFiles, fileName));
+        private void NotifyProgressChanged(long downloadSizeCompleted, long downloadFilesCompleted, string currentFilename)
+        {
+            ProgressChanged?.Invoke(this, new FractionalProgressChangedEventArgs(downloadSizeCompleted, DownloadSizeTotal, downloadFilesCompleted, DownloadFilesTotal, currentFilename));
+        }
 
         public event EventHandler<FractionalProgressChangedEventArgs> ProgressChanged;
-        public event EventHandler<string> CheckingFile;
 
         private static string CompressStringGz(string s)
         {
