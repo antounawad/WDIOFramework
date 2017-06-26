@@ -2,21 +2,21 @@
 
 namespace Eulg.Setup
 {
-    public class FractionalProgressChangedEventArgs : System.EventArgs
+    public class FractionalProgressChangedEventArgs : EventArgs
     {
-        public double Progress { get; private set; }
+        public double Progress { get; }
 
-        public bool ItemCountsUpdated { get { return CurrentItem != null; } }
+        public bool ItemCountsUpdated => CurrentItem != null;
 
-        public long CompletedItems { get; private set; }
+        public long CompletedItems { get; }
 
-        public long TotalItems { get; private set; }
+        public long TotalItems { get; }
 
-        public string CurrentItem { get; private set; }
+        public string CurrentItem { get; }
 
         public FractionalProgressChangedEventArgs(long complete, long total)
         {
-            if(total < 0 || complete < 0 || complete > total)
+            if (total < 0 || complete < 0 || complete > total)
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -26,10 +26,12 @@ namespace Eulg.Setup
 
         public FractionalProgressChangedEventArgs(long complete, long total, long completeItems, long totalItems, string currentItem)
         {
-            if (total < 0 || complete < 0 || complete > total || totalItems < 0 || completeItems < 0 || completeItems > totalItems)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
+            if (total < 0) total = 0;
+            if (complete < 0) complete = 0;
+            if (complete > total) complete = total;
+            if (totalItems < 0) totalItems = 0;
+            if (completeItems < 0) completeItems = 0;
+            if (completeItems > totalItems) completeItems = totalItems;
 
             Progress = (double)complete / total;
             CompletedItems = completeItems;
