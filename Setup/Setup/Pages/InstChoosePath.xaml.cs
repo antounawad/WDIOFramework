@@ -51,6 +51,7 @@ namespace Eulg.Setup.Pages
             }
             if (!CheckDrive(true))
             {
+                MessageBox.Show("Das Ziellaufwerk ist für die Installation nicht geeignet.", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             var path = TxtPath.Text;
@@ -90,7 +91,7 @@ namespace Eulg.Setup.Pages
                 LabelSpaceNeeded.Content = $"{decimal.Round(spaceNeeded / 1024m / 1024m):N0} MB";
                 LabelSpaceAvailabel.Content = $"{decimal.Round(spaceAvailable / 1024m / 1024m):N0} MB";
                 LabelSpaceRemaining.Content = $"{decimal.Round(spaceRemaining / 1024m / 1024m):N0} MB";
-                return (spaceRemaining > 0 && driveInfo.IsReady && driveInfo.DriveType == DriveType.Fixed);
+                return spaceRemaining > 0 && driveInfo.IsReady;
             }
             catch (Exception exception)
             {

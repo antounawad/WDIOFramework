@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace Eulg.Setup.Pages
 {
-    public partial class InstDependencies : UserControl, ISetupPageBase
+    public partial class InstDependencies : ISetupPageBase
     {
         public InstDependencies()
         {
@@ -45,7 +44,7 @@ namespace Eulg.Setup.Pages
 
                     if (Dependencies.Net451 == Dependencies.EDependencyState.Missing)
                     {
-                        Dependencies.InstallNet46();
+                        Dependencies.InstallNet47();
                     }
                     if (Dependencies.Cpp2008 == Dependencies.EDependencyState.Missing)
                     {
