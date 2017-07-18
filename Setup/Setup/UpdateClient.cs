@@ -38,7 +38,7 @@ namespace Eulg.Setup
 
         //private const string UPDATE_WORKER_BIN_FILE = "UpdateWorker.exe";
         //private const string UPDATE_WORKER_XML_FILE = "UpdateWorker.xml";
-        //private const string RESET_FILE_TAG = ".$EulgReset$";
+        private const string RESET_FILE_TAG = ".$EulgReset$";
         private const string FETCH_UPDATE_DATA_METHOD = "FilesUpdateCheck";
         private const string DOWNLOAD_FILE_METHOD = "FilesUpdateGetFileGz";
         //private const string DOWNLOAD_FILES_STREAM_METHOD = "FileUpdateGetFiles";
@@ -280,6 +280,10 @@ namespace Eulg.Setup
             }
             _inProgress -= fileSize;
             File.SetLastWriteTime(localFile, dateTime);
+            if (localFile.EndsWith(RESET_FILE_TAG, StringComparison.InvariantCultureIgnoreCase))
+            {
+                File.Copy(localFile, localFile.Replace(RESET_FILE_TAG, string.Empty));
+            }
         }
 
         public void DeleteClientIdOnServer()
