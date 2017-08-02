@@ -586,7 +586,7 @@ namespace Eulg.Setup
                 subKey.SetValue("Publisher", "xbAV Beratungssoftware GmbH", RegistryValueKind.String);
                 subKey.SetValue("URLInfoAbout", "berater.xbav.de", RegistryValueKind.String);
                 subKey.SetValue("UninstallString", Path.Combine(InstallPath, "Setup", setupExe) + " /U", RegistryValueKind.String);
-                subKey.SetValue("InstallDate", $"{DateTime.Now:YYYYMMDD}", RegistryValueKind.String);
+                subKey.SetValue("InstallDate", $"{DateTime.Now:yyyyMMdd}", RegistryValueKind.String);
                 subKey.SetValue("InstallLocation", InstallPath, RegistryValueKind.String);
                 subKey.SetValue("EstimatedSize", estInstallSizeInKb, RegistryValueKind.DWord);
                 subKey.SetValue("Language", 1033, RegistryValueKind.DWord);

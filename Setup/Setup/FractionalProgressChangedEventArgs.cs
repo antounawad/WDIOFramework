@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Eulg.Setup
+﻿namespace Eulg.Setup
 {
-    public class FractionalProgressChangedEventArgs : EventArgs
+    public class FractionalProgressChangedEventArgs : System.EventArgs
     {
         public double Progress { get; }
 
@@ -16,10 +14,9 @@ namespace Eulg.Setup
 
         public FractionalProgressChangedEventArgs(long complete, long total)
         {
-            if (total < 0 || complete < 0 || complete > total)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
+            if (total < 0) total = 0;
+            if (complete < 0) complete = 0;
+            if (complete > total) complete = total;
 
             Progress = (double)complete / total;
         }
