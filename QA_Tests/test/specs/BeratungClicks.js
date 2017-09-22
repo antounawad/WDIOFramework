@@ -35,6 +35,14 @@ describe('webdriver.io page', function () {
 			}
 	};
 
+	function CheckResult(pauseTime){
+		if(pauseTime > 0)
+			{
+				browser.pause(pauseTime);
+			}
+	};
+
+
 
 	it('should have the right title - the fancy generator way', function () {
 
@@ -110,6 +118,12 @@ describe('webdriver.io page', function () {
 			ClickAction('#navChapterLink_6', 100000, 8000);
 			ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
 			ClickAction('#btnNavNext', 100000, 10000);
+
+			var retValue = $('#backToOfferBtn');
+			//assert.equal(retValue,null,'Fehler bei der Angebotserstellung.');
+			
+
+
  		}, this);
 
 
