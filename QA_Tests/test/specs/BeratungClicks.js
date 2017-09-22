@@ -90,26 +90,43 @@ describe('webdriver.io page', function () {
 
 		ClickAction('#btnNavNext', 100000, 5000);
 
-		ClickAction('#navChapterLink_5', 100000, 5000);
-		
-		ClickAction('#navViewLink_BeratungBeratungTarifauswahl', 100000, 5000);
-
-		ClickAction('#radio_1', 100000, 8000);
-
-		var selector = ClickAction('#btnNavNext', 100000, 8000);
-		browser.click(selector);
-		browser.pause(8000);
-		browser.click(selector);
-		browser.pause(8000);
 		
 
-		ClickAction('#navChapterLink_6', 100000, 8000);
+		var radio = [];
+		radio[0] = '#radio_1';
+		radio[1] = '#radio_4';
+		radio[2] = '#radio_8';
+ 
+		 radio.forEach(function(element) {
+			console.log("Element: "+element);
+			ClickAction('#navChapterLink_5', 100000, 5000);
+			ClickAction('#navViewLink_BeratungBeratungTarifauswahl', 100000, 5000);			 
+			ClickAction(element, 100000, 8000);
+			var selector = ClickAction('#btnNavNext', 100000, 8000);
+			browser.click(selector);
+			browser.pause(8000);
+			browser.click(selector);
+			browser.pause(8000);
+			ClickAction('#navChapterLink_6', 100000, 8000);
+			ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
+			ClickAction('#btnNavNext', 100000, 10000);
+ 		}, this);
 
-		ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
 
 
 
-	
+ 		// var radioGrid = $('#tarifAuswahlRadioGroup');
+		// assert.notEqual(radioGrid.selector,"");
+		// console.log(radioGrid);
+ 		// browser.pause(3000);
+		
+
+ 		// var objarr = browser.elements('#tarifAuswahlRadioGroup');
+		//  browser.pause(3000);
+		//  console.log("Ojbect: "+objarr);
+		//  console.log("Value: "+objarr.value);
+
+
 		
 	});
 
