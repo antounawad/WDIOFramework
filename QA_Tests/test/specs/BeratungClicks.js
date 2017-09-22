@@ -3,10 +3,10 @@ var HelperObject  = require("../func/HelperObject.js")
 
 describe('webdriver.io page', function () {
 
-	var beforeScript;
+	var helperObject;
 	
 	before(function() {
-		beforeScript = new HelperObject(); 
+		helperObject = new HelperObject(); 
 	});
 
 
@@ -40,9 +40,9 @@ describe('webdriver.io page', function () {
 
 		
 
-  console.log(beforeScript.targetUrl);
+  console.log(helperObject.targetUrl);
   
-   var targetUrl = beforeScript.targetUrl;
+   var targetUrl = helperObject.targetUrl;
  
   console.log(targetUrl);
   browser.url('http://'+targetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
