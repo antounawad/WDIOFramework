@@ -1,13 +1,23 @@
 // var helper = require ('./specs/helper.js');
 var assert = require('assert');
+var HelperObject  = require("../func/HelperObject.js")
 
 describe('webdriver.io page', function () {
+
+	var beforeScript;
+	
+	before(function() {
+		beforeScript = new HelperObject(); 
+	});
+
 	it('should have the right title - the fancy generator way', function () {
 
 		
-  // passing the url from the CMD to the test 
-  var targetUrl = process.argv[3];
-  targetUrl = targetUrl.substr(12);
+
+  console.log(beforeScript.targetUrl);
+  
+   var targetUrl = beforeScript.targetUrl;
+ 
   console.log(targetUrl);
   browser.url('http://'+targetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
   this.timeout(9999999999999999999999999999999999999999999999999999999999999999);
@@ -119,7 +129,7 @@ describe('webdriver.io page', function () {
         browser.pause(5000);
         
 
-        retValue = $('#tariffSelection');
+        retValue = $('#container-content');
 		assert.notEqual(retValue.selector,"");
 		browser.waitForEnabled(retValue.selector, 100000);
         var objarr = browser.elementIdElements(ID,retValue.selector);
