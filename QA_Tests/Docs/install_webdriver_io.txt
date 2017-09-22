@@ -1,0 +1,91 @@
+1. Install NodeJS >> Required
+	https://nodejs.org/ (V8.4.0)
+	Click install
+
+2. Verzeichnis Automatic_Test anlegen
+	
+3. Installation phantomjs
+	npm install phantomjs
+	
+	
+4. Install Selenium standalone server
+	http://selenium-release.storage.googleapis.com/index.html?path=3.4/
+	Zum Starten des Selenium Servers:
+	Java		Gewünschter Treiber  mit Pfat zur Binärdatei
+	java -jar -Dphantomjs.binary.path=C:\Automatic_Test\node_modules\phantomjs\lib\phantom\bin\phantomjs.exe selenium-server-standalone-3.4.0.jar
+
+
+5. Installation webdriverio
+   npm install webdriverio >> Required
+   
+6. Testfile erstellen
+   und in Root Verzeichnis speichern.
+   
+   
+   var webdriverio = require('webdriverio');
+	var options = {
+    desiredCapabilities: {
+        browserName: 'firefox'
+    }
+	};
+webdriverio
+    .remote(options)
+    .init()
+    .url('http://www.google.com')
+    .getTitle().then(function(title) {
+        console.log('Title was: ' + title);
+    })
+    .end();
+
+
+7. Ersten Test ausführen
+	node test.js
+
+____________________________________________________________________________________________________________________________________________________________
+Umgebung installieren
+
+1. node_modules/bin/wdio config
+	alles mit Standard beantworten
+	
+2. errorShots Verzeichnis anlegen
+	
+2. Specs Verzeichnis anlegen
+	root. test\specs
+
+3.  Testfile erstellen und in specs speichern
+
+var assert = require('assert');
+describe('webdriver.io page', function() {o
+    it('should have the right title - the fancy generator way', function () {
+        browser.url('http://webdriver.io');
+        var title = browser.getTitle();
+        assert.equal(title, 'WebdriverIO - WebDriver bindings for Node.js');
+    });
+});
+
+
+4. Test starten
+	node_modules\.bin\wdio wdio.conf.js
+	
+5. Installation Sublime Text
+	http://www.sublimetext.com/2
+	
+6. gekoDriver download 
+java -jar -Dwebdriver.gecko.driver=Downloads\geckodriver.exe Downloads\selenium-server-standalone-3.4.0.jar
+
+	
+____________________________________________________________________________________________________________________________________________________________
+
+NOTEs : 
+1- npm install assert
+2- java -jar -Dphantomjs.binary.path=C:\Automatic_Test\node_modules\phantomjs\lib\phantom\bin\phantomjs.exe Downloads\selenium-server-standalone-3.4.0.jar >> Phantomjs , u show him where the bin path of the phantomjs is
+3- java -jar -Dwebdriver.gecko.driver=Downloads\geckodriver.exe Downloads\selenium-server-standalone-3.4.0.jar	>> Firefox or Chrome >> give him te path where the gekoDriver is 
+
+
+
+	
+
+
+   
+
+

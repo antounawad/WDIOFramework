@@ -1,0 +1,1 @@
+copy test\specs\*.* y:\Automatic_Test\test\specs\*.*
