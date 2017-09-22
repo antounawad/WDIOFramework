@@ -1,4 +1,3 @@
-// var helper = require ('./specs/helper.js');
 var assert = require('assert');
 var HelperObject  = require("../func/HelperObject.js")
 
