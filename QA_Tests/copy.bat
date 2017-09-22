@@ -1,1 +1,1 @@
-copy test\*.* y:\Automatic_Test\test\*.*
+xcopy test\*.* Y:\Automatic_Test\test\*.* /s /e /y
