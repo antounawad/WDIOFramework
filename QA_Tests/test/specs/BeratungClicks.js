@@ -117,7 +117,7 @@ describe('webdriver.io page', function () {
 			browser.pause(8000);
 			ClickAction('#navChapterLink_6', 100000, 8000);
 			ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
-			ClickAction('#btnNavNext', 100000, 30000);
+			ClickAction('#btnNavNext', 100000, 15000);
 
 			// var retValue = $('.md-title ng-binding');
 			// assert.equal(retValue,null,'Fehler bei der Angebotserstellung.');
