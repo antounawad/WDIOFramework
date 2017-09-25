@@ -117,10 +117,21 @@ describe('webdriver.io page', function () {
 			browser.pause(8000);
 			ClickAction('#navChapterLink_6', 100000, 8000);
 			ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
-			ClickAction('#btnNavNext', 100000, 15000);
+			ClickAction('#btnNavNext', 100000, 30000);
 
-			var retValue = $('#backToOfferBtn');
-			//assert.equal(retValue,null,'Fehler bei der Angebotserstellung.');
+			// var retValue = $('.md-title ng-binding');
+			// assert.equal(retValue,null,'Fehler bei der Angebotserstellung.');
+
+			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
+			if(errorBlock !== undefined)
+				{
+					// console.log("Errorblock class: " + errorBlock.getAttribute('class'));
+					// console.log("Errorblock index of ng-hide: " + errorBlock.getAttribute('class').indexOf('ng-hide'));
+					assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung');
+				}
+				else{
+					assert.equal(0, 1, 'Test passt nicht mehr');
+				} // alles kaputt!!!
 			
 
 
