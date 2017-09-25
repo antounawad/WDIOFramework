@@ -127,6 +127,8 @@ describe('webdriver.io page', function () {
 				{
 					// console.log("Errorblock class: " + errorBlock.getAttribute('class'));
 					// console.log("Errorblock index of ng-hide: " + errorBlock.getAttribute('class').indexOf('ng-hide'));
+					var tarifName = $("span[class='label-tarif']");
+					ta
 					assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung');
 				}
 				else{
