@@ -102,14 +102,21 @@ describe('webdriver.io page', function () {
 
 		var radio = [];
 		radio[0] = '#radio_1';
-		radio[1] = '#radio_4';
-		radio[2] = '#radio_8';
+		radio[1] = '#radio_3';
+		radio[2] = '#radio_7';
+		radio[3] = '#radio_8';
+		radio[4] = '#radio_10';
+		radio[5] = '#radio_11';
  
+		var radioNr=0;
+
 		 radio.forEach(function(element) {
-			console.log("Element: "+element);
+			radioNr++;
 			ClickAction('#navChapterLink_5', 100000, 5000);
 			ClickAction('#navViewLink_BeratungBeratungTarifauswahl', 100000, 5000);			 
 			ClickAction(element, 100000, 8000);
+		    var tarifLogo = $(element + "div.vr-tarif-info-logo");	//this is "div[class='vr-tarif-info-logo']"		
+			console.log("Selected Tarif Logo: "+ tarifLogo.getAttribute('back-img').substr(29));
 			var selector = ClickAction('#btnNavNext', 100000, 8000);
 			browser.click(selector);
 			browser.pause(8000);
@@ -117,6 +124,8 @@ describe('webdriver.io page', function () {
 			browser.pause(8000);
 			ClickAction('#navChapterLink_6', 100000, 8000);
 			ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
+			ClickAction('#select_value_label_2', 100000, 5000);
+			ClickAction('#select_option_34', 100000, 3000);
 			ClickAction('#btnNavNext', 100000, 15000);
 
 			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
@@ -124,7 +133,7 @@ describe('webdriver.io page', function () {
 				{
 					// console.log("Errorblock class: " + errorBlock.getAttribute('class'));
 					// console.log("Errorblock index of ng-hide: " + errorBlock.getAttribute('class').indexOf('ng-hide'));
-					assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']")+ browser.getText("div[class='label-details']"));
+					assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']")+ browser.getText("div[class='label-details']")); // the MsG of the Assert will be printed only if Equal is happned 
 				}
 				else{
 					assert.equal(0, 1, 'Test passt nicht mehr');
