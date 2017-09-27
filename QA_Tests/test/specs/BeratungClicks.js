@@ -107,15 +107,12 @@ describe('webdriver.io page', function () {
 		radio[3] = '#radio_8';
 		radio[4] = '#radio_10';
 		radio[5] = '#radio_11';
- 
-		var radioNr=0;
 
 		 radio.forEach(function(element) {
-			radioNr++;
 			ClickAction('#navChapterLink_5', 100000, 5000);
 			ClickAction('#navViewLink_BeratungBeratungTarifauswahl', 100000, 5000);			 
 			ClickAction(element, 100000, 8000);
-		    var tarifLogo = $(element + "div.vr-tarif-info-logo");	//this is "div[class='vr-tarif-info-logo']"		
+		    var tarifLogo = $(element + " div.vr-tarif-info-logo");	//this is "div[class='vr-tarif-info-logo']"		
 			console.log("Selected Tarif Logo: "+ tarifLogo.getAttribute('back-img').substr(29));
 			var selector = ClickAction('#btnNavNext', 100000, 8000);
 			browser.click(selector);
