@@ -107,6 +107,8 @@ describe('webdriver.io page', function () {
 		radio[3] = '#radio_8';
 		radio[4] = '#radio_10';
 		radio[5] = '#radio_11';
+		radio[6] = '#radio_12';
+		
 
 		 radio.forEach(function(element) {
 			ClickAction('#navChapterLink_5', 100000, 5000);
