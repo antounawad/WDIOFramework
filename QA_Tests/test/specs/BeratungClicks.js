@@ -94,7 +94,7 @@ describe('webdriver.io page', function () {
 
 		ClickAction('#btnNewConsultation', 100000, 10000);
 		
-		SearchAction('#Bruttolohn','4343',5000)
+		SearchAction('#Bruttolohn','4343',8000)
 
 		ClickAction('#btnNavNext', 100000, 5000);
 
@@ -103,12 +103,12 @@ describe('webdriver.io page', function () {
 		var radio = [];
 		radio[0] = '#radio_1';
 		radio[1] = '#radio_3';
-		radio[2] = '#radio_7';
-		radio[3] = '#radio_8';
+	    radio[2] = '#radio_7';
+	    radio[3] = '#radio_8';
 		radio[4] = '#radio_10';
 		radio[5] = '#radio_11';
 		radio[6] = '#radio_12';
-		
+	   
 
 		 radio.forEach(function(element) {
 			ClickAction('#navChapterLink_5', 100000, 5000);
@@ -140,10 +140,9 @@ describe('webdriver.io page', function () {
 			
 
 
- 		}, this);
-
-
-		
+		 }, this);
+		 
+	
 	});
 
 });
