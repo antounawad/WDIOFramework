@@ -1,13 +1,12 @@
-// var helper = require ('./specs/helper.js');
 var assert = require('assert');
 var HelperObject  = require("../func/HelperObject.js")
 
 describe('webdriver.io page', function () {
 
-	var beforeScript;
+	var helperObject;
 	
 	before(function() {
-		beforeScript = new HelperObject(); 
+		helperObject = new HelperObject(); 
 	});
 
 
@@ -36,14 +35,22 @@ describe('webdriver.io page', function () {
 			}
 	};
 
+	function CheckResult(pauseTime){
+		if(pauseTime > 0)
+			{
+				browser.pause(pauseTime);
+			}
+	};
+
+
 
 	it('should have the right title - the fancy generator way', function () {
 
 		
 
-  console.log(beforeScript.targetUrl);
+  console.log(helperObject.targetUrl);
   
-   var targetUrl = beforeScript.targetUrl;
+   var targetUrl = helperObject.targetUrl;
  
   console.log(targetUrl);
   browser.url('http://'+targetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
@@ -87,31 +94,55 @@ describe('webdriver.io page', function () {
 
 		ClickAction('#btnNewConsultation', 100000, 10000);
 		
-		SearchAction('#Bruttolohn','4343',5000)
+		SearchAction('#Bruttolohn','4343',8000)
 
 		ClickAction('#btnNavNext', 100000, 5000);
 
-		ClickAction('#navChapterLink_5', 100000, 5000);
-		
-		ClickAction('#navViewLink_BeratungBeratungTarifauswahl', 100000, 5000);
-
-		ClickAction('#radio_1', 100000, 8000);
-
-		var selector = ClickAction('#btnNavNext', 100000, 8000);
-		browser.click(selector);
-		browser.pause(8000);
-		browser.click(selector);
-		browser.pause(8000);
 		
 
-		ClickAction('#navChapterLink_6', 100000, 8000);
+		var radio = [];
+		radio[0] = '#radio_1';
+		radio[1] = '#radio_3';
+	    radio[2] = '#radio_7';
+	    radio[3] = '#radio_8';
+		radio[4] = '#radio_10';
+		radio[5] = '#radio_11';
+		radio[6] = '#radio_12';
+	   
 
-		ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
+		 radio.forEach(function(element) {
+			ClickAction('#navChapterLink_5', 100000, 5000);
+			ClickAction('#navViewLink_BeratungBeratungTarifauswahl', 100000, 5000);			 
+			ClickAction(element, 100000, 8000);
+		    var tarifLogo = $(element + " div.vr-tarif-info-logo");	//this is "div[class='vr-tarif-info-logo']"		
+			console.log("Selected Tarif Logo: "+ tarifLogo.getAttribute('back-img').substr(29));
+			var selector = ClickAction('#btnNavNext', 100000, 8000);
+			browser.click(selector);
+			browser.pause(8000);
+			browser.click(selector);
+			browser.pause(8000);
+			ClickAction('#navChapterLink_6', 100000, 8000);
+			ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
+			ClickAction('md-select-value#select_value_label_2.md-select-value', 100000, 5000); // md-select-value#select_value_label_2.md-select-value
+			ClickAction('#select_option_34', 100000, 3000);
+			ClickAction('#btnNavNext', 100000, 15000);
+
+			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
+			if(errorBlock !== undefined)
+				{
+					// console.log("Errorblock class: " + errorBlock.getAttribute('class'));
+					// console.log("Errorblock index of ng-hide: " + errorBlock.getAttribute('class').indexOf('ng-hide'));
+					assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']")+ browser.getText("div[class='label-details']")); // the MsG of the Assert will be printed only if Equal is happned 
+				}
+				else{
+					assert.equal(0, 1, 'Test passt nicht mehr');
+				} // alles kaputt!!!
+			
 
 
-////////
+		 }, this);
+		 
 	
-		
 	});
 
 });
