@@ -109,7 +109,7 @@ describe('webdriver.io page', function () {
 		ClickAction('#navViewLink_AngebotAngebotAngebotsdaten', 100000, 8000);
 
 
-
+////////
 	
 		
 	});
