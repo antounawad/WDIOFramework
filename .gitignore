@@ -17,6 +17,7 @@ Pages.g.*
 **/[Bb]in/*[Rr]elease*/
 **/[Bb]in/intermediate/
 **/[Bb]in/SRV*TEST/
+./QA_Tests/*.png
 /Web/*/bin/
 /Web/*/App_Data/
 /Web/lib/
