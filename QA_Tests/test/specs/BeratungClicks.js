@@ -47,13 +47,10 @@ describe('webdriver.io page', function () {
         browser.url('http://'+testLib.targetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
 		this.timeout(9999999999999999999999999999999999999999999999999999999999999999);
 
-		browser.pause(2000);
-		testLib.ShowBrowserTitle();
+		testLib.ShowBrowserTitle('Anmelden | xbAV-Berater');
       
- 		//console.log("Broser Title: "+testLib.browserTitle);
 
 		 browser.pause(2000)
-// 		console.log(title);
 
 // 		assert.equal(title, 'Anmelden | xbAV-Berater');
 

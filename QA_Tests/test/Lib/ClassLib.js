@@ -1,3 +1,4 @@
+var assert = require('assert');
 class TestLib{
     
      get url()  {return  process.argv[3]}
@@ -6,10 +7,15 @@ class TestLib{
 
     get browserTitle() {return browser.getTitle()}
 
-    ShowBrowserTitle()
+    ShowBrowserTitle(assertString='')
     {
         console.log("Browser title: ")
         console.log(this.browserTitle)
+        if(assertString != '')
+        {
+            assert.equal(this.browserTitle, assertString);
+        }
+
     }
 
      SearchElement(selector,value, pauseTime=0){
