@@ -20,8 +20,6 @@ describe('webdriver.io page', function () {
 
 	it('Smoke Test...', function () {
 		
-		console.log("targetUrl: "+testLib.targetUrl)
-
         browser.url('http://'+testLib.targetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F')
 		this.timeout(9999999999999999999999999999999999999999999999999999999999999999)
 

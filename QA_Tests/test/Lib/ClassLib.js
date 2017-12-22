@@ -67,6 +67,7 @@ class TestLib{
 				browser.pause(pauseTime);
 			}
 	}
+
 }
 module.exports = TestLib;
 

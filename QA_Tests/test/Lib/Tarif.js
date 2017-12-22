@@ -42,7 +42,7 @@ class Tarif{
 			// testLib.ClickAction('#navViewLink_AngebotAngebotAngebotsdaten','', 100000, 8000);
 			// testLib.ClickAction('md-select-value#select_value_label_2.md-select-value','#select_option_34', 100000, 5000); // md-select-value#select_value_label_2.md-select-value
 			// testLib.ClickAction('#select_option_34','#btnNavNext', 100000, 3000);
-			// testLib.ClickAction('#btnNavNext','', 100000, 15000);
+			 testLib.ClickAction('#btnNavNext','', timeout, pause);
 
 			// var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 			// if(errorBlock !== undefined)

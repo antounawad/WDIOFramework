@@ -1,4 +1,3 @@
-var assert = require('assert');
 var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
 
