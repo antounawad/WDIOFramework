@@ -1,3 +1,8 @@
+﻿<<<<<<< HEAD
+/.vs/
+/packages//**/bin/
+/**/obj/
+
 #folders
 bin/
 Results/
@@ -24,17 +29,10 @@ Pages.g.*
 # Do not remove these two rules below!
 # If you added package that created x86 or x64 directory, remove it and copy needed dlls from packages/...
 # in after build target. 
-x86/
-x64/
-[Bb]uild/
-[Bb]ld/
 *.metaproj
 *.metaproj.tmp
 *.bak
 
-#NUNIT
-*.VisualState.xml
-TestResult.xml
 
 *.pubxml.user
 *.bak
@@ -64,39 +62,6 @@ TestResult.xml
 *.pidb
 *.svclog
 *.scc
-
-# Visual C++ cache files
-ipch/
-*.aps
-*.ncb
-*.opensdf
-*.sdf
-*.cachefile
-
-# Visual Studio profiler
-*.psess
-*.vsp
-*.vspx
-
-# DocProject is a documentation generator add-in
-DocProject/buildhelp/
-DocProject/Help/*.HxT
-DocProject/Help/*.HxC
-DocProject/Help/*.hhc
-DocProject/Help/*.hhk
-DocProject/Help/*.hhp
-DocProject/Help/Html2
-DocProject/Help/html
-
-# Click-Once directory
-publish/
-
-# Windows Azure Build Output
-csx/
-*.build.csdef
-
-# Windows Store app package directory
-AppPackages/
 
 # Others
 sql/
