@@ -291,13 +291,13 @@ namespace Tools.TestDataScrambler
 
                 #region Dokumente
 
-                sqlCommand = "EXISTS (SELECT 1 FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id AND a.AgencyCustomerType<>3 AND c.AdviceData_Id = d.Consultation_Id)";
+                sqlCommand = "d.Consultation_Id IS NOT NULL AND EXISTS (SELECT 1 FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id AND a.AgencyCustomerType<>3 AND c.AdviceData_Id = d.Consultation_Id)";
                 UpdateDocuments("Consultation", sqlCommand, conn);
 
-                sqlCommand = "EXISTS (SELECT 1 FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vn.Id = d.Vn_Id)";
+                sqlCommand = "d.Vn_Id IS NOT NULL AND EXISTS (SELECT 1 FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vn.Id = d.Vn_Id)";
                 UpdateDocuments("VN", sqlCommand, conn);
 
-                sqlCommand = "EXISTS (SELECT 1 FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vp.Address_Id = d.Vp_Id)";
+                sqlCommand = "d.Vp_Id IS NOT NULL AND EXISTS (SELECT 1 FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vp.Address_Id = d.Vp_Id)";
                 UpdateDocuments("VP", sqlCommand, conn);
 
 
@@ -357,16 +357,12 @@ namespace Tools.TestDataScrambler
                 ProgressBar.IsIndeterminate = true;
             });
 
-            var sqlCommand = "UPDATE dd" +
-                             "   SET [data]=@EMPTYDATA" +
+            var sqlCommand = "DELETE dd" +
                              "  FROM DocumentData dd, DocumentMenge d" +
                              " WHERE dd.DocumentMenge_ID = d.ID AND " + sqlWherePart;
 
-            var emptyDataParam = new SqlParameter("@EMPTYDATA", SqlDbType.Binary) { Value = new byte[0] };
-            var updateCommand = new SqlCommand(sqlCommand, conn) { CommandTimeout = 1200 };
-            updateCommand.Parameters.Add(emptyDataParam);
-
-            updateCommand.ExecuteNonQuery();
+            var deleteCommand = new SqlCommand(sqlCommand, conn) { CommandTimeout = 1200 };
+            deleteCommand.ExecuteNonQuery();
         }
 
         #region Shuffle
