@@ -31,9 +31,9 @@ namespace Tools.TestDataScrambler
         {
             InitializeComponent();
 #if DEBUG
-            TextBoxConnectionString.Text = @"Data Source=(LocalDB)\MSSqlLocalDB;Initial Catalog=eulgtest;Integrated Security=True;Connect Timeout=1200";
+            TextBoxConnectionString.Text = @"Data Source=(LocalDB)\MSSqlLocalDB;Initial Catalog=eulgtest;Integrated Security=True;Connect Timeout=3600";
 #else
-            TextBoxConnectionString.Text = @"Data Source=localhost;Initial Catalog=eulgtest;User Id=eulgweb;Password=eulgweb;Connect Timeout=1200";
+            TextBoxConnectionString.Text = @"Data Source=localhost;Initial Catalog=eulgtest;User Id=eulgweb;Password=eulgweb;Connect Timeout=3600";
 #endif
         }
 
@@ -183,7 +183,8 @@ namespace Tools.TestDataScrambler
                         || m.EndsWith("xbav.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("xbav-berater.de", StringComparison.InvariantCultureIgnoreCase)
                         || m.EndsWith("entgeltumwandler.de", StringComparison.InvariantCultureIgnoreCase)
-                        || m.EndsWith("ks-software.de", StringComparison.InvariantCultureIgnoreCase))
+                        || m.EndsWith("ks-software.de", StringComparison.InvariantCultureIgnoreCase)
+                        || m.EndsWith("example.com", StringComparison.InvariantCultureIgnoreCase))
                         continue;
 
                     var prefix = string.Empty;
@@ -332,7 +333,7 @@ namespace Tools.TestDataScrambler
                 var t = string.Format("ALTER DATABASE {0} SET RECOVERY SIMPLE WITH NO_WAIT;" + Environment.NewLine
                     + "DBCC SHRINKDATABASE(N'{0}', 0);" + Environment.NewLine
                     + "DBCC SHRINKDATABASE(N'{0}', TRUNCATEONLY);" + Environment.NewLine
-                    + "// ALTER DATABASE {0} SET RECOVERY FULL WITH NO_WAIT; (nicht mehr nötig)" + Environment.NewLine
+                    + "-- ALTER DATABASE {0} SET RECOVERY FULL WITH NO_WAIT; (nicht mehr nötig)" + Environment.NewLine
                     + "GO", conn.Database);
 
                 conn.Close();
@@ -342,7 +343,7 @@ namespace Tools.TestDataScrambler
                     Clipboard.SetText(t);
 
                     LabelStatus.Content = "Habe fertig.";
-                    MessageBox.Show("Bitte anschliessend folgens Script in Toad ausführen: " + Environment.NewLine + t + Environment.NewLine + "(ist in der Zwischenablage)", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Bitte jetzt folgendes Script ausführen: " + Environment.NewLine + t + Environment.NewLine + Environment.NewLine + "(ist in der Zwischenablage)", "Hinweis", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             }
         }
