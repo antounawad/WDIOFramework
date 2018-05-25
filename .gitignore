@@ -182,3 +182,4 @@ Web/*/BuildInfo.xml
 # Offline-Setup Cache und Output
 Setup/OfflineSetup/Setup Files/
 Setup/OfflineSetup/setup-cache/
+/.vs/EULG-Shared/v15/Server/sqlite3

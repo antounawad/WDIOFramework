@@ -41,7 +41,7 @@ namespace Eulg.Utilities.Console
 
                 try
                 {
-                    result = parser(System.Console.ReadLine().Trim());
+                    result = parser(System.Console.ReadLine()?.Trim());
                 }
                 catch
                 {
@@ -94,14 +94,15 @@ namespace Eulg.Utilities.Console
 
         public static int Integer(string prompt, int? blank = null, int min = int.MinValue, int max = int.MaxValue, NumberStyles style = NumberStyles.Integer, IFormatProvider culture = null)
         {
-            Func<string, Tuple<int, bool>> parser = delegate(string s)
+            Tuple<int, bool> Parser(string s)
             {
                 var i = int.Parse(s, style, culture);
                 return Tuple.Create(i, min <= i && i <= max);
-            };
+            }
+
             return blank == null
-                       ? Show(prompt, parser, true)
-                       : Show(prompt, parser, blank.Value, true);
+                       ? Show(prompt, Parser, true)
+                       : Show(prompt, Parser, blank.Value, true);
         }
 
         public static T Enum<T>(string prompt, T? blank = null, bool inline = false, bool suppressDescription = false) where T : struct
@@ -139,7 +140,7 @@ namespace Eulg.Utilities.Console
             if (inline)
             {
                 System.Console.WriteLine("{0} ({1})", prompt,
-                                  string.Join(" ", items.Select((i, n) => $"{n+1}/{formatter(i).Key}")));
+                                  string.Join(" ", items.Select((i, n) => $"{n + 1}/{formatter(i).Key}")));
             }
             else
             {
@@ -201,15 +202,15 @@ namespace Eulg.Utilities.Console
                 }
             }
 
-            Func<string, Tuple<int, bool>> parser = input =>
+            Tuple<int, bool> Parser(string input)
             {
                 var idx = Enumerable.Range(0, items.Length).Cast<int?>().SingleOrDefault(i => formatter(items[i.Value]).Key.Equals(input, StringComparison.OrdinalIgnoreCase)) ?? (int.Parse(input) - 1);
                 return Tuple.Create(idx, idx >= 0 && idx < items.Length);
-            };
+            }
 
             var index = !allowBlank
-                ? Show(">", parser, true)
-                : Show(">", parser, -1, true);
+                ? Show(">", Parser, true)
+                : Show(">", Parser, -1, true);
 
             return index == -1 ? blank : items[index];
         }
@@ -309,7 +310,7 @@ namespace Eulg.Utilities.Console
                 ConnectTimeout = 20
             };
 
-            if(string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
             {
                 sqlBuilder.IntegratedSecurity = true;
             }
@@ -321,6 +322,41 @@ namespace Eulg.Utilities.Console
             }
 
             return sqlBuilder.ToString();
+        }
+
+        public static IEnumerable<Tuple<string, string>> SqlServerConnectionStrings()
+        {
+            var dataSource = String("Database instance");
+            var username = String("Username (blank=IntSec)");
+            var password = string.IsNullOrEmpty(username) ? null : Password();
+            var catalogs = String("Catalogs (; separates multiple catalogs)");
+
+            var connectionStrings = new List<Tuple<string, string>>();
+
+            foreach (var catalog in catalogs?.Split(';') ?? new string[] { })
+            {
+                var sqlBuilder = new SqlConnectionStringBuilder
+                {
+                    DataSource = dataSource,
+                    InitialCatalog = catalog,
+                    ConnectTimeout = 20
+                };
+
+                if (string.IsNullOrEmpty(username))
+                {
+                    sqlBuilder.IntegratedSecurity = true;
+                }
+                else
+                {
+                    sqlBuilder.IntegratedSecurity = false;
+                    sqlBuilder.Password = password;
+                    sqlBuilder.UserID = username;
+                }
+
+                connectionStrings.Add(new Tuple<string, string>(catalog, sqlBuilder.ToString()));
+            }
+
+            return connectionStrings;
         }
     }
 }
