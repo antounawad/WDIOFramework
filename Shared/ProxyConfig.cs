@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Microsoft.Win32;
 
@@ -17,13 +18,46 @@ namespace Eulg.Shared
         public string Domain { get; set; }
 
         private const string REG_KEY_SOFTWARE = "Software";
-        private const string REG_KEY_PARENT = "EULG Software GmbH"; //FIXME
+        private const string REG_KEY_PARENT = "xbAV Beratungssoftware GmbH";
+        private const string REG_KEY_PARENT_OBSOLETE = "EULG Software GmbH";
+
+        private readonly bool _compatibility;
+
+        public ProxyConfig()
+        {
+            if (CheckForProxySettings(RegistryHive.CurrentUser, REG_KEY_PARENT) || CheckForProxySettings(RegistryHive.LocalMachine, REG_KEY_PARENT))
+            {
+                _compatibility = false;
+            }
+            else if(CheckForProxySettings(RegistryHive.CurrentUser, REG_KEY_PARENT_OBSOLETE) || CheckForProxySettings(RegistryHive.LocalMachine, REG_KEY_PARENT_OBSOLETE))
+            {
+                _compatibility = true;
+            }
+            else
+            {
+                _compatibility = false;
+            }
+        }
+
+        private static bool CheckForProxySettings(RegistryHive registryHive, string parentKey)
+        {
+            using(var key = RegistryKey.OpenBaseKey(registryHive, RegistryView.Registry32).OpenSubKey($"{REG_KEY_SOFTWARE}\\{parentKey}", false))
+            {
+                if(key != null && key.GetValueNames().Any(_ => _.StartsWith("Proxy", StringComparison.Ordinal)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public void Init()
         {
             ReadFromRegistry();
             SetDefault();
         }
+
         public void SetDefault()
         {
             WebRequest.DefaultWebProxy = GetWebProxy();
@@ -68,7 +102,8 @@ namespace Eulg.Shared
             HttpPort = 0;
             try
             {
-                var keyCuParent = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+                var regKeyParent = _compatibility ? REG_KEY_PARENT_OBSOLETE : REG_KEY_PARENT;
+                var keyCuParent = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(regKeyParent, false);
                 if(keyCuParent != null)
                 {
                     Address = keyCuParent.GetValue("ProxyAddress", null) as string;
@@ -79,7 +114,7 @@ namespace Eulg.Shared
                 }
                 if(Address == null)
                 {
-                    var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(REG_KEY_PARENT, false);
+                    var keyLmParent = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, false)?.OpenSubKey(regKeyParent, false);
                     if(keyLmParent != null)
                     {
                         Address = keyLmParent.GetValue("ProxyAddress", null) as string;
@@ -112,22 +147,6 @@ namespace Eulg.Shared
                     ProxyType = EProxyType.Default;
             }
 
-            // ReSharper disable once TooWideLocalVariableScope
-            RegistryKey keyLmSoftware;
-            RegistryKey keyLmParent = null;
-            try
-            {
-                keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
-                keyLmParent = keyLmSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyLmSoftware?.CreateSubKey(REG_KEY_PARENT);
-            }
-            catch
-            {
-                // ignored: nur mir Admin-Rechten in HKEY_LOCAL_MACHINE
-            }
-
-            var keyCuSoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true);
-            var keyCuParent = keyCuSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyCuSoftware?.CreateSubKey(REG_KEY_PARENT);
-
             switch(ProxyType)
             {
                 case EProxyType.Default:
@@ -150,17 +169,57 @@ namespace Eulg.Shared
                     break;
             }
 
-            foreach(var key in new[] { keyCuParent, keyLmParent })
+            // ReSharper disable once TooWideLocalVariableScope
+            try
             {
-                if(key != null)
+                using (var keyLmSoftware = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
                 {
-                    if(Address != null) key.SetValue("ProxyAddress", Address, RegistryValueKind.String); else key.DeleteValue("ProxyAddress", false);
-                    if(HttpPort != null) key.SetValue("ProxyHttpPort", HttpPort, RegistryValueKind.DWord); else key.DeleteValue("ProxyHttpPort", false);
-                    if(Username != null) key.SetValue("ProxyUsername", Username, RegistryValueKind.String); else key.DeleteValue("ProxyUsername", false);
-                    if(Password != null) key.SetValue("ProxyPassword", Password, RegistryValueKind.String); else key.DeleteValue("ProxyPassword", false);
-                    if(Domain != null) key.SetValue("ProxyDomain", Domain, RegistryValueKind.String); else key.DeleteValue("ProxyDomain", false);
-                    key.DeleteValue("ProxySocks5Port", false);
+                    if(_compatibility)
+                    {
+                        using(var key = keyLmSoftware?.OpenSubKey(REG_KEY_PARENT_OBSOLETE, true) ?? keyLmSoftware?.CreateSubKey(REG_KEY_PARENT_OBSOLETE))
+                        {
+                            WriteToRegistry(key);
+                        }
+                    }
+
+                    using(var key = keyLmSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyLmSoftware?.CreateSubKey(REG_KEY_PARENT))
+                    {
+                        WriteToRegistry(key);
+                    }
                 }
+            }
+            catch
+            {
+                // ignored: nur mir Admin-Rechten in HKEY_LOCAL_MACHINE
+            }
+
+            using(var keyCuSoftware = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(REG_KEY_SOFTWARE, true))
+            {
+                if(_compatibility)
+                {
+                    using(var key = keyCuSoftware?.OpenSubKey(REG_KEY_PARENT_OBSOLETE, true) ?? keyCuSoftware?.CreateSubKey(REG_KEY_PARENT_OBSOLETE))
+                    {
+                        WriteToRegistry(key);
+                    }
+                }
+
+                using(var key = keyCuSoftware?.OpenSubKey(REG_KEY_PARENT, true) ?? keyCuSoftware?.CreateSubKey(REG_KEY_PARENT))
+                {
+                    WriteToRegistry(key);
+                }
+            }
+        }
+
+        private void WriteToRegistry(RegistryKey key)
+        {
+            if(key != null)
+            {
+                if(Address != null) key.SetValue("ProxyAddress", Address, RegistryValueKind.String); else key.DeleteValue("ProxyAddress", false);
+                if(HttpPort != null) key.SetValue("ProxyHttpPort", HttpPort, RegistryValueKind.DWord); else key.DeleteValue("ProxyHttpPort", false);
+                if(Username != null) key.SetValue("ProxyUsername", Username, RegistryValueKind.String); else key.DeleteValue("ProxyUsername", false);
+                if(Password != null) key.SetValue("ProxyPassword", Password, RegistryValueKind.String); else key.DeleteValue("ProxyPassword", false);
+                if(Domain != null) key.SetValue("ProxyDomain", Domain, RegistryValueKind.String); else key.DeleteValue("ProxyDomain", false);
+                key.DeleteValue("ProxySocks5Port", false);
             }
         }
 

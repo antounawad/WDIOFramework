@@ -1,0 +1,539 @@
+{
+  "__type": "ArtOfTest.WebAii.Design.ProjectModel.Test",
+  "__value": {
+    "DomStatesCounter": {},
+    "WebKitExecutionDelay": 0,
+    "ReuseAppWindow": 0,
+    "ProfilerResultsDirectory": null,
+    "ProfilerServerName": null,
+    "ProfilerBenchmarkResultsFilePath": null,
+    "ProfilerBenchmarkResultsId": "00000000-0000-0000-0000-000000000000",
+    "ProfilerConfigurationId": "00000000-0000-0000-0000-000000000000",
+    "ProfilerConfigurations": {},
+    "CurrentReferences": [
+      "System",
+      "System.Core",
+      "ArtOfTest.WebAii, Version=2017.1.207.0, Culture=neutral, PublicKeyToken=4fd5f65be123776c",
+      "ArtOfTest.WebAii.Design, Version=2017.1.207.0, Culture=neutral, PublicKeyToken=4fc62bbc3827ab1d",
+      "Telerik.WebAii.Controls.Html, Version=2017.1.207.0, Culture=neutral, PublicKeyToken=528163f3e645de45",
+      "Telerik.WebAii.Controls.Xaml, Version=2017.1.207.0, Culture=neutral, PublicKeyToken=528163f3e645de45",
+      "Telerik.WebAii.Controls.Xaml.Wpf, Version=2017.1.207.0, Culture=neutral, PublicKeyToken=528163f3e645de45",
+      "Telerik.TestingFramework.Controls.KendoUI, Version=2017.1.207.0, Culture=neutral, PublicKeyToken=528163f3e645de45"
+    ],
+    "Steps": {
+      "__type": "ArtOfTest.Common.Design.ProjectModel.AutomationStepList",
+      "__value": [
+        {
+          "__type": "ArtOfTest.WebAii.Design.ProjectModel.AutomationStep",
+          "__value": {
+            "Runtime ID": "381c2262-6684-4807-9ff3-11c0582b4a90",
+            "Description": "Navigate to : '/'",
+            "CustomDescription": null,
+            "Step": {
+              "__type": "ArtOfTest.WebAii.Design.IntrinsicTranslators.Descriptors.NavigateToActionDescriptor",
+              "__value": {
+                "UseDecodedUrl": true,
+                "NavigateURL": "/",
+                "BaseUrl": "https://hotfix.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F",
+                "WaitOnElementsTimeout": 0,
+                "UseStepWaitOnElementsTimout": false,
+                "WaitOnElements": false,
+                "UsejQuery": false,
+                "UseBackupSearch": true,
+                "ClosesBrowser": false,
+                "AjaxTimeout": 0,
+                "Pause": 0,
+                "RunsAgainstVersion": "",
+                "Constraints": {
+                  "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.DescriptorConstraints",
+                  "__value": {
+                    "ConstraintValues": {}
+                  }
+                },
+                "Elements": {},
+                "StepType": 4,
+                "LogMessageOnFailure": "",
+                "EditorType": "",
+                "DataBindingExpressions": {}
+              }
+            },
+            "Enabled": false,
+            "Order": 1,
+            "Id": "",
+            "StepState": 0,
+            "ContinueOnFailure": false,
+            "StepImageKey": "Kill_Sessionep1myzba.ksl",
+            "QcId": 0,
+            "QcVersionStamp": 0,
+            "Version": 200
+          }
+        },
+        {
+          "__type": "ArtOfTest.WebAii.Design.ProjectModel.AutomationStep",
+          "__value": {
+            "Runtime ID": "8d8c19e5-ce3f-472c-8efb-3c393465a0ee",
+            "Description": "Verify Exists 'MdCardTag'",
+            "CustomDescription": null,
+            "Step": {
+              "__type": "ArtOfTest.WebAii.Design.IntrinsicTranslators.Descriptors.IfThenElseLogicalDescriptor",
+              "__value": {
+                "Verification": {
+                  "__type": "ArtOfTest.WebAii.Design.IntrinsicTranslators.Descriptors.ExistsVerificationDescriptor",
+                  "__value": {
+                    "ExistsNot": false,
+                    "WaitOnElements": true,
+                    "WaitOnElementsTimeout": 30000,
+                    "UseStepWaitOnElementsTimout": false,
+                    "DataBindVariableName": null,
+                    "Timeout": 30000,
+                    "CheckInterval": 500,
+                    "EnsureStateIsCurrent": false,
+                    "Pause": 0,
+                    "RunsAgainstVersion": "",
+                    "Constraints": {
+                      "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.DescriptorConstraints",
+                      "__value": {
+                        "ConstraintValues": {}
+                      }
+                    },
+                    "Elements": {
+                      "target": {
+                        "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.ElementDescriptor",
+                        "__value": {
+                          "Name": "target",
+                          "Region": null,
+                          "Page": {
+                            "__type": "ArtOfTest.WebAii.Design.ProjectModel.PageUri",
+                            "__value": {
+                              "Path": "/Beratung/Account/MultiLoginAsk",
+                              "Query": "",
+                              "BaseUrl": "https://hotfix.xbav-berater.de",
+                              "EquivalentUrls": [],
+                              "Fragment": "",
+                              "Title": "Anmelden | xbAV-Berater",
+                              "CompareMode": 2,
+                              "AlwaysUseTitleInCompare": false,
+                              "FriendlyName": "AnmeldenXbAVBerater2"
+                            }
+                          },
+                          "Frame": null,
+                          "FindInfo": null,
+                          "FindExpression": {
+                            "__type": "ArtOfTest.Common.Design.ProjectModel.Elements.FindExpressionElement",
+                            "__value": {
+                              "uniqueKey": "cL+DhsjFu0+1qX5mSJ0HQQbtqnw=",
+                              "NodeKind": 4,
+                              "TechnologyType": 1,
+                              "Name": "MdCardTag",
+                              "FindExpressions": [
+                                {
+                                  "Key": 1,
+                                  "Value": {
+                                    "__type": "ArtOfTest.WebAii.Core.HtmlFindExpression",
+                                    "__value": {
+                                      "Clauses": [
+                                        {
+                                          "__type": "ArtOfTest.WebAii.Core.HtmlFindClause",
+                                          "__value": {
+                                            "Clause": "id=ID_Login_Wrapper"
+                                          }
+                                        }
+                                      ],
+                                      "Constraints": [],
+                                      "ChainStops": []
+                                    }
+                                  }
+                                }
+                              ],
+                              "BackupSearchClause": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[2]/md-card[1]",
+                              "DataBindingExpressions": {}
+                            }
+                          },
+                          "HtmlControlType": "ArtOfTest.WebAii.Controls.HtmlControls.HtmlControl",
+                          "IsIndependent": false,
+                          "DomStateKey": "",
+                          "TechnologyType": 1,
+                          "Version": 200
+                        }
+                      }
+                    },
+                    "StepType": 2,
+                    "LogMessageOnFailure": "",
+                    "EditorType": "",
+                    "DataBindingExpressions": {}
+                  }
+                },
+                "Branches": {
+                  "1": {
+                    "__type": "ArtOfTest.Common.Design.ProjectModel.LogicalBranchData",
+                    "__value": {
+                      "StepList": {
+                        "__type": "ArtOfTest.Common.Design.ProjectModel.AutomationStepList",
+                        "__value": [
+                          {
+                            "__type": "ArtOfTest.WebAii.Design.ProjectModel.AutomationStep",
+                            "__value": {
+                              "Runtime ID": "2a8bd063-63ca-4310-80ba-820f6edfeb7e",
+                              "Description": "Desktop command: LeftClick on BtnLogOffOthersButtonTag",
+                              "CustomDescription": null,
+                              "Step": {
+                                "__type": "ArtOfTest.WebAii.Design.IntrinsicTranslators.Descriptors.DesktopActionDescriptor",
+                                "__value": {
+                                  "Focus": true,
+                                  "DesktopActionType": 0,
+                                  "OffSet": {
+                                    "__type": "ArtOfTest.Common.Design.ActionPoint",
+                                    "__value": "0, 0, Percentage, AbsoluteCenter"
+                                  },
+                                  "UsejQuery": false,
+                                  "UseBackupSearch": true,
+                                  "ClosesBrowser": false,
+                                  "AjaxTimeout": 0,
+                                  "Pause": 0,
+                                  "WaitOnElementsTimeout": 30000,
+                                  "UseStepWaitOnElementsTimout": false,
+                                  "WaitOnElements": true,
+                                  "RunsAgainstVersion": "",
+                                  "Constraints": {
+                                    "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.DescriptorConstraints",
+                                    "__value": {
+                                      "ConstraintValues": {}
+                                    }
+                                  },
+                                  "Elements": {
+                                    "target": {
+                                      "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.ElementDescriptor",
+                                      "__value": {
+                                        "Name": "target",
+                                        "Region": null,
+                                        "Page": {
+                                          "__type": "ArtOfTest.WebAii.Design.ProjectModel.PageUri",
+                                          "__value": {
+                                            "Path": "/Beratung/Account/MultiLoginAsk",
+                                            "Query": "",
+                                            "BaseUrl": "https://hotfix.xbav-berater.de",
+                                            "EquivalentUrls": [],
+                                            "Fragment": "",
+                                            "Title": "Anmelden | xbAV-Berater",
+                                            "CompareMode": 2,
+                                            "AlwaysUseTitleInCompare": false,
+                                            "FriendlyName": "AnmeldenXbAVBerater2"
+                                          }
+                                        },
+                                        "Frame": null,
+                                        "FindInfo": null,
+                                        "FindExpression": {
+                                          "__type": "ArtOfTest.WebAii.Design.ProjectModel.HtmlFindExpressionElement",
+                                          "__value": {
+                                            "uniqueKey": "+lWAQsPkajfkdWvZbU/EHogqHMg=",
+                                            "NodeKind": 4,
+                                            "TechnologyType": 1,
+                                            "Name": "BtnLogOffOthersButtonTag",
+                                            "FindExpressions": [
+                                              {
+                                                "Key": 1,
+                                                "Value": {
+                                                  "__type": "ArtOfTest.WebAii.Core.HtmlFindExpression",
+                                                  "__value": {
+                                                    "Clauses": [
+                                                      {
+                                                        "__type": "ArtOfTest.WebAii.Core.HtmlFindClause",
+                                                        "__value": {
+                                                          "Clause": "id=btnLogOffOthers"
+                                                        }
+                                                      },
+                                                      {
+                                                        "__type": "ArtOfTest.WebAii.Core.HtmlFindClause",
+                                                        "__value": {
+                                                          "Clause": "tagname=button"
+                                                        }
+                                                      }
+                                                    ],
+                                                    "Constraints": [],
+                                                    "ChainStops": []
+                                                  }
+                                                }
+                                              }
+                                            ],
+                                            "BackupSearchClause": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[2]/md-card[1]/md-card-actions[1]/div[2]/button[1]",
+                                            "DataBindingExpressions": {}
+                                          }
+                                        },
+                                        "HtmlControlType": "ArtOfTest.WebAii.Controls.HtmlControls.HtmlButton",
+                                        "IsIndependent": false,
+                                        "DomStateKey": "",
+                                        "TechnologyType": 1,
+                                        "Version": 200
+                                      }
+                                    }
+                                  },
+                                  "StepType": 4,
+                                  "LogMessageOnFailure": "",
+                                  "EditorType": "",
+                                  "DataBindingExpressions": {}
+                                }
+                              },
+                              "Enabled": true,
+                              "Order": 1,
+                              "Id": "",
+                              "StepState": 0,
+                              "ContinueOnFailure": false,
+                              "StepImageKey": "Kill_Sessionikpo0uzb.xnv",
+                              "QcId": 0,
+                              "QcVersionStamp": 0,
+                              "Version": 200
+                            }
+                          }
+                        ]
+                      },
+                      "Description": "IF ({0})",
+                      "CustomDescription": null,
+                      "Order": 0,
+                      "Branch": 1,
+                      "Visible": true
+                    }
+                  },
+                  "0": {
+                    "__type": "ArtOfTest.Common.Design.ProjectModel.LogicalBranchData",
+                    "__value": {
+                      "StepList": {
+                        "__type": "ArtOfTest.Common.Design.ProjectModel.AutomationStepList",
+                        "__value": [
+                          {
+                            "__type": "ArtOfTest.WebAii.Design.ProjectModel.AutomationStep",
+                            "__value": {
+                              "Runtime ID": "d369e25e-8fd0-40b9-b7a1-5e1357c22be0",
+                              "Description": "Execute test 'Only_Logout'",
+                              "CustomDescription": null,
+                              "Step": {
+                                "__type": "ArtOfTest.WebAii.Design.IntrinsicTranslators.Descriptors.ExecuteTestActionDescriptor",
+                                "__value": {
+                                  "WaitOnElementsTimeout": 0,
+                                  "UseStepWaitOnElementsTimout": false,
+                                  "WaitOnElements": false,
+                                  "TestName": "Only_Logout",
+                                  "TestPath": "Steps\\Only_Logout.tstest",
+                                  "TestUniqueId": "f8aa6066-df3b-4628-af04-e6e6a049ec92",
+                                  "Pause": 0,
+                                  "RunsAgainstVersion": "",
+                                  "Constraints": {
+                                    "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.DescriptorConstraints",
+                                    "__value": {
+                                      "ConstraintValues": {}
+                                    }
+                                  },
+                                  "Elements": {},
+                                  "StepType": 4,
+                                  "LogMessageOnFailure": "",
+                                  "EditorType": "",
+                                  "DataBindingExpressions": {}
+                                }
+                              },
+                              "Enabled": true,
+                              "Order": 1,
+                              "Id": "",
+                              "StepState": 0,
+                              "ContinueOnFailure": false,
+                              "StepImageKey": "Kill_Sessionvhbhaoll.4nf",
+                              "QcId": 0,
+                              "QcVersionStamp": 0,
+                              "Version": 200
+                            }
+                          },
+                          {
+                            "__type": "ArtOfTest.WebAii.Design.ProjectModel.AutomationStep",
+                            "__value": {
+                              "Runtime ID": "77fb7655-0e5f-4eba-bb97-7d07357299e5",
+                              "Description": "Execute test 'Only_Login'",
+                              "CustomDescription": null,
+                              "Step": {
+                                "__type": "ArtOfTest.WebAii.Design.IntrinsicTranslators.Descriptors.ExecuteTestActionDescriptor",
+                                "__value": {
+                                  "WaitOnElementsTimeout": 0,
+                                  "UseStepWaitOnElementsTimout": false,
+                                  "WaitOnElements": false,
+                                  "TestName": "Only_Login",
+                                  "TestPath": "Steps\\Only_Login.tstest",
+                                  "TestUniqueId": "d4694bb8-2f57-4696-a168-68d89fb45e72",
+                                  "Pause": 0,
+                                  "RunsAgainstVersion": "",
+                                  "Constraints": {
+                                    "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.DescriptorConstraints",
+                                    "__value": {
+                                      "ConstraintValues": {}
+                                    }
+                                  },
+                                  "Elements": {},
+                                  "StepType": 4,
+                                  "LogMessageOnFailure": "",
+                                  "EditorType": "",
+                                  "DataBindingExpressions": {}
+                                }
+                              },
+                              "Enabled": true,
+                              "Order": 2,
+                              "Id": "",
+                              "StepState": 0,
+                              "ContinueOnFailure": false,
+                              "StepImageKey": "Kill_Sessionwpjjxybn.uhm",
+                              "QcId": 0,
+                              "QcVersionStamp": 0,
+                              "Version": 200
+                            }
+                          }
+                        ]
+                      },
+                      "Description": "ELSE",
+                      "CustomDescription": null,
+                      "Order": 1,
+                      "Branch": 0,
+                      "Visible": true
+                    }
+                  }
+                },
+                "UseStepWaitOnElementsTimout": false,
+                "WaitOnElementsTimeout": 0,
+                "WaitOnElements": false,
+                "Pause": 0,
+                "RunsAgainstVersion": "",
+                "Constraints": {
+                  "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.DescriptorConstraints",
+                  "__value": {
+                    "ConstraintValues": {}
+                  }
+                },
+                "Elements": {
+                  "target": {
+                    "__type": "ArtOfTest.Common.Design.Extensibility.Descriptors.ElementDescriptor",
+                    "__value": {
+                      "Name": "target",
+                      "Region": null,
+                      "Page": {
+                        "__type": "ArtOfTest.WebAii.Design.ProjectModel.PageUri",
+                        "__value": {
+                          "Path": "/Beratung/Account/MultiLoginAsk",
+                          "Query": "",
+                          "BaseUrl": "https://hotfix.xbav-berater.de",
+                          "EquivalentUrls": [],
+                          "Fragment": "",
+                          "Title": "Anmelden | xbAV-Berater",
+                          "CompareMode": 2,
+                          "AlwaysUseTitleInCompare": false,
+                          "FriendlyName": "AnmeldenXbAVBerater2"
+                        }
+                      },
+                      "Frame": null,
+                      "FindInfo": null,
+                      "FindExpression": {
+                        "__type": "ArtOfTest.Common.Design.ProjectModel.Elements.FindExpressionElement",
+                        "__value": {
+                          "uniqueKey": "cL+DhsjFu0+1qX5mSJ0HQQbtqnw=",
+                          "NodeKind": 4,
+                          "TechnologyType": 1,
+                          "Name": "MdCardTag",
+                          "FindExpressions": [
+                            {
+                              "Key": 1,
+                              "Value": {
+                                "__type": "ArtOfTest.WebAii.Core.HtmlFindExpression",
+                                "__value": {
+                                  "Clauses": [
+                                    {
+                                      "__type": "ArtOfTest.WebAii.Core.HtmlFindClause",
+                                      "__value": {
+                                        "Clause": "id=ID_Login_Wrapper"
+                                      }
+                                    }
+                                  ],
+                                  "Constraints": [],
+                                  "ChainStops": []
+                                }
+                              }
+                            }
+                          ],
+                          "BackupSearchClause": "/html[1]/body[1]/div[1]/div[1]/div[1]/div[2]/md-card[1]",
+                          "DataBindingExpressions": {}
+                        }
+                      },
+                      "HtmlControlType": "ArtOfTest.WebAii.Controls.HtmlControls.HtmlControl",
+                      "IsIndependent": false,
+                      "DomStateKey": "",
+                      "TechnologyType": 1,
+                      "Version": 200
+                    }
+                  }
+                },
+                "StepType": 8,
+                "LogMessageOnFailure": "",
+                "EditorType": "",
+                "DataBindingExpressions": {}
+              }
+            },
+            "Enabled": true,
+            "Order": 2,
+            "Id": "",
+            "StepState": 0,
+            "ContinueOnFailure": false,
+            "StepImageKey": "Kill_Session5d1rx1ct.0v3",
+            "QcId": 0,
+            "QcVersionStamp": 0,
+            "Version": 200
+          }
+        }
+      ]
+    },
+    "IndependentDescriptors": [],
+    "HtmlDescription": "",
+    "SilverlightEnabled": false,
+    "IsSilverlightApp": false,
+    "SilverlightAppWebUrl": "",
+    "SilverlightAppLocalDirectory": "",
+    "SilverlightAppRecordLocal": false,
+    "SilverlightAppOriginUri": null,
+    "WpfAppPath": null,
+    "UseDefaultWpfAppPath": false,
+    "TestAssembly": "GUiSmokeTests.dll",
+    "TestAssemblyPath": "bin",
+    "TestClass": "",
+    "IsManual": false,
+    "ResourceFilePath": "Steps\\Kill_Session.resx",
+    "HasCodeBehind": false,
+    "DataInfo": {
+      "__type": "ArtOfTest.Common.Design.Data.DataInfo",
+      "__value": {
+        "ConnectionString": "",
+        "DefaultToGrid": true,
+        "DataRange": "",
+        "LoadRecordsCount": null,
+        "DataTableName": "",
+        "DataProvider": "",
+        "DataEnabled": true,
+        "HasBuiltinGrid": false,
+        "DataType": 4,
+        "BuiltInData": null,
+        "BuiltInDocumentKey": null,
+        "TSQL": ""
+      }
+    },
+    "VSProperties": {},
+    "DeploymentItems": [],
+    "IsTestFragment": false,
+    "StopTestListOnFailure": false,
+    "InheritParentDataSource": false,
+    "BrowserType": 0,
+    "QcId": 0,
+    "QcFilePath": null,
+    "QcTestVersionStamp": 0,
+    "TestLinks": [],
+    "Description": "",
+    "Name": "Kill_Session",
+    "Owner": "",
+    "Path": "Steps\\Kill_Session.tstest",
+    "Priority": 0,
+    "TestType": 0,
+    "UniqueId": "86f6b75d-7d81-4446-8c0b-88f880ad6ccf",
+    "Id": "86f6b75d-7d81-4446-8c0b-88f880ad6ccf",
+    "ProjectId": "cff0332c-baac-43a1-930d-4f181e0bf731",
+    "Version": 200
+  }
+}

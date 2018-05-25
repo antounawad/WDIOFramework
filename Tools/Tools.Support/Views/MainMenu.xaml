@@ -16,11 +16,11 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <TabControl SelectionChanged="TabControl_OnSelectionChanged">
         <TabControl.Resources>
             <Style TargetType="{x:Type TabItem}">
-                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Height" Value="Auto" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="TabItem">
@@ -45,6 +45,19 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="HeaderTemplate">
+                    <Setter.Value>
+                        <DataTemplate DataType="{x:Type TabItem}">
+                            <Border x:Name="grid">
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Text="{TemplateBinding Content}" Foreground="White"/>
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </Border>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </TabControl.Resources>
 
@@ -54,20 +67,20 @@
                        Orientation="Vertical">
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnCheckFiles"
-                        >
+                        Name="BtnCheckFiles"
+                        Click="BtnCheckFiles_OnClick">
                     Programmdateien prüfen bzw. aktualisieren
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnProtocolViewer"
-                        >
+                        Name="BtnProtocolViewer"
+                        Click="BtnProtocolViewer_OnClick">
                     Protokoll anzeigen
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnCheckService_OnClick"
-                        >
+                        Name="BtnCheckService"
+                        Click="BtnCheckService_OnClick">
                     Update-Dienst prüfen
                 </Button>
                 <Button Height="28"
@@ -77,14 +90,14 @@
                 </Button>
                 <Button Height="28"
                         Margin="10"
-                        Click="BtnFernwartung_OnClick"
-                        >
+                        Name="BtnFernwartung"
+                        Click="BtnFernwartung_OnClick">
                     Fernwartung starten
                 </Button>
             </WrapPanel>
         </TabItem>
 
-        <TabItem Header="Upload">
+        <TabItem Header="Upload" IsSelected="False">
             <WrapPanel HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Orientation="Vertical">
@@ -104,12 +117,11 @@
                         Height="28"
                         Margin="10"
                         Click="BtnUpload_OnClick"
-                        Content="Upload starten"
-                        />
+                        Content="Upload starten" />
             </WrapPanel>
         </TabItem>
 
-        <TabItem x:Name="TabItemProxy" Header="Proxy">
+        <TabItem x:Name="TabItemProxy" Header="Proxy" IsSelected="False">
             <Grid>
 
                 <Grid.RowDefinitions>

@@ -67,15 +67,6 @@ namespace Update.Fix.Fixes
                 return false;
             }
 
-            var backupFilename = Path.ChangeExtension(brandingXmlFile, ".xml.bak");
-            var counter = 0;
-            while (File.Exists(backupFilename))
-            {
-                backupFilename = Path.ChangeExtension(brandingXmlFile, $".xml.{++counter}.bak");
-            }
-
-            File.Copy(brandingXmlFile, backupFilename);
-
             using(var fileStream = File.Open(brandingXmlFile, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
                 var xmlSerializer = new XmlSerializer(typeof(Branding));

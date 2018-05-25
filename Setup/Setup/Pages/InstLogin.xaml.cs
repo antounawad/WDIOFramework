@@ -58,7 +58,7 @@ namespace Eulg.Setup.Pages
         {
             LblOnlinAuth.Text = "";
 
-            if (String.IsNullOrWhiteSpace(TxtLogin.Text))
+            if (string.IsNullOrWhiteSpace(TxtLogin.Text))
             {
                 LblOnlinAuth.Text = "Bitte Benutzername (E-Mail-Adresse) und Passwort angeben!";
                 return;
@@ -71,7 +71,7 @@ namespace Eulg.Setup.Pages
             }
 
             var username = TxtLogin.Text.Trim();
-            var password = TxtPwd?.Password?.Trim() ?? String.Empty;
+            var password = TxtPwd?.Password?.Trim() ?? string.Empty;
 
             Profile profile;
             using (new Tools.WaitCursor())
@@ -119,14 +119,8 @@ namespace Eulg.Setup.Pages
 
             MainWindow.Instance.NavigateToPage(new InstChoosePath(profile, username, password));
         }
-        public bool OnPrev()
-        {
-            return false;
-        }
-        public bool OnClose()
-        {
-            return true;
-        }
+        public bool OnPrev() => false;
+        public bool OnClose() => true;
 
         private void TxtLogin_KeyDown(object sender, KeyEventArgs e)
         {

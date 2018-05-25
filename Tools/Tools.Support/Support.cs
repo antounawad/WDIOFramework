@@ -7,7 +7,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Security;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.ServiceProcess;
@@ -60,7 +59,7 @@ namespace Eulg.Client.SupportTool
             Sync
         }
 
-        public const string FERNWARTUNG_EXECUTABLE_NAME = "EulgFernwartung.exe";
+        public const string FERNWARTUNG_EXECUTABLE_NAME = "Fernwartung.exe";
         private const int STREAM_BUFFER_SIZE = 81920;
         private static string _ildasmPath;
         private Uri _updateServiceUri;
@@ -200,7 +199,7 @@ namespace Eulg.Client.SupportTool
             // ReSharper disable once RedundantAssignment
             var appPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".."));
 #if DEBUG
-            appPath = @"C:\Program Files (x86)\EulgDeTest";
+            appPath = @"C:\Program Files (x86)\xbAV-Berater";
 #endif
             var proxyConfig = new ProxyConfig();
             proxyConfig.Init();
@@ -220,26 +219,23 @@ namespace Eulg.Client.SupportTool
                 UserNames = accounts.Select(s => s.Item1).ToArray(),  // new[] { "" },
                 Passwords = accounts.Select(s => s.Item2).ToArray(),  // new[] { "" },
                 CheckProcesses = string.Empty, // AppBinary bei SupportTool auch nach KILL, siehe EULG-6189
-                KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server", // "server.exe" is Allianz-RK background process
+                KillProcesses = Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.AppBinary) + ";" + Path.GetFileNameWithoutExtension(CurrentBranding.FileSystem.SyncBinary) + ";server;javaw", // "server.exe", "javaw.exe" is Allianz-RK background process
                 SkipWaitForProcess = true,
                 SkipRestartApplication = true,
             };
-            updateClient.ProgressChanged += (sender, args) =>
-            {
-                NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
-            };
+            updateClient.ProgressChanged += (sender, args) => NotifyProgressChanged((int)Math.Floor(args.Progress * 100), (args.CurrentItem ?? string.Empty));
             NotifyProgressChanged(-1, "*Update-Katalog abrufen...");
             NotifyProgressChanged(-1, string.Join(", ", updateClient.UserNames));
-                var clientId = string.Empty;
-                try
-                {
-                    clientId = FingerPrint.ClientId;
-                }
-                catch (Exception exception)
-                {
-                    updateClient.Log(UpdateClient.LogTypeEnum.Error, exception.GetMessagesTree());
-                }
-                switch (updateClient.FetchManifest(clientId))
+            var clientId = string.Empty;
+            try
+            {
+                clientId = FingerPrint.ClientId;
+            }
+            catch (Exception exception)
+            {
+                updateClient.Log(UpdateClient.ELogTypeEnum.Error, exception.GetMessagesTree());
+            }
+            switch (updateClient.FetchManifest(clientId))
             {
                 case UpdateClient.EUpdateCheckResult.UpdatesAvailable:
                     break;
@@ -290,7 +286,7 @@ namespace Eulg.Client.SupportTool
                     Directory.CreateDirectory(updateClient.DownloadPath);
                 }
                 NotifyProgressChanged(-1, "*Programmdateien herunterladen...");
-                if (!updateClient.DownloadUpdatesStream())
+                if (!updateClient.DownloadUpdates())
                 {
                     MessageBox.Show("Fehler beim Download der Programmdateien!", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     NotifyProgressChanged(-1, "Protokoll übertragen...");
@@ -326,59 +322,62 @@ namespace Eulg.Client.SupportTool
 
         private void CompareDirectory(string path, string filePath, UpdateConfig.UpdateFile[] updateFiles, UpdateClient updateClient)
         {
-            if (!Directory.Exists(path))
+            if (Directory.Exists(path))
             {
-                return;
-            }
-            // Delete Extra Files
-            NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
-            var localFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
-            _filesProcessed = 0;
-            var filesTotal = localFiles.LongLength;
-            if (filesTotal == 0)
-                filesTotal = 1;
-            foreach (var file in localFiles)
-            {
-                _filesProcessed++;
-                NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_filesProcessed) / Convert.ToDecimal(filesTotal)) * 100), file);
-                var fileName = Path.GetFileName(file) ?? string.Empty;
-                var relPath = file.Substring(path.Length + 1);
-
-                if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
-                    && (relPath.StartsWith(@"Setup\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
-                        || fileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)
-                        || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
-                    continue;
-
-                if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase))
-                    && !updateClient.UpdateConf.ResetFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                // Delete Extra Files
+                NotifyProgressChanged(-1, $"*Verzeichnis durchsuchen ({filePath})..");
+                var localFiles = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                _filesProcessed = 0;
+                var filesTotal = localFiles.LongLength;
+                if (filesTotal == 0)
+                    filesTotal = 1;
+                foreach (var file in localFiles)
                 {
-                    updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
-                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra File: " + file);
+                    _filesProcessed++;
+                    NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_filesProcessed) / Convert.ToDecimal(filesTotal)) * 100), file);
+                    var fileName = Path.GetFileName(file) ?? string.Empty;
+                    var relPath = file.Substring(path.Length + 1);
+
+                    if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
+                        && (relPath.StartsWith(@"Setup\", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.StartsWith(@"Support\", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
+                            || fileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)
+                            || fileName.Equals("UpdateWorker.exe", StringComparison.InvariantCultureIgnoreCase)))
+                        continue;
+
+                    if (filePath.Equals("Setup", StringComparison.InvariantCultureIgnoreCase)
+                        && relPath.StartsWith(@"Setup.xml", StringComparison.InvariantCultureIgnoreCase))
+                        continue;
+
+                    if (!updateFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase))
+                        && !updateClient.UpdateConf.ResetFiles.Any(_ => _.FilePath.Equals(filePath, StringComparison.InvariantCultureIgnoreCase) && _.FileName.Equals(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = file });
+                        updateClient.Log(UpdateClient.ELogTypeEnum.Info, "Delete Extra File: " + file);
+                    }
                 }
-            }
 
-            // Delete Extra Directories?!?
-            var dirs = Directory.GetDirectories(path, "*.*", SearchOption.AllDirectories);
-            foreach (var dir in dirs)
-            {
-                var relPath = dir.Substring(path.Length + 1);
-
-                if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
-                    && (relPath.Equals(@"Setup", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.Equals(@"Support", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.Equals(@"Plugins", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
-                        || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
-                    continue;
-
-                if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase))
-                    && !updateClient.UpdateConf.ResetFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                // Delete Extra Directories?!?
+                var dirs = Directory.GetDirectories(path, "*.*", SearchOption.AllDirectories);
+                foreach (var dir in dirs)
                 {
-                    updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
-                    updateClient.Log(UpdateClient.LogTypeEnum.Info, "Delete Extra Dir: " + dir);
+                    var relPath = dir.Substring(path.Length + 1);
+
+                    if (filePath.Equals("AppDir", StringComparison.InvariantCultureIgnoreCase)
+                        && (relPath.Equals(@"Setup", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.Equals(@"Support", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.Equals(@"Plugins", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.StartsWith(@"Plugins\", StringComparison.InvariantCultureIgnoreCase)
+                            || relPath.Equals(@"Demo\Web\App_Data", StringComparison.InvariantCultureIgnoreCase)))
+                        continue;
+
+                    if (!updateFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase))
+                        && !updateClient.UpdateConf.ResetFiles.Any(a => a.FileName.StartsWith(relPath, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        updateClient.WorkerConfig.WorkerDeletes.Add(new WorkerConfig.WorkerDelete { Path = dir });
+                        updateClient.Log(UpdateClient.ELogTypeEnum.Info, "Delete Extra Dir: " + dir);
+                    }
                 }
             }
 
@@ -391,32 +390,40 @@ namespace Eulg.Client.SupportTool
                 updateFilesToCheck = updateFilesToCheck.Where(_ => !_.FileName.Equals("Branding.xml", StringComparison.InvariantCultureIgnoreCase)).ToArray();
             }
             var totalSize = updateFilesToCheck.Sum(_ => _.FileSize);
-            Parallel.ForEach(updateFilesToCheck, updateFile =>
-            {
-                System.Threading.Interlocked.Add(ref _sizeProcessed, updateFile.FileSize);
-                NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_sizeProcessed) / Convert.ToDecimal(totalSize)) * 100), $"{updateFile.FilePath}\\{updateFile.FileName}");
-                var localFile = Path.Combine(path, updateFile.FileName);
+            Parallel.ForEach(updateFilesToCheck, new ParallelOptions { MaxDegreeOfParallelism = 4 }, updateFile =>
+              {
+                  System.Threading.Interlocked.Add(ref _sizeProcessed, updateFile.FileSize);
+                  NotifyProgressChanged(Convert.ToInt32((Convert.ToDecimal(_sizeProcessed) / Convert.ToDecimal(totalSize)) * 100), $"{updateFile.FilePath}\\{updateFile.FileName}");
+                  var localFile = Path.Combine(path, updateFile.FileName);
 
-                var fileInfo = new FileInfo(localFile);
+                  var fileInfo = new FileInfo(localFile);
 
-                if (!fileInfo.Exists
-                    || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime)
-                    || fileInfo.Length != updateFile.FileSize
-                    || (!filePath.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase) && !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    var fixFile = new WorkerConfig.WorkerFile
-                    {
-                        Source = Path.Combine(updateFile.FilePath, updateFile.FileName),
-                        Destination = localFile,
-                        FileDateTime = updateFile.FileDateTime,
-                        FileSize = updateFile.FileSize,
-                        FileSizeGz = updateFile.FileSizeGz,
-                        FileName = updateFile.FileName,
-                        NewFile = !fileInfo.Exists
-                    };
-                    fixFiles.Add(fixFile);
-                }
-            });
+                  if (!fileInfo.Exists
+                      || !Tools.CompareLazyFileDateTime(fileInfo.LastWriteTime, updateFile.FileDateTime)
+                      || fileInfo.Length != updateFile.FileSize
+                      || (!filePath.Equals("Plugins", StringComparison.InvariantCultureIgnoreCase) && !GetHash(fileInfo, updateFile).Equals(updateFile.CheckSum, StringComparison.InvariantCultureIgnoreCase)))
+                  {
+                      var fixFile = new WorkerConfig.WorkerFile
+                      {
+                          Source = Path.Combine(updateFile.FilePath, updateFile.FileName),
+                          Destination = localFile,
+                          FileDateTime = updateFile.FileDateTime,
+                          FileSize = updateFile.FileSize,
+                          FileSizeGz = updateFile.FileSizeGz,
+                          FileName = updateFile.FileName,
+                          NewFile = !fileInfo.Exists
+                      };
+                      fixFiles.Add(fixFile);
+                  }
+                  else if (updateFile.FileName.EndsWith(UpdateClient.RESET_FILE_TAG, StringComparison.InvariantCultureIgnoreCase))
+                  {
+                      var fileWithoutReset = localFile.Substring(0, localFile.Length - UpdateClient.RESET_FILE_TAG.Length);
+                      if (!File.Exists(fileWithoutReset))
+                      {
+                          File.Copy(localFile, fileWithoutReset);
+                      }
+                  }
+              });
             updateClient.WorkerConfig.WorkerFiles.AddRange(fixFiles);
         }
 
@@ -652,7 +659,7 @@ namespace Eulg.Client.SupportTool
                         svc.Start();
                         svc.WaitForStatus(ServiceControllerStatus.Running, _serviceTimeout);
                     }
-                    var ok = (svc.Status != ServiceControllerStatus.Running);
+                    var ok = (svc.Status == ServiceControllerStatus.Running);
                     if (svc.Status != ServiceControllerStatus.Stopped)
                     {
                         svc.Stop();
@@ -668,7 +675,7 @@ namespace Eulg.Client.SupportTool
         private static string GetServiceImagePath(string serviceName)
         {
             var key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Services\" + serviceName);
-            return key?.GetValue("ImagePath").ToString();
+            return key?.GetValue("ImagePath").ToString().Trim('\"');
         }
 
         //public static bool InstallUpdateService()
@@ -724,7 +731,7 @@ namespace Eulg.Client.SupportTool
                     }
 
                     // Uninstall
-                    var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                    var p = new Process { StartInfo = { FileName = pathIs, Arguments = "uninstall", CreateNoWindow = false, UseShellExecute = true, Verb = "runas" } };
                     p.Start();
                     p.WaitForExit();
 
@@ -739,7 +746,7 @@ namespace Eulg.Client.SupportTool
                             DeleteDirectory(pathToDelete);
                         }
                         var pathObsolete2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2, UPDATE_SERVICE_PATH);
-                        if(pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
+                        if (pathCurrent.Equals(pathObsolete2, StringComparison.InvariantCultureIgnoreCase))
                         {
                             var pathToDelete = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86), UPDATE_SERVICE_PARENT_PATH_OBSOLETE2);
                             DeleteDirectory(pathToDelete);
@@ -754,7 +761,7 @@ namespace Eulg.Client.SupportTool
                 SetDirectoryAccessControl(destDir);
 
                 // Install new Service
-                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", RedirectStandardOutput = false, RedirectStandardError = false, CreateNoWindow = false, UseShellExecute = false } };
+                var pNew = new Process { StartInfo = { FileName = pathShould, Arguments = "install", CreateNoWindow = false, UseShellExecute = true, Verb = "runas" } };
                 pNew.Start();
                 pNew.WaitForExit();
                 return true;
@@ -854,8 +861,8 @@ namespace Eulg.Client.SupportTool
 
             if (ProcessHelper.IsProcessRunning(PROCESS))
             {
-                if (MessageBox.Show("Um die gewünschte Funktion auszuführen, muss der Beratungsclient geschlossen werden.\n\n Wollen Sie den Beratungslient jetzt schließen?",
-                                    "Beratungsclient schließen", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Um die gewünschte Funktion auszuführen, muss der xbAV-Berater geschlossen werden.\n\n Wollen Sie den xbAV-Berater jetzt schließen?",
+                                    "xbAV-Berater schließen", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
                 {
                     ProcessHelper.CloseProcess(PROCESS);
                 }

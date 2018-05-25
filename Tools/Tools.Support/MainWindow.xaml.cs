@@ -52,7 +52,7 @@ namespace Eulg.Client.SupportTool
                     App.DwmExtendFrameIntoClientArea(hwnd, ref margin);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.WriteLine("DWM-Api not available: Unsupported OS");
             }

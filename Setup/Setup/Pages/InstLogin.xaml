@@ -14,7 +14,7 @@
                    HorizontalAlignment="Center"
                    VerticalAlignment="Top"
                    FontSize="13"
-                   Text="Bitte geben Sie Ihre Anmeldedaten für den Zugriff auf das EULG-System ein."
+                   Text="Bitte geben Sie Ihre Anmeldedaten für den xbAV-Berater ein."
                    TextWrapping="Wrap" />
         <TextBlock x:Name="LblOnlinAuth"
                    Margin="0,8,0,8"

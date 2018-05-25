@@ -69,13 +69,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyStripStream.cs" />
     <Compile Include="CacheUpdateEvent.cs" />
     <Compile Include="Fingerprint.cs" />
-    <Compile Include="FractionalProgressChangedEventArgs.cs" />
     <Compile Include="IUpdateItem.cs" />
     <Compile Include="PositionWrapperStream.cs" />
     <Compile Include="SectionStream.cs" />

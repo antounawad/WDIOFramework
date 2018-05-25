@@ -30,10 +30,13 @@ namespace Eulg.Setup.WebInstaller
             }
 
             // ReSharper disable UnusedMember.Local
-            public static readonly BrandingProfile Local = new BrandingProfile("http://localhost:1591/ApiManifest/JsonGet");
             public static readonly BrandingProfile Release = new BrandingProfile("https://service.xbav-berater.de/ApiManifest/JsonGet");
-            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.4/Service/ApiManifest/JsonGet");
-            public static readonly BrandingProfile EulgDeTest = new BrandingProfile("https://test.eulg.de/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Local = new BrandingProfile("http://localhost:1591/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Test = new BrandingProfile("http://192.168.0.5/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Develop = new BrandingProfile("https://develop.xbav-berater.de/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Rc = new BrandingProfile("https://rc.xbav-berater.de/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Staging = new BrandingProfile("https://staging.xbav-berater.de/Service/ApiManifest/JsonGet");
+            public static readonly BrandingProfile Hotfix = new BrandingProfile("https://hotfix.xbav-berater.de/Service/ApiManifest/JsonGet");
             // ReSharper restore UnusedMember.Local
         }
 
@@ -232,8 +235,7 @@ namespace Eulg.Setup.WebInstaller
         }
         private static SetupManifest DownloadSetup(string tempPath, Uri updateService)
         {
-            var uri = new Uri(updateService, "WebInstGetSetup");
-
+            var uri = updateService.AbsoluteUri.TrimEnd('/') + "/WebInstGetSetup";
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Proxy = WebRequest.DefaultWebProxy;
             request.AutomaticDecompression = DecompressionMethods.None;

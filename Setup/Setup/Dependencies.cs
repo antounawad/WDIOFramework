@@ -19,14 +19,22 @@ namespace Eulg.Setup
         //public static Version VersionWin81 = new Version("6.3.9600");
         //public static Version VersionWin10 = new Version("6.2.9200"); CRAP!
 
+        // ReSharper disable InconsistentNaming
         //public const int REL_NET45 = 378389;
         public const int REL_NET451_ON_WIN81 = 378675;
         //public const int REL_NET451_ON_WIN_OLD_WIN = 378758;
         //public const int REL_NET452 = 379893;
         //public const int REL_NET46_ON_WIN10 = 393295;
         //public const int REL_NET46_ON_WIN_OLD_WIN = 393297;
+        //public const int REL_NET461_ON_WIN10 = 394254;
+        //public const int REL_NET461_ON_WIN_OLD_WIN = 394271;
+        //public const int REL_NET462_ON_WIN10 = 394802;
+        //public const int REL_NET462_ON_WIN_OLD_WIN = 394806;
+        //public const int REL_NET47_ON_WIN10 = 460798;
+        //public const int REL_NET47_ON_WIN_OLD_WIN = 460805;
 
-        public const string DOWNLOAD_URL_NET461 = @"https://download.microsoft.com/download/3/5/9/35980F81-60F4-4DE3-88FC-8F962B97253B/NDP461-KB3102438-Web.exe";
+        public const string DOWNLOAD_URL_NET47 = @"https://download.microsoft.com/download/A/E/A/AEAE0F3F-96E9-4711-AADA-5E35EF902306/NDP47-KB3186500-Web.exe";
+        //public const string DOWNLOAD_URL_NET461 = @"https://download.microsoft.com/download/3/5/9/35980F81-60F4-4DE3-88FC-8F962B97253B/NDP461-KB3102438-Web.exe";
         //public const string DOWNLOAD_URL_NET46 = @"http://download.microsoft.com/download/1/4/A/14A6C422-0D3C-4811-A31F-5EF91A83C368/NDP46-KB3045560-Web.exe";
         //public const string DOWNLOAD_URL_NET452 = @"http://download.microsoft.com/download/B/4/1/B4119C11-0423-477B-80EE-7A474314B347/NDP452-KB2901954-Web.exe";
         //public const string DOWNLOAD_URL_NET451 = @"http://download.microsoft.com/download/7/4/0/74078A56-A3A1-492D-BBA9-865684B83C1B/NDP451-KB2859818-Web.exe";
@@ -37,6 +45,7 @@ namespace Eulg.Setup
         public const string DOWNLOAD_URL_IE9_WIN_VISTAX64 = @"http://download.microsoft.com/download/8/3/2/83205D42-C4DE-435E-AF10-4919CBDB3A13/IE9-WindowsVista-x64-deu.exe";
         public const string DOWNLOAD_URL_IE9_WIN_VISTAX86 = @"http://download.microsoft.com/download/1/E/9/1E9DE3C7-0C84-41C8-BBED-997EB0C98CCA/IE9-WindowsVista-x86-deu.exe";
         public const string DOWNLOAD_URL_JRE = @"http://javadl.sun.com/webapps/download/AutoDL?BundleId=81870";
+        // ReSharper restore InconsistentNaming
 
         public enum EDependencyState
         {
@@ -323,12 +332,12 @@ namespace Eulg.Setup
             return EDependencyState.Missing;
         }
 
-        public static bool InstallNet46()
+        public static bool InstallNet47()
         {
-            const string SETUP_FILE_NAME = "NDP461-KB3102438-Web.exe";
+            const string SETUP_FILE_NAME = "NDP47-KB3186500-Web.exe";
             const string ARGUMENTS = "/passive /LCID 1031";
 
-            DoInstall(SETUP_FILE_NAME, ARGUMENTS, DOWNLOAD_URL_NET461, ".NET Framework 4.6.1");
+            DoInstall(SETUP_FILE_NAME, ARGUMENTS, DOWNLOAD_URL_NET47, ".NET Framework 4.7");
 
             return CheckNet451().IsOk();
         }

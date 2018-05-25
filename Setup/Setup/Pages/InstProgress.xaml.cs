@@ -27,19 +27,28 @@ namespace Eulg.Setup.Pages
             throw new NotImplementedException();
         }
 
-        public bool OnPrev()
-        {
-            return true;
-        }
+        public bool OnPrev() => true;
 
-        public bool OnClose()
-        {
-            return false;
-        }
+        public bool OnClose() => false;
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e) => SetupHelper.CancelRequested = true;
+
+        public void UpdateProgress(int percent, string message, string header)
         {
-            SetupHelper.CancelRequested = true;
+            Dispatcher.Invoke(new Action(delegate
+            {
+                if (percent < 0)
+                {
+                    ProgressBar.IsIndeterminate = true;
+                }
+                else
+                {
+                    ProgressBar.IsIndeterminate = false;
+                    ProgressBar.Value = percent;
+                }
+                LabelFileCount.Text = message;
+                if (!string.IsNullOrEmpty(header)) LabelProgress.Text = header;
+            }));
         }
 
     }

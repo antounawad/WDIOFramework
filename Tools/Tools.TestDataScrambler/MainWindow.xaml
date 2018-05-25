@@ -11,7 +11,10 @@
             </Grid.ColumnDefinitions>
             <Label Content="Connection-String:" Margin="4"/>
             <TextBox Grid.Column="1" x:Name="TextBoxConnectionString" MinWidth="300" VerticalContentAlignment="Center" Margin="4"/>
-            <Button Grid.Column="2" x:Name="ButtonStart" Content="Start" Click="ButtonStart_OnClick" Margin="4"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button  x:Name="ButtonStart" Content="Scramble" Click="ButtonStart_OnClick" Margin="4"/>
+                <Button  x:Name="ButtonDocConvert" Content="Dokumente konvertieren" Margin="4" Click="ButtonDocConvert_Click"/>
+            </StackPanel>
         </Grid>
         <Label x:Name="LabelStatus" Content="Bereit" HorizontalAlignment="Center"/>
         <ProgressBar x:Name="ProgressBar" Height="24" Margin="10"/>

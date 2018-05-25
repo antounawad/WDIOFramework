@@ -7,11 +7,11 @@
              d:DesignHeight="300"
              mc:Ignorable="d">
     <StackPanel x:Name="AreaInstDone">
-        <Label Content="EULG wurde erfolgreich installiert." FontSize="13" />
+        <Label Content="xbAV-Berater wurde erfolgreich installiert." FontSize="13" />
         <CheckBox x:Name="ChkStartEulg"
                   Margin="20,10,20,0"
                   VerticalAlignment="Center"
-                  Content="EULG starten"
+                  Content="xbAV-Berater starten"
                   FontSize="13" />
     </StackPanel>
 </UserControl>

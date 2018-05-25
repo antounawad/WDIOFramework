@@ -98,30 +98,5 @@ namespace Eulg.Update.Common
                 return String.Join(string.Empty, MD5.Create().ComputeHash(maskedStream).Select(b => b.ToString("x2")));
             }
         }
-
-        public static bool IsDemo
-        {
-            get
-            {
-#if DEMO
-                return true;
-#else
-                return false;
-#endif
-            }
-        }
-
-        public static bool IsProof
-        {
-            get
-            {
-#if PROOF
-                return true;
-#else
-                return false;
-#endif
-            }
-        }
-
     }
 }

@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("xbAV Beratungssoftware GmbH")]
 [assembly: AssemblyProduct("Setup")]
-[assembly: AssemblyCopyright("Copyright © 2016 xbAV Beratungssoftware GmbH")]
+[assembly: AssemblyCopyright("Copyright © 2017 xbAV Beratungssoftware GmbH")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +49,5 @@ using System.Windows;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.16.0728")]
+[assembly: AssemblyVersion("1.0.17.0718")]
 //[assembly: AssemblyFileVersion("1.0.15")]

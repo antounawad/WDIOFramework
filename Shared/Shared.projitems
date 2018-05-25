@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Branding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BrandingInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FractionalProgressChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IEProxyConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Profile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProxyConfig.cs" />

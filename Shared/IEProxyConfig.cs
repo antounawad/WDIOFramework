@@ -269,13 +269,13 @@ namespace Eulg.Shared
                 }
 
                 var errno = Marshal.GetLastWin32Error();
-                if(errno == (int)EWinHttpErrors.AutodetectionFailed || errno == 1168)
+                if(errno == (int)EWinHttpErrors.AutodetectionFailed || errno == (int)EWinHttpErrors.UnableToDownloadScript || errno == 1168)
                 {
                     IsAutoDetect = false;
-                    return null;
+                    return "";
                 }
 
-                throw GetLastWin32ErrorException();
+                throw new Exception($"Proxy-Konfiguration konnte nicht automatisch ermittelt werden (Fehler [{(EWinHttpErrors)errno}]). Bitte automatische Konfiguration deaktivieren und erneut versuchen.", GetLastWin32ErrorException());
             }
             finally
             {

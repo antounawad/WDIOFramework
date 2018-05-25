@@ -80,7 +80,7 @@ namespace Eulg.Utilities.Console
                        : Show(prompt, s => Tuple.Create(s, System.Text.RegularExpressions.Regex.IsMatch(s, pattern, options)), blank, inline);
         }
 
-        public static string File(string prompt, bool mustExist = false, bool directoryMustExist = true)
+        public static string File(string prompt, bool mustExist = false, bool directoryMustExist = true, bool inline = false)
         {
             return Show(prompt, s =>
             {
@@ -89,7 +89,38 @@ namespace Eulg.Utilities.Console
                                         && (!mustExist || System.IO.File.Exists(fn))
                                         && (!directoryMustExist || Directory.Exists(Path.GetDirectoryName(fn)))
                 );
-            });
+            }, inline);
+        }
+
+        public static string FileName(string prompt, string defaultName = null, string forceExtension = null)
+        {
+            var illegalChars = new List<char> { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
+            illegalChars.AddRange(Path.GetInvalidFileNameChars());
+
+            while(true)
+            {
+                LeadIn();
+                System.Console.Write(prompt);
+                System.Console.Write(" ");
+
+                var input = FilteredReadString(null, c => !illegalChars.Contains(c));
+                if (string.IsNullOrEmpty(input))
+                {
+                    if (string.IsNullOrEmpty(defaultName))
+                    {
+                        continue;
+                    }
+
+                    input = defaultName;
+                }
+
+                if (forceExtension != null)
+                {
+                    input = Path.ChangeExtension(input, forceExtension);
+                }
+
+                return input;
+            }
         }
 
         public static int Integer(string prompt, int? blank = null, int min = int.MinValue, int max = int.MaxValue, NumberStyles style = NumberStyles.Integer, IFormatProvider culture = null)
@@ -264,19 +295,23 @@ namespace Eulg.Utilities.Console
         {
             LeadIn();
             System.Console.Write(prompt);
+            return FilteredReadString('*', _ => true);
+        }
 
+        private static string FilteredReadString(char? mask, Func<char, bool> filter)
+        {
             var chars = new List<char>();
-            while (true)
+            while(true)
             {
                 var ck = System.Console.ReadKey(true);
-                switch (ck.Key)
+                switch(ck.Key)
                 {
                     case ConsoleKey.Enter:
                         System.Console.WriteLine();
                         LeadOut();
                         return new string(chars.ToArray());
                     case ConsoleKey.Backspace:
-                        if (chars.Count > 0)
+                        if(chars.Count > 0)
                         {
                             System.Console.CursorLeft -= 1;
                             System.Console.Write(' ');
@@ -285,8 +320,15 @@ namespace Eulg.Utilities.Console
                         }
                         break;
                     default:
-                        System.Console.Write('*');
-                        chars.Add(ck.KeyChar);
+                        if (filter(ck.KeyChar))
+                        {
+                            System.Console.Write(mask ?? ck.KeyChar);
+                            chars.Add(ck.KeyChar);
+                        }
+                        else
+                        {
+                            System.Console.Beep();
+                        }
                         break;
                 }
             }
@@ -297,7 +339,7 @@ namespace Eulg.Utilities.Console
             var dataSource = defaultDataSource == null
                 ? String("Database instance")
                 : String($"Database instance (default=\"{defaultDataSource}\")", defaultDataSource);
-            var username = String("Username (blank=IntSec)");
+            var username = String("Username (blank=IntSec)", "");
             var password = string.IsNullOrEmpty(username) ? null : Password();
             var catalog = defaultCatalog == null
                 ? String("Catalog")

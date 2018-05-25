@@ -1,0 +1,1 @@
+xcopy test\*.* Y:\test\*.* /s /e /y

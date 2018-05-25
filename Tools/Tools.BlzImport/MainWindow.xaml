@@ -1,0 +1,27 @@
+﻿<Window x:Class="Tools.BlzImport.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Grid.Column="1" Click="OnClickImportCsv" Padding="12 4" Margin="0 8 8 8">Import CSV...</Button>
+
+        <Button Grid.Row="0" Grid.Column="2" Click="OnClickSaveToFile" Padding="12 4" Margin="0 8 8 8">Save to File...</Button>
+
+        <TextBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" FontFamily="Lucida Console" IsReadOnly="True" IsReadOnlyCaretVisible="True" Margin="8 0 8 8"
+                 x:Name="OutputBox" x:FieldModifier="private" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" />
+    </Grid>
+</Window>
