@@ -225,7 +225,7 @@ namespace Eulg.Shared
                 return proxyUrls.Length > 0;
             }
 
-            var proxyList = GetProxyForUrl(url.OriginalString, IsAutoDetect ? null : PacScript.OriginalString);
+            var proxyList = GetProxyForUrl(url.GetLeftPart(UriPartial.Path), IsAutoDetect ? null : PacScript.OriginalString);
             proxyUrls = proxyList?.Split(';').Select(_ => _.Trim()).Where(_ => !string.IsNullOrEmpty(_)).ToArray() ?? new string[0];
             return proxyUrls.Length > 0;
         }
