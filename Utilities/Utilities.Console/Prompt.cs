@@ -488,6 +488,15 @@ namespace Eulg.Utilities.Console
                                 chars = suggestions.Value[0].ToList();
                                 break;
                             default:
+                                var cpl = GetCommonPrefixLength(suggestions.Value, chars.Count);
+                                if (cpl > 0)
+                                {
+                                    var cp = suggestions.Value[0].Substring(chars.Count, cpl);
+                                    System.Console.Write(cp);
+                                    chars.AddRange(cp);
+                                    break;
+                                }
+
                                 var now = DateTime.Now;
                                 if ((now - lastTab).TotalMilliseconds > 300)
                                 {
@@ -515,6 +524,23 @@ namespace Eulg.Utilities.Console
                         break;
                 }
             }
+        }
+
+        private static int GetCommonPrefixLength(string[] items, int startIndex)
+        {
+            var commonLength = items.Min(_ => _.Length) - startIndex;
+            var sorted = items.OrderBy(_ => _.ToLowerInvariant()).ToArray();
+
+            for (var n = 1; n <= commonLength; ++n)
+            {
+                if (!string.Equals(sorted[0].Substring(startIndex, n),
+                    sorted[sorted.Length - 1].Substring(startIndex, n), StringComparison.OrdinalIgnoreCase))
+                {
+                    return n - 1;
+                }
+            }
+
+            return commonLength;
         }
 
         private static void ShowAutocompleteSuggestions(string[] suggestions)
