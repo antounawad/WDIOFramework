@@ -6,7 +6,13 @@
         xmlns:local="clr-namespace:DbMigrate"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Vertical">
+            <ProgressBar x:Name="ProgressBarStep" Height="24" Margin="8,2"/>
+            <ProgressBar x:Name="ProgressBarTotal" Height="24" Margin="8,2"/>
+        </StackPanel>
+        <StackPanel>
+            <Button x:Name="BtnStart" Content="Start" Click="BtnStart_OnClick"/>
+        </StackPanel>
+    </DockPanel>
 </Window>

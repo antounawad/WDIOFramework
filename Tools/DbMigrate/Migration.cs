@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using Eulg.Common.Graph;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace DbMigrate
 {
     internal static class Migration
     {
-        public static string GetMsSqlConnectionString()
+        internal static string GetMsSqlConnectionString()
         {
             return new SqlConnectionStringBuilder
             {
@@ -22,9 +23,9 @@ namespace DbMigrate
                 InitialCatalog = "test_hotfix"
             }.ConnectionString;
         }
-        public static string GetPostgresConnectionString()
+        internal static string GetPostgresConnectionString()
         {
-            return new Npgsql.NpgsqlConnectionStringBuilder
+            return new NpgsqlConnectionStringBuilder
             {
                 Host = "192.168.0.5",
                 Username = "postgres",
@@ -34,7 +35,7 @@ namespace DbMigrate
             }.ConnectionString;
         }
 
-        public static void DoIt()
+        internal static void DoIt()
         {
             using (var connMsSql = new SqlConnection(GetMsSqlConnectionString()))
             {
@@ -50,9 +51,10 @@ namespace DbMigrate
                 }
                 rdrTables.Close();
 
-                using (var connPg = new Npgsql.NpgsqlConnection(GetPostgresConnectionString()))
+                using (var connPg = new NpgsqlConnection(GetPostgresConnectionString()))
                 {
                     connPg.Open();
+                    connPg.Notification += (o, e) => System.Diagnostics.Debug.WriteLine($"{e.PID}: {e.Condition}: {e.AdditionalInformation}");
 
                     // Get Destination Tables:
                     var dest_tables = new List<string>();
@@ -99,7 +101,7 @@ namespace DbMigrate
             }
         }
 
-        private static void CopyTable(SqlConnection connSource, Npgsql.NpgsqlConnection connDest, string table)
+        private static void CopyTable(SqlConnection connSource, NpgsqlConnection connDest, string table)
         {
             try
             {
@@ -108,30 +110,80 @@ namespace DbMigrate
                 //new NpgsqlCommand($"TRUNCATE TABLE public.\"{table}\" RESTART IDENTITY CASCADE", connDest).ExecuteNonQuery();
 
                 var dest_dataAdapter = new NpgsqlDataAdapter($"SELECT * FROM public.\"{table}\"", connDest);
+                //dest_dataAdapter.AcceptChangesDuringFill = false;
+                //dest_dataAdapter.AcceptChangesDuringUpdate = false;
+                //dest_dataAdapter.FillLoadOption = LoadOption.OverwriteChanges;
+                //dest_dataAdapter.ContinueUpdateOnError = false;
+                //dest_dataAdapter.MissingMappingAction = MissingMappingAction.Ignore;
+                //dest_dataAdapter.MissingSchemaAction = MissingSchemaAction.;
+
                 //dest_dataAdapter.UpdateCommand = new NpgsqlCommand();
-                new NpgsqlCommandBuilder(dest_dataAdapter);
+                var commandBuilder = new NpgsqlCommandBuilder(dest_dataAdapter);
+                commandBuilder.ConflictOption = ConflictOption.OverwriteChanges;
+                commandBuilder.SetAllValues = true;
+
+
+
                 var dest_dataTable = new DataTable();
                 dest_dataAdapter.FillSchema(dest_dataTable, SchemaType.Mapped);
+                dest_dataTable.PrimaryKey = null;
+                dest_dataTable.Constraints.Clear();
 
-                var src_cmd = new SqlCommand($"SELECT * FROM {table}", connSource);
-                var src_rdr = src_cmd.ExecuteReader();
-                while (src_rdr.Read())
+                var cmd = commandBuilder.GetInsertCommand(true);
+                //if (cmd.Parameters.Count != dest_dataTable.Columns.Count)
                 {
-                    var r = dest_dataTable.NewRow();
-                    for (var col = 0; col < src_rdr.FieldCount; col++)
+                    for (var cc = 0; cc < dest_dataTable.Columns.Count; cc++)
                     {
-                        var i = dest_dataTable.Columns[src_rdr.GetName(col)];
-                        r.SetField(i, src_rdr.GetValue(col));
+                        var co = dest_dataTable.Columns[cc];
+                        var pa = cmd.Parameters.FirstOrDefault(a => a.SourceColumn.Equals(co.ColumnName));
+                        if (pa == null)
+                        {
+                            var p = cmd.CreateParameter();
+                            //p.DbType
+                            p.SourceColumn = co.ColumnName;
+                            p.ParameterName = $"@{co.ColumnName}";
+                            p.SpecificType = co.DataType;
+                            cmd.Parameters.Add(p);
+                        }
+                        else
+                        {
+                            pa.SpecificType = co.DataType;
+                            //pa.DbType = co.DataType
+                        }
                     }
-                    dest_dataTable.Rows.Add(r);
-                    if (dest_dataTable.Rows.Count >= 250)
+                    //System.Diagnostics.Debug.WriteLine($"Blubb");
+                }
+                //cmd.Prepare();
+
+                using (var src_cmd = new SqlCommand($"SELECT * FROM {table}", connSource))
+                {
+                    using (var src_rdr = src_cmd.ExecuteReader())
                     {
-                        dest_dataAdapter.Update(dest_dataTable);
-                        dest_dataTable.Clear();
+                        while (src_rdr.Read())
+                        {
+                            //var r = dest_dataTable.NewRow();
+                            for (var col = 0; col < src_rdr.FieldCount; col++)
+                            {
+                                //var i = dest_dataTable.Columns[src_rdr.GetName(col)];
+                                //r.SetField(i, src_rdr.GetValue(col));
+
+                                //cmd.Parameters.Add(src_rdr.GetName(col), NpgsqlDbType.Unknown)
+                                cmd.Parameters[src_rdr.GetName(col)].Value = src_rdr.GetValue(col);
+                            }
+
+                            //dest_dataTable.Rows.Add(r);
+                            //if (dest_dataTable.Rows.Count >= 250)
+                            //{
+                            //    dest_dataAdapter.Update(dest_dataTable);
+                            //    dest_dataTable.Clear();
+                            //}
+                            var ii = cmd.ExecuteNonQuery();
+                        }
+
+                        src_rdr.Close();
+                        //dest_dataAdapter.Update(dest_dataTable);
                     }
                 }
-                src_rdr.Close();
-                dest_dataAdapter.Update(dest_dataTable);
 
                 //new NpgsqlCommand($"ALTER TABLE public.\"{table}\" ENABLE TRIGGER ALL", connDest).ExecuteNonQuery();
             }
@@ -161,6 +213,5 @@ namespace DbMigrate
 
             return graph.TopologicalSort(topSortOrder);
         }
-
     }
 }
