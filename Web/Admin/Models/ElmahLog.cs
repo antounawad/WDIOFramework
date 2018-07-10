@@ -290,7 +290,7 @@ namespace Eulg.Web.Service.Models
 #if DEBUG
             var csb = new MySqlConnectionStringBuilder
             {
-                Server = "eulg.de",
+                Server = "192.168.0.13",
                 Database = "elmah",
                 UserID = "elmah",
                 Password = "elmah",

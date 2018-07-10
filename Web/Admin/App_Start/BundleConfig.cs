@@ -8,6 +8,18 @@ namespace Admin
         // Weitere Informationen zur Bündelung finden Sie unter https://go.microsoft.com/fwlink/?LinkId=301862.
         public static void RegisterBundles(BundleCollection bundles)
         {
+            bundles.Add(new ScriptBundle("~/bundles/vue").Include(
+                "~/Scripts/vue.js",
+                "~/Scripts/vuetify.js",
+                "~/Scripts/axios.js"
+            ));
+
+            bundles.Add(new StyleBundle("~/Content/css").Include(
+                "~/fonts/roboto.css",
+                "~/Content/vuetify.css",
+                "~/Content/Site.css"
+            ));
+
             //bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
             //            "~/Scripts/jquery-{version}.js"));
 
@@ -25,6 +37,18 @@ namespace Admin
             //bundles.Add(new StyleBundle("~/Content/css").Include(
             //          "~/Content/bootstrap.css",
             //          "~/Content/site.css"));
+
+            #region Settings
+
+            bundles.FileSetOrderList.Clear(); // Wichtig!!!
+#if !DEBUG
+            BundleTable.EnableOptimizations = true;
+#else
+            BundleTable.EnableOptimizations = false;
+#endif
+
+            #endregion
+
         }
     }
 }
