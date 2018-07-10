@@ -43,7 +43,7 @@ namespace Tools.TestDataScrambler
 
             using (var conn = new SqlConnection(connectionString))
             {
-                var t1 = $"Datenbank {conn.Database} auf Server {conn.DataSource} scramblen?";
+                var t1 = $"Datenbank '{conn.Database}' auf Server '{conn.DataSource}' scramblen?";
                 if (MessageBox.Show(t1, "Achtung", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             }
 
@@ -193,7 +193,7 @@ namespace Tools.TestDataScrambler
                         prefix += (char)_rng.Next('a', 'z');
                     }
 
-                    var n = $"{prefix}@service.eulg.de";
+                    var n = $"{prefix}@example.com";
                     row.SetField("email", n);
 
                     foreach (DataRow rowUser in dtUser.Rows)
@@ -289,28 +289,29 @@ namespace Tools.TestDataScrambler
                 #endregion
 
 
+
                 #region Dokumente
-
-                sqlCommand = "d.Consultation_Id IS NOT NULL AND EXISTS (SELECT 1 FROM ConsultationMenge c, AgencyMenge a WHERE a.Address_Id = c.Agency_Id AND a.AgencyCustomerType<>3 AND c.AdviceData_Id = d.Consultation_Id)";
-                UpdateDocuments("Consultation", sqlCommand, conn);
-
-                sqlCommand = "d.Vn_Id IS NOT NULL AND EXISTS (SELECT 1 FROM VnMenge vn, AgencyMenge a WHERE vn.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vn.Id = d.Vn_Id)";
-                UpdateDocuments("VN", sqlCommand, conn);
-
-                sqlCommand = "d.Vp_Id IS NOT NULL AND EXISTS (SELECT 1 FROM VpMenge vp, AgencyMenge a WHERE vp.Agency_Id = a.Address_Id AND a.AgencyCustomerType <> 3 AND vp.Address_Id = d.Vp_Id)";
-                UpdateDocuments("VP", sqlCommand, conn);
-
 
                 Dispatcher.Invoke(() =>
                 {
-                    LabelStatus.Content = "Entferne gelöschte Dokumente";
+                    LabelStatus.Content = $"Lösche Dokumente";
                     ProgressBar.IsIndeterminate = true;
                 });
 
-                sqlCommand = "DELETE FROM DocumentData WHERE DocumentMenge_ID in (SELECT id FROM DocumentMenge WHERE deleted = 1 AND id NOT IN (SELECT document_id FROM ChangeFormMenge))";
+
+                sqlCommand = "TRUNCATE TABLE ElanDocuments";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+                
+                sqlCommand = "TRUNCATE TABLE ConsultationCustomDocumentValues";
                 new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
 
-                sqlCommand = "DELETE FROM DocumentMenge WHERE deleted = 1 AND id NOT IN (SELECT document_id FROM ChangeFormMenge)";
+                sqlCommand = "TRUNCATE TABLE ChangeFormMenge";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+
+                sqlCommand = "TRUNCATE TABLE DocumentData";
+                new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+
+                sqlCommand = "DELETE FROM DocumentMenge";
                 new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
 
                 #endregion
@@ -319,7 +320,7 @@ namespace Tools.TestDataScrambler
 
                 Dispatcher.Invoke(() =>
                 {
-                    LabelStatus.Content = "Stutze AuditLog-Tabelle";
+                    LabelStatus.Content = "Lösche sonstige Tabellen";
                     ProgressBar.IsIndeterminate = true;
                 });
 
@@ -328,6 +329,7 @@ namespace Tools.TestDataScrambler
 
 				sqlCommand = "TRUNCATE TABLE MailQueue";
                 new SqlCommand(sqlCommand, conn).ExecuteNonQuery();
+
 
 
                 var t = string.Format("ALTER DATABASE {0} SET RECOVERY SIMPLE WITH NO_WAIT;" + Environment.NewLine
@@ -348,22 +350,6 @@ namespace Tools.TestDataScrambler
             }
         }
 
-
-        private void UpdateDocuments(string caption, string sqlWherePart, SqlConnection conn)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                LabelStatus.Content = $"Lösche {caption}-Dokumente";
-                ProgressBar.IsIndeterminate = true;
-            });
-
-            var sqlCommand = "DELETE dd" +
-                             "  FROM DocumentData dd, DocumentMenge d" +
-                             " WHERE dd.DocumentMenge_ID = d.ID AND " + sqlWherePart;
-
-            var deleteCommand = new SqlCommand(sqlCommand, conn) { CommandTimeout = 1200 };
-            deleteCommand.ExecuteNonQuery();
-        }
 
         #region Shuffle
 
@@ -410,7 +396,7 @@ namespace Tools.TestDataScrambler
 
             using (var conn = new SqlConnection(connectionString))
             {
-                var t1 = $"Documente in Datenbank {conn.Database} auf Server {conn.DataSource} konvertieren?";
+                var t1 = $"Dokumente in Datenbank {conn.Database} auf Server {conn.DataSource} konvertieren?";
                 if (MessageBox.Show(t1, "Achtung", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             }
 
