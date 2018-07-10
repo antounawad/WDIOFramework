@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Eulg.Server.Common;
 
 namespace Eulg.Tools.MailTool
 {

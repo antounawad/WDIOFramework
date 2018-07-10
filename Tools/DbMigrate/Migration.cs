@@ -37,7 +37,7 @@ namespace DbMigrate
 
         internal static void DoIt()
         {
-            using (var connMsSql = new SqlConnection(GetMsSqlConnectionString()))
+            using(var connMsSql = new SqlConnection(GetMsSqlConnectionString()))
             {
                 connMsSql.Open();
 
@@ -45,13 +45,13 @@ namespace DbMigrate
                 var tables = new List<string>();
                 var cmdTables = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA='dbo' ORDER BY TABLE_NAME", connMsSql);
                 var rdrTables = cmdTables.ExecuteReader();
-                while (rdrTables.Read())
+                while(rdrTables.Read())
                 {
                     tables.Add(rdrTables.GetString(0));
                 }
                 rdrTables.Close();
 
-                using (var connPg = new NpgsqlConnection(GetPostgresConnectionString()))
+                using(var connPg = new NpgsqlConnection(GetPostgresConnectionString()))
                 {
                     connPg.Open();
                     connPg.Notification += (o, e) => System.Diagnostics.Debug.WriteLine($"{e.PID}: {e.Condition}: {e.AdditionalInformation}");
@@ -60,23 +60,23 @@ namespace DbMigrate
                     var dest_tables = new List<string>();
                     var dest_cmdTables = new NpgsqlCommand("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema' ORDER BY tablename", connPg);
                     var dest_rdrTables = dest_cmdTables.ExecuteReader();
-                    while (dest_rdrTables.Read())
+                    while(dest_rdrTables.Read())
                     {
                         dest_tables.Add(dest_rdrTables.GetString(0));
                     }
                     dest_rdrTables.Close();
 
-                    foreach (var table in tables.Where(_ => !_.StartsWith("_", StringComparison.Ordinal)))
+                    foreach(var table in tables.Where(_ => !_.StartsWith("_", StringComparison.Ordinal)))
                     {
-                        if (!dest_tables.Contains(table))
+                        if(!dest_tables.Contains(table))
                         {
                             System.Diagnostics.Debug.WriteLine("Missing Table is Postgres: " + table);
                             dest_tables.Remove(table);
                         }
                     }
-                    foreach (var table in dest_tables.Where(_ => !_.StartsWith("_", StringComparison.Ordinal)))
+                    foreach(var table in dest_tables.Where(_ => !_.StartsWith("_", StringComparison.Ordinal)))
                     {
-                        if (!tables.Contains(table))
+                        if(!tables.Contains(table))
                         {
                             System.Diagnostics.Debug.WriteLine("Missing Table in MsSql: " + table);
                             tables.Remove(table);
@@ -84,7 +84,7 @@ namespace DbMigrate
                     }
 
                     var reihenfolgeLoeschen = GetDependencyTree(connMsSql, tables, ETopSortOrder.SourceToSink).Where(_ => !_.StartsWith("_", StringComparison.Ordinal)).ToArray();
-                    foreach (var table in reihenfolgeLoeschen)
+                    foreach(var table in reihenfolgeLoeschen)
                     {
                         System.Diagnostics.Debug.WriteLine($"Truncate: {table}");
 
@@ -93,7 +93,7 @@ namespace DbMigrate
                     }
 
                     var reihenfolgeInsert = GetDependencyTree(connMsSql, tables, ETopSortOrder.SinkToSource).Where(_ => !_.StartsWith("_", StringComparison.Ordinal)).ToArray();
-                    foreach (var table in reihenfolgeInsert)
+                    foreach(var table in reihenfolgeInsert)
                     {
                         CopyTable(connMsSql, connPg, table);
                     }
@@ -132,11 +132,11 @@ namespace DbMigrate
                 var cmd = commandBuilder.GetInsertCommand(true);
                 //if (cmd.Parameters.Count != dest_dataTable.Columns.Count)
                 {
-                    for (var cc = 0; cc < dest_dataTable.Columns.Count; cc++)
+                    for(var cc = 0; cc < dest_dataTable.Columns.Count; cc++)
                     {
                         var co = dest_dataTable.Columns[cc];
                         var pa = cmd.Parameters.FirstOrDefault(a => a.SourceColumn.Equals(co.ColumnName));
-                        if (pa == null)
+                        if(pa == null)
                         {
                             var p = cmd.CreateParameter();
                             //p.DbType
@@ -155,14 +155,14 @@ namespace DbMigrate
                 }
                 //cmd.Prepare();
 
-                using (var src_cmd = new SqlCommand($"SELECT * FROM {table}", connSource))
+                using(var src_cmd = new SqlCommand($"SELECT * FROM {table}", connSource))
                 {
-                    using (var src_rdr = src_cmd.ExecuteReader())
+                    using(var src_rdr = src_cmd.ExecuteReader())
                     {
-                        while (src_rdr.Read())
+                        while(src_rdr.Read())
                         {
                             //var r = dest_dataTable.NewRow();
-                            for (var col = 0; col < src_rdr.FieldCount; col++)
+                            for(var col = 0; col < src_rdr.FieldCount; col++)
                             {
                                 //var i = dest_dataTable.Columns[src_rdr.GetName(col)];
                                 //r.SetField(i, src_rdr.GetValue(col));
@@ -187,7 +187,7 @@ namespace DbMigrate
 
                 //new NpgsqlCommand($"ALTER TABLE public.\"{table}\" ENABLE TRIGGER ALL", connDest).ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 Console.WriteLine($"{table}: {e}");
             }
@@ -198,16 +198,16 @@ namespace DbMigrate
             var cmd = new SqlCommand("SELECT KCU1.TABLE_NAME AS FK_TABLE_NAME,KCU2.TABLE_NAME AS REFERENCED_TABLE_NAME FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS AS RC INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KCU1 ON KCU1.CONSTRAINT_CATALOG = RC.CONSTRAINT_CATALOG AND KCU1.CONSTRAINT_SCHEMA = RC.CONSTRAINT_SCHEMA AND KCU1.CONSTRAINT_NAME = RC.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KCU2 ON KCU2.CONSTRAINT_CATALOG = RC.UNIQUE_CONSTRAINT_CATALOG AND KCU2.CONSTRAINT_SCHEMA = RC.UNIQUE_CONSTRAINT_SCHEMA AND KCU2.CONSTRAINT_NAME = RC.UNIQUE_CONSTRAINT_NAME AND KCU2.ORDINAL_POSITION = KCU1.ORDINAL_POSITION ;", connection);
 
             var graph = tables.CreateDirectedGraph();
-            using (var rdr = cmd.ExecuteReader())
+            using(var rdr = cmd.ExecuteReader())
             {
-                while (rdr.Read())
+                while(rdr.Read())
                 {
                     var x = rdr.GetString(0);
                     var y = rdr.GetString(1);
-                    if (x == y)
+                    if(x == y)
                         continue;
                     var dep = graph[x][y];
-                    if (!dep.Exists) dep.Add();
+                    if(!dep.Exists) dep.Add();
                 }
             }
 

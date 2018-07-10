@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<AdminConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Areas>
+    <Area Name="15.5" IsRelease="false">
+      <MainDB Host="localhost" Name="eulg" User="eulgweb" Password="eulgweb" />
+      <PortalDB Host="localhost" Name="eulgportal" User="eulgweb" Password="eulgweb" />
+      <TrainingDB Host="localhost" Name="eulg_training" User="eulgweb" Password="eulgweb" />
+      <DemoDB Host="localhost" Name="eulg_demo" User="eulgweb" Password="eulgweb" />
+      <TaskSchedulerService ServiceName="EulgTaskScheduler" DeployPath="" />
+      <PortalSite SiteName="Portal" Path="C:\Test\Sites\Portal" DeployPath="" HasMaintenanceMode="true" Url="http://192.168.15.5/Portal" />
+      <VerwaltungSite SiteName="Verwaltung" Path="C:\Test\Sites\Verwaltung" DeployPath="C:\Test\Sites\Deploy\Vermittlerbereich" Url="http://192.168.15.5/Verwaltung" />
+      <ServiceSite SiteName="Service" Path="C:\Test\Sites\Service" DeployPath="C:\Test\Sites\Deploy\Service" Url="http://192.168.15.5/Service" />
+    </Area>
+  </Areas>
+  <CommonConfig MySiteName="Service" Backup="C:\Backup" BackupCompression="true" AppOfflineTemplateFile="C:\Test\Sites\Maintenance\app_offline.htm.template" />
+</AdminConfig>
