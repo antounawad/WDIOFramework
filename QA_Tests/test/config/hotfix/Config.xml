@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Channel>hotfix</Channel>
+	<SelectorList>
+	<Selector>
+		<Value>SelectedItem_VrId</Value>
+		<CheckVisible>false</CheckVisible>
+		</Selector>
+		<Selector>
+		<Value>SelectedItem_ImplementationMethodId</Value>
+		<CheckVisible>false</CheckVisible>
+		</Selector>
+		<Selector>
+		<Value>SelectedItem_InsuranceTypeId</Value>
+		<CheckVisible>false</CheckVisible>
+	</Selector>
+	<Selector>
+		<Value>SelectedItem_TariffId</Value>
+		<CheckVisible>false</CheckVisible>
+	</Selector>
+	<Selector>
+		<Value>SelectedItem_TariffOptionId</Value>
+		<CheckVisible>false</CheckVisible>
+	</Selector>
+		<Selector>
+		<Value>SelectedItem_BavPledgeId</Value>
+		<CheckVisible>false</CheckVisible>
+	</Selector>
+		<Selector>
+		<Value>SelectedItem_ContractTypeId</Value>
+		<CheckVisible>false</CheckVisible>
+	</Selector>	
+		<Selector>
+		<Value>SelectedItem_AssociationId</Value>
+		<CheckVisible>true</CheckVisible>
+	</Selector>	
+
+	</SelectorList>  
+  <VersichererList all="false" smoke="true">
+	<Versicherer>
+		<Name>Allianz</Name>
+		<Id>1006</Id>
+	</Versicherer>
+	<Versicherer>
+		<Name>Si</Name>
+		<Id>1048</Id>
+	</Versicherer>
+  <Versicherer>
+		<Name>Hdi</Name>
+		<Id>1033</Id>
+	</Versicherer>
+
+	</VersichererList>
+</Config>

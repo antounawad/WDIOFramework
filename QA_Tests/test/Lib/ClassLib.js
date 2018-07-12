@@ -132,7 +132,11 @@ class TestLib{
         {
             var fields = this.ReadXMLFieldValues(path);
             fields.forEach(element => {
-                var fieldname  = '#'+element['Name'][0];
+                var fieldname  = element['Name'][0];
+                if(fieldname.substr(0,1)!='.')
+                {
+                    fieldname  = '#'+element['Name'][0];
+                }
                 var fieldValue = element['Value'][0];
                 var list = element['ListBox'][0];
                 var exist = browser.isExisting(fieldname);
@@ -148,19 +152,45 @@ class TestLib{
 
                         if(Ids.length > 1)
                         {
-                           this.OnlyClickAction(fieldname,1000);
-                           if(index > -1)
-                           {
+                            try{
+                                this.OnlyClickAction(fieldname,1000);
+                                    
+                            }
+                            catch(ex)
+                            {
+                                browser.leftClick(List.selector,10,10);
+
+
+                                var arrowSelektor = '.md-select-icon'; 
+                                List = $(arrowSelektor);
+                                if(List != null)
+                                {
+                                    this.OnlyClickAction(arrowSelektor,1000);
+                                }
+                            }
+
+                            if(index > -1)
+                            {
                             this.ClickAction('#'+Ids[index]);
-                           }
-                           else{
+                            }
+                            else{
                             this.ClickAction('#'+Ids[0]);   
-                           }
+                            }
+
+                                
+                        
                         }
                     }
                     else
                     {
-                        this.SearchElement(fieldname, fieldValue);
+                        if(fieldValue == 'Click')
+                        {
+                            this.OnlyClickAction(fieldname)
+                        }
+                        else
+                        {
+                            this.SearchElement(fieldname, fieldValue);
+                        }
                     }                    
                 }
               

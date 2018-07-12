@@ -1,7 +1,13 @@
 var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
 
+var _newVn = false;    
+
 class VN{
+
+    
+
+    get NewVn(){ return this._newVn};
 
     ShowVNs(timeout=20000)
     {
@@ -36,7 +42,14 @@ class VN{
 
     AddVN(testVNName)
     {
-       testLib.CheckSiteFields(this.executablePath+'test\\config\\sites\\Arbeitgeber\\Stammdaten.xml');
+       testLib.CheckSiteFields(testLib.executablePath+'test\\config\\sites\\Arbeitgeber\\Stammdaten.xml');
+       this._newVn = true;
+    }
+
+    AddZahlungsart()
+    {
+        testLib.Navigate2Selector('Zahlungsart / GwG');
+        testLib.CheckSiteFields(testLib.executablePath+'test\\config\\sites\\Arbeitgeber\\Zahlungsart.xml');
     }
 
 

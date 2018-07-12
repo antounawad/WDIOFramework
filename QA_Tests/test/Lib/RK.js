@@ -7,18 +7,7 @@ var VP = require('../Lib/VP.js')
 const vp = new VP()
 
 
-var checkIsEnabled = null;
-
-
-
 class RK{
-
-	get smokeTest()
-	{
-		return _smokeTest;
-	}
-
-	
 
 	StartRKTest()
 	{
@@ -29,32 +18,13 @@ class RK{
 
 		this.CheckExistTariffs();
 
+		this.AddTarif();
+
+	}
+
+	AddTarif()
+	{
 		testLib.ClickAction('#btnNewTariffConfig');
-
-
-		var ImplementationList   = null;
-		var ImplementationIds    = null;
-
-		var TypeList   = null;
-		 var TypeIds    = null;
-	 
-
-		var TarifList   = null;
-		var TarifIds    = null;
-
-		var	OptionList   = null;
-		var	OptionIds    = null;
-
-		var ZusageArtList   = null;
-		var ZursageArtIds   = null;
-
-		var BeantragungList   = null;
-		var BeantragungIds    = null;
-
-		var GruppenRahmenList   = null;
-		var GruppenRahmenIds    = null;
-
-
 
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
@@ -82,7 +52,7 @@ class RK{
 						Values = List.getAttribute("md-option[ng-repeat]", "value",true);
 						Ids = List.getAttribute("md-option[ng-repeat]", "id",true);
 
-						testLib.OnlyClickAction(Selector,1000);
+						testLib.OnlyClickAction(Selector);
 
 						if(tarifSel == 0)
 						{
@@ -102,10 +72,16 @@ class RK{
 		   
 				
 				testLib.ClickAction('#modalContainer_btnSpeichern');
+
+				if(vn.NewVn)
+				{		
+					vn.AddZahlungsart();
+				}
 				
 				testLib.Navigate2Selector('Arbeitnehmer – Auswahl')
 
-				vp.SearchVP('AutomRKTestVP',2000);
+				vp.CheckVP('AutomRKTestVP');
+
 
 				testLib.ClickAction('#btnFastForwardConsultation','#btnFastForward',50000,0,true);
 
@@ -147,10 +123,6 @@ class RK{
 			});
 			
 		}
-
-
-
-
 	}
 
 	CheckExistTariffs()
@@ -161,7 +133,9 @@ class RK{
 		{
 
 			testLib.ClickAction('.ng-scope.md-font.mdi.mdi-24px.mdi-delete','#modalDeleteAreYouSure_btnLöschen');
-			testLib.ClickAction('#modalDeleteAreYouSure_btnLöschen');
+			testLib.ClickAction('#modalDeleteAreYouSure_btnLöschen','#btnNewTariffConfig');
+			testLib.PauseAction(1000);
+			
 		}		
 	}
 
