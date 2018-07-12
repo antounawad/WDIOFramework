@@ -82,7 +82,9 @@ class TestLib{
                 this.ClickAction('#btnNavNext','#btnNavNext');
                 this.PauseAction(1000);
                 this.CheckSiteFields();
-                if(this.browserTitle.indexOf(selector) > -1 )
+                var title = this.browserTitle;
+                var index = title.indexOf(selector);
+                if(index > -1 )
                 {
                     break;
                 }
@@ -101,7 +103,9 @@ class TestLib{
                 this.ClickAction('#btnNavNext');
                 this.PauseAction(1000);
                 this.CheckSiteFields();
-                if(this.browserTitle.indexOf(selector) > -1 )
+                var title = this.browserTitle;
+                var index = title.indexOf(selector);
+                if(index > -1 )
                 {
                     break;
                 }
@@ -127,6 +131,10 @@ class TestLib{
             path = pathFile;
         }
         
+        if(title.indexOf('Angebotsdaten') >= 0)
+        {
+            var t = "asdfaf";
+        }
 
         if(fs.existsSync(path))
         {
@@ -140,8 +148,10 @@ class TestLib{
                 var fieldValue = element['Value'][0];
                 var list = element['ListBox'][0];
                 var exist = browser.isExisting(fieldname);
+                
                 if(exist)
                 {
+                    this.PauseAction(1000);
                     if(list != null && list == "true")
                     {
                         var List     = $(fieldname);
@@ -150,7 +160,10 @@ class TestLib{
 
                         var index = values.indexOf(fieldValue);
 
-                        if(Ids.length > 1)
+                        var checkIsEnabled =	browser.getAttribute(fieldname, "disabled");
+	
+
+                        if(Ids.length > 1 && checkIsEnabled == null)
                         {
                             try{
                                 this.OnlyClickAction(fieldname,1000);
@@ -158,6 +171,7 @@ class TestLib{
                             }
                             catch(ex)
                             {
+                                List.setValue("1");
                                 browser.leftClick(List.selector,10,10);
 
 
@@ -220,9 +234,6 @@ class TestLib{
 		browser.click(retValue.selector);
         console.log(browser.getTitle());
         
-
-        
-
         if(waitforVisibleSelector == '#btnFastForward')
         {
             if(!browser.isExisting(waitforVisibleSelector))

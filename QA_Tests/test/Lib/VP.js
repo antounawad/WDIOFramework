@@ -41,7 +41,8 @@ class VP{
     AddVP(testVNName)
     {
        testLib.CheckSiteFields(testLib.executablePath+'test\\config\\sites\\Arbeitnehmer\\Stammdaten.xml');
-       this._newVp = true;
+	   this._newVp = true;
+	   testLib.OnlyClickAction('#btnNavNext');
     }	
 }
 module.exports = VP;

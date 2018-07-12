@@ -5,6 +5,8 @@ var VN = require('../Lib/VN.js')
 const vn = new VN()
 var VP = require('../Lib/VP.js')
 const vp = new VP()
+var Consultation = require('../Lib/Consultation.js')
+const consultation = new Consultation()
 
 
 class RK{
@@ -82,18 +84,21 @@ class RK{
 
 				vp.CheckVP('AutomRKTestVP');
 
+				testLib.Navigate2Selector('Beratungsübersicht');
 
-				testLib.ClickAction('#btnFastForwardConsultation','#btnFastForward',50000,0,true);
+				consultation.AddConsultation();
 
-				//testLib.ClickAction('#btnFastForward');
+				// testLib.Navigate2Selector('Angebot - Kurzübersicht');
 
-				testLib.PauseAction(2000);
-				var IsTariRadioIsVisible = browser.isVisible('#tarifAuswahlRadioGroup'); 
+				// //testLib.ClickAction('#btnFastForward');
 
-				if(IsTariRadioIsVisible)	
-				{
-					testLib.ClickAction('#radio_8')
-				}							
+				// testLib.PauseAction(2000);
+				// var IsTariRadioIsVisible = browser.isVisible('#tarifAuswahlRadioGroup'); 
+
+				// if(IsTariRadioIsVisible)	
+				// {
+				// 	testLib.ClickAction('#radio_8')
+				// }							
 
 				testLib.Navigate2Selector('Angebot – Kurzübersicht')
 

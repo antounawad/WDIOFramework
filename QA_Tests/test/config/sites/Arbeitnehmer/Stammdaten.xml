@@ -2,9 +2,39 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-	<Name>select_container_12</Name>
+	<Name>Firstname</Name>
+	<Value>AutomRKTestVP</Value>
+	<ListBox>False</ListBox>
+   </Field>
+  <Field>
+	<Name>Street</Name>
+	<Value>Teststrasse 11</Value>
+	<ListBox>False</ListBox>
+   </Field>
+  <Field>
+	<Name>Lastname</Name>
+	<Value>AutomRKTestVP</Value>
+	<ListBox>False</ListBox>
+   </Field>
+  <Field>
+	<Name>Zip</Name>
+	<Value>66583</Value>
+	<ListBox>False</ListBox>
+   </Field>   
+  <Field>
+	<Name>input_16</Name>
+	<Value>30.01.1963</Value>
+	<ListBox>False</ListBox>
+   </Field>
+     <Field>
+	<Name>Title</Name>
 	<Value>1</Value>
 	<ListBox>true</ListBox>
    </Field>
 </Fields>
 </Config>
+
+
+
+
+
