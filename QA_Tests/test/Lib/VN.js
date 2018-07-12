@@ -36,7 +36,7 @@ class VN{
 
     AddVN(testVNName)
     {
-       testLib.CheckSiteFields('C:\\Automatic_Test\\test\\config\\sites\\Arbeitgeber\\Stammdaten.xml');
+       testLib.CheckSiteFields(this.executablePath+'test\\config\\sites\\Arbeitgeber\\Stammdaten.xml');
     }
 
 

@@ -12,12 +12,12 @@ var _smokeTest = false;
 var _standard = false;
 var _tempValue = "";
 var _tempArray = null;
-
+var _executablePath = "C:\\Git\\Shared\\QA_Tests\\"
 
 
 class TestLib{
 
-
+    get executablePath(){ return _executablePath};
 
     get versicherer()
     {
@@ -43,7 +43,7 @@ class TestLib{
 
      }
 
-     get configUrl() {return 'C:\\Automatic_Test\\test\\config\\'+this.targetUrl+'\\Config.xml'}
+     get configUrl() {return this.executablePath+'test\\config\\'+this.targetUrl+'\\Config.xml'}
 
 
     get browserTitle() {return browser.getTitle()}
@@ -121,7 +121,7 @@ class TestLib{
         {
             title = title.substr(0,index-1);
         }
-        var path = 'C:\\Automatic_Test\\test\\config\\sites\\'+title+'.xml';
+        var path = this.executablePath+'test\\config\\sites\\'+title+'.xml';
         if(pathFile != null)
         {
             path = pathFile;
@@ -284,11 +284,11 @@ class TestLib{
 		
 		console.log(process.cwd());
 
-        var existsConfigFile = fs.existsSync('C:\\Automatic_Test\\test\\config\\'+channel+'Config.xml');
+        var existsConfigFile = fs.existsSync(this.executablePath+'test\\config\\'+channel+'Config.xml');
 		assert.equal(existsConfigFile,true);
 
 		var parser = new xml2js.Parser();
-		var data = fs.readFileSync('C:\\Automatic_Test\\test\\config\\Config.xml');
+		var data = fs.readFileSync(this.executablePath+'test\\config\\Config.xml');
 
 
 			parser.parseString(data, function(err,result)
