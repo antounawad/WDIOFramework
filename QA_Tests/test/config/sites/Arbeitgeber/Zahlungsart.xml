@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Fields>
+  <Field>
+	<Name>select_container_9</Name>
+	<Value>Überweisung</Value>
+	<ListBox>true</ListBox>
+  </Field>
+</Fields>

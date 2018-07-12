@@ -2,45 +2,32 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Starten",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/app.js",
-            "stopOnEntry": false,
-            "args": [],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": null,
-            "runtimeExecutable": null,
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "env": {
-                "NODE_ENV": "development"
+            //"protocol": "inspector",
+            "protocol": "auto",
+            //"protocol": "auto",
+            "timeout": 200000,            
+            "port": 5859,            
+            "name": "WebdriverIO",
+            "stopOnEntry": true,
+            "runtimeExecutable": "node_modules/.bin/wdio",
+            "windows": {
+                        "runtimeExecutable": "C:/Git/Shared/QA_Tests/node_modules/.bin/wdio"
             },
-            "console": "internalConsole",
-            "sourceMaps": false,
-            "outFiles": []
-        },
-        {
-            "name": "Anfügen",
-            "type": "node",
-            "request": "attach",
-            "port": 5858,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": false,
-            "outFiles": [],
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
-        },
-        {
-            "name": "An den Prozess anfügen",
-            "type": "node",
-            "request": "attach",
-            "processId": "${command.PickProcess}",
-            "port": 5858,
-            "sourceMaps": false,
-            "outFiles": []
+            "cwd": "C:/Git/Shared/QA_Tests",
+            //"runtimeArgs": ["--dbg=127.0.0.1:5859"],
+            "console": "integratedTerminal",
+            // This args config runs only the file that's open and displayed
+            // (e.g., a file in test/spec/):
+            "args":[
+                // To run a specific file, you can use:
+                //"--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
+                //"wdio.conf.js", "--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
+                "wdio.conf_debug.js", "--spec", "C:/Git/Shared/QA_Tests/test/specs/SmokeTestBeratung.js", "--prerelease", "--4.4.0"
+                //"wdio.conf.js", "--hotfix"
+
+            ]
         }
     ]
 }

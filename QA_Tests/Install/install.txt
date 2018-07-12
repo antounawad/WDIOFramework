@@ -69,6 +69,11 @@ describe('webdriver.io page', function() {o
 5. Installation Sublime Text
 	http://www.sublimetext.com/2
 	
+--------
+upgrade:
+1- npm -g install npm
+2- npm -v
+	
 	
 	
 

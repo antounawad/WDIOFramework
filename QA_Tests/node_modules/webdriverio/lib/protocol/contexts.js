@@ -9,9 +9,6 @@
  *
  */
 
-import depcrecate from '../helpers/depcrecationWarning'
-
 export default function contexts () {
-    depcrecate('contexts')
     return this.requestHandler.create('/session/:sessionId/contexts')
 }

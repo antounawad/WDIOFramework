@@ -1,18 +1,5 @@
 
-		
-
-			// var labelTarif = $("span[class='label-tarif']");
-			// console.log('jQuery text(): ' + labelTarif.getText());
-
-			//var tarifName = $("div[class='vr-tarif-info-container-main layout-align-start-center layout-row']");
-			//console.log(browser.getText("span[class='label-tarif']"));
-			// var tarifName = browser.getText ($("span[class='label-tarif']"));
-			//console.log(tarifName.innerText);
-			// var retValue = $('.md-title ng-binding');
-			// assert.equal(retValue,null,'Fehler bei der Angebotserstellung.');
-
-        
-        // var targetUrl;
+		// var targetUrl;
 		// var test; //--Test=irgendwas
 		// process.argv.forEach(function(element) {
         //      if (element.indexOf("--targetUrl") > -1) {

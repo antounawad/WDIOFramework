@@ -1,5 +1,44 @@
+// {
+    // "version": "0.2.0",
+    // "configurations": [
+        // {
+            // "type": "node",
+            // "request": "launch",
+            // //"protocol": "inspector",
+            // "protocol": "auto",
+            // //"protocol": "auto",
+            // "timeout": 200000,            
+            // "port": 5859,            
+            // "name": "WebdriverIO",
+            // "stopOnEntry": true,
+            // "runtimeExecutable": "node_modules/.bin/wdio",
+            // "windows": {
+                // "runtimeExecutable": "C:/Automatic_Test/node_modules/.bin/wdio"
+            // },
+            // "cwd": "C:/Automatic_Test",
+            // //"runtimeArgs": ["--dbg=127.0.0.1:5859"],
+            // "console": "integratedTerminal",
+            // // This args config runs only the file that's open and displayed
+            // // (e.g., a file in test/spec/):
+            // "args":[
+                // // To run a specific file, you can use:
+                // //"--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
+                // "wdio.conf.js", "--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
+                // //"wdio.conf.js", "--hotfix"
+
+            // ]
+        // }
+    // ]
+// }
+
+
+
+
+
 exports.config = {
-    
+  		// // debug: true,
+		// // //execArgv: ['--inspect=127.0.0.1:5859/0f2c936f-b1cd-4ac9-aab3-f63b0f33d55e'],
+		// // execArgv: ['--inspect-brk=127.0.0.1:5859'],
     //
     // ==================
     // Specify Test Files
@@ -14,7 +53,7 @@ exports.config = {
     ],
     // Patterns to exclude.
     exclude: [
-        // 'path/to/excluded/files'
+         'path/to/excluded/files'
     ],
     //
     // ============
@@ -44,7 +83,7 @@ exports.config = {
         // 5 instances get started at a time.
         maxInstances: 5,
         //
-        browserName: 'firefox'
+        browserName: 'firefox',
     }],
     //
     // ===================
@@ -77,7 +116,7 @@ exports.config = {
 	port: 4444,
     //
     // Default timeout for all waitFor* commands.
-    waitforTimeout: 100000000,
+    waitforTimeout: 10000,
     //
     // Default timeout in milliseconds for request
     // if Selenium Grid doesn't send response

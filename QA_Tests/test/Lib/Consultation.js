@@ -15,6 +15,7 @@ class Consultation{
         testLib.SearchElement('#Bruttolohn',value,timeout)	
     }
 
+
 }
 module.exports = Consultation;
 

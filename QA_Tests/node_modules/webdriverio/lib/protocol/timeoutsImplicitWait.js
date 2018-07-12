@@ -7,17 +7,20 @@
  *
  * If this command is never sent, the driver should default to an implicit wait of 0ms.
  *
- * Depcrecated! Please use the `timeouts` command instead.
+ * This command is deprecated and will be removed soon. Make sure you don't use it in your
+ * automation/test scripts anymore to avoid errors. Please use the
+ * [`timeouts`](http://webdriver.io/api/protocol/timeouts.html) command instead.
  *
  * @param {Number} ms   The amount of time to wait, in milliseconds. This value has a lower bound of 0.
  *
  * @see https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol#sessionsessionidtimeoutsimplicit_wait
  * @type protocol
+ * @deprecated
  *
  */
 
 import { ProtocolError } from '../utils/ErrorHandler'
-import depcrecate from '../helpers/depcrecationWarning'
+import deprecate from '../helpers/deprecationWarning'
 
 export default function timeoutsImplicitWait (ms) {
     /*!
@@ -27,6 +30,11 @@ export default function timeoutsImplicitWait (ms) {
         throw new ProtocolError('number or type of arguments don\'t agree with timeoutsImplicitWait protocol command')
     }
 
-    depcrecate('timeoutsImplicitWait')
+    deprecate(
+        'timeoutsImplicitWait',
+        this.options.deprecationWarnings,
+        'This command is not part of the W3C WebDriver spec and won\'t be supported in ' +
+        'future versions of the driver. It is recommended to use the timeout command for this.'
+    )
     return this.requestHandler.create('/session/:sessionId/timeouts/implicit_wait', { ms })
 }

@@ -1,2 +1,5 @@
-java -jar -Dwebdriver.gecko.driver=Downloads\geckodriver.exe Downloads\selenium-server-standalone-3.4.0.jar
-java -jar -Dphantomjs.binary.path=C:\Automatic_Test\node_modules\phantomjs\lib\phantom\bin\phantomjs.exe Downloads\selenium-server-standalone-3.4.0.jar
+java -jar -Dwebdriver.gecko.driver=Driver\geckodriver.exe Driver\selenium-server-standalone-3.11.0.jar
+java -jar -Dphantomjs.binary.path=C:\Automatic_Test\node_modules\phantomjs\lib\phantom\bin\phantomjs.exe Driver\selenium-server-standalone-3.11.0.jar
+
+
+npm install xml2js

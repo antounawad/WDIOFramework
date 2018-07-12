@@ -1,17 +1,20 @@
-var assert = require('assert');
 var TestLib = require('../Lib/ClassLib.js')
+ var assert = require('assert');
 const testLib = new TestLib();
+
+
+
 
 class VP{
     
 	ShowVps(timeout)
 	{
-		testLib.ClickAction('#btnFastForwardVp', '#btnNewVp',timeout)
+		testLib.ClickAction('#btnFastForwardConsultation', '#btnNewVp',timeout)
 	}
 
-	SearchVP(searchValue,timeout=20000,pause=3000){
-        this.ShowVps(timeout)
-		testLib.SearchElement('#Search','Tests',timeout, pause)
+	SearchVP(searchValue,timeout=2000,pause=500){
+        //this.ShowVps(timeout)
+		testLib.SearchElement('#Search',searchValue,timeout, pause)
 	}
 }
 module.exports = VP;
