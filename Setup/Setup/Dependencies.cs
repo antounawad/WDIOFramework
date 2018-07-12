@@ -32,8 +32,11 @@ namespace Eulg.Setup
         //public const int REL_NET462_ON_WIN_OLD_WIN = 394806;
         //public const int REL_NET47_ON_WIN10 = 460798;
         //public const int REL_NET47_ON_WIN_OLD_WIN = 460805;
+        //public const int REL_NET471_ON_WIN10 = 461308;
+        //public const int REL_NET471_ON_WIN_OLD_WIN = 461310;
 
-        public const string DOWNLOAD_URL_NET47 = @"https://download.microsoft.com/download/A/E/A/AEAE0F3F-96E9-4711-AADA-5E35EF902306/NDP47-KB3186500-Web.exe";
+        public const string DOWNLOAD_URL_NET471 = @"https://download.microsoft.com/download/8/E/2/8E2BDDE7-F06E-44CC-A145-56C6B9BBE5DD/NDP471-KB4033344-Web.exe";
+        //public const string DOWNLOAD_URL_NET47 = @"https://download.microsoft.com/download/A/E/A/AEAE0F3F-96E9-4711-AADA-5E35EF902306/NDP47-KB3186500-Web.exe";
         //public const string DOWNLOAD_URL_NET461 = @"https://download.microsoft.com/download/3/5/9/35980F81-60F4-4DE3-88FC-8F962B97253B/NDP461-KB3102438-Web.exe";
         //public const string DOWNLOAD_URL_NET46 = @"http://download.microsoft.com/download/1/4/A/14A6C422-0D3C-4811-A31F-5EF91A83C368/NDP46-KB3045560-Web.exe";
         //public const string DOWNLOAD_URL_NET452 = @"http://download.microsoft.com/download/B/4/1/B4119C11-0423-477B-80EE-7A474314B347/NDP452-KB2901954-Web.exe";
@@ -337,7 +340,7 @@ namespace Eulg.Setup
             const string SETUP_FILE_NAME = "NDP47-KB3186500-Web.exe";
             const string ARGUMENTS = "/passive /LCID 1031";
 
-            DoInstall(SETUP_FILE_NAME, ARGUMENTS, DOWNLOAD_URL_NET47, ".NET Framework 4.7");
+            DoInstall(SETUP_FILE_NAME, ARGUMENTS, DOWNLOAD_URL_NET471, ".NET Framework 4.71");
 
             return CheckNet451().IsOk();
         }

@@ -225,7 +225,7 @@ namespace Eulg.Shared
                 return proxyUrls.Length > 0;
             }
 
-            var proxyList = GetProxyForUrl(url.OriginalString, IsAutoDetect ? null : PacScript.OriginalString);
+            var proxyList = GetProxyForUrl(url.GetLeftPart(UriPartial.Path), IsAutoDetect ? null : PacScript.OriginalString);
             proxyUrls = proxyList?.Split(';').Select(_ => _.Trim()).Where(_ => !string.IsNullOrEmpty(_)).ToArray() ?? new string[0];
             return proxyUrls.Length > 0;
         }
@@ -269,13 +269,13 @@ namespace Eulg.Shared
                 }
 
                 var errno = Marshal.GetLastWin32Error();
-                if(errno == (int)EWinHttpErrors.AutodetectionFailed || errno == 1168)
+                if(errno == (int)EWinHttpErrors.AutodetectionFailed || errno == (int)EWinHttpErrors.UnableToDownloadScript || errno == 1168)
                 {
                     IsAutoDetect = false;
-                    return null;
+                    return "";
                 }
 
-                throw GetLastWin32ErrorException();
+                throw new Exception($"Proxy-Konfiguration konnte nicht automatisch ermittelt werden (Fehler [{(EWinHttpErrors)errno}]). Bitte automatische Konfiguration deaktivieren und erneut versuchen.", GetLastWin32ErrorException());
             }
             finally
             {

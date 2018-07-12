@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Logging";
+}
+
+<div id="app">
+    <v-app dark>
+
+        <v-navigation-drawer fixed app>
+            <v-list dense>
+                <v-list-tile @@click="">
+                    <v-list-tile-action>
+                        <v-icon>home</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Logging</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile @@click="">
+                    <v-list-tile-action>
+                        <v-icon>contact_mail</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Admin</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
+        </v-navigation-drawer>
+        <v-toolbar color="indigo" dark fixed app>
+            <v-toolbar-side-icon @@click.stop="drawer = !drawer"></v-toolbar-side-icon>
+            <v-toolbar-title>@ViewBag.Title</v-toolbar-title>
+        </v-toolbar>
+
+        <v-content>
+            <v-container fluid @*fill-height*@>
+                @*<router-view></router-view>*@
+
+                <v-layout justify-center align-center>
+                    <v-flex xs10>
+                        <v-card>
+                            <v-card-title>
+                                Filter-Einstellungen
+                            </v-card-title>
+                            <v-btn color="info">Zurücksetzen</v-btn>
+                            <v-btn color="success">Suchen</v-btn>
+                        </v-card>
+                        <v-card>
+                            <v-card-title>
+                                Log-Einträge
+                            </v-card-title>
+                            <v-data-table :headers="headers" :items="items" class="elevation-1">
+                                <template slot="items" slot-scope="props">
+                                    <td>{{ props.item.name }}</td>
+                                    <td class="text-xs-right">{{ props.item.calories }}</td>
+                                    <td class="text-xs-right">{{ props.item.fat }}</td>
+                                    <td class="text-xs-right">{{ props.item.carbs }}</td>
+                                    <td class="text-xs-right">{{ props.item.protein }}</td>
+                                    <td class="text-xs-right">{{ props.item.iron }}</td>
+                                </template>
+                            </v-data-table>
+                        </v-card>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </v-content>
+        <v-footer color="indigo" :inset="true" app>
+            <span class="white--text">&copy; 2018</span>
+        </v-footer>
+
+        @*<v-toolbar>
+                <v-toolbar-side-icon></v-toolbar-side-icon>
+                <v-toolbar-title>@ViewBag.Title</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-toolbar-items class="hidden-sm-and-down">
+                    <v-btn flat>Admin</v-btn>
+                    <v-btn flat color="primary">Logging</v-btn>
+                    <v-btn flat>UsageLog</v-btn>
+                    <v-btn flat>MailQuele</v-btn>
+                </v-toolbar-items>
+            </v-toolbar>
+            <v-content>
+
+            </v-content>*@
+    </v-app>
+</div>
+
+@section Scripts
+{
+    <script>
+        //var axios = require('axios');
+        Vue.prototype.$http = axios;
+        Vue.config.devtools = true;
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    headers: [
+                        {
+                            text: 'App',
+                            align: 'left',
+                            sortable: true,
+                            value: 'app'
+                        },
+                        { text: 'Datum/Zeit', value: 'timestamp' },
+                        { text: 'Anzahl', value: 'anzahl' },
+                        { text: 'Message', value: 'message' },
+                        { text: 'Typ/Quelle', value: 'type' },
+                        { text: 'Benutzer', value: 'user' },
+                        { text: 'Code', value: 'code' },
+                        { text: 'Aktionen', value: 'actions' },
+                    ],
+                    items: []
+                    //items: [
+                    //    {
+                    //        value: false,
+                    //        name: 'Frozen Yogurt',
+                    //        calories: 159,
+                    //        fat: 6.0,
+                    //        carbs: 24,
+                    //        protein: 4.0,
+                    //        iron: '1%'
+                    //    },
+                    //    {
+                    //        value: false,
+                    //        name: 'Ice cream sandwich',
+                    //        calories: 237,
+                    //        fat: 9.0,
+                    //        carbs: 37,
+                    //        protein: 4.3,
+                    //        iron: '1%'
+                    //    }]
+                }
+            },
+            created: function () {
+                this.getData()
+            },
+            methods: {
+                getData: function () {
+
+                    fetch('@Url.Action("GetLogEntries")').then(function (response) {
+                        return response.json();
+                    }).then(function (result) {
+                        this.items =  result;
+                    });
+
+
+                    @*$.ajax({
+                        url: '@Url.Action("GetLogEntries")',
+                        method: 'GET'
+                    }).then(function (data) {
+                        vm.items = data;
+                    });*@
+                }
+            }
+        });
+    </script>
+}
+
+@section Styles
+{
+}

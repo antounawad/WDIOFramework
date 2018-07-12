@@ -1,0 +1,113 @@
+﻿@using Eulg.Web.Service.Models
+@using Eulg.Web.Shared.Helpers
+@model ElmahLog
+@{
+    Layout = "~/Views/Shared/_LayoutLogging.cshtml";
+    ViewBag.Title = Model.Message;
+}
+
+<div ng-app="App" ng-controller="Ctrl" ng-cloak>
+    <md-card>
+        <md-card-header>
+            <md-card-avatar>
+                <md-icon class="md-avatar-icon" md-font-icon="mdi-24px mdi-bug"><md-tooltip>@Model.Sequence</md-tooltip></md-icon>
+            </md-card-avatar>
+            <md-card-header-text>
+                <span class="md-title">@($"{Model.TimeLocal:F}")</span>
+                <span class="md-subhead">@($"{Model.Type} {(string.IsNullOrWhiteSpace(Model.Source) ? "" : "in")} {Model.Source}")</span>
+            </md-card-header-text>
+            @Html.Md().Button().Label("Jira Ticket anlegen").NgClick("exportToJira('" + Model.ErrorId + "', $event)").MdIcon("jira").NgClass("{ 'reported_to_jira': '" + Model.ReportedToJira + "' }").MdTooltip("{{'" + Model.ReportedToJira + "' ? 'Jira Ticket angelegt: ' + '" + Model.ReportedToJira + "' : 'Neues Jira Ticket anlegen'}}")
+            @Html.Md().Button().Label("Zurück").NgHref(Url.Action("Index")).CssClass("md-accent")
+        </md-card-header>
+        <md-card-content>
+            <md-toolbar md-scroll-shrink>
+                <div class="md-toolbar-tools">
+                    <div class="md-title">@Model.Message</div>
+                </div>
+            </md-toolbar>
+            <pre class="error-message">@Model.Detail</pre>
+            @foreach (var a in Model.DetailSections)
+            {
+                <md-toolbar md-scroll-shrink>
+                    <div class="md-toolbar-tools">@a.Key</div>
+                </md-toolbar>
+                <table class="table-error">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var b in a.Value.Where(w => !string.IsNullOrWhiteSpace(w.Value)))
+                        {
+                            <tr>
+                                <td>@b.Key</td>
+                                <td>@b.Value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </md-card-content>
+    </md-card>
+</div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/angular")
+    <script>
+        angular.module("ngAria", ["ng"]);
+        angular.module("App", ["ngMaterial", "md.data.table"]).config(["$compileProvider", "$mdIconProvider", "$mdAriaProvider", "$mdThemingProvider", function($compileProvider, $mdIconProvider, $mdAriaProvider, $mdThemingProvider) {
+                $mdIconProvider.defaultFontSet("mdi");
+                $mdThemingProvider.theme("default").primaryPalette("indigo").accentPalette("blue").warnPalette("deep-orange").backgroundPalette("grey");
+            }]);
+        @(Html.Ng().AngularController().AddModules(AngularController.EModule.MdDialog, AngularController.EModule.RootScope)
+              .Content(
+                @<text>
+                    $scope.exportToJira = function (errorID, $event) {
+                        $http.post('@Url.Action("ExportLogEntryToJira")', { id: errorID }).then(function (response) {
+                            $mdDialog.show(
+                                $mdDialog.alert().clickOutsideToClose(true)
+                                    .title("Jira")
+                                    .textContent("Bugreport-Mail gesendet!")
+                                    .ok("OK")
+                                    .targetEvent($event)
+                            );
+                        }, function errorCallback(response) {
+                        });
+                    };
+                </text>))
+    </script>
+}
+
+@section Styles
+{
+    @Styles.Render("~/Content/angular")
+    <style>
+        .table-error {
+            font-family: "DejaVu Sans Mono", "Consolas", monospace;
+            font-size: 10px;
+            padding: 8px 0;
+        }
+
+        .table-error td:first-of-type {
+            padding-right: 16px;
+        }
+
+        .table-error thead {
+            text-align: left;
+        }
+
+        .error-message {
+            font-family: "DejaVu Sans Mono", "Consolas", monospace;
+            font-size: 12px;
+            background-color: #ffffcc;
+            padding: 8px;
+        }
+
+        button.reported_to_jira md-icon {
+            color: #0bd00b !important;
+        }
+    </style>
+}

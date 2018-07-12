@@ -1,0 +1,39 @@
+﻿<md-card>
+    <md-card-header>
+        <md-card-avatar>
+            <md-icon class="md-avatar-icon" md-font-icon="mdi-24px mdi-bug"><md-tooltip>{{currentError.Sequence}}</md-tooltip></md-icon>
+        </md-card-avatar>
+        <md-card-header-text>
+            <div class="md-title">{{currentError.TimeLocal | date: 'dd.MM.yyyy HH:mm:ss'}}</div>
+            <div class="md-subhead">{{currentError.Type}} {{currentError.Source == null ? '' : 'in'}} {{currentError.Source}}</div>
+        </md-card-header-text>
+    </md-card-header>
+    <md-card-content>
+        <md-toolbar md-scroll-shrink>
+            <div class="md-toolbar-tools">
+                <div class="md-title" ng-bind="currentError.Message"></div>
+            </div>
+        </md-toolbar>
+        <pre class="error-message" ng-bind="currentError.Detail"></pre>
+        <div ng-repeat="(a,b) in currentError.DetailSections">
+            <div class="md-title section-title"></div>
+            <md-toolbar md-scroll-shrink>
+                <div class="md-toolbar-tools" ng-bind="a"></div>
+            </md-toolbar>
+            <table class="table-error">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="(c,d) in b" ng-show="d != null && d != ''">
+                        <td ng-bind="c"></td>
+                        <td ng-bind="d"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </md-card-content>
+</md-card>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Config TestServer="true" CheckMultiLogin="true" />
+  <Database DbReadOnly="false" 
+	ConnectionString="Data Source=(LocalDB)\MSSqlLocalDB;Initial Catalog=test_develop;Integrated Security=True;Connect Timeout=1200" 
+	ConnectionStringX="Data Source=192.168.0.5;Initial Catalog=eulg;User Id=eulgweb;Password=eulgweb;Connect Timeout=1200" 
+	XConnectionString="data source=C:\Daten\OfflineWeb\a8e9d213-f221-4bcc-9b51-738ecd14bc40.db;failifmissing=True;journal mode=Wal;foreign keys=True;binaryguid=False;synchronous=Normal;password=&quot;zR3l0ivnt7R5wOv6tGFG8T/prcE=&quot;" 
+	XConnectionStringSqliteForDebugX="data source=C:\Users\holger.mueller\AppData\Local\EULG-FALLBACK\Data\ca84b782-fc8b-481b-a91a-74b312556149.db;password=2AMWcNfeO8Pz6w6dcQF9wvTftSY=;failifmissing=True;journal mode=Persist;foreign keys=True;binaryguid=False" />
+  <Logging MainLogFile="C:\Temp\Eulg.log" MailLogFile="C:\Temp\EulgMail.log" LoginLogFile="C:\Temp\EulgLogin.log" />
+  <Urls UrlPortal="http://192.168.15.4/Portal" UrlVerwaltung="http://192.168.15.4/Verwaltung" RedirectToHttps="false" UrlBeratung="http://localhost:63733/" />
+  <Mail AllowExternalMails="false" RewriteAddress="mail-fallback@eulg.de" UseMailQueue="false" PdfParserFallbackAddress="info@eulg.de" SendMailsBccAddress="">
+    <Smtp Host="smtp.office365.com" Port="587" UserName="kontakt@eulg.de" Password="Fh3479asdl%sa" EnableSsl="true" FromEmail="kontakt@eulg.de" FromName="EULG - Entgeltumwandlung leicht gemacht" />
+    <Pop3 Host="localhost" Port="110" UserName="noreply@service.eulg.de" Password="F25j93JtEXRE" UseSsl="false" />
+    <Imap Host="localhost" Port="143" UserName="noreply@service.eulg.de" Password="F25j93JtEXRE" />
+  </Mail>
+</Settings>
