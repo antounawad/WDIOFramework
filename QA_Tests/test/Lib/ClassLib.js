@@ -78,9 +78,9 @@ class TestLib{
         try{
             while(true)
             {
-                browser.scroll(0,800);
-                this.ClickAction('#btnNavNext','#btnNavNext');
-                this.PauseAction(1000);
+                //browser.scroll(0,800);
+                this.ClickAction('#btnNavNext');
+                this.PauseAction(1500);
                 this.CheckSiteFields();
                 var title = this.browserTitle;
                 var index = title.indexOf(selector);
@@ -99,9 +99,9 @@ class TestLib{
         {
             while(true)
             {
-                browser.scroll(0,800);
+                //browser.scroll(0,800);
                 this.ClickAction('#btnNavNext');
-                this.PauseAction(1000);
+                this.PauseAction(1500);
                 this.CheckSiteFields();
                 var title = this.browserTitle;
                 var index = title.indexOf(selector);
@@ -131,7 +131,7 @@ class TestLib{
             path = pathFile;
         }
         
-        if(title.indexOf('Angebotsdaten') >= 0)
+        if(title.indexOf('Stammdaten') >= 0)
         {
             var t = "asdfaf";
         }
@@ -231,7 +231,40 @@ class TestLib{
         var retValue = $(selector);
         retValue.waitForVisible(timeout);
         retValue.waitForEnabled(timeout);
-		browser.click(retValue.selector);
+        var ex = false;
+        try
+        {
+            browser.click(retValue.selector);
+        }catch(ex)
+        {
+            ex = true;
+            browser.click('btnNavBack');
+
+        }
+
+        if(ex)
+        {
+            ex = false;
+            try
+            {
+                browser.click(retValue.selector);
+            }catch(ex)
+            {
+                ex = true;
+            }            
+        }
+
+        if(ex)
+        {
+            ex = false;
+            try
+            {
+                browser.click(retValue.selector);
+            }catch(ex)
+            {
+                ex = true;
+            }            
+        }        
         console.log(browser.getTitle());
         
         if(waitforVisibleSelector == '#btnFastForward')
