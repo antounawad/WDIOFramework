@@ -50,6 +50,7 @@ class VN{
     {
         testLib.Navigate2Site('Zahlungsart / GwG');
         testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\Arbeitgeber\\Zahlungsart.xml');
+        this._newVn = false;
     }
 
 
