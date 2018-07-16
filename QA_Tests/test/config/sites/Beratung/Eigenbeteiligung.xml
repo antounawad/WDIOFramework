@@ -4,12 +4,10 @@
   <Field>
 	<Name>radio_16</Name>
 	<Value>Click</Value>
-	<ListBox>False</ListBox>
    </Field>
   <Field>
 	<Name>NettoVerzicht</Name>
 	<Value>120</Value>
-	<ListBox>False</ListBox>
    </Field>   
 </Fields>
 </Config>

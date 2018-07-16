@@ -11,7 +11,7 @@ class Consultation{
 	}
 
      SetBruttoLohn(value,timeout=10000){
-        testLib.SearchElement('#Bruttolohn',value,timeout)	
+        testLib.SearchElement('#Bruttolohn',value)	
     }
 
    

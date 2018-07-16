@@ -18,16 +18,15 @@ class RK{
 			// Navigate to Target Site
 		testLib.Navigate2Site('Arbeitgeber – Tarifvorgabe')
 
-		this.CheckExistTariffs();
+		this.RemoveExistTariffs();
 
-		this.AddTarif();
+		this.AddTarifOption();
 
 	}
 
-	AddTarif()
+	AddTarifOption()
 	{
-		testLib.ClickAction('#btnNewTariffConfig');
-
+		testLib.OnlyClickAction('#btnNewTariffConfig');
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
 			var Selector = null;
@@ -36,8 +35,12 @@ class RK{
 			var Ids = null;
 		
 			testLib.Versicherer.forEach(versicherer => {
+				
+
 				for (var tarifSel = 0; tarifSel < testLib.TarifSelectoren.length; tarifSel++)
 				{
+						
+
 
 						Selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
 						if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
@@ -88,52 +91,24 @@ class RK{
 
 				consultation.AddConsultation();
 
-				// testLib.Navigate2Selector('Angebot - Kurzübersicht');
-
-				// //testLib.ClickAction('#btnFastForward');
-
-				// testLib.PauseAction(2000);
-				// var IsTariRadioIsVisible = browser.isVisible('#tarifAuswahlRadioGroup'); 
-
-				// if(IsTariRadioIsVisible)	
-				// {
-				// 	testLib.ClickAction('#radio_8')
-				// }							
-
 				testLib.Navigate2Site('Angebot – Kurzübersicht')
 
+				this.CheckRKResult();
 
-				testLib.ClickAction('.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger');
+				this.Jump2TarifSite();
 
+				this.RemoveExistTariffs();
 
-				testLib.ClickAction('#navChapterLink_1','#navViewLink_VnVnVersorgungswerk');
-				testLib.ClickAction('#navViewLink_VnVnVersorgungswerk');
-
-				testLib.ClickAction('.ng-scope.md-font.mdi.mdi-24px.mdi-delete','#modalDeleteAreYouSure_btnLöschen');
-				testLib.ClickAction('#modalDeleteAreYouSure_btnLöschen','#btnNewTariffConfig');
-
-
-				testLib.ClickAction('#btnNewTariffConfig');				
-	 
-				
-
-				
-			
-
-				
-
-		 
-
+				testLib.ClickAction('#btnNewTariffConfig');
 
 			});
 			
 		}
 	}
 
-	CheckExistTariffs()
+	RemoveExistTariffs()
 	{
-		
-		// Falls es beim Löschen Probleme gab, wird hier nochtmal geprüft und ggfs. gelöscht
+		testLib.PauseAction(1000);
 		if(browser.isExisting('.ng-scope.md-font.mdi.mdi-24px.mdi-delete'))
 		{
 
@@ -145,8 +120,37 @@ class RK{
 	}
 
 
+	Jump2TarifSite()
+	{
+		testLib.ClickAction('.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger');
+
+		testLib.ClickAction('#navChapterLink_1','#navViewLink_VnVnVersorgungswerk');
+
+		testLib.ClickAction('#navViewLink_VnVnVersorgungswerk');
+
+	}
+
+	CheckRKResult()
+	{
+			browser.waitUntil(function () 
+			{
+				return  browser.isVisible('#btnNavNext');
+		 	 }, 50000, 'expected text to be different after 5s');
+			
+			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 	
-	
+			if(errorBlock !== undefined)
+			{
+				console.log("Errorblock class: " + errorBlock.getAttribute('class'));
+				console.log("Errorblock index of ng-hide: " + errorBlock.getAttribute('class').indexOf('ng-hide'));
+				assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']")+ browser.getText("div[class='label-details']"));
+			}
+			else
+			{
+				assert.equal(0, 1, 'Rechenkernseite prüfen');
+			} 
+
+	}
 
 }
 module.exports = RK;

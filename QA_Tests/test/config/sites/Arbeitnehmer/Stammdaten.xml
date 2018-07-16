@@ -4,27 +4,22 @@
   <Field>
 	<Name>Firstname</Name>
 	<Value>AutomRKTestVP</Value>
-	<ListBox>False</ListBox>
    </Field>
   <Field>
 	<Name>Street</Name>
 	<Value>Teststrasse 11</Value>
-	<ListBox>False</ListBox>
    </Field>
   <Field>
 	<Name>Lastname</Name>
 	<Value>AutomRKTestVP</Value>
-	<ListBox>False</ListBox>
    </Field>
   <Field>
 	<Name>Zip</Name>
 	<Value>66583</Value>
-	<ListBox>False</ListBox>
    </Field>   
   <Field>
 	<Name>input_16</Name>
 	<Value>30.01.1963</Value>
-	<ListBox>False</ListBox>
    </Field>
      <Field>
 	<Name>Title</Name>

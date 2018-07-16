@@ -9,7 +9,6 @@
   <Field>
 	<Name>HandeltAufEigeneRechnung</Name>
 	<Value>Click</Value>
-	<ListBox>false</ListBox>
   </Field>  
 </Fields>
 </Config>

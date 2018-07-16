@@ -14,7 +14,7 @@ class VP{
 
 	SearchVP(searchValue,timeout=2000,pause=500){
         //this.ShowVps(timeout)
-		testLib.SearchElement('#Search',searchValue,timeout, pause)
+		testLib.SearchElement('#Search',searchValue)
 	}
 
 	CheckVP(testVPName)

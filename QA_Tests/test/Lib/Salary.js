@@ -8,7 +8,7 @@ class Salary{
 
      SetZusatzBeitrag(value,timeout=10000,pause=3000){
          this.ShowSalary(timeout,pause)
-         testLib.SearchElement('#GesetzlicheKrankenversicherungZusatzbeitrag',value,timeout)	
+         testLib.SearchElement('#GesetzlicheKrankenversicherungZusatzbeitrag',value)	
     }
 
 }

@@ -20,8 +20,10 @@ var _SiteFields = null;
 var _executablePath = "C:\\Git\\Shared\\QA_Tests\\";
 // Helper um Fehler bei den Iterationen abzufangen
 var _Navigate2SiteIterator = 0;
-
+// Helper um Fehler bei Rekursiven Aufrufen zu vermeiden
 var _ClickIterator = 0;
+var _SearchIterator = 0;
+var _ClearElementIterator = 0;
 
 
 class TestLib{
@@ -83,11 +85,46 @@ class TestLib{
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
-    SearchElement(selector,value, pauseTime=0){
-		var searchSelector = browser.element(selector)
-		assert.notEqual(searchSelector, null)
-		searchSelector.setValue(value)
-		this.PauseAction(pauseTime)
+    SearchElement(selector,value, pauseTime=0, checkExist=false){
+        try
+        {
+            if(_SearchIterator >= 100)
+            {
+                throw new Error("Zu viele SearchElement Iterationen");
+            }
+            var searchSelector = $(selector)
+            assert.notEqual(searchSelector, null)
+
+            var entryValue = searchSelector.getValue();
+           
+
+            if(checkExist)
+            {
+                if(entryValue != null && entryValue != "")
+                {
+                    return;
+                }
+            }
+
+           searchSelector.setValue(value);
+           var retValue = searchSelector.getValue();
+
+            if(value != retValue)
+            {
+                this.OnlyClickAction(searchSelector.selector);
+                this.PauseAction(500);
+                searchSelector.addValue(100);
+    
+                _SearchIterator += 1;
+                this.SearchElement(selector, value, 1000);
+            }
+        }catch(ex)
+        {
+            _SearchIterator += 1;
+            this.SearchElement(selector, value, 1000);
+
+        }
+		
     }
 
     // Navigiert zur Seite des Übergebenen Seitentitels
@@ -149,6 +186,52 @@ class TestLib{
         return path;
     }
 
+    CheckFieldAttribute(attributeName,element)
+    {
+        var result = null
+        try{
+            result = element[attributeName][0];
+
+        }
+        catch(ex){}
+        
+        return result;
+    }
+
+    ClearElemantValue(elementName)
+    {
+        try
+        {
+            if(_ClearElementIterator >= 100)
+            {
+                throw new Error("Zu viele Iterationen ClearElement");
+            }
+            var element = $(elementName);
+            this.PauseAction(2000);
+            if(_ClearElementIterator > 0)
+            {
+                this.PauseAction(1000);
+            }
+            
+            element.clearElement();
+                                    
+            if(element.getValue() != "")
+            {
+                _ClearElementIterator += 1;
+                //browser.elementIdClear(element);
+                browser.elementIdClear(elementName);
+                this.ClearElemantValue(elementName);
+            }
+    
+        }
+        catch(ex)
+        {
+            _ClearElementIterator += 1;
+
+        }
+
+    }
+
     // Methode zum Automatisierten Füllen von Pflichtfeldern
     // Die Methode wird während des Navigierens aufgerufen (kann auch separat aufgerufen werden)
     // Wenn pathFile nicht angegeben wird, ermittelt sich der Name aus dem Titel der aktuellen Seite 
@@ -164,23 +247,47 @@ class TestLib{
         {
             var fields = this.ReadXMLFieldValues(configFile);
             fields.forEach(element => {
-                var fieldname  = element['Name'][0];
+
+                var fieldname  =  null;
+                var fieldValue = null;
+                var list = null;
+                var exist = null;
+                var clear = null;
+                var check = null;
+
+
+                fieldname  = element['Name'][0];
                 if(fieldname.substr(0,1)!='.')
                 {
                     fieldname  = '#'+element['Name'][0];
                 }
-                var fieldValue = element['Value'][0];
-                var list = element['ListBox'][0];
-                var exist = browser.isExisting(fieldname);
+                fieldValue = element['Value'][0];
+                exist = browser.isExisting(fieldname);
+
+                if(fieldname == '#Gesamtbeitrag')
+                {
+                    var x = "eins";
+                }
+                list =  this.CheckFieldAttribute('ListBox',element);
+                clear = this.CheckFieldAttribute('Clear',element);
+                check = this.CheckFieldAttribute('Check',element);
                 
                 if(exist)
                 {
+                    
+                    if(clear != null && clear === "true")
+                    {
+                        this.ClearElemantValue(fieldname);
+                    }
+
                     this.PauseAction(1000);
-                    if(list != null && list == "true")
+
+                    if(list != null && list === "true")
                     {
                         var List     = $(fieldname);
                         var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
                         var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
+
 
                         var index = values.indexOf(fieldValue);
 
@@ -221,13 +328,13 @@ class TestLib{
                     }
                     else
                     {
-                        if(fieldValue == 'Click')
+                        if(fieldValue === 'Click')
                         {
                             this.OnlyClickAction(fieldname)
                         }
                         else
                         {
-                            this.SearchElement(fieldname, fieldValue);
+                            this.SearchElement(fieldname, fieldValue, 0, (check!=null && check==="true"));
                         }
                     }                    
                 }
