@@ -18,6 +18,10 @@ var _Common = false;
 var _SiteFields = null;
 // Config Path
 var _executablePath = "C:\\Git\\Shared\\QA_Tests\\";
+// Helper um Fehler bei den Iterationen abzufangen
+var _Navigate2SiteIterator = 0;
+
+var _ClickIterator = 0;
 
 
 class TestLib{
@@ -31,10 +35,11 @@ class TestLib{
     // FileStream für Config Dateien
     get Fs(){return fs};
 
-    // Übergebenes Projekt --hotfix
+    // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() {return process.argv[5].substr(2)}
 
-     get version() 
+     // Returns Version aus Args
+     get Version() 
      {
          var ver = process.argv[6]
          if(ver != '')
@@ -44,28 +49,40 @@ class TestLib{
 
      }
 
-     get configUrl() {return this.ExecutablePath+'test\\config\\'+this.TargetUrl+'\\Config.xml'}
+     // Returns Main Config Pfad
+     get MainConfigPath() {return this.ExecutablePath+'test\\config\\'+this.TargetUrl+'\\Config.xml'}
 
+     // Einheitliche Rückgabe des Titels
+     get BrowserTitle() {return browser.getTitle()}
 
-    get browserTitle() {return browser.getTitle()}
-
+    // Returns Versicher Liste aus Config falls angegeben
     get Versicherer() {return _Versicherer}
+
+    // Returns Schlter ob alle Versicherer geprüft werden oder nur die aus der List
+    // Wandelt um on Boolean
     get AllVersicherer() {return _AllVersicherer == 'true'}
+
+    // Returns Smoke Test ja oder nein
+    // Wandelt um in Boolean
     get SmokeTest() {return _SmokeTest == 'true'}
+
+    // Returns TarifSelektoren aus Config
     get TarifSelectoren(){return _TarifSelector}
 
-
+    // Loggt den Browser Title und prüft, falls assertString nicht leer ist
     ShowBrowserTitle(assertString='')
     {
-        console.log("Browser title: ")
-        console.log(this.browserTitle)
+        console.log("Broser Title: "+this.BrowserTitle)
         if(assertString != '')
         {
-            assert.equal(this.browserTitle, assertString);
+            assert.equal(this.BrowserTitle, assertString);
         }
 
     }
 
+    // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
+    // Wird der Selector nicht gefunden, wird abgebrochen
+    // Wenn ein Pause value übergeben wird, wird Pausiert
     SearchElement(selector,value, pauseTime=0){
 		var searchSelector = browser.element(selector)
 		assert.notEqual(searchSelector, null)
@@ -73,73 +90,79 @@ class TestLib{
 		this.PauseAction(pauseTime)
     }
 
-    Navigate2Selector(selector)
+    // Navigiert zur Seite des Übergebenen Seitentitels
+    Navigate2Site(title)
     {
-        var test = null;
         try{
+            if(_Navigate2SiteIterator >= 100)
+            {
+                throw new Error("Zu viele Navigate2Site Iterationen");
+            }
             while(true)
             {
-                //browser.scroll(0,800);
                 this.ClickAction('#btnNavNext');
-                this.PauseAction(1500);
+                if(_Navigate2SiteIterator == 0)
+                {
+                    this.PauseAction(500);
+                }
+                else
+                {
+                    this.PauseAction(1500);
+                }
                 this.CheckSiteFields();
-                var title = this.browserTitle;
-                var index = title.indexOf(selector);
+                var index = this.BrowserTitle.indexOf(title);
                 if(index > -1 )
                 {
+                    _Navigate2SiteIterator = 0;
                     break;
                 }
     
             }
         }catch(err){
             console.log(err)
-            test = true;
+            _Navigate2SiteIterator += 1;
+            this.Navigate2Site(title);
         }
-
-        if(test)
-        {
-            while(true)
-            {
-                //browser.scroll(0,800);
-                this.ClickAction('#btnNavNext');
-                this.PauseAction(1500);
-                this.CheckSiteFields();
-                var title = this.browserTitle;
-                var index = title.indexOf(selector);
-                if(index > -1 )
-                {
-                    break;
-                }
-    
-            }
-        }
-
-        
-
     }
 
-    CheckSiteFields(pathFile)
+    GetXmlConfigPath(pathFile)
     {
-        var title = this.browserTitle;
+        var title = this.BrowserTitle;
         var index = title.indexOf('|');
         if(index >  0)
         {
             title = title.substr(0,index-1);
         }
-        var path = this.ExecutablePath+'test\\config\\sites\\'+title+'.xml';
-        if(pathFile != null)
-        {
-            path = pathFile;
-        }
-        
+
         if(title.indexOf('Stammdaten') >= 0)
         {
             var t = "asdfaf";
         }
 
-        if(fs.existsSync(path))
+
+        var path = this.ExecutablePath+'test\\config\\sites\\'+title+'.xml';
+
+        if(pathFile != null)
         {
-            var fields = this.ReadXMLFieldValues(path);
+            path = pathFile;
+        }
+        return path;
+    }
+
+    // Methode zum Automatisierten Füllen von Pflichtfeldern
+    // Die Methode wird während des Navigierens aufgerufen (kann auch separat aufgerufen werden)
+    // Wenn pathFile nicht angegeben wird, ermittelt sich der Name aus dem Titel der aktuellen Seite 
+    // Ansonsten aus der Übergebenen Variablen
+    // Falls eine Seite gefunden wird, werden die Felder extrahiert und ggfs. die Values gesetzt
+    // Noch ein bisschen dirty aber schon funktionsfähig
+    CheckSiteFields(pathFile)
+    {
+       
+        var configFile = this.GetXmlConfigPath(pathFile);
+        
+        if(fs.existsSync(configFile))
+        {
+            var fields = this.ReadXMLFieldValues(configFile);
             fields.forEach(element => {
                 var fieldname  = element['Name'][0];
                 if(fieldname.substr(0,1)!='.')
@@ -186,10 +209,10 @@ class TestLib{
 
                             if(index > -1)
                             {
-                            this.ClickAction('#'+Ids[index]);
+                                this.ClickAction('#'+Ids[index]);
                             }
                             else{
-                            this.ClickAction('#'+Ids[0]);   
+                                this.ClickAction('#'+Ids[0]);   
                             }
 
                                 
@@ -211,10 +234,8 @@ class TestLib{
               
             });
         }
-
-
-        
     }
+
 
     OnlyClickAction(selector, pauseTime=0){
 		var retValue = $(selector);
@@ -229,53 +250,32 @@ class TestLib{
     }
     
     ClickAction(selector, waitforVisibleSelector='', timeout=50000, pauseTime=0, click=false){
+
+        if(_ClickIterator >= 100)
+        {
+            throw new Error("Zu viele ClickAction Iterationen");
+        }
+
         var retValue = $(selector);
         retValue.waitForVisible(timeout);
         retValue.waitForEnabled(timeout);
-        var ex = false;
         try
         {
             browser.click(retValue.selector);
+
         }catch(ex)
         {
-            ex = true;
+            _ClickIterator += 1;
             browser.click('btnNavBack');
-
+            this.ClickAction(selector, waitforVisibleSelector, timeout, pauseTime, click);
         }
 
-        if(ex)
-        {
-            ex = false;
-            try
-            {
-                browser.click(retValue.selector);
-            }catch(ex)
-            {
-                ex = true;
-            }            
-        }
-
-        if(ex)
-        {
-            ex = false;
-            try
-            {
-                browser.click(retValue.selector);
-            }catch(ex)
-            {
-                ex = true;
-            }            
-        }        
-        console.log(browser.getTitle());
-        
         if(waitforVisibleSelector == '#btnFastForward')
         {
             if(!browser.isExisting(waitforVisibleSelector))
             {
                 waitforVisibleSelector = '#btnNavNext';
             }
-            
-
         }
 
 
@@ -301,87 +301,9 @@ class TestLib{
 			}
     }
 
-    getAttributes(selector, value, show=false)
-    {
-       var attributes =  browser.getAttribute(selector, value);
-        if(show)
-        {
-            console.log(attributes);
-        }
-        return attributes;
-    }
-
-    checkAttribute(selector, value)
-    {
-        var attribute = browser.getAttribute(selector, value)
-        return attribute != null;
-    }
-
-
-    WaitUntil(selector)
-    {
-       browser.waitUntil(function () {
-            try {
-                return !!body.element(selector).value;
-            } catch (e) {
-                return false;
-            }
-        });
-    }
-
-    CheckResult(pauseTime)
-    {
-		if(pauseTime > 0)
-			{
-				browser.pause(pauseTime);
-			}
-    }
-    
-    GetSelector(selector, withTitle=false, waitTime=0)
-    {
-        var sel =  $(selector);
-        assert.notEqual(sel.selector,"");
-        if(withTitle)
-        {
-            sel.getTitle();
-        }
-
-        if(waitTime > 0)
-        {
-            browser.waitForEnabled(sel.selector, waitTime * 1000);
-        }
-
-
-        return sel;
-    }
-
-    ReadXML(channel){
-		
-		console.log(process.cwd());
-
-        var existsConfigFile = fs.existsSync(this.ExecutablePath+'test\\config\\'+channel+'Config.xml');
-		assert.equal(existsConfigFile,true);
-
-		var parser = new xml2js.Parser();
-		var data = fs.readFileSync(this.ExecutablePath+'test\\config\\Config.xml');
-
-
-			parser.parseString(data, function(err,result)
-			{
-				var tarife = result['Config']['Tariffs'];
-				for (var i = 0; i < tarife.length; i++) {
-					console.log(tarife[i].$.Vr)
-					var tarif = tarife[i]['Tariff'];
-					for (var j = 0; j < tarif.length; j++) {
-						console.log(tarif[i]["EnumValue"])
-					}
-				}
-			})
-    }
-
     GetXmlParser()
     {
-        var existsConfigFile = fs.existsSync(this.configUrl);
+        var existsConfigFile = fs.existsSync(this.MainConfigPath);
 		assert.equal(existsConfigFile,true);
 
         var parser = new xml2js.Parser();
@@ -390,12 +312,11 @@ class TestLib{
 
     }
 
-
     ReadXMLAttribute(standard){
 	
 		_Common = standard;
 
-		this.GetXmlParser().parseString(this.Fs.readFileSync(this.configUrl), function(err,result)
+		this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
 		{
 			if(_Common)
 			{
@@ -414,9 +335,9 @@ class TestLib{
     
     CheckVersion()
     {
-		if(this.SmokeTest && this.version != '')
+		if(this.SmokeTest && this.Version != '')
 		{
-			assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.version), -1, "Fehlerhafte Version ausgliefert.");
+			assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
 		}		
     }
 
@@ -432,24 +353,6 @@ class TestLib{
 
 		return _SiteFields;
     }
-
-
-
-    // GetSelector(selector, withTitle=false, waitTime=0)
-    // {
-    //     var retSelector = $(selector);
-    //     assert.notEqual(retSelector,"");
-
-    //     if(withTitle)
-    //     {
-    //         retSelector.getTitle();
-    //     }
-
-    //     return $(retSelector);
-    // }
-
-
-
 }
 module.exports = TestLib;
 

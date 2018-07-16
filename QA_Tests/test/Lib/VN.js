@@ -48,7 +48,7 @@ class VN{
 
     AddZahlungsart()
     {
-        testLib.Navigate2Selector('Zahlungsart / GwG');
+        testLib.Navigate2Site('Zahlungsart / GwG');
         testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\Arbeitgeber\\Zahlungsart.xml');
     }
 

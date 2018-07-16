@@ -16,7 +16,7 @@ class RK{
 
 		vn.CheckVN('AutomRKTestVN');
 			// Navigate to Target Site
-		testLib.Navigate2Selector('Arbeitgeber – Tarifvorgabe')
+		testLib.Navigate2Site('Arbeitgeber – Tarifvorgabe')
 
 		this.CheckExistTariffs();
 
@@ -80,11 +80,11 @@ class RK{
 					vn.AddZahlungsart();
 				}
 				
-				testLib.Navigate2Selector('Arbeitnehmer – Auswahl')
+				testLib.Navigate2Site('Arbeitnehmer – Auswahl')
 
 				vp.CheckVP('AutomRKTestVP');
 
-				testLib.Navigate2Selector('Beratungsübersicht');
+				testLib.Navigate2Site('Beratungsübersicht');
 
 				consultation.AddConsultation();
 
@@ -100,7 +100,7 @@ class RK{
 				// 	testLib.ClickAction('#radio_8')
 				// }							
 
-				testLib.Navigate2Selector('Angebot – Kurzübersicht')
+				testLib.Navigate2Site('Angebot – Kurzübersicht')
 
 
 				testLib.ClickAction('.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger');
