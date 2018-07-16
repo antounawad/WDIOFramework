@@ -27,7 +27,7 @@ describe('webdriver.io page', function () {
 	it('Smoke Test...', function () {
 
 
-		browser.url('http://'+ testLib.targetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
+		browser.url('http://'+ testLib.TargetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
 		this.timeout(999999999999999999999999999999999999999999);
 
 		// Erstmal die Standard configuration auslesen

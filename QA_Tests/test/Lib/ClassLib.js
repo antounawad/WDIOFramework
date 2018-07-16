@@ -3,35 +3,36 @@ var fs = require('fs'),
  xml2js=require('xml2js')
 
 var defaultTimout = 10000;
-var AVersicherer = "";
 
+// Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
-var _tarifSelector = null;
-var _allVersicherer = false;
-var _smokeTest = false;
-var _standard = false;
-var _tempValue = "";
-var _tempArray = null;
-var _executablePath = "C:\\Git\\Shared\\QA_Tests\\"
+// Speichert die TarifSelektoren
+var _TarifSelector = null;
+// Alle Versicherer oder nur bestimmte
+var _AllVersicherer = false;
+// Smoke Test Ja oder Nein
+var _SmokeTest = false;
+// Temporär zum Auslesen der allgemein gültigen Config Values
+var _Common = false;
+// Liefert die Felder in Site Config
+var _SiteFields = null;
+// Config Path
+var _executablePath = "C:\\Git\\Shared\\QA_Tests\\";
 
 
 class TestLib{
 
-    get executablePath(){ return _executablePath};
+    //Wegen Config Dateien.
+    get ExecutablePath(){ return _executablePath};
 
-    get versicherer()
-    {
-        return AVersicherer;
-    }
+    // Gibt die VersichererList aus Config Datei zurück
+    get Versicherer(){ return _Versicherer};
     
+    // FileStream für Config Dateien
+    get Fs(){return fs};
 
-    get fs()
-    {
-        return fs;
-    }
-
-     get url()  {return  process.argv[5]}
-     get targetUrl() {return this.url.substr(2)}
+    // Übergebenes Projekt --hotfix
+     get TargetUrl() {return process.argv[5].substr(2)}
 
      get version() 
      {
@@ -43,15 +44,15 @@ class TestLib{
 
      }
 
-     get configUrl() {return this.executablePath+'test\\config\\'+this.targetUrl+'\\Config.xml'}
+     get configUrl() {return this.ExecutablePath+'test\\config\\'+this.TargetUrl+'\\Config.xml'}
 
 
     get browserTitle() {return browser.getTitle()}
 
     get Versicherer() {return _Versicherer}
-    get AllVersicherer() {return _allVersicherer == 'true'}
-    get SmokeTest() {return _smokeTest == 'true'}
-    get TarifSelectoren(){return _tarifSelector}
+    get AllVersicherer() {return _AllVersicherer == 'true'}
+    get SmokeTest() {return _SmokeTest == 'true'}
+    get TarifSelectoren(){return _TarifSelector}
 
 
     ShowBrowserTitle(assertString='')
@@ -125,7 +126,7 @@ class TestLib{
         {
             title = title.substr(0,index-1);
         }
-        var path = this.executablePath+'test\\config\\sites\\'+title+'.xml';
+        var path = this.ExecutablePath+'test\\config\\sites\\'+title+'.xml';
         if(pathFile != null)
         {
             path = pathFile;
@@ -358,11 +359,11 @@ class TestLib{
 		
 		console.log(process.cwd());
 
-        var existsConfigFile = fs.existsSync(this.executablePath+'test\\config\\'+channel+'Config.xml');
+        var existsConfigFile = fs.existsSync(this.ExecutablePath+'test\\config\\'+channel+'Config.xml');
 		assert.equal(existsConfigFile,true);
 
 		var parser = new xml2js.Parser();
-		var data = fs.readFileSync(this.executablePath+'test\\config\\Config.xml');
+		var data = fs.readFileSync(this.ExecutablePath+'test\\config\\Config.xml');
 
 
 			parser.parseString(data, function(err,result)
@@ -392,23 +393,23 @@ class TestLib{
 
     ReadXMLAttribute(standard){
 	
-		_standard = standard;
+		_Common = standard;
 
-		this.GetXmlParser().parseString(this.fs.readFileSync(this.configUrl), function(err,result)
+		this.GetXmlParser().parseString(this.Fs.readFileSync(this.configUrl), function(err,result)
 		{
-			if(_standard)
+			if(_Common)
 			{
-				_allVersicherer = result['Config']['VersichererList'][0].$['all'];
-                _smokeTest = result['Config']['VersichererList'][0].$['smoke'];
-                _tarifSelector  = result['Config']['SelectorList'][0]['Selector'];
-				if(_allVersicherer == "false")
+				_AllVersicherer = result['Config']['VersichererList'][0].$['all'];
+                _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
+                _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
+				if(_AllVersicherer == "false")
 				{
 					_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
 				}
             }
 		})
 
-		_standard = false;
+		_Common = false;
     }
     
     CheckVersion()
@@ -422,14 +423,14 @@ class TestLib{
 
     ReadXMLFieldValues(xmlFile){
 	
-		_tempArray = null;
+		_SiteFields = null;
 
-		this.GetXmlParser().parseString(this.fs.readFileSync(xmlFile), function(err,result)
+		this.GetXmlParser().parseString(this.Fs.readFileSync(xmlFile), function(err,result)
 		{
-			_tempArray = result['Config']['Fields'][0]['Field'];
+			_SiteFields = result['Config']['Fields'][0]['Field'];
 		})
 
-		return _tempArray;
+		return _SiteFields;
     }
 
 

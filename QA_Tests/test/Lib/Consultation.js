@@ -19,9 +19,9 @@ class Consultation{
     {
 
         this.NewConsultation();
-        testLib.CheckSiteFields(testLib.executablePath+'test\\config\\sites\\Beratung\\Beratung.xml');
+        testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\Beratung\\Beratung.xml');
         testLib.Navigate2Selector('Eigenbeteiligung');
-        testLib.CheckSiteFields(testLib.executablePath+'test\\config\\sites\\Beratung\\Eigenbeteiligung.xml');
+        testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\Beratung\\Eigenbeteiligung.xml');
         testLib.OnlyClickAction('#btnNavNext');
     }
     
