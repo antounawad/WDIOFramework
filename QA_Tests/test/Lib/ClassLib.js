@@ -27,6 +27,10 @@ var _ClickIterator = 0;
 var _SearchIterator = 0;
 var _ClearElementIterator = 0;
 
+var _WaitUntilSelector = "";
+
+var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
+
 
 class TestLib{
 
@@ -87,6 +91,20 @@ class TestLib{
 
     }
 
+    set WaitUntilSelector(value)
+    {
+        _WaitUntilSelector = value;
+    }
+
+    get WaitUntilSelector()
+    {
+        return _WaitUntilSelector;
+    }
+
+    get MenueMinMax(){return _MenueMinMax};
+
+
+
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
@@ -144,14 +162,6 @@ class TestLib{
             {
                 this.ClickAction('#btnNavNext');
 
-                // if(_Navigate2SiteIterator == 0)
-                // {
-                //     this.PauseAction(500);
-                // }
-                // else
-                // {
-                //     this.PauseAction(1500);
-                // }
                 var index = this.BrowserTitle.indexOf(title);
                 if(index > -1 )
                 {
@@ -481,6 +491,20 @@ class TestLib{
 		})
 
 		return _SiteFields;
+    }
+
+    WaitUntil(waitUntilSelector='#btnNavNext', waitTime=5000, message="")
+    {
+        this.WaitUntilSelector = waitUntilSelector;
+        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
+        if(message != "")
+        {
+            _message = message;
+        }
+        browser.waitUntil(function ()
+        {
+            return  browser.isVisible(_WaitUntilSelector)
+          }, waitTime, _message);
     }
 }
 module.exports = TestLib;

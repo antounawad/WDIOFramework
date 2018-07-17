@@ -7,6 +7,10 @@ var VP = require('../Lib/VP.js')
 const vp = new VP()
 var Consultation = require('../Lib/Consultation.js')
 const consultation = new Consultation()
+var Tarif = require('../Lib/Tarif.js')
+const tarif = new Tarif()
+var Document = require('../Lib/Document.js')
+const document = new Document();
 
 
 class RK{
@@ -15,10 +19,10 @@ class RK{
 	{
 
 		vn.CheckVN('AutomRKTestVN');
-			// Navigate to Target Site
+			
 		testLib.Navigate2Site('Arbeitgeber – Tarifvorgabe')
 
-		this.RemoveExistTariffs();
+		tarif.RemoveExistTariffs();
 
 		this.AddTarifOption();
 
@@ -26,7 +30,8 @@ class RK{
 
 	AddTarifOption()
 	{
-		testLib.OnlyClickAction('#btnNewTariffConfig');
+		tarif.AddTarif();
+
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
 			var Selector = null;
@@ -95,61 +100,23 @@ class RK{
 
 				this.CheckRKResult();
 
-				if(testLib.DocumentTest)
-				{
-					testLib.Navigate2Site('Abschluss – Dokumente');
-					testLib.OnlyClickAction('#btn_generate');
+				document.GenerateDocuments();
 
-					browser.waitUntil(function () 
-					{
-						return  browser.isVisible('#btn_generate');
-					}, 50000, 'expected Generate Btn');
+				tarif.Jump2TarifSite();
 
-				}
+				tarif.RemoveExistTariffs();
 
-
-
-				this.Jump2TarifSite();
-
-				this.RemoveExistTariffs();
-
-				testLib.ClickAction('#btnNewTariffConfig');
+				tarif.AddTarif();
 
 			});
 			
 		}
 	}
 
-	RemoveExistTariffs()
-	{
-		testLib.PauseAction(1000);
-		if(browser.isExisting('.ng-scope.md-font.mdi.mdi-24px.mdi-delete'))
-		{
-
-			testLib.ClickAction('.ng-scope.md-font.mdi.mdi-24px.mdi-delete','#modalDeleteAreYouSure_btnLöschen');
-			testLib.ClickAction('#modalDeleteAreYouSure_btnLöschen','#btnNewTariffConfig');
-			testLib.PauseAction(1000);
-			
-		}		
-	}
-
-
-	Jump2TarifSite()
-	{
-		testLib.ClickAction('.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger');
-
-		testLib.ClickAction('#navChapterLink_1','#navViewLink_VnVnVersorgungswerk');
-
-		testLib.ClickAction('#navViewLink_VnVnVersorgungswerk');
-
-	}
 
 	CheckRKResult()
 	{
-			browser.waitUntil(function () 
-			{
-				return  browser.isVisible('#btnNavNext');
-		 	 }, 50000, 'expected text to be different after 5s');
+		    testLib.WaitUntil();
 			
 			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 	
