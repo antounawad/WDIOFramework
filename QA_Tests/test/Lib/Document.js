@@ -19,7 +19,7 @@ class Document{
         testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
         testLib.WaitUntil(_DocumentsGenerateSelector,80000);
         testLib.PauseAction(500);
-        assert.notEqual(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline'), -1, "Fehler bei der Dokumentegenerierung");
+        assert.equal(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline'), -1 , "Fehler bei der Dokumentegenerierung");
         
     }
 }
