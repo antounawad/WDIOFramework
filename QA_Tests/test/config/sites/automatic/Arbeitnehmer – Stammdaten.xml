@@ -2,13 +2,9 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-	<Name>radio_16</Name>
+	<Name>id_switch</Name>
 	<Value>Click</Value>
-   </Field>
-  <Field>
-	<Name>NettoVerzicht</Name>
-	<Value>120</Value>
-   </Field>   
+  </Field>
 </Fields>
 </Config>
 

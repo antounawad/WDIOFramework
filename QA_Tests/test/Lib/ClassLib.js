@@ -4,6 +4,8 @@ var fs = require('fs'),
 
 var defaultTimout = 10000;
 
+// Mit Dokumentgenerierung oder nicht
+var _Documents = false;
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
 // Speichert die TarifSelektoren
@@ -70,6 +72,9 @@ class TestLib{
 
     // Returns TarifSelektoren aus Config
     get TarifSelectoren(){return _TarifSelector}
+
+    // Mit Document Test oder nicht
+    get DocumentTest(){return _Documents === 'true'}
 
     // Loggt den Browser Title und prüft, falls assertString nicht leer ist
     ShowBrowserTitle(assertString='')
@@ -138,27 +143,36 @@ class TestLib{
             while(true)
             {
                 this.ClickAction('#btnNavNext');
-                if(_Navigate2SiteIterator == 0)
-                {
-                    this.PauseAction(500);
-                }
-                else
-                {
-                    this.PauseAction(1500);
-                }
-                this.CheckSiteFields();
+
+                // if(_Navigate2SiteIterator == 0)
+                // {
+                //     this.PauseAction(500);
+                // }
+                // else
+                // {
+                //     this.PauseAction(1500);
+                // }
                 var index = this.BrowserTitle.indexOf(title);
                 if(index > -1 )
                 {
                     _Navigate2SiteIterator = 0;
                     break;
                 }
-    
+
+                browser.waitUntil(function () 
+                {
+                    return  browser.isVisible('#btnNavNext');
+                  }, 50000, 'expected text to be different after 50s');
+                
+                  this.CheckSiteFields();
             }
         }catch(err){
             console.log(err)
             _Navigate2SiteIterator += 1;
             this.Navigate2Site(title);
+        }finally
+        {
+            this.CheckSiteFields();
         }
     }
 
@@ -177,7 +191,7 @@ class TestLib{
         }
 
 
-        var path = this.ExecutablePath+'test\\config\\sites\\'+title+'.xml';
+        var path = this.ExecutablePath+'test\\config\\sites\\automatic\\'+title+'.xml';
 
         if(pathFile != null)
         {
@@ -198,7 +212,7 @@ class TestLib{
         return result;
     }
 
-    ClearElemantValue(elementName)
+    ClearElementValue(elementName)
     {
         try
         {
@@ -207,7 +221,7 @@ class TestLib{
                 throw new Error("Zu viele Iterationen ClearElement");
             }
             var element = $(elementName);
-            this.PauseAction(2000);
+
             if(_ClearElementIterator > 0)
             {
                 this.PauseAction(1000);
@@ -218,9 +232,7 @@ class TestLib{
             if(element.getValue() != "")
             {
                 _ClearElementIterator += 1;
-                //browser.elementIdClear(element);
-                browser.elementIdClear(elementName);
-                this.ClearElemantValue(elementName);
+                this.ClearElementValue(elementName);
             }
     
         }
@@ -254,7 +266,7 @@ class TestLib{
                 var exist = null;
                 var clear = null;
                 var check = null;
-
+                var add = null;
 
                 fieldname  = element['Name'][0];
                 if(fieldname.substr(0,1)!='.')
@@ -264,21 +276,18 @@ class TestLib{
                 fieldValue = element['Value'][0];
                 exist = browser.isExisting(fieldname);
 
-                if(fieldname == '#Gesamtbeitrag')
+                if(fieldname == '#AgencyNumber')
                 {
                     var x = "eins";
                 }
                 list =  this.CheckFieldAttribute('ListBox',element);
                 clear = this.CheckFieldAttribute('Clear',element);
                 check = this.CheckFieldAttribute('Check',element);
+                add = this.CheckFieldAttribute('Add', element);
                 
                 if(exist)
                 {
                     
-                    if(clear != null && clear === "true")
-                    {
-                        this.ClearElemantValue(fieldname);
-                    }
 
                     this.PauseAction(1000);
 
@@ -334,7 +343,17 @@ class TestLib{
                         }
                         else
                         {
-                            this.SearchElement(fieldname, fieldValue, 0, (check!=null && check==="true"));
+                            if(add != null && add === "true")
+                            {
+                                this.ClickAction(fieldname);
+                                var sel = $(fieldname);
+                                sel.addValue(fieldValue);
+                            }
+                            else
+                            {
+        
+                                this.SearchElement(fieldname, fieldValue, 0, (check!=null && check==="true"));
+                            }
                         }
                     }                    
                 }
@@ -427,7 +446,10 @@ class TestLib{
 		{
 			if(_Common)
 			{
-				_AllVersicherer = result['Config']['VersichererList'][0].$['all'];
+                
+                _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
+                _Documents = result['Config']['Tests'][0].$['documents'];
+                
                 _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
 				if(_AllVersicherer == "false")

@@ -42,14 +42,14 @@ class VN{
 
     AddVN(testVNName)
     {
-       testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\Arbeitgeber\\Stammdaten.xml');
+       testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Arbeitgeber\\Stammdaten.xml');
        this._newVn = true;
     }
 
     AddZahlungsart()
     {
         testLib.Navigate2Site('Zahlungsart / GwG');
-        testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\Arbeitgeber\\Zahlungsart.xml');
+        testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Arbeitgeber\\Zahlungsart.xml');
         this._newVn = false;
     }
 

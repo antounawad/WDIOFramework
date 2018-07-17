@@ -2,14 +2,18 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-	<Name>KirchensteuerPflichtig</Name>
+	<Name>radio_16</Name>
 	<Value>Click</Value>
    </Field>
   <Field>
-	<Name>Bruttolohn</Name>
-	<Value>3500</Value>
-	<Clear>true</Clear>
-   </Field>
+	<Name>NettoVerzicht</Name>
+	<Value>120</Value>
+	<Add>true</Add>
+   </Field>   
 </Fields>
 </Config>
+
+
+
+
 

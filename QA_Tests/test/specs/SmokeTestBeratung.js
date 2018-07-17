@@ -44,9 +44,13 @@ describe('webdriver.io page', function () {
 
 		
 		// Todo Test manuell anlegen und übergeben
-		rk.StartRKTest();
 
-		
+		for(var i = 0;i <= 10;i++)
+		{
+
+			rk.StartRKTest();
+
+		}
 	   
 	   console.log("Test is ready");
 

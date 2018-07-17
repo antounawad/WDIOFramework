@@ -95,6 +95,14 @@ class RK{
 
 				this.CheckRKResult();
 
+				if(testLib.DocumentTest)
+				{
+					testLib.Navigate2Site('Abschluss – Dokumente');
+					testLib.OnlyClickAction('.md-accent.md-raised.md-button.md-ink-ripple');
+				}
+
+
+
 				this.Jump2TarifSite();
 
 				this.RemoveExistTariffs();
