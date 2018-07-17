@@ -77,8 +77,6 @@ class RK{
 	
 			if(errorBlock !== undefined)
 			{
-				console.log("Errorblock class: " + errorBlock.getAttribute('class'));
-				console.log("Errorblock index of ng-hide: " + errorBlock.getAttribute('class').indexOf('ng-hide'));
 				assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']")+ browser.getText("div[class='label-details']"));
 			}
 			else
