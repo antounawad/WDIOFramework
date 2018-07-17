@@ -1,22 +1,28 @@
 var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
 
+var _btnNewConsultation = '#btnNewConsultation';
+var _bruttoLohn = '#Bruttolohn';
+var _btnFastForwardConsultation = '#btnFastForwardConsultation';
+
+
 class Consultation{
+
+    get BtnFastForwardConsultation(){return _btnFastForwardConsultation};
+
     ShowConsultations(timeout=10000,pause=1000){
-   		testLib.ClickAction('#btnFastForward','', timeout, pause)
+   		testLib.ClickAction(testLib.BtnFastForward,'', timeout, pause)
 	}
 
     NewConsultation(timeout=50000,pause=1000){
         
-        browser.waitUntil(function () 
-        {
-            return  browser.isVisible('#btnNewConsultation');
-        }, 10000, 'New Consultation Button');
-        testLib.ClickAction('#btnNewConsultation','#Bruttolohn', timeout,pause)
+        testLib.WaitUntil(_btnNewConsultation,10000);
+        testLib.ClickAction(_btnNewConsultation);
+        testLib.WaitUntil(_bruttoLohn);
 	}
 
      SetBruttoLohn(value,timeout=10000){
-        testLib.SearchElement('#Bruttolohn',value)	
+        testLib.SearchElement(_bruttoLohn,value)	
     }
 
    
@@ -27,7 +33,7 @@ class Consultation{
         testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Beratung\\Beratung.xml');
         testLib.Navigate2Site('Eigenbeteiligung');
         testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Beratung\\Eigenbeteiligung.xml');
-        testLib.OnlyClickAction('#btnNavNext');
+        testLib.OnlyClickAction(testLib.BtnNavNext);
     }
     
 

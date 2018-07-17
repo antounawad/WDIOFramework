@@ -16,8 +16,11 @@ class Document{
             return;            
         }
         testLib.Navigate2Site(_SiteTitle);
-		testLib.OnlyClickAction(_DocumentsGenerateSelector);
-		testLib.WaitUntil(_DocumentsGenerateSelector,80000);
+        testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
+        testLib.WaitUntil(_DocumentsGenerateSelector,80000);
+        testLib.PauseAction(500);
+        assert.notEqual(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline'), -1, "Fehler bei der Dokumentegenerierung");
+        
     }
 }
 

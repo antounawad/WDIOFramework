@@ -29,7 +29,13 @@ var _ClearElementIterator = 0;
 
 var _WaitUntilSelector = "";
 
+var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
+
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
+
+var _btnNavNext = '#btnNavNext';
+
+var _btnFastForward = '#btnFastForward';
 
 
 class TestLib{
@@ -103,8 +109,12 @@ class TestLib{
 
     get MenueMinMax(){return _MenueMinMax};
 
+    get BtnNavNext(){return _btnNavNext};
+
+    get BtnFastForward(){return _btnFastForward};
 
 
+    get TarifSiteSelector(){return _TarifSiteSelector};
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
@@ -373,6 +383,11 @@ class TestLib{
     }
 
 
+    Next()
+    {
+        this.OnlyClickAction(_btnNavNext);
+    }
+
     OnlyClickAction(selector, pauseTime=0){
 		var retValue = $(selector);
         assert.notEqual(retValue.selector,"");
@@ -493,7 +508,7 @@ class TestLib{
 		return _SiteFields;
     }
 
-    WaitUntil(waitUntilSelector='#btnNavNext', waitTime=5000, message="")
+    WaitUntil(waitUntilSelector='#btnNavNext', waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
