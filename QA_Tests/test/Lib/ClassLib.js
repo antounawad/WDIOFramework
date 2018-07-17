@@ -50,12 +50,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[5].substr(2)}
+     //get TargetUrl() { return process.argv[5].substr(2)}
+     get TargetUrl() { return process.argv[3].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         var ver = process.argv[6]
+         //var ver = process.argv[6]
+         var ver = process.argv[4]
          if(ver != '')
          {
              return ver.substr(2);
