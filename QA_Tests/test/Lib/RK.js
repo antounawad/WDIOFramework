@@ -98,7 +98,13 @@ class RK{
 				if(testLib.DocumentTest)
 				{
 					testLib.Navigate2Site('Abschluss – Dokumente');
-					testLib.OnlyClickAction('.md-accent.md-raised.md-button.md-ink-ripple');
+					testLib.OnlyClickAction('#btn_generate');
+
+					browser.waitUntil(function () 
+					{
+						return  browser.isVisible('#btn_generate');
+					}, 50000, 'expected Generate Btn');
+
 				}
 
 

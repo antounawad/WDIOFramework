@@ -7,6 +7,11 @@ class Consultation{
 	}
 
     NewConsultation(timeout=50000,pause=1000){
+        
+        browser.waitUntil(function () 
+        {
+            return  browser.isVisible('#btnNewConsultation');
+        }, 10000, 'New Consultation Button');
         testLib.ClickAction('#btnNewConsultation','#Bruttolohn', timeout,pause)
 	}
 
