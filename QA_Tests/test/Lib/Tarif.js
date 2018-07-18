@@ -10,9 +10,13 @@ var _ngoption = 'md-option[ng-repeat]';
 var _value = 'value';
 var _id = 'id';
 var _beratungTarifSelector = '#navViewLink_BeratungBeratungTarifauswahl';
+var _tarifTitle = 'Arbeitgeber – Tarifvorgabe'
 
 
 class Tarif{
+
+	get TarifTitle(){return _tarifTitle};
+
     ShowTarif(timeout=10000,pause=3000){
    		testLib.ClickAction(testLib.BtnNavNext,_beratungTarifSelector, timeout, pause)
 	}
@@ -85,30 +89,54 @@ class Tarif{
 				// 	return;
 				// }
 
-				testLib.OnlyClickAction(Selector);
-
-				if(tarifSel == 0)
+				try
 				{
-					testLib.ClickAction('#'+Ids[Values.indexOf(versicherer['Id'][0])]);
+					testLib.OnlyClickAction(Selector);
 
-				}
-				else
-				{
-					var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
-					if(Ids.length > 1 && checkIsEnabled == null)
+					if(tarifSel == 0)
 					{
-						testLib.ClickAction('#'+Ids[0]);
+						testLib.ClickAction('#'+Ids[Values.indexOf(versicherer['Id'][0])]);
+
 					}
-				}						
+					else
+					{
+						var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
+						if(Ids.length > 1 && checkIsEnabled == null)
+						{
+							testLib.ClickAction('#'+Ids[0]);
+						}
+					}						
+				}catch(ex){}
 		
 		}
 		
-		testLib.ClickAction('#modalContainer_btnSpeichern');
+
+		
+
+		var index = -1;
+		if(browser.isExisting('.warningMessage'))
+		{
+			var text = browser.getText('.warningMessage');
+			index = text.indexOf('Tarifkonfiguration nicht verfügbar');
+		
+		
+		}
+		else
+		{
+			testLib.ClickAction('#modalContainer_btnSpeichern');
+		}
+		return true;// index == -1;
+
+
+		
 	}
 
-	DeleteAllTarife(newTarif=false)
+	DeleteAllTarife(newTarif=false, jump=true)
 	{
-		this.Jump2TarifSite();
+		if(jump)
+		{
+			this.Jump2TarifSite();
+		}
 		this.RemoveExistTariffs();
 		if(newTarif)
 		{

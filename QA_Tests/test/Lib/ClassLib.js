@@ -32,6 +32,7 @@ var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
 
 var _btnNavNext = '#btnNavNext';
+var _btnNavPrev = '#btnNavBack';
 
 var _btnFastForward = '#btnFastForward';
 
@@ -375,6 +376,12 @@ class TestLib{
         this.ClickAction(_btnNavNext);
     }
 
+    Prev(waitTime=0)
+    {
+        this.PauseAction(waitTime);
+        this.ClickAction(_btnNavPrev);
+    }
+
     OnlyClickAction(selector, pauseTime=0){
 		var retValue = $(selector);
         assert.notEqual(retValue.selector,"");
@@ -513,6 +520,19 @@ class TestLib{
 			assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
 		}		
     }
+
+    CheckText(selector,text)
+    {
+        var index = -1;
+		if(this.SmokeTest && this.Version != '')
+		{
+            var text = browser.getText(selector);
+            if(text != null && text.length > 0)
+                index = text.indexOf(text);
+
+        }		
+        return index >= 0;
+    }    
 
 
     ReadXMLFieldValues(xmlFile){

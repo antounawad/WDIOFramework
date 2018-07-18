@@ -19,31 +19,38 @@ class RK{
 	{
 		vn.CheckVN('AutomRKTestVN');
 
+		
+
 		vp.CheckVP('AutomRKTestVP');
 
-		tarif.DeleteAllTarife();
+		
 
 		this.CreateTarifOptions();
 	}
 
 	CreateTarifOptions()
 	{
-		tarif.AddTarif();
+		tarif.DeleteAllTarife(true);
 
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
 		
 			testLib.Versicherer.forEach(versicherer => {
 
-				tarif.CreateTarif(versicherer)
+			 if(tarif.CreateTarif(versicherer))
+			 {
 		   
 //				testLib.Navigate2Site('Arbeitnehmer – Auswahl')
 
-//vp.CheckVP('AutomRKTestVP');				
+//vp.CheckVP('AutomRKTestVP');		
 
-				testLib.Navigate2Site('Beratungsübersicht');
+				if(browser.isEnabled('#btnNavNext'))
+				{
 
-				consultation.AddConsultation();
+					testLib.Navigate2Site('Beratungsübersicht');
+
+					consultation.AddConsultation();
+				}
 
 				//testLib.Navigate2Site('Angebot – Kurzübersicht')
 
@@ -53,8 +60,18 @@ class RK{
 				
 				//testLib.Next(500);
 
-				tarif.DeleteAllTarife(true);
+				tarif.DeleteAllTarife(true,false);	
 
+			 }
+			 else
+			 {
+				 tarif.DeleteAllTarife(false,false);
+				 testLib.Prev();
+				 testLib.Next();
+				 tarif.AddTarif();
+
+			 }
+			 
 
 			});
 			

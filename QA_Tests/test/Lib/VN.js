@@ -37,6 +37,9 @@ class VN{
             {
                 //testLib.OnlyClickAction('#btnBlurredOverlay');
                 testLib.OnlyClickAction(_gridSelector);
+                testLib.Navigate2Site('Arbeitgeber – Tarifvorgabe');
+                tarif.AddTarif();
+                tarif.CreateTarif(testLib.Versicherer[0]);
             }
 		}		
     }
