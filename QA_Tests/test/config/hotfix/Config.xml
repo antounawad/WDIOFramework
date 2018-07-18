@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Channel>hotfix</Channel>
+  <New>
+	<Chapter>
+		<VN>
+			<Sites path="vn">
+				<Site>
+					<Url>new</Url>
+					<FileName>Stammdaten.xml</FileName>
+				</Site>
+				<Site>
+					<Url>Arbeitgeber – Tarifvorgabe</Url>
+					<FileName>Callback</FileName>
+					<Versicherer>
+						<Name>Allianz</Name>
+						<Id>1006</Id>
+					</Versicherer>
+				</Site>
+				<Site>
+					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
+					<FileName>Zahlungsart.xml</FileName>
+				</Site>				
+			</Sites>
+		</VN>
+		<VP>
+			<Sites path="vp">
+				<Site>
+					<Url>new</Url>
+					<FileName>Stammdaten.xml</FileName>
+				</Site>
+			</Sites>
+		</VP>
+		<Consultation>
+			<Sites path="consultation">
+				<Site>
+					<Url>new</Url>
+					<FileName>Beratung.xml</FileName>
+				</Site>
+				<Site>
+					<Url>Eigenbeteiligung</Url>
+					<FileName>Eigenbeteiligung.xml</FileName>
+				</Site>				
+			</Sites>
+		</Consultation>
+	</Chapter>
+  </New>
   <Tests documents="true"></Tests>
 	<SelectorList>
 	<Selector>

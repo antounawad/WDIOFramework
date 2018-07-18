@@ -24,7 +24,7 @@
                 // To run a specific file, you can use:
                 //"--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
                 //"wdio.conf.js", "--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
-                "wdio.conf_debug.js", "--spec", "C:/Git/Shared/QA_Tests/test/specs/SmokeTestBeratung.js", "--hotfix", "--4.4.2"
+                "wdio.conf_debug.js", "--spec", "C:/Git/Shared/QA_Tests/test/specs/SmokeTestBeratung.js", "--hotfix", "--4.4.3"
                 //"wdio.conf.js", "--hotfix"
 
             ]

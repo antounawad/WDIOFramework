@@ -18,13 +18,12 @@ class RK{
 	StartRKTest()
 	{
 		vn.CheckVN('AutomRKTestVN');
-			
-		testLib.Navigate2Site(testLib.TarifSiteSelector);
 
-		tarif.RemoveExistTariffs();
+		vp.CheckVP('AutomRKTestVP');
+
+		tarif.DeleteAllTarife();
 
 		this.CreateTarifOptions();
-
 	}
 
 	CreateTarifOptions()
@@ -38,30 +37,24 @@ class RK{
 
 				tarif.CreateTarif(versicherer)
 		   
-				if(vn.NewVn)
-				{		
-					vn.AddZahlungsart();
-				}
-				
-				testLib.Navigate2Site('Arbeitnehmer – Auswahl')
+//				testLib.Navigate2Site('Arbeitnehmer – Auswahl')
 
-				vp.CheckVP('AutomRKTestVP');
+//vp.CheckVP('AutomRKTestVP');				
 
 				testLib.Navigate2Site('Beratungsübersicht');
 
 				consultation.AddConsultation();
 
-				testLib.Navigate2Site('Angebot – Kurzübersicht')
+				//testLib.Navigate2Site('Angebot – Kurzübersicht')
 
-				this.CheckRKResult();
+				//this.CheckRKResult();
 
-				document.GenerateDocuments();
+				//document.GenerateDocuments();
+				
+				//testLib.Next(500);
 
-				tarif.Jump2TarifSite();
+				tarif.DeleteAllTarife(true);
 
-				tarif.RemoveExistTariffs();
-
-				tarif.AddTarif();
 
 			});
 			

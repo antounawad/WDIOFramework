@@ -76,6 +76,15 @@ class Tarif{
 				Values = List.getAttribute(_ngoption, _value,true);
 				Ids = List.getAttribute(_ngoption, _id,true);
 
+				// var number = versicherer['Id'][0];
+
+				// var index = Values[number];
+				// if(index == null || index < 0)
+				// {
+				// 	testLib.ClickAction('#modalContainer_btnAbbrechen');
+				// 	return;
+				// }
+
 				testLib.OnlyClickAction(Selector);
 
 				if(tarifSel == 0)
@@ -95,6 +104,16 @@ class Tarif{
 		}
 		
 		testLib.ClickAction('#modalContainer_btnSpeichern');
+	}
+
+	DeleteAllTarife(newTarif=false)
+	{
+		this.Jump2TarifSite();
+		this.RemoveExistTariffs();
+		if(newTarif)
+		{
+			this.AddTarif();
+		}
 	}
 	
 }
