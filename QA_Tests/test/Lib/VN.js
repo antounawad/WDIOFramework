@@ -1,17 +1,15 @@
 var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
+var Tarif = require('../Lib/Tarif.js')
+const tarif = new Tarif()
 
-var _newVn = false;    
 var _btnMainAgency = '#btnXbavMainAgency';
 var _btnNewVn = '#btnNewVn';
 var _gridSelector = '#tableList';
 var _searchSelector = '#Search';
+var _vnNode = 'VN';
 
 class VN{
-
-    
-
-    get NewVn(){ return this._newVn};
 
     ShowVNs(timeout=20000)
     {
@@ -23,7 +21,7 @@ class VN{
         testLib.SearchElement(_searchSelector,searchValue)
     }
     
-    CheckVN(testVNName)
+    CheckVN(testVNName, checkTarif = false)
     {
         this.SearchVN(testVNName);
         testLib.PauseAction(1000);
@@ -33,32 +31,37 @@ class VN{
             var index = text.indexOf(testVNName);
             if(index == -1)
             {
-                testLib.OnlyClickAction(_btnNewVn);
                 this.AddVN(testVNName);
             }
             else
             {
-                //testLib.OnlyClickAction('#btnBlurredOverlay');
-                testLib.OnlyClickAction(_gridSelector);
+                if(checkTarif)
+                {
+                    testLib.Navigate2Site(tarif.TarifTitle);
+                    if(!testLib.CheckisEnabled(testLib.BtnNavNext))
+                    {
+                        this.AddTarif(testLib);
+                    }
+
+                }
+                else
+                {
+                    testLib.OnlyClickAction(_gridSelector);
+                }
             }
 		}		
     }
 
     AddVN(testVNName)
     {
-       testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Arbeitgeber\\Stammdaten.xml');
-       this._newVn = true;
+       testLib.AddChapter(_vnNode, _btnNewVn,'',this.AddTarif);
     }
 
-    AddZahlungsart()
+    AddTarif(element)
     {
-        testLib.Navigate2Site('Zahlungsart / GwG');
-        testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Arbeitgeber\\Zahlungsart.xml');
-        this._newVn = false;
+        tarif.AddTarif();
+        tarif.CreateTarif(element['Versicherer'][0]);
     }
-
-
-
 }
 module.exports = VN;
 

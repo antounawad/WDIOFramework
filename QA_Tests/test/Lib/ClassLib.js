@@ -1,8 +1,8 @@
 var assert = require('assert');
 var fs = require('fs'),
  xml2js=require('xml2js')
-
-var defaultTimout = 10000;
+  
+ var defaultTimout = 10000;
 
 // Mit Dokumentgenerierung oder nicht
 var _Documents = false;
@@ -14,8 +14,6 @@ var _TarifSelector = null;
 var _AllVersicherer = false;
 // Smoke Test Ja oder Nein
 var _SmokeTest = false;
-// Temporär zum Auslesen der allgemein gültigen Config Values
-var _Common = false;
 // Liefert die Felder in Site Config
 var _SiteFields = null;
 // Config Path
@@ -34,12 +32,21 @@ var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
 
 var _btnNavNext = '#btnNavNext';
+var _btnNavPrev = '#btnNavBack';
 
 var _btnFastForward = '#btnFastForward';
+
+var _NewChapterList = ['New','Chapter','','Sites'];
+
+var _btnBlurredOverlay = '#btnBlurredOverlay';
+
+var _gridSelector = '#tableList';
 
 
 class TestLib{
 
+    
+    get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
 
@@ -162,10 +169,28 @@ class TestLib{
 		
     }
 
+    CheckisEnabled(selector)
+    {
+        this.WaitUntil(selector);
+        var result =  browser.isEnabled(selector);
+        return result;
+    }
+
+    CheckIsVisible(selector)
+    {
+        var result = browser.isVisible(selector);
+    }
+
     // Navigiert zur Seite des Übergebenen Seitentitels
     Navigate2Site(title)
     {
         try{
+            if(this.BrowserTitle.indexOf(title) >= 0)
+            {
+                _Navigate2SiteIterator = 0;
+                return;
+            }
+
             if(_Navigate2SiteIterator >= 100)
             {
                 throw new Error("Zu viele Navigate2Site Iterationen");
@@ -178,15 +203,13 @@ class TestLib{
                 if(index > -1 )
                 {
                     _Navigate2SiteIterator = 0;
+                    this.PauseAction(500);
                     break;
                 }
 
-                browser.waitUntil(function () 
-                {
-                    return  browser.isVisible('#btnNavNext');
-                  }, 50000, 'expected text to be different after 50s');
-                
-                  this.CheckSiteFields();
+                this.WaitUntil(this.BtnNavNext);
+               
+                this.CheckSiteFields();
             }
         }catch(err){
             console.log(err)
@@ -207,31 +230,13 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(title.indexOf('Stammdaten') >= 0)
-        {
-            var t = "asdfaf";
-        }
-
-
-        var path = this.ExecutablePath+'test\\config\\sites\\automatic\\'+title+'.xml';
+        var path = this.ExecutablePath+'test\\config\\sites\\mandatory\\'+title+'.xml';
 
         if(pathFile != null)
         {
             path = pathFile;
         }
         return path;
-    }
-
-    CheckFieldAttribute(attributeName,element)
-    {
-        var result = null
-        try{
-            result = element[attributeName][0];
-
-        }
-        catch(ex){}
-        
-        return result;
     }
 
     ClearElementValue(elementName)
@@ -385,9 +390,16 @@ class TestLib{
     }
 
 
-    Next()
+    Next(waitTime=0)
     {
-        this.OnlyClickAction(_btnNavNext);
+        this.PauseAction(waitTime);
+        this.ClickAction(_btnNavNext);
+    }
+
+    Prev(waitTime=0)
+    {
+        this.PauseAction(waitTime);
+        this.ClickAction(_btnNavPrev);
     }
 
     OnlyClickAction(selector, pauseTime=0){
@@ -465,15 +477,12 @@ class TestLib{
 
     }
 
-    ReadXMLAttribute(standard){
-	
-		_Common = standard;
-
+    ReadXMLAttribute(standard=false){
+		
 		this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
-		{
-			if(_Common)
+		{ 
+			if(standard)
 			{
-                
                 _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
                 _Documents = result['Config']['Tests'][0].$['documents'];
                 
@@ -482,12 +491,47 @@ class TestLib{
 				if(_AllVersicherer == "false")
 				{
 					_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
-				}
+                }
             }
 		})
-
-		_Common = false;
     }
+
+    CheckFieldAttribute(attributeName,element)
+    {
+        var result = null
+        try{
+            result = element[attributeName][0];
+
+        }
+        catch(ex){}
+        
+        return result;
+    }
+
+
+    GetElementFromConfig(elementArr)
+    {
+        var res = null;
+       
+        try{
+            this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
+            { 
+                    res = result['Config'];
+                    elementArr.forEach(function(el) {
+                        res = res[el];
+                        if(res != null)
+                        {
+                            res = res[0];
+                        }
+                    })
+            })  
+        }catch(ex){}
+
+        
+        return res;
+    }    
+
+
     
     CheckVersion()
     {
@@ -497,20 +541,33 @@ class TestLib{
 		}		
     }
 
+    CheckText(selector,text)
+    {
+        var index = -1;
+		if(this.SmokeTest && this.Version != '')
+		{
+            var text = browser.getText(selector);
+            if(text != null && text.length > 0)
+                index = text.indexOf(text);
+
+        }		
+        return index >= 0;
+    }    
+
 
     ReadXMLFieldValues(xmlFile){
-	
-		_SiteFields = null;
-
+    
+        _SiteFields = null;
 		this.GetXmlParser().parseString(this.Fs.readFileSync(xmlFile), function(err,result)
 		{
-			_SiteFields = result['Config']['Fields'][0]['Field'];
-		})
+			_SiteFields =  result['Config']['Fields'][0]['Field'];
+        })
+        
+        return _SiteFields;
 
-		return _SiteFields;
     }
 
-    WaitUntil(waitUntilSelector='#btnNavNext', waitTime=50000, message="")
+    WaitUntil(waitUntilSelector=this.BtnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
@@ -518,11 +575,76 @@ class TestLib{
         {
             _message = message;
         }
+
+        if(this.CheckIsVisible(this.BtnBlurredOverlay))
+        {
+            this.OnlyClickAction(this.BtnBlurredOverlay);
+            if(this.CheckIsVisible(_gridSelector))
+            {
+                this.OnlyClickAction(_gridSelector);
+            }
+        }
+    
+
         browser.waitUntil(function ()
         {
             return  browser.isVisible(_WaitUntilSelector)
           }, waitTime, _message);
     }
+
+    GetNewChapterList(chapter){
+        var resultArr = [_NewChapterList.length];
+        _NewChapterList.forEach(function(element, index) 
+        {
+            if(element === '')
+            {
+                resultArr[index] = chapter;
+            }
+            else
+            {
+                resultArr[index] = element;
+            }
+        });
+
+        return resultArr;
+    }
+
+    AddChapter(chapter, btnNew, waitUntilSelector='',callbackFunc=null)
+    {
+        var Sites = this.GetElementFromConfig(this.GetNewChapterList(chapter));
+		var path = Sites.$['path'];
+        
+        Sites['Site'].forEach(element => {
+            var url = element['Url'][0];
+            if(url == 'new')
+            {
+                this.WaitUntil(btnNew,10000);
+                this.ClickAction(btnNew);
+                if(waitUntilSelector !== '')
+                {
+                    this.WaitUntil(waitUntilSelector);
+                }
+
+            }
+            else
+            {
+                this.Navigate2Site(url);
+            }
+            var fileName = element['FileName'][0];
+            if(fileName == 'Callback' && callbackFunc != null)
+            {
+                callbackFunc(element);
+            }
+            else
+            {
+                this.CheckSiteFields(this.ExecutablePath+'test\\config\\sites\\new\\'+path+'\\'+fileName);
+            }
+		});        
+    }
+
+
+   
+
 }
 module.exports = TestLib;
 

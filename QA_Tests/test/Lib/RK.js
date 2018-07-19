@@ -17,61 +17,48 @@ class RK{
 
 	StartRKTest()
 	{
-		vn.CheckVN('AutomRKTestVN');
-			
-		testLib.Navigate2Site(testLib.TarifSiteSelector);
+		vn.CheckVN('AutomRKTestVN',true);
 
-		tarif.RemoveExistTariffs();
+		vp.CheckVP('AutomRKTestVP');
 
 		this.CreateTarifOptions();
-
 	}
 
 	CreateTarifOptions()
 	{
-		tarif.AddTarif();
+		tarif.DeleteAllTarife(true);
+
+		//tarif.GetAllTarife();
 
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
-		
 			testLib.Versicherer.forEach(versicherer => {
 
-				tarif.CreateTarif(versicherer)
-		   
-				if(vn.NewVn)
-				{		
-					vn.AddZahlungsart();
-				}
-				
-				testLib.Navigate2Site('Arbeitnehmer – Auswahl')
+			 tarif.CreateTarif(versicherer)
+			 
+			testLib.Navigate2Site('Beratungsübersicht');
 
-				vp.CheckVP('AutomRKTestVP');
+			consultation.AddConsultation();
 
-				testLib.Navigate2Site('Beratungsübersicht');
+			//testLib.Navigate2Site('Angebot – Angebotsdaten');
+			
+			testLib.Navigate2Site('Angebot – Kurzübersicht')
 
-				consultation.AddConsultation();
-
-				testLib.Navigate2Site('Angebot – Kurzübersicht')
-
-				this.CheckRKResult();
+			this.CheckRKResult();
 
 				document.GenerateDocuments();
+				
+				testLib.Next(500);
 
-				tarif.Jump2TarifSite();
-
-				tarif.RemoveExistTariffs();
-
-				tarif.AddTarif();
-
+			tarif.DeleteAllTarife(true);	
 			});
-			
 		}
 	}
 
 
 	CheckRKResult()
 	{
-		    testLib.WaitUntil();
+		    testLib.WaitUntil(100000);
 			
 			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 	

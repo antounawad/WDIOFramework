@@ -4,9 +4,10 @@ const testLib = new TestLib();
 var Consultation = require('../Lib/Consultation.js')
 const consultation = new Consultation();
 
-var _newVp = false;    
 var _btnNewVp = '#btnNewVp';
 var _gridSelector = '#tableList';
+var _vpNode = 'VP'
+var _siteTitle = 'Arbeitnehmer – Auswahl';
 
 
 class VP{
@@ -23,6 +24,7 @@ class VP{
 
 	CheckVP(testVPName)
     {
+        testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
 		if(testLib.SmokeTest)
@@ -31,12 +33,14 @@ class VP{
             var index = text.indexOf(testVPName);
             if(index == -1)
             {
-                testLib.OnlyClickAction(_btnNewVp);
                 this.AddVP(testVPName);
             }
             else
             {
-                //testLib.OnlyClickAction('#btnBlurredOverlay');
+                if(testLib.CheckIsVisible(testLib.BtnBlurredOverlay))
+                {
+                    testLib.OnlyClickAction(testLib.BtnBlurredOverlay);
+                }
                 testLib.OnlyClickAction(_gridSelector);
             }
 		}		
@@ -44,10 +48,8 @@ class VP{
 
     AddVP(testVNName)
     {
-       testLib.CheckSiteFields(testLib.ExecutablePath+'test\\config\\sites\\manual\\Arbeitnehmer\\Stammdaten.xml');
-       this._newVp = true;
-       
-	   testLib.OnlyClickAction('#btnNavNext');
+       testLib.AddChapter(_vpNode, _btnNewVp);
+       testLib.Next();
     }	
 }
 module.exports = VP;
