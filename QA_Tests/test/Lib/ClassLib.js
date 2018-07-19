@@ -567,7 +567,7 @@ class TestLib{
 
     }
 
-    WaitUntil(waitUntilSelector=this.BtnNavNext, waitTime=50000, message="")
+    WaitUntil(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
@@ -576,9 +576,9 @@ class TestLib{
             _message = message;
         }
 
-        if(this.CheckIsVisible(this.BtnBlurredOverlay))
+        if(this.CheckIsVisible(_btnBlurredOverlay))
         {
-            this.OnlyClickAction(this.BtnBlurredOverlay);
+            this.OnlyClickAction(_btnBlurredOverlay);
             if(this.CheckIsVisible(_gridSelector))
             {
                 this.OnlyClickAction(_gridSelector);

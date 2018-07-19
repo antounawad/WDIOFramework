@@ -45,7 +45,7 @@ describe('webdriver.io page', function () {
 		
 
 
-		testLib.CheckVersion();
+//		testLib.CheckVersion();
 
 		// Login
 		// Todo extrahieren
