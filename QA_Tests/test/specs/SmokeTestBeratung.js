@@ -42,6 +42,9 @@ describe('webdriver.io page', function () {
 		testLib.ReadXMLAttribute(true);
 
 
+		
+
+
 		testLib.CheckVersion();
 
 		// Login

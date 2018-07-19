@@ -21,7 +21,7 @@ class VN{
         testLib.SearchElement(_searchSelector,searchValue)
     }
     
-    CheckVN(testVNName)
+    CheckVN(testVNName, checkTarif = false)
     {
         this.SearchVN(testVNName);
         testLib.PauseAction(1000);
@@ -35,11 +35,19 @@ class VN{
             }
             else
             {
-                //testLib.OnlyClickAction('#btnBlurredOverlay');
-                testLib.OnlyClickAction(_gridSelector);
-                testLib.Navigate2Site('Arbeitgeber – Tarifvorgabe');
-                tarif.AddTarif();
-                tarif.CreateTarif(testLib.Versicherer[0]);
+                if(checkTarif)
+                {
+                    testLib.Navigate2Site(tarif.TarifTitle);
+                    if(!testLib.CheckisEnabled(testLib.BtnNavNext))
+                    {
+                        this.AddTarif(testLib);
+                    }
+
+                }
+                else
+                {
+                    testLib.OnlyClickAction(_gridSelector);
+                }
             }
 		}		
     }

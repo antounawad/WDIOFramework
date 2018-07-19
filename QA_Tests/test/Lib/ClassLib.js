@@ -38,11 +38,15 @@ var _btnFastForward = '#btnFastForward';
 
 var _NewChapterList = ['New','Chapter','','Sites'];
 
+var _btnBlurredOverlay = '#btnBlurredOverlay';
+
+var _gridSelector = '#tableList';
+
 
 class TestLib{
 
     
-
+    get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
 
@@ -53,14 +57,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() { return process.argv[5].substr(2)}
-     //get TargetUrl() { return process.argv[3].substr(2)}
+     //get TargetUrl() { return process.argv[5].substr(2)}
+     get TargetUrl() { return process.argv[3].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         var ver = process.argv[6]
-         //var ver = process.argv[4]
+         //var ver = process.argv[6]
+         var ver = process.argv[4]
          if(ver != '')
          {
              return ver.substr(2);
@@ -165,10 +169,28 @@ class TestLib{
 		
     }
 
+    CheckisEnabled(selector)
+    {
+        this.WaitUntil(selector);
+        var result =  browser.isEnabled(selector);
+        return result;
+    }
+
+    CheckIsVisible(selector)
+    {
+        var result = browser.isVisible(selector);
+    }
+
     // Navigiert zur Seite des Übergebenen Seitentitels
     Navigate2Site(title)
     {
         try{
+            if(this.BrowserTitle.indexOf(title) >= 0)
+            {
+                _Navigate2SiteIterator = 0;
+                return;
+            }
+
             if(_Navigate2SiteIterator >= 100)
             {
                 throw new Error("Zu viele Navigate2Site Iterationen");
@@ -181,15 +203,13 @@ class TestLib{
                 if(index > -1 )
                 {
                     _Navigate2SiteIterator = 0;
+                    this.PauseAction(500);
                     break;
                 }
 
-                browser.waitUntil(function () 
-                {
-                    return  browser.isVisible('#btnNavNext');
-                  }, 50000, 'expected text to be different after 50s');
-                
-                  this.CheckSiteFields();
+                this.WaitUntil(this.BtnNavNext);
+               
+                this.CheckSiteFields();
             }
         }catch(err){
             console.log(err)
@@ -547,7 +567,7 @@ class TestLib{
 
     }
 
-    WaitUntil(waitUntilSelector='#btnNavNext', waitTime=50000, message="")
+    WaitUntil(waitUntilSelector=this.BtnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
@@ -555,6 +575,17 @@ class TestLib{
         {
             _message = message;
         }
+
+        if(this.CheckIsVisible(this.BtnBlurredOverlay))
+        {
+            this.OnlyClickAction(this.BtnBlurredOverlay);
+            if(this.CheckIsVisible(_gridSelector))
+            {
+                this.OnlyClickAction(_gridSelector);
+            }
+        }
+    
+
         browser.waitUntil(function ()
         {
             return  browser.isVisible(_WaitUntilSelector)

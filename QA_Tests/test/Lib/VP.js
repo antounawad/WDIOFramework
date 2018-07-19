@@ -37,7 +37,10 @@ class VP{
             }
             else
             {
-                //testLib.OnlyClickAction('#btnBlurredOverlay');
+                if(testLib.CheckIsVisible(testLib.BtnBlurredOverlay))
+                {
+                    testLib.OnlyClickAction(testLib.BtnBlurredOverlay);
+                }
                 testLib.OnlyClickAction(_gridSelector);
             }
 		}		

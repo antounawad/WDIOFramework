@@ -82,110 +82,17 @@
 
 	</SelectorList>  
   <VersichererList all="false" smoke="true">
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name> -->
+		 <!-- <Id>1006</Id> -->
+	 <!-- </Versicherer> -->
 	 <Versicherer> 
-		 <Name>Allianz</Name>
-		 <Id>1006</Id>
-	 </Versicherer>
-	<!-- <Versicherer> -->
-		<!-- <Name>Si</Name> -->
-		<!-- <Id>1048</Id> -->
-	<!-- </Versicherer> -->
-  <!-- <Versicherer> -->
-		<!-- <Name>Hdi</Name> -->
-		<!-- <Id>1033</Id> -->
-	<!-- </Versicherer> -->
-  <!-- <Versicherer> -->
-		<!-- <Name>Continentale</Name> -->
-		<!-- <Id>1335</Id> -->
-	<!-- </Versicherer>	 -->
-<!-- <Versicherer> -->
-		<!-- <Name>a</Name> -->
-		<!-- <Id>1006</Id> -->
-	<!-- </Versicherer> -->
-<!-- <Versicherer> -->
-		<!-- <Name>a</Name> -->
-		<!-- <Id>1007</Id> -->
-	<!-- </Versicherer> -->
-<!-- <Versicherer> -->
-		<!-- <Name>a</Name> -->
-		<!-- <Id>9997</Id> -->
-	<!-- </Versicherer> -->
-<!-- <Versicherer> -->
-		<!-- <Name>a</Name> -->
-		<!-- <Id>1335</Id> -->
-	<!-- </Versicherer> -->
- <Versicherer> 
-	 <Name>a</Name> 
-	 <Id>9995</Id> 
+		 <Name>Si</Name> 
+		 <Id>1048</Id> 
 	 </Versicherer> 
-<Versicherer>
-		<Name>a</Name>
-		<Id>1013</Id>
-	</Versicherer>
-<Versicherer>
-		<Name>a</Name>
-		<Id>1062</Id>
-	</Versicherer>	
-	
-<Versicherer>
-		<Name>a</Name>
-		<Id>1033</Id>
-	</Versicherer>	
-
-<Versicherer>
-		<Name>a</Name>
-		<Id>9994</Id>
-	</Versicherer>	
-
-<Versicherer>
-		<Name>a</Name>
-		<Id>1108</Id>
-	</Versicherer>	
-
-<Versicherer>
-		<Name>a</Name>
-		<Id>9993</Id>
-	</Versicherer>	
-
-<Versicherer>
-		<Name>a</Name>
-		<Id>1090</Id>
-	</Versicherer>	
-
-<Versicherer>
-		<Name>a</Name>
-		<Id>1147</Id>
-	</Versicherer>	
-
-<Versicherer>
-		<Name>a</Name>
-		<Id>1150</Id>
-	</Versicherer>		
-	
-<Versicherer>
-		<Name>a</Name>
-		<Id>1099</Id>
-	</Versicherer>		
-<Versicherer>
-		<Name>a</Name>
-		<Id>1138</Id>
-	</Versicherer>		
-<Versicherer>
-		<Name>a</Name>
-		<Id>11104</Id>
-	</Versicherer>		
-<Versicherer>
-		<Name>a</Name>
-		<Id>1048</Id>
-	</Versicherer>		
-<Versicherer>
-		<Name>a</Name>
-		<Id>9999</Id>
-	</Versicherer>		
-<Versicherer>
-		<Name>a</Name>
-		<Id>11103</Id>
-	</Versicherer>			
-
-	</VersichererList>
+   <!-- <Versicherer>  -->
+		 <!-- <Name>Hdi</Name>  -->
+		 <!-- <Id>1033</Id>  -->
+	 <!-- </Versicherer>  -->
+	 </VersichererList>
 </Config>
