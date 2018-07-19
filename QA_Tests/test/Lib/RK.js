@@ -58,7 +58,7 @@ class RK{
 
 	CheckRKResult()
 	{
-		    testLib.WaitUntil(100000);
+		    testLib.WaitUntil(testLib.BtnNavNext,100000);
 			
 			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 	
