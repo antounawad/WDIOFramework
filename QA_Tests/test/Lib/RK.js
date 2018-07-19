@@ -48,7 +48,7 @@ class RK{
 
 				document.GenerateDocuments();
 				
-				testLib.Next(500);
+				//testLib.Next(500);
 
 			tarif.DeleteAllTarife(true);	
 			});

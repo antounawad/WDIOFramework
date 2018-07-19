@@ -45,7 +45,7 @@ var _gridSelector = '#tableList';
 
 class TestLib{
 
-    
+   
     get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
@@ -57,14 +57,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
+     get TargetUrl() {return process.argv[3].substr(2)}
      //get TargetUrl() { return process.argv[5].substr(2)}
-     get TargetUrl() { return process.argv[3].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         //var ver = process.argv[6]
          var ver = process.argv[4]
+         //var ver = process.argv[6]
          if(ver != '')
          {
              return ver.substr(2);
@@ -83,11 +83,11 @@ class TestLib{
 
     // Returns Schlter ob alle Versicherer geprüft werden oder nur die aus der List
     // Wandelt um on Boolean
-    get AllVersicherer() {return _AllVersicherer == 'true'}
+    get AllVersicherer() {return _AllVersicherer === 'true'}
 
     // Returns Smoke Test ja oder nein
     // Wandelt um in Boolean
-    get SmokeTest() {return _SmokeTest == 'true'}
+    get SmokeTest() {return _SmokeTest === 'true'}
 
     // Returns TarifSelektoren aus Config
     get TarifSelectoren(){return _TarifSelector}
@@ -535,9 +535,9 @@ class TestLib{
     
     CheckVersion()
     {
-		if(this.SmokeTest && this.Version != '')
+		if(this.SmokeTest && this.Version !== '')
 		{
-			assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
+            assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
 		}		
     }
 
