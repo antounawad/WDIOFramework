@@ -616,6 +616,7 @@ class TestLib{
         
         Sites['Site'].forEach(element => {
             var url = element['Url'][0];
+            var BtnClick = this.CheckFieldAttribute('NewBtn');
             if(url == 'new')
             {
                 this.WaitUntil(btnNew,10000);
@@ -625,6 +626,11 @@ class TestLib{
                     this.WaitUntil(waitUntilSelector);
                 }
 
+            }
+            else if(BtnClick != null)
+            {
+                this.Navigate2Site(url);
+                this.ClickAction(BtnClick)
             }
             else
             {
