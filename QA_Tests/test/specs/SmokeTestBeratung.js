@@ -27,25 +27,20 @@ describe('webdriver.io page', function () {
 	it('Smoke Test...', function () {
 
 
-		testLib.ReadXMLAttribute(true);
 
 		browser.url('http://'+ testLib.TargetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
 		this.timeout(999999999999999999999999999999999999999999);
 
-
-		
+		console.log(process.argv);
 
 		// Erstmal die Standard configuration auslesen
 		// Alle Versicherer oder nur spezielle
 		// Alle Kombinationen oder nur spezielle oder nur SmokeTest
 		// SmokeTest := Nur erste funtkionierende Kombination
 		testLib.ReadXMLAttribute(true);
-
-
-		
-
-
-//		testLib.CheckVersion();
+ 
+		// Wird nur ausgeführt bei Smoke Test und Angabe von Version --n.n.n in der Url
+		testLib.CheckVersion();
 
 		// Login
 		// Todo extrahieren
