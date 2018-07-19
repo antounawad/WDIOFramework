@@ -63,13 +63,13 @@ class TestLib{
      // Returns Version aus Args
      get Version() 
      {
-         var ver = process.argv[4]
-         //var ver = process.argv[6]
-         if(ver != '')
+         let ver = process.argv[4]
+         //let ver = process.argv[6]
+         if(ver != null)
          {
              return ver.substr(2);
          }
-
+         return '';
      }
 
      // Returns Main Config Pfad
@@ -612,11 +612,15 @@ class TestLib{
     AddChapter(chapter, btnNew, waitUntilSelector='',callbackFunc=null)
     {
         var Sites = this.GetElementFromConfig(this.GetNewChapterList(chapter));
-		var path = Sites.$['path'];
+        var path = Sites.$['path'];
         
         Sites['Site'].forEach(element => {
+           
+            // if(fs.existsSync(configFileName))
+            // {
+    
             var url = element['Url'][0];
-            var BtnClick = this.CheckFieldAttribute('NewBtn');
+            var BtnClick = this.CheckFieldAttribute('NewBtn',element);
             if(url == 'new')
             {
                 this.WaitUntil(btnNew,10000);
@@ -630,21 +634,27 @@ class TestLib{
             else if(BtnClick != null)
             {
                 this.Navigate2Site(url);
-                this.ClickAction(BtnClick)
+                this.ClickAction('#'+BtnClick)
             }
             else
             {
                 this.Navigate2Site(url);
             }
             var fileName = element['FileName'][0];
+            var configFileName = this.ExecutablePath+'test\\config\\sites\\new\\'+path+'\\'+fileName;    
             if(fileName == 'Callback' && callbackFunc != null)
             {
                 callbackFunc(element);
             }
             else
             {
-                this.CheckSiteFields(this.ExecutablePath+'test\\config\\sites\\new\\'+path+'\\'+fileName);
+                   this.CheckSiteFields(configFileName);
             }
+        //}
+        // else
+        // {
+        //     console.log('Config Datei: '+configFileName+' existiert nicht.')
+        // }
 		});        
     }
 

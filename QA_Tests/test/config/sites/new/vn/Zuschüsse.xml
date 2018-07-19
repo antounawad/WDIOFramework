@@ -6,16 +6,18 @@
 	<Value>Test</Value>
 	</Field>
 	<Field>
-	<Name>SelectedItem_VLBenefit</Name>
-	<Value>30</Value>	
+	<Name>SelectedItem_VlBenefit</Name>
+	<Value>30</Value>
+	<Add>true</Add>	
   </Field>
 	<Field>
 	<Name>SelectedItem_VlAlternativeBenefit</Name>
 	<Value>30</Value>	
+	<Add>true</Add>
   </Field>
     <Field>
 	<Name>modalContainer_btnSpeichern</Name>
-	<Value>click</Value>	
+	<Value>Click</Value>	
   </Field>
 </Fields>
 </Config>

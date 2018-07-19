@@ -87,10 +87,10 @@
 
 	</SelectorList>  
   <VersichererList all="false" smoke="true">
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Allianz</Name> -->
-		 <!-- <Id>1006</Id> -->
-	 <!-- </Versicherer> -->
+	  <Versicherer>  -->
+		 <Name>Allianz</Name>
+		  <Id>1006</Id>
+	  </Versicherer>
 	 <Versicherer> 
 		 <Name>Si</Name> 
 		 <Id>1048</Id> 
