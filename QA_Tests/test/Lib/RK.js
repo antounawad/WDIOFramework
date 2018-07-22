@@ -28,13 +28,44 @@ class RK{
 	{
 		tarif.DeleteAllTarife(true);
 
-		//tarif.GetAllTarife();
+		var onlineTarife = tarif.GetAllTarife();
 
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
-			testLib.Versicherer.forEach(versicherer => {
+			var iterateArr = testLib.Versicherer;
+			if(testLib.AllVersicherer)
+			{
+				onlineTarife.forEach(versicherer => {
+			
+					tarif.CreateTarif(versicherer)
+					
+				   testLib.Navigate2Site('Beratungsübersicht');
+	   
+				   consultation.AddConsultation();
+	   
+				   //testLib.Navigate2Site('Angebot – Angebotsdaten');
+				   
+				   testLib.Navigate2Site('Angebot – Kurzübersicht')
+	   
+				   this.CheckRKResult();
+	   
+					   document.GenerateDocuments();
+					   
+					   //testLib.Next(500);
+	   
+				   tarif.DeleteAllTarife(true);	
+				   });
 
-			 tarif.CreateTarif(versicherer)
+
+
+
+				return;
+			}
+
+
+			testLib.Versicherer.forEach(versicherer => {
+			
+			 tarif.CreateTarif(versicherer['Id'][0])
 			 
 			testLib.Navigate2Site('Beratungsübersicht');
 

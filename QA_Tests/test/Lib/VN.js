@@ -60,7 +60,7 @@ class VN{
     AddTarif(element)
     {
         tarif.AddTarif();
-        tarif.CreateTarif(element['Versicherer'][0]);
+        tarif.CreateTarif(element['Versicherer'][0]['Id'][0]);
     }
 }
 module.exports = VN;

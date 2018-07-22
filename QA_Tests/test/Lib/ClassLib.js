@@ -57,14 +57,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[3].substr(2)}
-     //get TargetUrl() { return process.argv[5].substr(2)}
+     //get TargetUrl() {return process.argv[3].substr(2)}
+     get TargetUrl() { return process.argv[5].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[4]
-         //let ver = process.argv[6]
+         //let ver = process.argv[4]
+         let ver = process.argv[6]
          if(ver != null)
          {
              return ver.substr(2);
@@ -488,10 +488,10 @@ class TestLib{
                 
                 _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
-				if(_AllVersicherer == "false")
-				{
+				//if(_AllVersicherer == "false")
+				//{
 					_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
-                }
+                //}
             }
 		})
     }

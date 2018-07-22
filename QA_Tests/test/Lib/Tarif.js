@@ -66,7 +66,7 @@ class Tarif{
 		Values = List.getAttribute(_ngoption, _value,true);
 		Values = this.FilterOnline(Values);
 
-
+		return Values;
 	}
 
 	FilterOnline(versichererIds)
@@ -78,16 +78,17 @@ class Tarif{
 		offline[3] = '1150'; // Saarland
 
 		var online = [versichererIds.length-offline.length];
+		var counter = 0;
         versichererIds.forEach(function(value, index) 
         {
-			var f = offline.find(value);
-			if(true)
+			var ind = offline.indexOf(value);
+			if(ind == -1)
             {
-                online[index] = element;
+                online[counter++] = value;
             }
         });
 
-        return offline;
+        return online;
 	}
 
 	CreateTarif(versicherer, allArr)
@@ -129,7 +130,7 @@ class Tarif{
 
 					if(tarifSel == 0)
 					{
-						testLib.ClickAction('#'+Ids[Values.indexOf(versicherer['Id'][0])]);
+						testLib.ClickAction('#'+Ids[Values.indexOf(versicherer)]);
 
 					}
 					else
