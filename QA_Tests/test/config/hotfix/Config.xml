@@ -86,16 +86,20 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="true">
+  <VersichererList all="true" smoke="true" breakAtError="false">
 	  <Versicherer> 
-		 <Name>WWK</Name>
-		  <Id>1103</Id>
+		 <Name>leipz</Name>
+		  <Id>9997</Id>
 	  </Versicherer>
+	  <Versicherer> 
+		 <Name>leipz</Name>
+		  <Id>9997</Id>
+	  </Versicherer>	  
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Si</Name>  -->
 		 <!-- <Id>1048</Id>  -->
 	 <!-- </Versicherer>  -->
-   <!-- <versicherer>  -->
+   <!-- <versicherer>  --> 
 		 <!-- <name>hdi</name>  -->
 		 <!-- <id>1033</id>  -->
 	 <!-- </versicherer>  -->
