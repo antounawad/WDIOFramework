@@ -15,6 +15,8 @@ var Tarif = require('../Lib/Tarif.js')
 const tarif = new Tarif()
 var RK = require('../Lib/RK.js')
 const rk = new RK()
+var VM = require('../Lib/VM.js')
+const vm = new VM();
 
 
 
@@ -29,7 +31,7 @@ describe('webdriver.io page', function () {
 
 
 		browser.url('http://'+ testLib.TargetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
-		this.timeout(999999999999999999999999999999999999999999);
+		this.timeout(testLib.UrlTimeOut);
 
 		console.log(process.argv);
 
@@ -45,6 +47,9 @@ describe('webdriver.io page', function () {
 		// Login
 		// Todo extrahieren
 		login.LoginUser();
+
+		//vm.DeleteAgency('AutomRKTestVN');
+
 
 		
 		// Todo Test manuell anlegen und übergeben

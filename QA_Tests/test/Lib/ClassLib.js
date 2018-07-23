@@ -4,6 +4,8 @@ var fs = require('fs'),
   
  var defaultTimout = 10000;
 
+ var _UrlTimeOut = 999999999999999999999999999999999999999999;
+
 // Mit Dokumentgenerierung oder nicht
 var _Documents = false;
 // Versicher Liste (falls in config angegeben)
@@ -45,7 +47,8 @@ var _gridSelector = '#tableList';
 
 class TestLib{
 
-   
+   get UrlTimeOut(){return _UrlTimeOut};
+
     get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
@@ -236,6 +239,11 @@ class TestLib{
         {
             path = pathFile;
         }
+
+        if(title == 'Angebot – Berufsinformationen')
+        {
+            var a = 'b';
+        }
         return path;
     }
 
@@ -403,6 +411,10 @@ class TestLib{
     }
 
     OnlyClickAction(selector, pauseTime=0){
+        if(!browser.isExisting(selector))
+        {
+            return;
+        }
 		var retValue = $(selector);
         assert.notEqual(retValue.selector,"");
         browser.click(retValue.selector);
@@ -591,6 +603,31 @@ class TestLib{
             return  browser.isVisible(_WaitUntilSelector)
           }, waitTime, _message);
     }
+
+    WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
+    {
+        this.WaitUntilSelector = waitUntilSelector;
+        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
+        if(message != "")
+        {
+            _message = message;
+        }
+
+        if(this.CheckIsVisible(_btnBlurredOverlay))
+        {
+            this.OnlyClickAction(_btnBlurredOverlay);
+            if(this.CheckIsVisible(_gridSelector))
+            {
+                this.OnlyClickAction(_gridSelector);
+            }
+        }
+    
+
+        browser.waitUntil(function ()
+        {
+            return  browser.isSelected(_WaitUntilSelector)
+          }, waitTime, _message);
+    }    
 
     GetNewChapterList(chapter){
         var resultArr = [_NewChapterList.length];

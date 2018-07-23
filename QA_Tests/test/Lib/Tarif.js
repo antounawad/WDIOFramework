@@ -71,7 +71,7 @@ class Tarif{
 
 	FilterOnline(versichererIds)
 	{
-		var offline = [4];
+		var offline = [7];
 		offline[0] = '1090'; // Swisslife
 		offline[1] = '1062'; // LV
 		offline[2] = '9995'; // Generali

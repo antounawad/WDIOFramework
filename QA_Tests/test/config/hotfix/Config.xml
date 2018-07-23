@@ -87,17 +87,17 @@
 
 	</SelectorList>  
   <VersichererList all="true" smoke="true">
-	  <Versicherer>  -->
-		 <Name>Allianz</Name>
-		  <Id>1006</Id>
+	  <Versicherer> 
+		 <Name>WWK</Name>
+		  <Id>1103</Id>
 	  </Versicherer>
-	 <Versicherer> 
-		 <Name>Si</Name> 
-		 <Id>1048</Id> 
-	 </Versicherer> 
-   <!-- <Versicherer>  -->
-		 <!-- <Name>Hdi</Name>  -->
-		 <!-- <Id>1033</Id>  -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Si</Name>  -->
+		 <!-- <Id>1048</Id>  -->
 	 <!-- </Versicherer>  -->
+   <!-- <versicherer>  -->
+		 <!-- <name>hdi</name>  -->
+		 <!-- <id>1033</id>  -->
+	 <!-- </versicherer>  -->
 	 </VersichererList>
 </Config>

@@ -28,61 +28,43 @@ class RK{
 	{
 		tarif.DeleteAllTarife(true);
 
-		var onlineTarife = tarif.GetAllTarife();
 
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
 			var iterateArr = testLib.Versicherer;
 			if(testLib.AllVersicherer)
 			{
+				var onlineTarife = tarif.GetAllTarife();
 				onlineTarife.forEach(versicherer => {
-			
-					tarif.CreateTarif(versicherer)
-					
-				   testLib.Navigate2Site('Beratungsübersicht');
-	   
-				   consultation.AddConsultation();
-	   
-				   //testLib.Navigate2Site('Angebot – Angebotsdaten');
-				   
-				   testLib.Navigate2Site('Angebot – Kurzübersicht')
-	   
-				   this.CheckRKResult();
-	   
-					   document.GenerateDocuments();
-					   
-					   //testLib.Next(500);
-	   
-				   tarif.DeleteAllTarife(true);	
+
+					try
+					{
+
+				
+						tarif.CreateTarif(versicherer)
+						this.Navigate2RK()
+					}
+					catch(ex)
+					{
+						tarif.DeleteAllTarife(true);	
+					}
+				 
 				   });
+				
+			}
+			else
+			{
+				testLib.Versicherer.forEach(versicherer => {
+			
+					tarif.CreateTarif(versicherer['Id'][0])
 
-
-
-
-				return;
+					this.Navigate2RK();
+					
+			   });
+	   
 			}
 
 
-			testLib.Versicherer.forEach(versicherer => {
-			
-			 tarif.CreateTarif(versicherer['Id'][0])
-			 
-			testLib.Navigate2Site('Beratungsübersicht');
-
-			consultation.AddConsultation();
-
-			//testLib.Navigate2Site('Angebot – Angebotsdaten');
-			
-			testLib.Navigate2Site('Angebot – Kurzübersicht')
-
-			this.CheckRKResult();
-
-				document.GenerateDocuments();
-				
-				//testLib.Next(500);
-
-			tarif.DeleteAllTarife(true);	
-			});
 		}
 	}
 
@@ -102,6 +84,24 @@ class RK{
 				assert.equal(0, 1, 'Rechenkernseite prüfen');
 			} 
 
+	}
+
+
+	Navigate2RK()
+	{
+		testLib.Navigate2Site('Beratungsübersicht');
+	   
+		consultation.AddConsultation();
+
+		testLib.Navigate2Site('Angebot – Kurzübersicht')
+
+		this.CheckRKResult();
+
+		//document.GenerateDocuments();
+			
+			//testLib.Next(500);
+
+		tarif.DeleteAllTarife(true);	
 	}
 
 }
