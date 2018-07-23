@@ -10,6 +10,7 @@ var fs = require('fs'),
 var _Documents = false;
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
+var _ExcludeVersicherer = null;
 // Speichert die TarifSelektoren
 var _TarifSelector = null;
 // Alle Versicherer oder nur bestimmte
@@ -59,6 +60,8 @@ class TestLib{
 
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer(){ return _Versicherer};
+
+    get ExcludeVersicherer(){return _ExcludeVersicherer};
     
     // FileStream für Config Dateien
     get Fs(){return fs};
@@ -494,7 +497,8 @@ class TestLib{
     }
 
     ReadXMLAttribute(standard=false){
-		
+        
+        var callback = this.CheckFieldListAttribute;
 		this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
 		{ 
 			if(standard)
@@ -505,7 +509,8 @@ class TestLib{
                 
                 _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
-				_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
+                _Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
+                _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
             }
 		})
     }
@@ -515,6 +520,18 @@ class TestLib{
         var result = null
         try{
             result = element[attributeName][0];
+
+        }
+        catch(ex){}
+        
+        return result;
+    }
+
+    CheckFieldListAttribute(attributeName,element)
+    {
+        var result = null
+        try{
+            result = element[attributeName];
 
         }
         catch(ex){}

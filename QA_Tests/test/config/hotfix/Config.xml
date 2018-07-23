@@ -104,4 +104,22 @@
 		 <!-- <id>1033</id>  -->
 	 <!-- </versicherer>  -->
 	 </VersichererList>
+	 <ExcludeList>
+	  <Versicherer> 
+		 <Name>Swisslife</Name>
+		  <Id>1090</Id>
+	  </Versicherer>
+	  <Versicherer> 
+		 <Name>LV</Name>
+		  <Id>1062</Id>
+	  </Versicherer>
+	  	  <Versicherer> 
+		 <Name>Generali</Name>
+		  <Id>9995</Id>
+	  </Versicherer>
+	  <Versicherer> 
+		 <Name>Saarland</Name>
+		  <Id>1150</Id>
+	  </Versicherer>
+	 </ExcludeList>
 </Config>

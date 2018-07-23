@@ -64,20 +64,18 @@ class Tarif{
 		Selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
 		List = $(Selector);
 		Values = List.getAttribute(_ngoption, _value,true);
-		Values = this.FilterOnline(Values);
+		Values = this.ExtractExcludeIds(Values);
 
 		return Values;
 	}
 
-	FilterOnline(versichererIds)
+	ExtractExcludeIds(versichererIds)
 	{
-		var offline = [4];
-		offline[0] = '1090'; // Swisslife
-		offline[1] = '1062'; // LV
-		offline[2] = '9995'; // Generali
-		offline[3] = '1150'; // Saarland
-
-		var online = [versichererIds.length-offline.length];
+		var online = [versichererIds.length-testLib.ExcludeVersicherer.length];
+		var offline = [testLib.ExcludeVersicherer.length];
+		testLib.ExcludeVersicherer.forEach(function(value, index) {
+			offline[index] = value.Id[0];
+		});
 		var counter = 0;
         versichererIds.forEach(function(value, index) 
         {
@@ -115,15 +113,6 @@ class Tarif{
 				Values = List.getAttribute(_ngoption, _value,true);
 				Ids = List.getAttribute(_ngoption, _id,true);
 
-				// var number = versicherer['Id'][0];
-
-				// var index = Values[number];
-				// if(index == null || index < 0)
-				// {
-				// 	testLib.ClickAction('#modalContainer_btnAbbrechen');
-				// 	return;
-				// }
-
 				try
 				{
 					testLib.OnlyClickAction(Selector);
@@ -150,24 +139,6 @@ class Tarif{
 		}
 		
 		testLib.ClickAction('#modalContainer_btnSpeichern');
-		
-
-		// var index = -1;
-		// if(browser.isExisting('.warningMessage'))
-		// {
-		// 	var text = browser.getText('.warningMessage');
-		// 	index = text.indexOf('Tarifkonfiguration nicht verfügbar');
-		
-		
-		// }
-		// else
-		// {
-			
-		// }
-		// return true;// index == -1;
-
-
-		
 	}
 
 	DeleteAllTarife(newTarif=false, jump=true)
