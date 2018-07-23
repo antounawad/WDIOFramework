@@ -71,7 +71,7 @@ class Tarif{
 
 	FilterOnline(versichererIds)
 	{
-		var offline = [7];
+		var offline = [4];
 		offline[0] = '1090'; // Swisslife
 		offline[1] = '1062'; // LV
 		offline[2] = '9995'; // Generali
@@ -91,7 +91,7 @@ class Tarif{
         return online;
 	}
 
-	CreateTarif(versicherer, allArr)
+	CreateTarif(versicherer)
 	{
 		var Selector = null;
 		var List = null;
@@ -130,7 +130,8 @@ class Tarif{
 
 					if(tarifSel == 0)
 					{
-						testLib.ClickAction('#'+Ids[Values.indexOf(versicherer)]);
+						var selector = '#'+Ids[Values.indexOf(versicherer)];
+						testLib.ClickAction(selector);
 
 					}
 					else
