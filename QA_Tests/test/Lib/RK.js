@@ -12,6 +12,9 @@ const tarif = new Tarif()
 var Document = require('../Lib/Document.js')
 const document = new Document();
 
+var _ErrorList = [100];
+var _ErrorCounter = 0;
+
 
 class RK{
 
@@ -22,6 +25,22 @@ class RK{
 		vp.CheckVP('AutomRKTestVP');
 
 		this.CreateTarifOptions();
+
+		if(!testLib.BreakAtError)
+		{
+			if(_ErrorList.length > 0)
+			{
+				console.log("Fehler beim RK Test");
+				_ErrorList.forEach(function(value, index) 
+				{
+					console.log(value)
+				});
+				  
+				throw new Error("Fehler beim RK Test, siehe vorige Logs...")
+				  
+			}
+
+		}		
 	}
 
 	CreateTarifOptions()
@@ -39,14 +58,12 @@ class RK{
 
 					try
 					{
-
-				
-						tarif.CreateTarif(versicherer)
-						this.Navigate2RK()
+						this.Navigate2RK(versicherer);
 					}
 					catch(ex)
 					{
-						tarif.DeleteAllTarife(true);	
+						
+					   this.ErrorFunction(ex);		
 					}
 				 
 				   });
@@ -56,9 +73,16 @@ class RK{
 			{
 				testLib.Versicherer.forEach(versicherer => {
 			
-					tarif.CreateTarif(versicherer['Id'][0])
-
-					this.Navigate2RK();
+					try
+					{
+						this.Navigate2RK(versicherer['Id'][0]);
+					}
+					catch(ex)
+					{
+						
+					   this.ErrorFunction(ex);		
+					}
+					
 					
 			   });
 	   
@@ -66,6 +90,19 @@ class RK{
 
 
 		}
+	}
+
+	ErrorFunction(ex)
+	{
+		if(!testLib.BreakAtError)
+		{
+			_ErrorList[_ErrorCounter++] = ex.message;
+			tarif.DeleteAllTarife(true);	
+		}
+		else
+		{
+			throw new Error(ex);
+		}		
 	}
 
 
@@ -87,21 +124,30 @@ class RK{
 	}
 
 
-	Navigate2RK()
+	Navigate2RK(versicherer)
 	{
-		testLib.Navigate2Site('Beratungsübersicht');
-	   
-		consultation.AddConsultation();
+		try
+		{
+			tarif.CreateTarif(versicherer);
 
-		testLib.Navigate2Site('Angebot – Kurzübersicht')
+			testLib.Navigate2Site('Beratungsübersicht');
+		
+			consultation.AddConsultation();
 
-		this.CheckRKResult();
+			testLib.Navigate2Site('Angebot – Kurzübersicht')
 
-		//document.GenerateDocuments();
-			
-			//testLib.Next(500);
+			this.CheckRKResult();
 
-		tarif.DeleteAllTarife(true);	
+			document.GenerateDocuments();
+				
+				//testLib.Next(500);
+
+			tarif.DeleteAllTarife(true);	
+		}
+		catch(ex)
+		{
+			throw new Error(ex);
+		}
 	}
 
 }

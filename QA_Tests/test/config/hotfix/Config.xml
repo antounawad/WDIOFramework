@@ -17,11 +17,11 @@
 						<Id>1006</Id>
 					</Versicherer>
 				</Site>
-				<Site>
-					<Url>Arbeitgeber – Zusch</Url>
-					<NewBtn>btnNewTariffConfig</NewBtn>
-					<FileName>Zuschüsse.xml</FileName>
-				</Site>		
+				<!-- <Site> -->
+					<!-- <Url>Arbeitgeber – Zusch</Url> -->
+					<!-- <NewBtn>btnNewTariffConfig</NewBtn> -->
+					<!-- <FileName>Zuschüsse.xml</FileName> -->
+				<!-- </Site>		 -->
 				<Site>
 					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
 					<FileName>Zahlungsart.xml</FileName>
@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="true"></Tests>
+  <Tests documents="false"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
