@@ -29,6 +29,8 @@ var _ClearElementIterator = 0;
 
 var _WaitUntilSelector = "";
 
+var _BreakAtError = false;
+
 var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
@@ -49,6 +51,8 @@ class TestLib{
 
    get UrlTimeOut(){return _UrlTimeOut};
 
+   get BreakAtError(){return _BreakAtError === 'true'};
+
     get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
@@ -60,14 +64,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[3].substr(2)}
-     //get TargetUrl() { return process.argv[5].substr(2)}
+     //get TargetUrl() {return process.argv[3].substr(2)}
+     get TargetUrl() { return process.argv[5].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[4]
-         //let ver = process.argv[6]
+         //let ver = process.argv[4]
+         let ver = process.argv[6]
          if(ver != null)
          {
              return ver.substr(2);
@@ -496,14 +500,12 @@ class TestLib{
 			if(standard)
 			{
                 _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
+                _BreakAtError = result['Config']['VersichererList'][0].$['breakAtError'];
                 _Documents = result['Config']['Tests'][0].$['documents'];
                 
                 _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
-				//if(_AllVersicherer == "false")
-				//{
-					_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
-                //}
+				_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
             }
 		})
     }
