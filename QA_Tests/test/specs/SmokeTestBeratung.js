@@ -33,28 +33,21 @@ describe('webdriver.io page', function () {
 		browser.url('http://'+ testLib.TargetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
 		this.timeout(testLib.UrlTimeOut);
 
-		console.log(process.argv);
-
 		// Erstmal die Standard configuration auslesen
 		// Alle Versicherer oder nur spezielle
 		// Alle Kombinationen oder nur spezielle oder nur SmokeTest
 		// SmokeTest := Nur erste funtkionierende Kombination
 		testLib.ReadXMLAttribute(true);
  
-		// Wird nur ausgeführt bei Smoke Test und Angabe von Version --n.n.n in der Url
-		testLib.CheckVersion();
-
 		// Login
 		// Todo extrahieren
 		login.LoginUser();
 
-		//vm.DeleteAgency('AutomRKTestVN');
+
+		vn.AddVN('asfasfdsafsadfas');
 
 
-		
-		// Todo Test manuell anlegen und übergeben
 
-		rk.StartRKTest();
 
 	   
 	   console.log("Test is ready");

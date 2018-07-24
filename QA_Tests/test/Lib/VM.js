@@ -22,7 +22,7 @@ class VM{
         {
             
             testLib.OnlyClickAction('.fa.fa-trash-o');
-            testLib.WaitUntil('.btn.btn-primary');          
+            testLib.WaitUntilVisible('.btn.btn-primary');          
             testLib.OnlyClickAction('.modal-content')
             testLib.OnlyClickAction('.btn btn-primary');
         }

@@ -67,14 +67,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     //get TargetUrl() {return process.argv[3].substr(2)}
-     get TargetUrl() { return process.argv[5].substr(2)}
+     get TargetUrl() {return process.argv[3].substr(2)}
+     //get TargetUrl() { return process.argv[5].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         //let ver = process.argv[4]
-         let ver = process.argv[6]
+         let ver = process.argv[4]
+         //let ver = process.argv[6]
          if(ver != null)
          {
              return ver.substr(2);
@@ -181,7 +181,7 @@ class TestLib{
 
     CheckisEnabled(selector)
     {
-        this.WaitUntil(selector);
+        this.WaitUntilVisible(selector);
         var result =  browser.isEnabled(selector);
         return result;
     }
@@ -217,7 +217,7 @@ class TestLib{
                     break;
                 }
 
-                this.WaitUntil(this.BtnNavNext);
+                this.WaitUntilVisible(this.BtnNavNext);
                
                 this.CheckSiteFields();
             }
@@ -598,7 +598,7 @@ class TestLib{
 
     }
 
-    WaitUntil(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
+    WaitUntilVisible(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
@@ -679,11 +679,11 @@ class TestLib{
             var BtnClick = this.CheckFieldAttribute('NewBtn',element);
             if(url == 'new')
             {
-                this.WaitUntil(btnNew,10000);
+                this.WaitUntilVisible(btnNew,10000);
                 this.ClickAction(btnNew);
                 if(waitUntilSelector !== '')
                 {
-                    this.WaitUntil(waitUntilSelector);
+                    this.WaitUntilVisible(waitUntilSelector);
                 }
 
             }

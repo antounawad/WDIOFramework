@@ -86,23 +86,22 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="true" breakAtError="false">
+  <VersichererList all="false" smoke="true" breakAtError="false">
 	  <Versicherer> 
-		 <Name>leipz</Name>
-		  <Id>9997</Id>
+		 <Name>Allianz</Name>
+		  <Id>1006</Id>
+		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
+		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
+		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
 	  </Versicherer>
-	  <Versicherer> 
-		 <Name>leipz</Name>
-		  <Id>9997</Id>
-	  </Versicherer>	  
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Si</Name>  -->
-		 <!-- <Id>1048</Id>  -->
-	 <!-- </Versicherer>  -->
-   <!-- <versicherer>  --> 
-		 <!-- <name>hdi</name>  -->
-		 <!-- <id>1033</id>  -->
-	 <!-- </versicherer>  -->
+	 <Versicherer> 
+		 <Name>Si</Name> 
+		 <Id>1048</Id> 
+	 </Versicherer> 
+   <versicherer>  
+		 <name>hdi</name> 
+		 <id>1033</id> 
+	 </versicherer> 
 	 </VersichererList>
 	 <ExcludeList>
 	  <Versicherer> 

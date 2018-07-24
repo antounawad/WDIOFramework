@@ -24,17 +24,17 @@ class Tarif{
 
 	RemoveExistTariffs()
 	{
-		testLib.WaitUntil(_addTarifBtnSelector);
+		testLib.WaitUntilVisible(_addTarifBtnSelector);
 
 		while(browser.isExisting(_deleteTarifSelector))
 		{
 			testLib.OnlyClickAction(_deleteTarifSelector);
 			
-			testLib.WaitUntil(_deleteTarifBtnSelector);
+			testLib.WaitUntilVisible(_deleteTarifBtnSelector);
 			
 			testLib.ClickAction(_deleteTarifBtnSelector);
 
-			testLib.WaitUntil(_addTarifBtnSelector);
+			testLib.WaitUntilVisible(_addTarifBtnSelector);
 
 			testLib.PauseAction(500);
 			
@@ -89,7 +89,7 @@ class Tarif{
         return online;
 	}
 
-	CreateTarif(versicherer)
+	CreateTarif(versicherer,specialTarif='',specialDurchfWeg='')
 	{
 		var Selector = null;
 		var List = null;
@@ -128,12 +128,26 @@ class Tarif{
 						var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
 						if(Ids.length > 1 && checkIsEnabled == null)
 						{
-							testLib.ClickAction('#'+Ids[0]);
+							var lIndex = 0;
+							if(Selector == '#SelectedItem_TariffId' && specialTarif != null && specialTarif != '')
+							{
+								lIndex = Values.indexOf(specialTarif);
+							}
+							else if(Selector == '#SelectedItem_ImplementationMethodId' && specialDurchfWeg != null && specialDurchfWeg != '')
+							{
+								lIndex = Values.indexOf(specialDurchfWeg);
+							}
+							if(lIndex == -1)
+							{
+								throw new Error("Kombination nicht gültig. Prüfe: Tarif und Ukasse");
+								lIndex = 0;
+							}
+							testLib.ClickAction('#'+Ids[lIndex]);	
 						}
 					}						
 				}catch(ex)
 				{
-					var x = "y";
+					throw new Error(ex);
 				}
 		
 		}
@@ -143,6 +157,7 @@ class Tarif{
 
 	DeleteAllTarife(newTarif=false, jump=true)
 	{
+		testLib.PauseAction(1000);
 		if(jump)
 		{
 			this.Jump2TarifSite();

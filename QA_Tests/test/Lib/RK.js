@@ -20,15 +20,15 @@ class RK{
 
 	StartRKTest()
 	{
-		vn.CheckVN('AutomRKTestVN',true);
+		vn.AddVN('AutomRKTestVN',true);
 
-		vp.CheckVP('AutomRKTestVP');
+		vp.AddVP('AutomRKTestVP');
 
 		this.CreateTarifOptions();
 
 		if(!testLib.BreakAtError)
 		{
-			if(_ErrorList.length > 0)
+			if(_ErrorList.length > 1)
 			{
 				console.log("Fehler beim RK Test");
 				_ErrorList.forEach(function(value, index) 
@@ -36,7 +36,7 @@ class RK{
 					console.log(value)
 				});
 				  
-				throw new Error("Fehler beim RK Test, siehe vorige Logs...")
+				//throw new Error("Fehler beim RK Test, siehe vorige Logs...")
 				  
 			}
 
@@ -75,7 +75,10 @@ class RK{
 			
 					try
 					{
-						this.Navigate2RK(versicherer['Id'][0]);
+						var specialTarif = testLib.CheckFieldAttribute('Tarif',versicherer);
+						var specialDurchfWeg = testLib.CheckFieldAttribute('DurchfWeg',versicherer); 
+
+						this.Navigate2RK(versicherer['Id'][0],specialTarif, specialDurchfWeg);
 					}
 					catch(ex)
 					{
@@ -108,7 +111,7 @@ class RK{
 
 	CheckRKResult()
 	{
-		    testLib.WaitUntil(testLib.BtnNavNext,100000);
+		    testLib.WaitUntilVisible(testLib.BtnNavNext,100000);
 			
 			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 	
@@ -124,17 +127,17 @@ class RK{
 	}
 
 
-	Navigate2RK(versicherer)
+	Navigate2RK(versicherer,specialTarif='',specialDurchfWeg='')
 	{
 		try
 		{
-			tarif.CreateTarif(versicherer);
+			tarif.CreateTarif(versicherer,specialTarif,specialDurchfWeg);
 
 			testLib.Navigate2Site('Beratungsübersicht');
 		
 			consultation.AddConsultation();
 
-			testLib.Navigate2Site('Angebot – Kurzübersicht')
+			testLib.Navigate2Site('Auswertung – Rendite')
 
 			this.CheckRKResult();
 
