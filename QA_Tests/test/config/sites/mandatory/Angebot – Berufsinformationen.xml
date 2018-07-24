@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>fl-input-11</Name>
+	<Value>Anwendungsentwickler/in</Value>
+	<Check>true</Check>
+  </Field>
+  <Field>
+	<Name>fl-input-9</Name>
+	<Value>Anwendungstechniker</Value>
+	<Check>true</Check>
+  </Field>  
+</Fields>
+</Config>
+

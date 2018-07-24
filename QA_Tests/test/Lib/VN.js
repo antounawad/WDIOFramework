@@ -21,7 +21,7 @@ class VN{
         testLib.SearchElement(_searchSelector,searchValue)
     }
     
-    CheckVN(testVNName, checkTarif = false)
+    AddVN(testVNName, checkTarif = false)
     {
         this.SearchVN(testVNName);
         testLib.PauseAction(1000);
@@ -31,7 +31,7 @@ class VN{
             var index = text.indexOf(testVNName);
             if(index == -1)
             {
-                this.AddVN(testVNName);
+                this.AddChapter(testVNName);
             }
             else
             {
@@ -52,7 +52,7 @@ class VN{
 		}		
     }
 
-    AddVN(testVNName)
+    AddChapter(testVNName)
     {
        testLib.AddChapter(_vnNode, _btnNewVn,'',this.AddTarif);
     }
@@ -60,7 +60,7 @@ class VN{
     AddTarif(element)
     {
         tarif.AddTarif();
-        tarif.CreateTarif(element['Versicherer'][0]);
+        tarif.CreateTarif(element['Versicherer'][0]['Id'][0]);
     }
 }
 module.exports = VN;

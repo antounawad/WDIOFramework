@@ -22,7 +22,7 @@ class VP{
 		testLib.SearchElement('#Search',searchValue)
 	}
 
-	CheckVP(testVPName)
+	AddVP(testVPName)
     {
         testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
@@ -33,7 +33,7 @@ class VP{
             var index = text.indexOf(testVPName);
             if(index == -1)
             {
-                this.AddVP(testVPName);
+                this.AddChapter(testVPName);
             }
             else
             {
@@ -46,7 +46,7 @@ class VP{
 		}		
     }
 
-    AddVP(testVNName)
+    AddChapter(testVNName)
     {
        testLib.AddChapter(_vpNode, _btnNewVp);
        testLib.Next();

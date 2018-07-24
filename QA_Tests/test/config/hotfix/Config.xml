@@ -17,11 +17,11 @@
 						<Id>1006</Id>
 					</Versicherer>
 				</Site>
-				<Site>
-					<Url>Arbeitgeber – Zusch</Url>
-					<NewBtn>btnNewTariffConfig</NewBtn>
-					<FileName>Zuschüsse.xml</FileName>
-				</Site>		
+				<!-- <Site> -->
+					<!-- <Url>Arbeitgeber – Zusch</Url> -->
+					<!-- <NewBtn>btnNewTariffConfig</NewBtn> -->
+					<!-- <FileName>Zuschüsse.xml</FileName> -->
+				<!-- </Site>		 -->
 				<Site>
 					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
 					<FileName>Zahlungsart.xml</FileName>
@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="true"></Tests>
+  <Tests documents="false"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -86,18 +86,39 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="true">
-	  <Versicherer>  -->
+  <VersichererList all="false" smoke="true" breakAtError="false">
+	  <Versicherer> 
 		 <Name>Allianz</Name>
 		  <Id>1006</Id>
+		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
+		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
+		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
 	  </Versicherer>
 	 <Versicherer> 
 		 <Name>Si</Name> 
 		 <Id>1048</Id> 
 	 </Versicherer> 
-   <!-- <Versicherer>  -->
-		 <!-- <Name>Hdi</Name>  -->
-		 <!-- <Id>1033</Id>  -->
-	 <!-- </Versicherer>  -->
+   <versicherer>  
+		 <name>hdi</name> 
+		 <id>1033</id> 
+	 </versicherer> 
 	 </VersichererList>
+	 <ExcludeList>
+	  <Versicherer> 
+		 <Name>Swisslife</Name>
+		  <Id>1090</Id>
+	  </Versicherer>
+	  <Versicherer> 
+		 <Name>LV</Name>
+		  <Id>1062</Id>
+	  </Versicherer>
+	  	  <Versicherer> 
+		 <Name>Generali</Name>
+		  <Id>9995</Id>
+	  </Versicherer>
+	  <Versicherer> 
+		 <Name>Saarland</Name>
+		  <Id>1150</Id>
+	  </Versicherer>
+	 </ExcludeList>
 </Config>

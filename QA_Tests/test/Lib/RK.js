@@ -12,53 +12,106 @@ const tarif = new Tarif()
 var Document = require('../Lib/Document.js')
 const document = new Document();
 
+var _ErrorList = [100];
+var _ErrorCounter = 0;
+
 
 class RK{
 
 	StartRKTest()
 	{
-		vn.CheckVN('AutomRKTestVN',true);
+		vn.AddVN('AutomRKTestVN',true);
 
-		vp.CheckVP('AutomRKTestVP');
+		vp.AddVP('AutomRKTestVP');
 
 		this.CreateTarifOptions();
+
+		if(!testLib.BreakAtError)
+		{
+			if(_ErrorList.length > 1)
+			{
+				console.log("Fehler beim RK Test");
+				_ErrorList.forEach(function(value, index) 
+				{
+					console.log(value)
+				});
+				  
+				//throw new Error("Fehler beim RK Test, siehe vorige Logs...")
+				  
+			}
+
+		}		
 	}
 
 	CreateTarifOptions()
 	{
 		tarif.DeleteAllTarife(true);
 
-		//tarif.GetAllTarife();
 
 		if(testLib.Versicherer != null && testLib.SmokeTest)
 		{
-			testLib.Versicherer.forEach(versicherer => {
+			var iterateArr = testLib.Versicherer;
+			if(testLib.AllVersicherer)
+			{
+				var onlineTarife = tarif.GetAllTarife();
+				onlineTarife.forEach(versicherer => {
 
-			 tarif.CreateTarif(versicherer)
-			 
-			testLib.Navigate2Site('Beratungsübersicht');
-
-			consultation.AddConsultation();
-
-			//testLib.Navigate2Site('Angebot – Angebotsdaten');
-			
-			testLib.Navigate2Site('Angebot – Kurzübersicht')
-
-			this.CheckRKResult();
-
-				document.GenerateDocuments();
+					try
+					{
+						this.Navigate2RK(versicherer);
+					}
+					catch(ex)
+					{
+						
+					   this.ErrorFunction(ex);		
+					}
+				 
+				   });
 				
-				//testLib.Next(500);
+			}
+			else
+			{
+				testLib.Versicherer.forEach(versicherer => {
+			
+					try
+					{
+						var specialTarif = testLib.CheckFieldAttribute('Tarif',versicherer);
+						var specialDurchfWeg = testLib.CheckFieldAttribute('DurchfWeg',versicherer); 
 
-			tarif.DeleteAllTarife(true);	
-			});
+						this.Navigate2RK(versicherer['Id'][0],specialTarif, specialDurchfWeg);
+					}
+					catch(ex)
+					{
+						
+					   this.ErrorFunction(ex);		
+					}
+					
+					
+			   });
+	   
+			}
+
+
 		}
+	}
+
+	ErrorFunction(ex)
+	{
+		if(!testLib.BreakAtError)
+		{
+			_ErrorList[_ErrorCounter++] = ex.message;
+			tarif.DeleteAllTarife(true);	
+		}
+		else
+		{
+			throw new Error(ex);
+		}		
 	}
 
 
 	CheckRKResult()
 	{
-		    testLib.WaitUntil(testLib.BtnNavNext,100000);
+		    testLib.WaitUntilVisible(testLib.BtnNavNext,100000);
 			
 			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 	
@@ -71,6 +124,33 @@ class RK{
 				assert.equal(0, 1, 'Rechenkernseite prüfen');
 			} 
 
+	}
+
+
+	Navigate2RK(versicherer,specialTarif='',specialDurchfWeg='')
+	{
+		try
+		{
+			tarif.CreateTarif(versicherer,specialTarif,specialDurchfWeg);
+
+			testLib.Navigate2Site('Beratungsübersicht');
+		
+			consultation.AddConsultation();
+
+			testLib.Navigate2Site('Auswertung – Rendite')
+
+			this.CheckRKResult();
+
+			document.GenerateDocuments();
+				
+				//testLib.Next(500);
+
+			tarif.DeleteAllTarife(true);	
+		}
+		catch(ex)
+		{
+			throw new Error(ex);
+		}
 	}
 
 }

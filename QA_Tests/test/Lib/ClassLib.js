@@ -4,10 +4,13 @@ var fs = require('fs'),
   
  var defaultTimout = 10000;
 
+ var _UrlTimeOut = 999999999999999999999999999999999999999999;
+
 // Mit Dokumentgenerierung oder nicht
 var _Documents = false;
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
+var _ExcludeVersicherer = null;
 // Speichert die TarifSelektoren
 var _TarifSelector = null;
 // Alle Versicherer oder nur bestimmte
@@ -27,6 +30,8 @@ var _ClearElementIterator = 0;
 
 var _WaitUntilSelector = "";
 
+var _BreakAtError = false;
+
 var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
@@ -45,13 +50,18 @@ var _gridSelector = '#tableList';
 
 class TestLib{
 
-   
+   get UrlTimeOut(){return _UrlTimeOut};
+
+   get BreakAtError(){return _BreakAtError === 'true'};
+
     get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
 
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer(){ return _Versicherer};
+
+    get ExcludeVersicherer(){return _ExcludeVersicherer};
     
     // FileStream für Config Dateien
     get Fs(){return fs};
@@ -171,7 +181,7 @@ class TestLib{
 
     CheckisEnabled(selector)
     {
-        this.WaitUntil(selector);
+        this.WaitUntilVisible(selector);
         var result =  browser.isEnabled(selector);
         return result;
     }
@@ -207,7 +217,7 @@ class TestLib{
                     break;
                 }
 
-                this.WaitUntil(this.BtnNavNext);
+                this.WaitUntilVisible(this.BtnNavNext);
                
                 this.CheckSiteFields();
             }
@@ -235,6 +245,11 @@ class TestLib{
         if(pathFile != null)
         {
             path = pathFile;
+        }
+
+        if(title == 'Angebot – Berufsinformationen')
+        {
+            var a = 'b';
         }
         return path;
     }
@@ -403,6 +418,10 @@ class TestLib{
     }
 
     OnlyClickAction(selector, pauseTime=0){
+        if(!browser.isExisting(selector))
+        {
+            return;
+        }
 		var retValue = $(selector);
         assert.notEqual(retValue.selector,"");
         browser.click(retValue.selector);
@@ -478,20 +497,20 @@ class TestLib{
     }
 
     ReadXMLAttribute(standard=false){
-		
+        
+        var callback = this.CheckFieldListAttribute;
 		this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
 		{ 
 			if(standard)
 			{
                 _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
+                _BreakAtError = result['Config']['VersichererList'][0].$['breakAtError'];
                 _Documents = result['Config']['Tests'][0].$['documents'];
                 
                 _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
-				if(_AllVersicherer == "false")
-				{
-					_Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
-                }
+                _Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
+                _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
             }
 		})
     }
@@ -501,6 +520,18 @@ class TestLib{
         var result = null
         try{
             result = element[attributeName][0];
+
+        }
+        catch(ex){}
+        
+        return result;
+    }
+
+    CheckFieldListAttribute(attributeName,element)
+    {
+        var result = null
+        try{
+            result = element[attributeName];
 
         }
         catch(ex){}
@@ -567,7 +598,7 @@ class TestLib{
 
     }
 
-    WaitUntil(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
+    WaitUntilVisible(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
@@ -591,6 +622,31 @@ class TestLib{
             return  browser.isVisible(_WaitUntilSelector)
           }, waitTime, _message);
     }
+
+    WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
+    {
+        this.WaitUntilSelector = waitUntilSelector;
+        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
+        if(message != "")
+        {
+            _message = message;
+        }
+
+        if(this.CheckIsVisible(_btnBlurredOverlay))
+        {
+            this.OnlyClickAction(_btnBlurredOverlay);
+            if(this.CheckIsVisible(_gridSelector))
+            {
+                this.OnlyClickAction(_gridSelector);
+            }
+        }
+    
+
+        browser.waitUntil(function ()
+        {
+            return  browser.isSelected(_WaitUntilSelector)
+          }, waitTime, _message);
+    }    
 
     GetNewChapterList(chapter){
         var resultArr = [_NewChapterList.length];
@@ -623,11 +679,11 @@ class TestLib{
             var BtnClick = this.CheckFieldAttribute('NewBtn',element);
             if(url == 'new')
             {
-                this.WaitUntil(btnNew,10000);
+                this.WaitUntilVisible(btnNew,10000);
                 this.ClickAction(btnNew);
                 if(waitUntilSelector !== '')
                 {
-                    this.WaitUntil(waitUntilSelector);
+                    this.WaitUntilVisible(waitUntilSelector);
                 }
 
             }

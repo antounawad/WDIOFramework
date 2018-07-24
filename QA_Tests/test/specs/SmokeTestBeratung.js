@@ -15,6 +15,8 @@ var Tarif = require('../Lib/Tarif.js')
 const tarif = new Tarif()
 var RK = require('../Lib/RK.js')
 const rk = new RK()
+var VM = require('../Lib/VM.js')
+const vm = new VM();
 
 
 
@@ -29,9 +31,7 @@ describe('webdriver.io page', function () {
 
 
 		browser.url('http://'+ testLib.TargetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
-		this.timeout(999999999999999999999999999999999999999999);
-
-		console.log(process.argv);
+		this.timeout(testLib.UrlTimeOut);
 
 		// Erstmal die Standard configuration auslesen
 		// Alle Versicherer oder nur spezielle
@@ -39,17 +39,15 @@ describe('webdriver.io page', function () {
 		// SmokeTest := Nur erste funtkionierende Kombination
 		testLib.ReadXMLAttribute(true);
  
-		// Wird nur ausgeführt bei Smoke Test und Angabe von Version --n.n.n in der Url
-		testLib.CheckVersion();
-
 		// Login
 		// Todo extrahieren
 		login.LoginUser();
 
-		
-		// Todo Test manuell anlegen und übergeben
 
-		rk.StartRKTest();
+		vn.AddVN('asfasfdsafsadfas');
+
+
+
 
 	   
 	   console.log("Test is ready");

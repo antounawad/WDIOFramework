@@ -24,17 +24,17 @@ class Tarif{
 
 	RemoveExistTariffs()
 	{
-		testLib.WaitUntil(_addTarifBtnSelector);
+		testLib.WaitUntilVisible(_addTarifBtnSelector);
 
 		while(browser.isExisting(_deleteTarifSelector))
 		{
 			testLib.OnlyClickAction(_deleteTarifSelector);
 			
-			testLib.WaitUntil(_deleteTarifBtnSelector);
+			testLib.WaitUntilVisible(_deleteTarifBtnSelector);
 			
 			testLib.ClickAction(_deleteTarifBtnSelector);
 
-			testLib.WaitUntil(_addTarifBtnSelector);
+			testLib.WaitUntilVisible(_addTarifBtnSelector);
 
 			testLib.PauseAction(500);
 			
@@ -64,33 +64,32 @@ class Tarif{
 		Selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
 		List = $(Selector);
 		Values = List.getAttribute(_ngoption, _value,true);
-		Values = this.FilterOnline(Values);
+		Values = this.ExtractExcludeIds(Values);
 
-
+		return Values;
 	}
 
-	FilterOnline(versichererIds)
+	ExtractExcludeIds(versichererIds)
 	{
-		var offline = [4];
-		offline[0] = '1090'; // Swisslife
-		offline[1] = '1062'; // LV
-		offline[2] = '9995'; // Generali
-		offline[3] = '1150'; // Saarland
-
-		var online = [versichererIds.length-offline.length];
+		var online = [versichererIds.length-testLib.ExcludeVersicherer.length];
+		var offline = [testLib.ExcludeVersicherer.length];
+		testLib.ExcludeVersicherer.forEach(function(value, index) {
+			offline[index] = value.Id[0];
+		});
+		var counter = 0;
         versichererIds.forEach(function(value, index) 
         {
-			var f = offline.find(value);
-			if(true)
+			var ind = offline.indexOf(value);
+			if(ind == -1)
             {
-                online[index] = element;
+                online[counter++] = value;
             }
         });
 
-        return offline;
+        return online;
 	}
 
-	CreateTarif(versicherer, allArr)
+	CreateTarif(versicherer,specialTarif='',specialDurchfWeg='')
 	{
 		var Selector = null;
 		var List = null;
@@ -114,22 +113,14 @@ class Tarif{
 				Values = List.getAttribute(_ngoption, _value,true);
 				Ids = List.getAttribute(_ngoption, _id,true);
 
-				// var number = versicherer['Id'][0];
-
-				// var index = Values[number];
-				// if(index == null || index < 0)
-				// {
-				// 	testLib.ClickAction('#modalContainer_btnAbbrechen');
-				// 	return;
-				// }
-
 				try
 				{
 					testLib.OnlyClickAction(Selector);
 
 					if(tarifSel == 0)
 					{
-						testLib.ClickAction('#'+Ids[Values.indexOf(versicherer['Id'][0])]);
+						var selector = '#'+Ids[Values.indexOf(versicherer)];
+						testLib.ClickAction(selector);
 
 					}
 					else
@@ -137,39 +128,36 @@ class Tarif{
 						var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
 						if(Ids.length > 1 && checkIsEnabled == null)
 						{
-							testLib.ClickAction('#'+Ids[0]);
+							var lIndex = 0;
+							if(Selector == '#SelectedItem_TariffId' && specialTarif != null && specialTarif != '')
+							{
+								lIndex = Values.indexOf(specialTarif);
+							}
+							else if(Selector == '#SelectedItem_ImplementationMethodId' && specialDurchfWeg != null && specialDurchfWeg != '')
+							{
+								lIndex = Values.indexOf(specialDurchfWeg);
+							}
+							if(lIndex == -1)
+							{
+								throw new Error("Kombination nicht gültig. Prüfe: Tarif und Ukasse");
+								lIndex = 0;
+							}
+							testLib.ClickAction('#'+Ids[lIndex]);	
 						}
 					}						
 				}catch(ex)
 				{
-					var x = "y";
+					throw new Error(ex);
 				}
 		
 		}
 		
 		testLib.ClickAction('#modalContainer_btnSpeichern');
-		
-
-		// var index = -1;
-		// if(browser.isExisting('.warningMessage'))
-		// {
-		// 	var text = browser.getText('.warningMessage');
-		// 	index = text.indexOf('Tarifkonfiguration nicht verfügbar');
-		
-		
-		// }
-		// else
-		// {
-			
-		// }
-		// return true;// index == -1;
-
-
-		
 	}
 
 	DeleteAllTarife(newTarif=false, jump=true)
 	{
+		testLib.PauseAction(1000);
 		if(jump)
 		{
 			this.Jump2TarifSite();
