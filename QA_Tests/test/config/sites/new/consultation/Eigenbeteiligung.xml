@@ -2,24 +2,18 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-<<<<<<< HEAD
-	<Name>radio_20</Name>
-=======
-	<Name>radio_15</Name>
+	<Name>r_NettoBeitrag</Name>
 	<Value>Click</Value>
-   </Field>   
-  <Field>
-	<Name>radio_16</Name>
->>>>>>> df9d0b675a2d68274d23453c6738067e81815412
-	<Value>Click</Value>
-   </Field>   
-  <Field>
-	<Name>Gesamtbeitrag</Name>
+   </Field>
+    <Field>
+	<Name>NettoVerzicht</Name>
 	<Value>120</Value>
 	<Add>true</Add>
-   </Field>   
+   </Field>
 </Fields>
 </Config>
+
+
 
 
 
