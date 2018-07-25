@@ -44,8 +44,15 @@ describe('webdriver.io page', function () {
 		login.LoginUser();
 
 
-		vn.AddVN('AutomRKTestVN');
+		//vn.AddVN('AutomRKTestVN');
 
+		//vp.AddVP("AutomRKTestVP");
+
+		rk.StartRKTest();
+
+		//consultation.AddConsultation();
+
+			
 
 
 
