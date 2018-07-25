@@ -47,10 +47,16 @@ var _btnBlurredOverlay = '#btnBlurredOverlay';
 
 var _gridSelector = '#tableList';
 
+var _btnMainAgency = '#btnXbavMainAgency';
+
+var _btnNewVn = '#btnNewVn';
+
 
 class TestLib{
 
    get UrlTimeOut(){return _UrlTimeOut};
+
+   get BtnMainAgency(){return _btnMainAgency};
 
    get BreakAtError(){return _BreakAtError === 'true'};
 
@@ -67,14 +73,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[3].substr(2)}
-     //get TargetUrl() { return process.argv[5].substr(2)}
+     //get TargetUrl() {return process.argv[3].substr(2)}
+     get TargetUrl() { return process.argv[5].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[4]
-         //let ver = process.argv[6]
+         //let ver = process.argv[4]
+         let ver = process.argv[6]
          if(ver != null)
          {
              return ver.substr(2);
@@ -246,11 +252,6 @@ class TestLib{
         {
             path = pathFile;
         }
-
-        if(title == 'Angebot – Berufsinformationen')
-        {
-            var a = 'b';
-        }
         return path;
     }
 
@@ -296,9 +297,10 @@ class TestLib{
     {
        
         var configFile = this.GetXmlConfigPath(pathFile);
-        
+
         if(fs.existsSync(configFile))
         {
+
             var fields = this.ReadXMLFieldValues(configFile);
             fields.forEach(element => {
 
@@ -329,7 +331,6 @@ class TestLib{
                 
                 if(exist)
                 {
-                    
 
                     this.PauseAction(1000);
 
@@ -403,6 +404,14 @@ class TestLib{
             });
         }
     }
+
+    SelectHauptAgentur()
+    {
+		this.WaitUntilVisible(_btnMainAgency);
+        this.OnlyClickAction(_btnMainAgency);
+        this.WaitUntilVisible(_btnNewVn);
+        
+    }    
 
 
     Next(waitTime=0)
