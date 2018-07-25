@@ -21,6 +21,7 @@ const vm = new VM();
 
 
 
+
 describe('webdriver.io page', function () {
 
 
@@ -43,13 +44,10 @@ describe('webdriver.io page', function () {
 		// Todo extrahieren
 		login.LoginUser();
 
-
-		//vn.AddVN('AutomRKTestVN');
-
-		//vp.AddVP('TestAntoun');
-	 	rk.StartRKTest();
+		testLib.SelectHauptAgentur();
 
 
+		rk.StartRKTest();
 
 	   
 	   console.log("Test is ready");
