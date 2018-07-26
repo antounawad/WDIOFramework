@@ -2,11 +2,11 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-	<Name>.md-container md-ink-ripple</Name>
+	<Name>r_NettoBeitrag</Name>
 	<Value>Click</Value>
    </Field>
 	 <Field>
-	<Name>Gesamtbeitrag</Name>
+	<Name>NettoVerzicht</Name>
 	<Value>120</Value>
 	<Add>true</Add>
    </Field>   
