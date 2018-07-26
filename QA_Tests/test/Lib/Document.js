@@ -17,8 +17,8 @@ class Document{
         }
         testLib.Navigate2Site(_SiteTitle);
         testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
-        testLib.WaitUntilVisible(_DocumentsGenerateSelector,80000);
-        testLib.PauseAction(500);
+        testLib.WaitUntilVisible(_DocumentsGenerateSelector,100000);
+        testLib.PauseAction(1000);
         assert.equal(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline'), -1 , "Fehler bei der Dokumentegenerierung");
         
     }
