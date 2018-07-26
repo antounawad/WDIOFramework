@@ -93,10 +93,10 @@
 	 </Versicherer>   	 
 	 </VersichererList>
 	 <ExcludeList>
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>KlinikRente</Name>  -->
-		 <!-- <Id>9994</Id>  -->
-	 <!-- </Versicherer>    -->
+	 <Versicherer> 
+		 <Name>CanadaLife</Name> 
+		 <Id>9997</Id> 
+	 </Versicherer>   
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
