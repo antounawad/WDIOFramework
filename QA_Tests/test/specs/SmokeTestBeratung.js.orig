@@ -44,14 +44,20 @@ describe('webdriver.io page', function () {
 		// Todo extrahieren
 		login.LoginUser();
 
-		testLib.SelectHauptAgentur();
+<<<<<<< HEAD
+
+		//vn.AddVN('AutomRKTestVN');
 
 		//vp.AddVP("AutomRKTestVP");
 
-		//rk.StartRKTest();
+		rk.StartRKTest();
 
 		//consultation.AddConsultation();
 
+			
+=======
+		testLib.SelectHauptAgentur();
+>>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
 
 
 		rk.StartRKTest();

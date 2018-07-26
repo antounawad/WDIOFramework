@@ -141,7 +141,7 @@ class RK{
 
 			this.CheckRKResult();
 
-			testLib.Navigate2Site('Auswertung – Rendite')
+			//testLib.Navigate2Site('Auswertung – Rendite')
 
 			document.GenerateDocuments();
 				
