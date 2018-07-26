@@ -90,9 +90,9 @@
 	  <Versicherer> 
 		 <Name>Allianz</Name>
 		  <Id>1006</Id>
-		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
-		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
-		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
+		 <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif>
+		 <DurchfWeg>1</DurchfWeg> Direkt 
+		 <DurchfWeg>4</DurchfWeg> Ukasse
 	  </Versicherer>
 	 <Versicherer> 
 		 <Name>Si</Name> 
@@ -104,6 +104,10 @@
 	 </versicherer> 
 	 </VersichererList>
 	 <ExcludeList>
+	 <Versicherer> 
+		 <Name>CanadaLife</Name>
+		  <Id>9997</Id>
+	  </Versicherer>
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>

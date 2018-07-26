@@ -139,7 +139,12 @@ class RK{
 
 			testLib.Navigate2Site('Angebot – Kurzübersicht')
 
-			this.CheckRKResult();
+			try{
+				this.CheckRKResult();
+			}
+			catch(ex){}
+
+			
 
 			//testLib.Navigate2Site('Auswertung – Rendite')
 
