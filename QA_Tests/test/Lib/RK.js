@@ -137,9 +137,11 @@ class RK{
 		
 			consultation.AddConsultation();
 
-			testLib.Navigate2Site('Auswertung – Rendite')
+			testLib.Navigate2Site('Angebot – Kurzübersicht')
 
 			this.CheckRKResult();
+
+			testLib.Navigate2Site('Auswertung – Rendite')
 
 			document.GenerateDocuments();
 				

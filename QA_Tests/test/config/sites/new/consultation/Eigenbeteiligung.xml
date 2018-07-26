@@ -5,13 +5,15 @@
 	<Name>r_NettoBeitrag</Name>
 	<Value>Click</Value>
    </Field>
-	 <Field>
+    <Field>
 	<Name>NettoVerzicht</Name>
 	<Value>120</Value>
 	<Add>true</Add>
-   </Field>   
+   </Field>
 </Fields>
 </Config>
+
+
 
 
 

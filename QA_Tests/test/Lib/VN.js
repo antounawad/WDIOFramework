@@ -13,11 +13,10 @@ class VN{
 
     ShowVNs(timeout=20000)
     {
-        testLib.ClickAction(_btnMainAgency, _btnNewVn,timeout,1000)
+        testLib.ClickAction(_btnNewVn,timeout,1000)
     }
 
     SearchVN(searchValue,timeout=200000){
-        this.ShowVNs(timeout)
         testLib.SearchElement(_searchSelector,searchValue)
     }
     

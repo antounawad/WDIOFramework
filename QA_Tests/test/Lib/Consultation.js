@@ -19,7 +19,7 @@ class Consultation{
         testLib.SearchElement(_bruttoLohn,value)	
     }
 
-    AddConsultation(bruttolohn)
+    AddConsultation()
     {
         testLib.AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
     }
