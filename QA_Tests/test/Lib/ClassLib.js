@@ -505,6 +505,19 @@ class TestLib{
 
     }
 
+    SetLeftMenuVisible()
+    {
+        var checkBlock = $("#navbar-left");
+
+		if(checkBlock.state == 'success')
+		{
+			if(checkBlock.getAttribute('class').indexOf('navbar-folded') >= 0)
+			{
+                this.ClickAction(this.MenueMinMax);
+            }
+		}
+    }
+
     ReadXMLAttribute(standard=false){
         
         var callback = this.CheckFieldListAttribute;
