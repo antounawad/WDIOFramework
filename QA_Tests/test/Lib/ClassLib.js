@@ -41,6 +41,10 @@ var _btnTarifSave = 'modalContainer_btnSpeichern';
 var _btnNavNext = '#btnNavNext';
 var _btnNavPrev = '#btnNavBack';
 
+var _leftSiteMenu = '#navbar-left'
+
+ 
+
 var _btnFastForward = '#btnFastForward';
 
 var _NewChapterList = ['New','Chapter','','Sites'];
@@ -519,7 +523,10 @@ class TestLib{
 
     SetLeftMenuVisible()
     {
-        var checkBlock = $("#navbar-left");
+
+        this.WaitUntilVisible(_leftSiteMenu);
+
+        var checkBlock = $(_leftSiteMenu);
 
 		if(checkBlock.state == 'success')
 		{
