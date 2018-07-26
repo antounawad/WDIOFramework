@@ -20,9 +20,9 @@ class RK{
 
 	StartRKTest()
 	{
-		vn.AddVN('AutomRKTestVN',true);
+		vn.AddVN('AutomaticVN_AA',true);
 
-		vp.AddVP('AutomRKTestVP');
+		vp.AddVP('AutomaticVP_AA');
 
 		this.CreateTarifOptions();
 
@@ -141,7 +141,7 @@ class RK{
 
 			this.CheckRKResult();
 
-			testLib.Navigate2Site('Auswertung – Rendite')
+			//testLib.Navigate2Site('Auswertung – Rendite')
 
 			document.GenerateDocuments();
 				
