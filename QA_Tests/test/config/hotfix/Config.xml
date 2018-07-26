@@ -17,7 +17,6 @@
 						<Id>1006</Id>
 					</Versicherer>
 				</Site>
-
 				<!-- <Site>  -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
 					<!-- <NewBtn>btnNewTariffConfig</NewBtn>  -->
@@ -94,10 +93,10 @@
 	 </Versicherer>   	 
 	 </VersichererList>
 	 <ExcludeList>
-	 <Versicherer> 
-		 <Name>KlinikRente</Name> 
-		 <Id>9994</Id> 
-	 </Versicherer>   
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>KlinikRente</Name>  -->
+		 <!-- <Id>9994</Id>  -->
+	 <!-- </Versicherer>    -->
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
