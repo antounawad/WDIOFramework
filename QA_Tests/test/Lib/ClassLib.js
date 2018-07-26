@@ -36,6 +36,8 @@ var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
 
+var _btnTarifSave = 'modalContainer_btnSpeichern';
+
 var _btnNavNext = '#btnNavNext';
 var _btnNavPrev = '#btnNavBack';
 
@@ -459,7 +461,17 @@ class TestLib{
         }catch(ex)
         {
             _ClickIterator += 1;
-            browser.click('btnNavBack');
+            
+            if(this.CheckIsVisible(_btnTarifSave))
+            {
+                browser.click(_btnTarifSave);
+            }
+            else if(this.CheckIsVisible(_btnNavPrev))
+            {
+
+                browser.click(_btnNavPrev);
+            }
+            
             this.ClickAction(selector, waitforVisibleSelector, timeout, pauseTime, click);
         }
 
