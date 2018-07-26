@@ -17,12 +17,12 @@
 						<Id>1006</Id>
 					</Versicherer>
 				</Site>
-				
-				<Site> 
-					<Url>Arbeitgeber – Zusch</Url>
-					<NewBtn>btnNewTariffConfig</NewBtn> 
-					<FileName>Zuschüsse.xml</FileName> 
-				</Site>	
+
+				<!-- <Site>  -->
+					<!-- <Url>Arbeitgeber – Zusch</Url> -->
+					<!-- <NewBtn>btnNewTariffConfig</NewBtn>  -->
+					<!-- <FileName>Zuschüsse.xml</FileName>  -->
+				<!-- </Site>	 -->
 				<Site>
 					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
 					<FileName>Zahlungsart.xml</FileName>
@@ -51,7 +51,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false"></Tests>
+  <Tests documents="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -89,15 +89,9 @@
 	</SelectorList>  
   <VersichererList all="true" smoke="true" breakAtError="false">
  <Versicherer> 
-		 <Name>KlinikRente</Name> 
-		 <Id>9994</Id> 
-	 </Versicherer>   
-	 
- <Versicherer> 
-		 <Name>Zürich</Name> 
-		 <Id>1138</Id> 
+		 <Name>WWK</Name> 
+		 <Id>1103</Id> 
 	 </Versicherer>   	 
-
 	 </VersichererList>
 	 <ExcludeList>
 	 <Versicherer> 
