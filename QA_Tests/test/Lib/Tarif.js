@@ -43,7 +43,8 @@ class Tarif{
 	
 	Jump2TarifSite()
 	{
-		testLib.ClickAction(testLib.MenueMinMax);
+
+		testLib.SetLeftMenuVisible();
 
 		testLib.ClickAction(_navchapter,_versorgunswerkSelector);
 
@@ -157,7 +158,6 @@ class Tarif{
 
 	DeleteAllTarife(newTarif=false, jump=true)
 	{
-		testLib.PauseAction(1000);
 		if(jump)
 		{
 			this.Jump2TarifSite();
