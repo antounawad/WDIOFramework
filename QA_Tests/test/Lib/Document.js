@@ -15,11 +15,27 @@ class Document{
         {
             return;            
         }
-        testLib.Navigate2Site(_SiteTitle);
-        testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
-        testLib.WaitUntilVisible(_DocumentsGenerateSelector,80000);
-        testLib.PauseAction(500);
-        assert.equal(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline'), -1 , "Fehler bei der Dokumentegenerierung");
+
+        try
+        {
+            testLib.Navigate2Site(_SiteTitle);
+            
+            testLib.WaitUntilVisible(_DocumentsGenerateSelector,80000);
+            
+            testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
+    
+            testLib.WaitUntilVisible(_DocumentsGenerateSelector,80000);
+            
+            assert.equal(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline'), -1 , "Fehler bei der Dokumentegenerierung");
+    
+        }
+        catch(ex)
+        {
+            throw new Error(ex);
+
+        }
+
+
         
     }
 }
