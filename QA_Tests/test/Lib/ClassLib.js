@@ -80,6 +80,7 @@ class TestLib{
      get Version() 
      {
          //let ver = process.argv[4]
+         
          let ver = process.argv[6]
          if(ver != null)
          {
