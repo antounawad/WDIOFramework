@@ -17,11 +17,11 @@
 						<Id>1006</Id>
 					</Versicherer>
 				</Site>
-				<!-- <Site> -->
+				<!-- <Site>  -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
-					<!-- <NewBtn>btnNewTariffConfig</NewBtn> -->
-					<!-- <FileName>Zuschüsse.xml</FileName> -->
-				<!-- </Site>		 -->
+					<!-- <NewBtn>btnNewTariffConfig</NewBtn>  -->
+					<!-- <FileName>Zuschüsse.xml</FileName>  -->
+				<!-- </Site>	 -->
 				<Site>
 					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
 					<FileName>Zahlungsart.xml</FileName>
@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false"></Tests>
+  <Tests documents="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -88,36 +88,15 @@
 	</SelectorList>  
   <VersichererList all="true" smoke="true" breakAtError="false">
  <Versicherer> 
-		 <Name>Si</Name> 
-		 <Id>9999</Id> 
-	 </Versicherer>   
-	  <!-- <Versicherer>  -->
-		 <!-- <Name>Allianz</Name> -->
-		  <!-- <Id>1006</Id> -->
-		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
-		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
-		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
-	  <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Si</Name>  -->
-		 <!-- <Id>1048</Id>  -->
-	 <!-- </Versicherer>  -->
- <Versicherer> 
-		 <Name>Zürich</Name> 
-		 <Id>1138</Id> 
+		 <Name>WWK</Name> 
+		 <Id>1103</Id> 
 	 </Versicherer>   	 
-
-   <!-- <versicherer>   -->
-		 <!-- <name>hdi</name>  -->
-		 <!-- <id>1033</id>  -->
-	 <!-- </versicherer>  -->
 	 </VersichererList>
 	 <ExcludeList>
-	 
-	  <!-- <Versicherer>  -->
-		 <!-- <Name>Canada Life</Name> -->
-		  <!-- <Id>9997</Id> -->
-	  <!-- </Versicherer>	  -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>KlinikRente</Name>  -->
+		 <!-- <Id>9994</Id>  -->
+	 <!-- </Versicherer>    -->
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>

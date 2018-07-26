@@ -4,11 +4,10 @@
   <Field>
 	<Name>r_NettoBeitrag</Name>
 	<Value>Click</Value>
-<<<<<<< HEAD
-   </Field>   
-  <Field>
-=======
    </Field>
+<<<<<<< HEAD
+	 <Field>
+=======
     <Field>
 >>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
 	<Name>NettoVerzicht</Name>

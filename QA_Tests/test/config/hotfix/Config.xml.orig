@@ -86,23 +86,13 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="true" breakAtError="false">
 <<<<<<< HEAD
-  	  <Versicherer> 
-		 <Name>Testversicherer</Name>
-		  <Id>9999</Id>
-		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
-		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
-		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
-	  </Versicherer>
-  
-	  <!-- <Versicherer>  -->
-		 <!-- <Name>Allianz</Name> -->
-		  <!-- <Id>1006</Id> -->
-		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
-		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
-		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
+  <VersichererList all="true" smoke="true" breakAtError="false">
+	  <Versicherer> 
+		 <Name>Allianz</Name>
+		  <Id>1006</Id>
 =======
+  <VersichererList all="false" smoke="true" breakAtError="false">
  <Versicherer> 
 		 <Name>Si</Name> 
 		 <Id>9999</Id> 
@@ -110,34 +100,22 @@
 	  <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name> -->
 		  <!-- <Id>1006</Id> -->
+>>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
 		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
 		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
 		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
->>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
 	  <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Si</Name>  -->
 		 <!-- <Id>1048</Id>  -->
 	 <!-- </Versicherer>  -->
-<<<<<<< HEAD
-   <!-- <versicherer>   -->
-		 <!-- <name>hdi</name>  -->
-		 <!-- <id>1033</id>  -->
-	 <!-- </versicherer>  -->
-=======
  <Versicherer> 
 		 <Name>Zürich</Name> 
 		 <Id>1138</Id> 
 	 </Versicherer>   	 
 
->>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
 	 </VersichererList>
 	 <ExcludeList>
-	 
-	  <Versicherer> 
-		 <Name>Canada Life</Name>
-		  <Id>9997</Id>
-	  </Versicherer>	 
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
