@@ -122,6 +122,10 @@
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
 	  </Versicherer>
+	  <!-- <Versicherer>  -->
+		 <!-- <Name>SI</Name> -->
+		  <!-- <Id>1048</Id> -->
+	  <!-- </Versicherer> -->
 	  <Versicherer> 
 		 <Name>LV</Name>
 		  <Id>1062</Id>

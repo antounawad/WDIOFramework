@@ -100,6 +100,7 @@ class Tarif{
 		for (var tarifSel = 0; tarifSel < testLib.TarifSelectoren.length; tarifSel++)
 		{
 				Selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
+				testLib.PauseAction(100);
 				if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
 				{
 					var CheckVisible = browser.isVisible(Selector); 
