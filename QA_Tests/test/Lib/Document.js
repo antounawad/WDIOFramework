@@ -3,7 +3,8 @@ var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
 
 var _DocumentsGenerateSelector = '#btn_generate';
-var _SiteTitle = 'Abschluss – Dokumente'
+var _SiteTitle = 'Abschluss – Dokumente';
+var _FailSite = 'Abschluss - Status';
 
 class Document{
 
@@ -15,7 +16,7 @@ class Document{
         {
             return;            
         }
-        testLib.Navigate2Site(_SiteTitle);
+        testLib.Navigate2Site(_SiteTitle,_FailSite);
         testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
         testLib.WaitUntilVisible(_DocumentsGenerateSelector,100000);
         testLib.PauseAction(1000);

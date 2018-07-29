@@ -79,14 +79,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[3].substr(2)}
-     //get TargetUrl() { return process.argv[5].substr(2)}
+     //get TargetUrl() {return process.argv[3].substr(2)}
+     get TargetUrl() { return process.argv[5].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[4]
-         //let ver = process.argv[6]
+         //let ver = process.argv[4]
+         let ver = process.argv[6]
          if(ver != null)
          {
              return ver.substr(2);
@@ -204,7 +204,7 @@ class TestLib{
     }
 
     // Navigiert zur Seite des Übergebenen Seitentitels
-    Navigate2Site(title)
+    Navigate2Site(title, failSite='')
     {
         try{
             if(this.BrowserTitle.indexOf(title) >= 0)
@@ -219,7 +219,15 @@ class TestLib{
             }
             while(true)
             {
-                this.ClickAction('#btnNavNext');
+                try
+                {
+                    this.WaitUntilVisible(_btnNavNext);
+                }catch(ex){}
+
+                if(this.isVisible(_btnNavNext))
+                {
+                    this.OnlyClickAction(_btnNavNext);
+                }
 
                 var index = this.BrowserTitle.indexOf(title);
                 if(index > -1 )
@@ -227,6 +235,23 @@ class TestLib{
                     _Navigate2SiteIterator = 0;
                     this.PauseAction(500);
                     break;
+                }
+
+                if(failSite != '')
+                {
+                    var indexFail = this.BrowserTitle.indexOf(failSite);
+                    if(index > -1 )
+                    {
+                        try
+                        {
+                            this.WaitUntilVisible(_btnNavPrev);
+                        }catch(ex){}
+        
+                        if(this.isVisible(_btnNavPrev))
+                        {
+                            this.OnlxClickAction(_btnNavPrev);
+                        }
+                     }
                 }
 
                 this.WaitUntilVisible(this.BtnNavNext);
