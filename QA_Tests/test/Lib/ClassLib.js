@@ -10,6 +10,7 @@ var fs = require('fs'),
 var _Documents = false;
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
+var _DurchfWege = null;
 var _ExcludeVersicherer = null;
 // Speichert die TarifSelektoren
 var _TarifSelector = null;
@@ -37,6 +38,9 @@ var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
 
 var _btnTarifSave = 'modalContainer_btnSpeichern';
+
+var _AllDurchfWege = false;
+var _DurchfWegCounter = 0;
 
 var _btnNavNext = '#btnNavNext';
 var _btnNavPrev = '#btnNavBack';
@@ -80,6 +84,10 @@ class TestLib{
    get BtnMainAgency(){return _btnMainAgency};
 
    get BreakAtError(){return _BreakAtError === 'true'};
+
+   get AllDurchfWege(){return _AllDurchfWege === 'true'};
+   
+   get DurchfWege(){return _DurchfWege};
 
     get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
@@ -597,6 +605,9 @@ class TestLib{
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
                 _Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
                 _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
+                _AllDurchfWege = result['Config']['DurchfwegList'][0].$['all'];
+                _DurchfWege =  result['Config']['DurchfwegList'][0]['DurchfWeg'];
+                var x = "y";
             }
 		})
     }
@@ -708,6 +719,33 @@ class TestLib{
             return  browser.isVisible(_WaitUntilSelector)
           }, waitTime, _message);
     }
+
+    WaitUntilEnabled(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
+    {
+        this.WaitUntilSelector = waitUntilSelector;
+        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
+        if(message != "")
+        {
+            _message = message;
+        }
+
+        if(this.CheckIsVisible(_btnBlurredOverlay))
+        {
+            this.OnlyClickAction(_btnBlurredOverlay);
+            if(this.CheckIsVisible(_gridSelector))
+            {
+                this.OnlyClickAction(_gridSelector);
+            }
+        }
+    
+
+        browser.waitUntil(function ()
+        {
+            return browser.isEnabled(_WaitUntilSelector);
+
+          }, waitTime, _message);
+
+    }    
 
     WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {

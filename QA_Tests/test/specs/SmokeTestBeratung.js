@@ -54,7 +54,7 @@ describe('webdriver.io page', function () {
 
 
 
-		rk.StartRKTest();
+		rk.StartRKTest(vn, vp);
 
 	   
 	   console.log("Test is ready");

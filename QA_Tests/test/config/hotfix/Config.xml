@@ -86,22 +86,20 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="true" breakAtError="false">
- <Versicherer> 
-		 <Name>Si</Name> 
-		 <Id>9999</Id> 
-	 </Versicherer>   
+  <VersichererList all="true" smoke="false" breakAtError="false">
+ <!-- <Versicherer>  -->
+		 <!-- <Name>Si</Name>  -->
+		 <!-- <Id>9999</Id>  -->
+	 <!-- </Versicherer>    -->
 	  <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name> -->
 		  <!-- <Id>1006</Id> -->
 		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
-		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
-		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
 	  <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Si</Name>  -->
-		 <!-- <Id>1048</Id>  -->
-	 <!-- </Versicherer>  -->
+	 <Versicherer> 
+		 <Name>Si</Name> 
+		 <Id>1048</Id> 
+	 </Versicherer> 
  <Versicherer> 
 		 <Name>Zürich</Name> 
 		 <Id>1138</Id> 
@@ -112,6 +110,17 @@
 		 <!-- <id>1033</id>  -->
 	 <!-- </versicherer>  -->
 	 </VersichererList>
+	 
+	 <DurchfwegList all="true">
+	 <DurchfWeg>
+	  <Name>Direkt</Name>
+	  <Id>1</Id>
+	 </DurchfWeg>
+	 <DurchfWeg>
+	  <Name>SBU</Name>
+	  <Id>2</Id>
+	 </DurchfWeg>	 
+	 </DurchfwegList>
 	 <ExcludeList>
 	 
 	  <!-- <Versicherer>  -->

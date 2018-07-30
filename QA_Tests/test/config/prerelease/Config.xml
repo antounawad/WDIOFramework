@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Channel>prerelease</Channel>
+  <New>
+	<Chapter>
+		<VN>
+			<Sites path="vn">
+				<Site>
+					<Url>new</Url>
+					<FileName>Stammdaten.xml</FileName>
+				</Site>
+				<Site>
+					<Url>Arbeitgeber – Tarifvorgabe</Url>
+					<FileName>Callback</FileName>
+					<Versicherer>
+						<Name>Allianz</Name>
+						<Id>1006</Id>
+					</Versicherer>
+				</Site>
+				<!-- <Site>  -->
+					<!-- <Url>Arbeitgeber – Zusch</Url> -->
+					<!-- <NewBtn>btnNewTariffConfig</NewBtn>  -->
+					<!-- <FileName>Zuschüsse.xml</FileName>  -->
+				<!-- </Site>	 -->
+				<Site>
+					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
+					<FileName>Zahlungsart.xml</FileName>
+				</Site>				
+			</Sites>
+		</VN>
+		<VP>
+			<Sites path="vp">
+				<Site>
+					<Url>new</Url>
+					<FileName>Stammdaten.xml</FileName>
+				</Site>
+			</Sites>
+		</VP>
+		<Consultation>
+			<Sites path="consultation">
+				<Site>
+					<Url>new</Url>
+					<FileName>Beratung.xml</FileName>
+				</Site>
+				<Site>
+					<Url>Eigenbeteiligung</Url>
+					<FileName>Eigenbeteiligung.xml</FileName>
+				</Site>				
+			</Sites>
+		</Consultation>
+	</Chapter>
+  </New>
+  <Tests documents="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -20,7 +70,7 @@
 	</Selector>
 	<Selector>
 		<Value>SelectedItem_TariffOptionId</Value>
-		<CheckVisible>false</CheckVisible>
+		<CheckVisible>true</CheckVisible>
 	</Selector>
 		<Selector>
 		<Value>SelectedItem_BavPledgeId</Value>
@@ -36,19 +86,42 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="true">
-	<Versicherer>
-		<Name>Allianz</Name>
-		<Id>1006</Id>
-	</Versicherer>
-	<Versicherer>
-		<Name>Si</Name>
-		<Id>1048</Id>
-	</Versicherer>
-  <Versicherer>
-		<Name>Hdi</Name>
-		<Id>1033</Id>
-	</Versicherer>
-
-	</VersichererList>
+  <VersichererList all="true" smoke="true" breakAtError="false">
+ <Versicherer> 
+		 <Name>WWK</Name> 
+		 <Id>1103</Id> 
+	 </Versicherer>   	 
+	 </VersichererList>
+	 <ExcludeList>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>KlinikRente</Name>  -->
+		 <!-- <Id>9994</Id>  -->
+	 <!-- </Versicherer>    -->
+	  <Versicherer> 
+		 <Name>Swisslife</Name>
+		  <Id>1090</Id>
+	  </Versicherer>
+	  <Versicherer> 
+		 <Name>LV</Name>
+		  <Id>1062</Id>
+	  </Versicherer>
+	  	  <Versicherer> 
+		 <Name>Generali</Name>
+		  <Id>9995</Id>
+	  </Versicherer>
+	  <Versicherer> 
+		 <Name>Saarland</Name>
+		  <Id>1150</Id>
+	  </Versicherer>
+	 </ExcludeList>
+	 <DurchfwegList all="false">
+	 <DurchfWeg>
+	  <Name>Direkt</Name>
+	  <Value>1</Value>
+	 </DurchfWeg>
+	 <DurchfWeg>
+	  <Name>SBU</Name>
+	  <Value>2</Value>
+	 </DurchfWeg>	 
+	 </DurchfwegList>	 
 </Config>

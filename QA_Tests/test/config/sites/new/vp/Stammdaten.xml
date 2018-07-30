@@ -3,7 +3,7 @@
 <Fields>
   <Field>
 	<Name>Firstname</Name>
-	<Value>AutomaticVP_AA</Value>
+	<Value>AutomRKTestVP</Value>
    </Field>
   <Field>
 	<Name>Street</Name>
@@ -11,7 +11,7 @@
    </Field>
   <Field>
 	<Name>Lastname</Name>
-	<Value>AutomaticVP_AA</Value>
+	<Value>AutomRKTestVP</Value>
    </Field>
   <Field>
 	<Name>Zip</Name>

@@ -1,11 +1,6 @@
 var assert = require('assert');
 var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
-var Consultation = require('../Lib/Consultation.js')
-const consultation = new Consultation();
-var Document = require('../Lib/Document.js')
-const document = new Document();
-
 var _deleteTarifSelector = '.ng-scope.md-font.mdi.mdi-24px.mdi-delete';
 var _deleteTarifBtnSelector = '#modalDeleteAreYouSure_btnLöschen';
 var _addTarifBtnSelector = '#btnNewTariffConfig';
@@ -74,11 +69,11 @@ class Tarif{
 	GetAllDurchfWege()
 	{
 		_It_Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
-		_It_List = $(_It_Selector);
-		_It_Values = _It_List.getAttribute(_ngoption, _value,true);
-		_It_Values = this.ExtractExcludeIds(_It_Values);
+		_It_List = $(Selector);
+		_It_Values = List.getAttribute(_ngoption, _value,true);
+		_It_Values = this.ExtractExcludeIds(Values);
 
-		return _It_Values;
+		return Values;
 	}
 
 	ExtractExcludeIds(versichererIds)
@@ -101,9 +96,12 @@ class Tarif{
         return online;
 	}
 
+<<<<<<< Updated upstream
+	CreateTarif(versicherer)
+=======
 	GetDurchfWegArray()
 	{
-		if(!testLib.AllDurchfWege)
+		if(testLib.AllDurchfWege)
 		{
 			var durchfwegArr = [testLib.DurchfWege.length];
 			testLib.DurchfWege.forEach(function(value, index) 
@@ -121,6 +119,7 @@ class Tarif{
 	
 
 	CreateSmokeTarif(versicherer)
+>>>>>>> Stashed changes
 	{
 		var Selector = null;
 		var List = null;
@@ -181,86 +180,64 @@ class Tarif{
 		var Ids = null;
 
 		try
-		{	
-			var durchfSel = 0;
-			while(true)
+		{		
+
+			Selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
+			List = $(Selector);
+			Values = List.getAttribute(_ngoption, _value,true);
+			Ids = List.getAttribute(_ngoption, _id,true);
+
+			testLib.OnlyClickAction(Selector);	
+			var selector = '#'+Ids[Values.indexOf(versicherer)];
+			testLib.OnlyClickAction(selector);
+
+			for(var durchfSel = 0; durchfSel <= this.GetDurchfWegArray.length-1; durchfSel++)
 			{
-				
-				Selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
+				Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
 				List = $(Selector);
 				Values = List.getAttribute(_ngoption, _value,true);
 				Ids = List.getAttribute(_ngoption, _id,true);
 
 				testLib.OnlyClickAction(Selector);	
-				var selector = '#'+Ids[Values.indexOf(versicherer)];
-				testLib.OnlyClickAction(selector);
-			
+				var selector = '#'+Ids[Values.indexOf(testLib.DurchfWege[durchfSel])];
+				testLib.ClickAction(selector);
 
-				var durchfWegeArr = this.GetDurchfWegArray();
-				
-					Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
-					List = $(Selector);
-					Values = List.getAttribute(_ngoption, _value,true);
-					Ids = List.getAttribute(_ngoption, _id,true);
+				for (var tarifSel = 2; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
+				{
+					//for(var durchfSel = 0; durchfSel <= this.GetDurchfWegArray.length-1; durchfSel++)
 
-					testLib.OnlyClickAction(Selector);	
-					var x0 = durchfWegeArr[durchfSel];
-					var x1 = Values.indexOf(x0)
-					var selector = '#'+Ids[x1];
-					testLib.ClickAction(selector);
-
-					for (var tarifSel = 2; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
-					{
-			
-							Selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
-							if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
+						Selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
+						if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
+						{
+							var CheckVisible = browser.isVisible(Selector); 
+							if(!CheckVisible)
 							{
-								var CheckVisible = browser.isVisible(Selector); 
-								if(!CheckVisible)
-								{
-									continue;
-								}
+								continue;
 							}
-			
-							List = $(Selector);
-							Values = List.getAttribute(_ngoption, _value,true);
-							Ids = List.getAttribute(_ngoption, _id,true);
-			
-							try
-							{
-								testLib.OnlyClickAction(Selector);
-			
-									var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
-									if(Ids.length > 1 && checkIsEnabled == null)
-									{
-										testLib.ClickAction('#'+Ids[0]);	
-									}
-														
-							}catch(ex)
-							{
-								throw new Error(ex);
-							}
-					
-					}
-					testLib.ClickAction('#modalContainer_btnSpeichern');
-					this.CheckAngebot();
+						}
 
-					durchfSel++;
-					if(durchfSel > durchfWegeArr.length-1)
-					{
-						testLib.ClickAction('#modalContainer_btnAbbrechen');
-						break;
-					}
+						List = $(Selector);
+						Values = List.getAttribute(_ngoption, _value,true);
+						Ids = List.getAttribute(_ngoption, _id,true);
+
+						testLib.OnlyClickAction(Selector);
+
+						var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
+						if(Ids.length > 1 && checkIsEnabled == null)
+						{
+							testLib.ClickAction('#'+Ids[0]);	
+						}
+						
 				
+				}
 			}
-			
 
 	}catch(ex)
 	{
 		throw new Error(ex);
 	}
 		
-		
+		testLib.ClickAction('#modalContainer_btnSpeichern');
 	}
 
 	DeleteAllTarife(newTarif=false, jump=true)
@@ -275,39 +252,6 @@ class Tarif{
 			this.AddTarif();
 		}
 	}
-
-	CheckAngebot(newTarif=true) {
-		testLib.Navigate2Site('Beratungsübersicht');
-
-	   consultation.AddConsultation();
-
-		var failSite = testLib.StatusSiteTitle+':'+testLib.NavChapterAngebot+':'+testLib.LinkAngebotKurzUebersicht;
-		testLib.Navigate2Site('Angebot – Kurzübersicht',failSite);
-
-		this.CheckRKResult();
-
-		document.GenerateDocuments();
-
-		this.DeleteAllTarife(newTarif);
-	}	
-
-
-	CheckRKResult() {
-		testLib.WaitUntilVisible(testLib.BtnNavNext, 100000);
-
-		var errorBlock = $("md-card[ng-show='HasErrorMessages']");
-
-		if (errorBlock !== undefined) {
-			assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']") + browser.getText("div[class='label-details']"));
-		}
-		else {
-			assert.equal(0, 1, 'Rechenkernseite prüfen');
-		}
-
-	}	
-
-	
-	
 	
 }
 

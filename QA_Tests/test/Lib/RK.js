@@ -1,10 +1,10 @@
 var TestLib = require('../Lib/ClassLib.js')
- var assert = require('assert');
+var assert = require('assert');
 const testLib = new TestLib();
-var VN = require('../Lib/VN.js')
-const vn = new VN()
-var VP = require('../Lib/VP.js')
-const vp = new VP()
+// var VN = require('../Lib/VN.js')
+// const vn = new VN()
+// var VP = require('../Lib/VP.js')
+// const vp = new VP()
 var Consultation = require('../Lib/Consultation.js')
 const consultation = new Consultation()
 var Tarif = require('../Lib/Tarif.js')
@@ -16,142 +16,87 @@ var _ErrorList = [100];
 var _ErrorCounter = 0;
 
 
-class RK{
+class RK {
 
-	StartRKTest()
-	{
-		vn.AddVN('AutomRKTestVN',true);
+	StartRKTest(vn, vp) {
+		vn.AddVN('AutomRKTestVN', true);
 
 		vp.AddVP('AutomRKTestVP');
 
 		this.CreateTarifOptions();
 
-		if(!testLib.BreakAtError)
-		{
-			if(_ErrorList.length > 1)
-			{
+		if (!testLib.BreakAtError) {
+			if (_ErrorList.length > 1) {
 				console.log("Fehler beim RK Test");
-				_ErrorList.forEach(function(value, index) 
-				{
+				_ErrorList.forEach(function (value, index) {
 					console.log(value)
 				});
-				  
+
 				//throw new Error("Fehler beim RK Test, siehe vorige Logs...")
-				  
+
 			}
 
-		}		
+		}
 	}
 
-	CreateTarifOptions()
-	{
+	CreateTarifOptions() {
 		tarif.DeleteAllTarife(true);
 
-
-		if(testLib.Versicherer != null && testLib.SmokeTest)
-		{
-			var iterateArr = testLib.Versicherer;
-			if(testLib.AllVersicherer)
-			{
-				var onlineTarife = tarif.GetAllTarife();
-				onlineTarife.forEach(versicherer => {
-
-					try
-					{
-						this.Navigate2RK(versicherer);
-					}
-					catch(ex)
-					{
-						
-					   this.ErrorFunction(ex);		
-					}
-				 
-				   });
-				
-			}
-			else
-			{
-				testLib.Versicherer.forEach(versicherer => {
-			
-					try
-					{
-
-						this.Navigate2RK(versicherer['Id'][0]);
-					}
-					catch(ex)
-					{
-						
-					   this.ErrorFunction(ex);		
-					}
-					
-					
-			   });
-	   
-			}
-
-
-		}
+		this.Navigate2RK();
 	}
 
-	ErrorFunction(ex)
-	{
-		if(!testLib.BreakAtError)
-		{
+	ErrorFunction(ex) {
+		if (!testLib.BreakAtError) {
 			_ErrorList[_ErrorCounter++] = ex.message;
-			tarif.DeleteAllTarife(true);	
+			tarif.DeleteAllTarife(true);
 		}
-		else
-		{
+		else {
 			throw new Error(ex);
-		}		
+		}
 	}
 
 
-	CheckRKResult()
-	{
-		    testLib.WaitUntilVisible(testLib.BtnNavNext,100000);
-			
-			var errorBlock = $("md-card[ng-show='HasErrorMessages']");
-	
-			if(errorBlock !== undefined)
-			{
-				assert.notEqual(errorBlock.getAttribute('class').indexOf('ng-hide'), -1, 'Fehler bei Angebotserstellung für Tarif: ' + browser.getText("span[class='label-tarif']")+ browser.getText("div[class='label-details']"));
-			}
-			else
-			{
-				assert.equal(0, 1, 'Rechenkernseite prüfen');
-			} 
 
-	}
+	Navigate2RK(versicherer) {
+		try {
 
 
-	Navigate2RK(versicherer)
-	{
-		try
-		{
-			tarif.CreateTarif(versicherer);
+			this.GetVersichererArray().forEach(versicherer => {
 
-			testLib.Navigate2Site('Beratungsübersicht');
-		
-			consultation.AddConsultation();
-
-			var failSite = testLib.StatusSiteTitle+':'+testLib.NavChapterAngebot+':'+testLib.LinkAngebotKurzUebersicht;
-			testLib.Navigate2Site('Angebot – Kurzübersicht',failSite);
-
-			this.CheckRKResult();
-
-			//testLib.Navigate2Site('Auswertung – Rendite')
-
-			document.GenerateDocuments();
+				try {
+					if (testLib.SmokeTest) {
+						tarif.CreateSmokeTarif(versicherer);
+						tarif.CheckAngebot();
+					}
+					else {
+						tarif.CreateListTarif(versicherer);
+					}
+				}
+				catch (ex) {
+					this.ErrorFunction(ex);
+				}
 				
-				//testLib.Next(500);
-
-			tarif.DeleteAllTarife(true);	
+			});
 		}
-		catch(ex)
-		{
+		catch (ex) {
 			throw new Error(ex);
 		}
+	}
+
+
+
+	GetVersichererArray() {
+		
+		if (!testLib.AllVersicherer) {
+			var versicherArr = [testLib.Versicherer.length];
+			testLib.Versicherer.forEach(function (value, index) {
+				versicherArr[index] = value['Id'][0];
+			});
+
+			return versicherArr;
+		}
+
+		return tarif.GetAllVersicherer();
 	}
 
 }
