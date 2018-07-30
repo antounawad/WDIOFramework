@@ -5,7 +5,8 @@ var _deleteTarifSelector = '.ng-scope.md-font.mdi.mdi-24px.mdi-delete';
 var _deleteTarifBtnSelector = '#modalDeleteAreYouSure_btnLöschen';
 var _addTarifBtnSelector = '#btnNewTariffConfig';
 var _versorgunswerkSelector = '#navViewLink_VnVnVersorgungswerk';
-var _navchapter = '#navChapterLink_1';
+
+
 var _ngoption = 'md-option[ng-repeat]';
 var _value = 'value';
 var _id = 'id';
@@ -43,13 +44,7 @@ class Tarif{
 	
 	Jump2TarifSite()
 	{
-
-		testLib.SetLeftMenuVisible();
-
-		testLib.ClickAction(_navchapter,_versorgunswerkSelector);
-
-		testLib.ClickAction(_versorgunswerkSelector);
-
+		testLib.Jump2Chapter(testLib.NavChapterTarif, _versorgunswerkSelector);
 	}
 
 	AddTarif()
@@ -90,7 +85,7 @@ class Tarif{
         return online;
 	}
 
-	CreateTarif(versicherer,specialTarif='',specialDurchfWeg='')
+	CreateTarif(versicherer)
 	{
 		var Selector = null;
 		var List = null;
@@ -129,21 +124,7 @@ class Tarif{
 						var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
 						if(Ids.length > 1 && checkIsEnabled == null)
 						{
-							var lIndex = 0;
-							if(Selector == '#SelectedItem_TariffId' && specialTarif != null && specialTarif != '')
-							{
-								lIndex = Values.indexOf(specialTarif);
-							}
-							else if(Selector == '#SelectedItem_ImplementationMethodId' && specialDurchfWeg != null && specialDurchfWeg != '')
-							{
-								lIndex = Values.indexOf(specialDurchfWeg);
-							}
-							if(lIndex == -1)
-							{
-								throw new Error("Kombination nicht gültig. Prüfe: Tarif und Ukasse");
-								lIndex = 0;
-							}
-							testLib.ClickAction('#'+Ids[lIndex]);	
+							testLib.ClickAction('#'+Ids[0]);	
 						}
 					}						
 				}catch(ex)

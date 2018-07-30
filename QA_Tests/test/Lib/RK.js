@@ -75,10 +75,8 @@ class RK{
 			
 					try
 					{
-						var specialTarif = testLib.CheckFieldAttribute('Tarif',versicherer);
-						var specialDurchfWeg = testLib.CheckFieldAttribute('DurchfWeg',versicherer); 
 
-						this.Navigate2RK(versicherer['Id'][0],specialTarif, specialDurchfWeg);
+						this.Navigate2RK(versicherer['Id'][0]);
 					}
 					catch(ex)
 					{
@@ -127,17 +125,18 @@ class RK{
 	}
 
 
-	Navigate2RK(versicherer,specialTarif='',specialDurchfWeg='')
+	Navigate2RK(versicherer)
 	{
 		try
 		{
-			tarif.CreateTarif(versicherer,specialTarif,specialDurchfWeg);
+			tarif.CreateTarif(versicherer);
 
 			testLib.Navigate2Site('Beratungsübersicht');
 		
 			consultation.AddConsultation();
 
-			testLib.Navigate2Site('Angebot – Kurzübersicht')
+			var failSite = testLib.StatusSiteTitle+':'+testLib.NavChapterAngebot+':'+testLib.LinkAngebotKurzUebersicht;
+			testLib.Navigate2Site('Angebot – Kurzübersicht',failSite);
 
 			this.CheckRKResult();
 

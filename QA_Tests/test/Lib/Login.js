@@ -9,7 +9,7 @@ var _passwordSelector = '#Password';
 var _usernameSelector = '#Username';
 
 class Login{
-    LoginUser(password=_passwd,username=_user,passwordSelector=_passwd, loginBtnSelector=_loginBtnSelector,usernameSelector=_usernameSelector){
+    LoginUser(password=_passwd,username=_user,passwordSelector=_passwordSelector, loginBtnSelector=_loginBtnSelector,usernameSelector=_usernameSelector){
  		var userElement = browser.element(usernameSelector);
  		assert.notEqual(userElement, null);
  		userElement.setValue(username);
