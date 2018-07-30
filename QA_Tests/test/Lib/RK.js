@@ -20,9 +20,9 @@ class RK{
 
 	StartRKTest()
 	{
-		vn.AddVN('AutomaticVN_AA',true);
+		vn.AddVN('AutomRKTestVN',true);
 
-		vp.AddVP('AutomaticVP_AA');
+		vp.AddVP('AutomRKTestVP');
 
 		this.CreateTarifOptions();
 

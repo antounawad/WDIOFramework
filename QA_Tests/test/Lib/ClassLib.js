@@ -57,8 +57,23 @@ var _btnMainAgency = '#btnXbavMainAgency';
 
 var _btnNewVn = '#btnNewVn';
 
+var _NavchapterTarif = '#navChapterLink_1'; // Arbeitgeber
+var _NavchapterAngebot = '#navChapterLink_6' // Angebot
+var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
+var _StatusSiteTitle = 'Abschluss - Status';
+var _LinkAngebotKurzUebersicht = 'navViewLink_AngebotAngebotVersichererangebot';
+
+
 
 class TestLib{
+
+    get NavChapterTarif(){return _NavchapterTarif};
+    get NavChapterAngebot(){return _NavchapterAngebot};
+    get NavChapterDokumente(){return _NavchapterDokumente};
+
+    get StatusSiteTitle(){return _StatusSiteTitle}
+
+    get LinkAngebotKurzUebersicht(){return _LinkAngebotKurzUebersicht};
 
    get UrlTimeOut(){return _UrlTimeOut};
 
@@ -207,28 +222,14 @@ class TestLib{
     Navigate2Site(title, failSite='')
     {
         try{
-            if(this.BrowserTitle.indexOf(title) >= 0)
-            {
-                _Navigate2SiteIterator = 0;
-                return;
-            }
+            this.PauseAction(500);
 
-            if(_Navigate2SiteIterator >= 100)
+            if(_Navigate2SiteIterator >= 50)
             {
                 throw new Error("Zu viele Navigate2Site Iterationen");
             }
             while(true)
-            {
-                try
-                {
-                    this.WaitUntilVisible(_btnNavNext);
-                }catch(ex){}
-
-                if(this.isVisible(_btnNavNext))
-                {
-                    this.OnlyClickAction(_btnNavNext);
-                }
-
+            { 
                 var index = this.BrowserTitle.indexOf(title);
                 if(index > -1 )
                 {
@@ -239,34 +240,53 @@ class TestLib{
 
                 if(failSite != '')
                 {
-                    var indexFail = this.BrowserTitle.indexOf(failSite);
-                    if(index > -1 )
+                    var fSiteArr = String(failSite).split(":");
+                    var indexFail = this.BrowserTitle.indexOf(fSiteArr[0]);
+                    if(indexFail >= 0)
                     {
-                        try
-                        {
-                            this.WaitUntilVisible(_btnNavPrev);
-                        }catch(ex){}
-        
-                        if(this.isVisible(_btnNavPrev))
-                        {
-                            this.OnlxClickAction(_btnNavPrev);
-                        }
+                        this.Jump2Chapter(fSiteArr[1],fSiteArr[2]);
+                        this.Navigate2Site(title, failSite);
                      }
-                }
+                }                
+
+               
 
                 this.WaitUntilVisible(this.BtnNavNext);
+                this.OnlyClickAction(this.BtnNavNext);
                
                 this.CheckSiteFields();
             }
         }catch(err){
             console.log(err)
             _Navigate2SiteIterator += 1;
-            this.Navigate2Site(title);
+            this.Navigate2Site(title, failSite);
         }finally
         {
             this.CheckSiteFields();
         }
     }
+
+    Jump2FailSite(failSite,title)
+    {
+        if(failSite === '')
+        {
+            this.Navigate2Site(title);
+            return;
+        }
+        var chapterLink = String(failSite).split(":");
+        this.Jump2Chapter(chapterLink[0], chapterLink[1])
+    }
+
+    Jump2Chapter(chapter, link)
+    {
+		this.SetLeftMenuVisible();
+
+		this.ClickAction(chapter, link);
+
+		this.ClickAction(link);
+    }
+
+
 
     GetXmlConfigPath(pathFile)
     {

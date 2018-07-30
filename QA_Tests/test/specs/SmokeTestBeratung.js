@@ -46,6 +46,13 @@ describe('webdriver.io page', function () {
 
 		testLib.SelectHauptAgentur();
 
+		//vp.AddVP("AutomRKTestVP");
+
+		//rk.StartRKTest();
+
+		//consultation.AddConsultation();
+
+
 
 		rk.StartRKTest();
 

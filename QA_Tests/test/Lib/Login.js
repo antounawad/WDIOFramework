@@ -2,18 +2,19 @@ var assert = require('assert');
 var TestLib = require('../Lib/ClassLib.js')
 const testLib = new TestLib();
 
+var _passwd = 'qvbno@12F5';
+var _user   = 'hans-peter.bremer';
+var _loginBtnSelector = '#ID_Login_Button';
+var _passwordSelector = '#Password';
+var _usernameSelector = '#Username';
+
 class Login{
-    LoginUser(password='qvbno@12F5',username='hans-peter.bremer',passwordSelector='#Password', loginBtnSelector='#ID_Login_Button',usernameSelector='#Username'){
+    LoginUser(password=_passwd,username=_user,passwordSelector=_passwd, loginBtnSelector=_loginBtnSelector,usernameSelector=_usernameSelector){
  		var userElement = browser.element(usernameSelector);
- 		console.log(userElement);
  		assert.notEqual(userElement, null);
-
  		userElement.setValue(username);
-
  		var passwdElement = browser.element(passwordSelector);
- 		console.log(passwdElement);
  		assert.notEqual(passwdElement, null);
-
  		passwdElement.setValue(password);
  		testLib.ClickAction(loginBtnSelector);
 	}
