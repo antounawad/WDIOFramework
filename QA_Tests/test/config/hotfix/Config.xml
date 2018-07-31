@@ -97,8 +97,8 @@
 		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
 	  <!-- </Versicherer> -->
 	 <Versicherer> 
-		 <Name>Bayerische</Name> 
-		 <Id>1013</Id> 
+		 <Name>SI</Name> 
+		 <Id>1048</Id> 
 	 </Versicherer> 
  <Versicherer> 
 		 <Name>Zürich</Name> 
@@ -112,14 +112,18 @@
 	 </VersichererList>
 	 
 	 <DurchfwegList all="true">
+	 <!-- <DurchfWeg> -->
+	  <!-- <Name>Direkt</Name> -->
+	  <!-- <Id>1</Id> -->
+	 <!-- </DurchfWeg> -->
 	 <DurchfWeg>
-	  <Name>Direkt</Name>
-	  <Id>1</Id>
-	 </DurchfWeg>
-	 <DurchfWeg>
-	  <Name>SBU</Name>
-	  <Id>4</Id>
+	  <Name>Pensionskasse</Name>
+	  <Id>2</Id>
 	 </DurchfWeg>	 
+	 <!-- <DurchfWeg> -->
+	  <!-- <Name>SBU</Name> -->
+	  <!-- <Id>4</Id> -->
+	 <!-- </DurchfWeg>	  -->
 	 </DurchfwegList>
 	 <ExcludeList>
 	 

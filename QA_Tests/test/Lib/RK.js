@@ -29,6 +29,9 @@ class RK {
 			this.CreateTarifOptions();
 		}catch(ex)
 		{
+			if(String(ex.message).indexOf('AssertionError') >= 0)
+				throw new Error(ex);
+
 			this.CreateTarifOptions();
 		}
 	}
@@ -42,12 +45,14 @@ class RK {
 	ErrorFunction(message) {
 		if (!testLib.BreakAtError) {
 			console.log(message);
-			_ErrorList[_ErrorCounter++] = ex.message;
+			_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+'.png');
+			testLib.TakeErrorShot(String(_ErrorCounter)+'.png');
 			tarif.DeleteAllTarife(true);
+			_ErrorCounter += 1;
 		}
 		else {
 			console.log("BreakAtError = false; Fehler:")
-			assert.equal(1,0,ex.message);
+			assert.equal(1,0,message);
 		}
 	}
 
@@ -64,7 +69,7 @@ class RK {
 				try {
 					if (testLib.SmokeTest) {
 						tarif.CreateSmokeTarif(versicherer);
-						tarif.CheckAngebot(vArr.length != i+1);
+						tarif.CheckAngebot(vArr.length != i+1,true);
 					}
 					else {
 						tarif.CreateListTarif(versicherer,vArr.length != i+1);

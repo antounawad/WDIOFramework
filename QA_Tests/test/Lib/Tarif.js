@@ -206,6 +206,55 @@ class Tarif{
 
 				var durchfWegLength = 1;
 
+				List = $(Selector);
+				Values = List.getAttribute(_ngoption, _value,true);
+				Ids = List.getAttribute(_ngoption, _id,true);
+
+				var durchfWegeArr = this.GetDurchfWegArray();
+				
+
+				if(!testLib.AllDurchfWege)
+				{
+					var found = false;
+					var x0 = durchfWegeArr[durchfSel];
+					if(Values.indexOf(x0) == -1)
+					{
+						if(newTarif)
+						{
+							browser.refresh();
+							testLib.WaitUntilVisible(_addTarifBtnSelector)
+							this.AddTarif();
+							durchfSel++;
+							if(durchfSel > durchfWegeArr.length)
+							{
+								break;
+							}
+							continue;
+								
+						}
+												
+					}
+					// for(var check = 0;check <= durchfWegeArr.length-1; check++)
+					// {
+					// 	found = Values.indexOf(durchfWegeArr[check]) >= 0;
+					// 	if(found)
+					// 	{
+					// 		break;
+					// 	}
+					// }
+					// if(!found)
+					// {
+					// 	testLib.ClickAction('#modalContainer_btnAbbrechen');
+					// 	if(newTarif)
+					// 	{
+					// 		browser.refresh();
+					// 		testLib.WaitUntilVisible(_addTarifBtnSelector)
+					// 		this.AddTarif();
+					// 	}
+					// 	break;	
+					// }
+				}
+
 				if(checkIsEnabled == null)
 				{
 					var durchfWegeArr = this.GetDurchfWegArray();
@@ -257,7 +306,7 @@ class Tarif{
 					
 					}
 					testLib.ClickAction('#modalContainer_btnSpeichern');
-					this.CheckAngebot(newTarif);
+					this.CheckAngebot(newTarif,true);
 					durchfSel++;
 					if(durchfSel > durchfWegLength-1)
 					{
@@ -287,7 +336,18 @@ class Tarif{
 		}
 	}
 
-	CheckAngebot(newTarif=true) {
+	CheckAngebot(newTarif=true,short=false) {
+		if(short)
+		{
+			browser.refresh();
+			testLib.WaitUntilVisible(_addTarifBtnSelector)
+			this.DeleteAllTarife(newTarif);
+			return;
+		}		
+		
+
+
+
 		testLib.Navigate2Site('Beratungsübersicht');
 
 	   consultation.AddConsultation();

@@ -93,6 +93,8 @@ class TestLib{
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
 
+    get ErrorShotPath(){return _executablePath+'errorShots\\'}
+
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer(){ return _Versicherer};
 
@@ -169,6 +171,12 @@ class TestLib{
 
 
     get TarifSiteSelector(){return _TarifSiteSelector};
+
+
+    TakeErrorShot(message)
+    {
+        browser.saveScreenshot(this.ErrorShotPath+message+'.png')
+    }
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
