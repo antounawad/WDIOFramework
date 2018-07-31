@@ -234,25 +234,6 @@ class Tarif{
 						}
 												
 					}
-					// for(var check = 0;check <= durchfWegeArr.length-1; check++)
-					// {
-					// 	found = Values.indexOf(durchfWegeArr[check]) >= 0;
-					// 	if(found)
-					// 	{
-					// 		break;
-					// 	}
-					// }
-					// if(!found)
-					// {
-					// 	testLib.ClickAction('#modalContainer_btnAbbrechen');
-					// 	if(newTarif)
-					// 	{
-					// 		browser.refresh();
-					// 		testLib.WaitUntilVisible(_addTarifBtnSelector)
-					// 		this.AddTarif();
-					// 	}
-					// 	break;	
-					// }
 				}
 
 				if(checkIsEnabled == null)
