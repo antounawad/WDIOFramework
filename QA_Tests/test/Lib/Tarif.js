@@ -21,11 +21,16 @@ var _It_Selector = null;
 var _It_List = null;
 var _It_Values = null;
 var _It_Selector = null;
+var _ResultArr = [100];
+var _ResultCounter = 0;
+
 
 
 class Tarif{
 
 	get TarifTitle(){return _tarifTitle};
+	get ResultArr(){return _ResultArr};
+	get ResultCounter(){return _ResultCounter++};
 
     ShowTarif(timeout=10000,pause=3000){
    		testLib.ClickAction(testLib.BtnNavNext,_beratungTarifSelector, timeout, pause)
@@ -76,7 +81,6 @@ class Tarif{
 		_It_Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
 		_It_List = $(_It_Selector);
 		_It_Values = _It_List.getAttribute(_ngoption, _value,true);
-		_It_Values = this.ExtractExcludeIds(_It_Values);
 
 		return _It_Values;
 	}
@@ -92,7 +96,8 @@ class Tarif{
         versichererIds.forEach(function(value, index) 
         {
 			var ind = offline.indexOf(value);
-			if(ind == -1)
+			var ind2 = _ResultArr.indexOf(value);
+			if(ind == -1 && ind2 == -1)
             {
                 online[counter++] = value;
             }
@@ -173,7 +178,7 @@ class Tarif{
 	}
 
 
-	CreateListTarif(versicherer)
+	CreateListTarif(versicherer, newTarif=true)
 	{
 		var Selector = null;
 		var List = null;
@@ -196,9 +201,17 @@ class Tarif{
 				testLib.OnlyClickAction(selector);
 			
 
-				var durchfWegeArr = this.GetDurchfWegArray();
+				Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
+				var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
+
+				var durchfWegLength = 1;
+
+				if(checkIsEnabled == null)
+				{
+					var durchfWegeArr = this.GetDurchfWegArray();
+					durchfWegLength = durchfWegeArr.length;
 				
-					Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
+					
 					List = $(Selector);
 					Values = List.getAttribute(_ngoption, _value,true);
 					Ids = List.getAttribute(_ngoption, _id,true);
@@ -208,6 +221,7 @@ class Tarif{
 					var x1 = Values.indexOf(x0)
 					var selector = '#'+Ids[x1];
 					testLib.ClickAction(selector);
+				}
 
 					for (var tarifSel = 2; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
 					{
@@ -243,15 +257,12 @@ class Tarif{
 					
 					}
 					testLib.ClickAction('#modalContainer_btnSpeichern');
-					this.CheckAngebot();
-
+					this.CheckAngebot(newTarif);
 					durchfSel++;
-					if(durchfSel > durchfWegeArr.length-1)
+					if(durchfSel > durchfWegLength-1)
 					{
-						testLib.ClickAction('#modalContainer_btnAbbrechen');
 						break;
 					}
-				
 			}
 			
 

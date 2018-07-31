@@ -224,6 +224,7 @@ class TestLib{
     CheckIsVisible(selector)
     {
         var result = browser.isVisible(selector);
+        return result;
     }
 
     // Navigiert zur Seite des Übergebenen Seitentitels
@@ -287,9 +288,11 @@ class TestLib{
 
     Jump2Chapter(chapter, link)
     {
-		this.SetLeftMenuVisible();
-
-		this.ClickAction(chapter, link);
+        this.SetLeftMenuVisible();
+        if(!this.CheckIsVisible(link))
+        {
+            this.ClickAction(chapter, link);
+        }
 
 		this.ClickAction(link);
     }
@@ -486,6 +489,8 @@ class TestLib{
     }
 
     OnlyClickAction(selector, pauseTime=0){
+     try{
+        
         if(!browser.isExisting(selector))
         {
             return;
@@ -499,6 +504,28 @@ class TestLib{
             this.PauseAction(pauseTime);
         }
         return retValue;
+        }catch(ex)
+        {
+            if(!this.CheckPopUp(retValue.selector))
+            {
+                throw new Error(ex);
+            }
+        }
+    }
+
+    CheckPopUp(clickSelector)
+    {
+        var selectorLeaveOrGo = '.swal2-confirm.md-button.md-raised.md-accent';
+        if(this.CheckIsVisible(selectorLeaveOrGo))
+        {
+            browser.click(selectorLeaveOrGo);
+            browser.click(retValue.selector);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     ClickAction(selector, waitforVisibleSelector='', timeout=50000, pauseTime=0, click=false){
@@ -518,6 +545,15 @@ class TestLib{
         }catch(ex)
         {
             _ClickIterator += 1;
+
+            if(!this.CheckPopUp(retValue.selector))
+            {
+                throw new Error(ex);
+            }
+            else
+            {
+                return;
+            }
             
             if(this.CheckIsVisible(_btnTarifSave))
             {
@@ -525,7 +561,6 @@ class TestLib{
             }
             else if(this.CheckIsVisible(_btnNavPrev))
             {
-
                 browser.click(_btnNavPrev);
             }
             
@@ -536,7 +571,7 @@ class TestLib{
         {
             if(!browser.isExisting(waitforVisibleSelector))
             {
-                waitforVisibleSelector = '#btnNavNext';
+                waitforVisibleSelector = _btnNavNext;
             }
         }
 
@@ -554,6 +589,7 @@ class TestLib{
         this.PauseAction(pauseTime);
 
         return retValue;
+       
 	}
 
     PauseAction(pauseTime){

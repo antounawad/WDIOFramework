@@ -11,31 +11,25 @@ var Tarif = require('../Lib/Tarif.js')
 const tarif = new Tarif()
 var Document = require('../Lib/Document.js')
 const document = new Document();
-
-var _ErrorList = [100];
+var _ErrorList = [1000];
 var _ErrorCounter = 0;
+
+
 
 
 class RK {
 
 	StartRKTest(vn, vp) {
-		vn.AddVN('AutomRKTestVN', true);
+		try
+		{
+			vn.AddVN('AutomRKTestVN', true);
 
-		vp.AddVP('AutomRKTestVP');
+			vp.AddVP('AutomRKTestVP');
 
-		this.CreateTarifOptions();
-
-		if (!testLib.BreakAtError) {
-			if (_ErrorList.length > 1) {
-				console.log("Fehler beim RK Test");
-				_ErrorList.forEach(function (value, index) {
-					console.log(value)
-				});
-
-				//throw new Error("Fehler beim RK Test, siehe vorige Logs...")
-
-			}
-
+			this.CreateTarifOptions();
+		}catch(ex)
+		{
+			this.CreateTarifOptions();
 		}
 	}
 
@@ -45,13 +39,15 @@ class RK {
 		this.Navigate2RK();
 	}
 
-	ErrorFunction(ex) {
+	ErrorFunction(message) {
 		if (!testLib.BreakAtError) {
+			console.log(message);
 			_ErrorList[_ErrorCounter++] = ex.message;
 			tarif.DeleteAllTarife(true);
 		}
 		else {
-			throw new Error(ex);
+			console.log("BreakAtError = false; Fehler:")
+			assert.equal(1,0,ex.message);
 		}
 	}
 
@@ -60,23 +56,27 @@ class RK {
 	Navigate2RK(versicherer) {
 		try {
 
-
-			this.GetVersichererArray().forEach(versicherer => {
+			var vArr = this.GetVersichererArray();
+			for(var i = 0; i <= vArr.length-1; i++)
+			{
+				versicherer = vArr[i];
 
 				try {
 					if (testLib.SmokeTest) {
 						tarif.CreateSmokeTarif(versicherer);
-						tarif.CheckAngebot();
+						tarif.CheckAngebot(vArr.length != i+1);
 					}
 					else {
-						tarif.CreateListTarif(versicherer);
+						tarif.CreateListTarif(versicherer,vArr.length != i+1);
 					}
+					tarif.ResultArr[tarif.ResultCounter] = versicherer;
 				}
 				catch (ex) {
-					this.ErrorFunction(ex);
+					var message = 'Versicherer: '+versicherer+' ' + ex.message;
+					this.ErrorFunction(message);
 				}
 				
-			});
+			};
 		}
 		catch (ex) {
 			throw new Error(ex);
