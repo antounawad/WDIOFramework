@@ -25,6 +25,11 @@ var _It_Selector = null;
 var _ResultArr = [100];
 var _ResultCounter = 0;
 
+var _selector = null;
+var _list = null;
+var _values = null;
+var _ids = null;
+
 
 
 class Tarif{
@@ -207,13 +212,20 @@ class Tarif{
 		return durchfSel;
 	}
 
+	SetTarifSelector()
+	{
+		_list = $(_selector);
+		_values = _list.getAttribute(_ngoption, _value,true);
+		_ids = _list.getAttribute(_ngoption, _id,true);
+	}
+
 
 	CreateListTarif(versicherer, newTarif=true)
 	{
-		var Selector = null;
-		var List = null;
-		var Values = null;
-		var Ids = null;
+		_selector = null;
+		_list = null;
+		_values = null;
+		_ids = null;
 
 		try
 		{	
@@ -221,24 +233,21 @@ class Tarif{
 			while(true)
 			{
 				
-				Selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
-				List = $(Selector);
-				Values = List.getAttribute(_ngoption, _value,true);
-				Ids = List.getAttribute(_ngoption, _id,true);
+				_selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
 
-				testLib.OnlyClickAction(Selector);	
-				var selector = '#'+Ids[Values.indexOf(versicherer)];
+				this.SetTarifSelector();
+
+				testLib.OnlyClickAction(_selector);	
+				var selector = '#'+_ids[_values.indexOf(versicherer)];
 				testLib.OnlyClickAction(selector);
 			
 
-				Selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
-				var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
+				_selector = '#'+testLib.TarifSelectoren[1]["Value"][0];
+				var checkIsEnabled =	browser.getAttribute(_selector, "disabled");
 
 				var durchfWegLength = 1;
 
-				List = $(Selector);
-				Values = List.getAttribute(_ngoption, _value,true);
-				Ids = List.getAttribute(_ngoption, _id,true);
+				this.SetTarifSelector();
 
 				var durchfWegeArr = this.GetDurchfWegArray();
 
@@ -246,7 +255,7 @@ class Tarif{
 				{
 					var found = false;
 					var dwFound = durchfWegeArr[durchfSel];
-					if(Values.indexOf(dwFound) == -1)
+					if(_values.indexOf(dwFound) == -1)
 					{
 						if(newTarif)
 						{
@@ -267,46 +276,40 @@ class Tarif{
 
 				if(checkIsEnabled == null)
 				{
-					var durchfWegeArr = this.GetDurchfWegArray();
 					durchfWegLength = durchfWegeArr.length;
-				
-					
-					List = $(Selector);
-					Values = List.getAttribute(_ngoption, _value,true);
-					Ids = List.getAttribute(_ngoption, _id,true);
 
-					testLib.OnlyClickAction(Selector);	
+					this.SetTarifSelector();
+
+					testLib.OnlyClickAction(_selector);	
 					var x0 = durchfWegeArr[durchfSel];
-					var x1 = Values.indexOf(x0)
-					var selector = '#'+Ids[x1];
+					var x1 = _values.indexOf(x0)
+					var selector = '#'+_ids[x1];
 					testLib.ClickAction(selector);
 				}
 
 					for (var tarifSel = 2; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
 					{
 			
-							Selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
+							_selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
 							if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
 							{
-								var CheckVisible = browser.isVisible(Selector); 
+								var CheckVisible = browser.isVisible(_selector); 
 								if(!CheckVisible)
 								{
 									continue;
 								}
 							}
 			
-							List = $(Selector);
-							Values = List.getAttribute(_ngoption, _value,true);
-							Ids = List.getAttribute(_ngoption, _id,true);
+							this.SetTarifSelector();
 			
 							try
 							{
-								testLib.OnlyClickAction(Selector);
+								testLib.OnlyClickAction(_selector);
 			
-									var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
-									if(Ids.length > 1 && checkIsEnabled == null)
+									var checkIsEnabled =	browser.getAttribute(_selector, "disabled");
+									if(_ids.length > 1 && checkIsEnabled == null)
 									{
-										testLib.ClickAction('#'+Ids[0]);	
+										testLib.ClickAction('#'+_ids[0]);	
 									}
 														
 							}catch(ex)
