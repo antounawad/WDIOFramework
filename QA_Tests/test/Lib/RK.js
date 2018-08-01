@@ -90,6 +90,10 @@ class RK {
 				catch (ex) {
 					var message = 'Versicherer: '+versicherer+' ' + ex.message;
 					this.ErrorFunction(message);
+					if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
+					{
+						throw new Error(ex);
+					}
 				}
 				
 			};

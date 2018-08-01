@@ -11,6 +11,7 @@ var _Documents = false;
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
 var _DurchfWege = null;
+var _Tarife =  null;
 var _ExcludeVersicherer = null;
 // Speichert die TarifSelektoren
 var _TarifSelector = null;
@@ -31,6 +32,8 @@ var _ClearElementIterator = 0;
 
 var _WaitUntilSelector = "";
 
+var _TarifSmoke = false;
+
 var _BreakAtError = false;
 
 var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
@@ -40,7 +43,7 @@ var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backbu
 var _btnTarifSave = 'modalContainer_btnSpeichern';
 
 var _AllDurchfWege = false;
-var _DurchfWegCounter = 0;
+var _AllTarife = false;
 
 var _btnNavNext = '#btnNavNext';
 var _btnNavPrev = '#btnNavBack';
@@ -73,7 +76,11 @@ var _OnlyTarifCheck = false;
 
 class TestLib{
 
+    get TarifSmoke(){return _TarifSmoke === 'true'};
     get OnlyTarifCheck(){return _OnlyTarifCheck === 'true'};
+    get Tarife(){return _Tarife};
+
+    get AllTarife(){return _AllTarife === 'true'};
 
     get NavChapterTarif(){return _NavchapterTarif};
     get NavChapterAngebot(){return _NavchapterAngebot};
@@ -108,14 +115,14 @@ class TestLib{
     get Fs(){return fs};
 
     // Übergebenes Projekt --hotfix aus Args
-     //get TargetUrl() {return process.argv[3].substr(2)}
-     get TargetUrl() { return process.argv[5].substr(2)}
+     get TargetUrl() {return process.argv[3].substr(2)}
+     //get TargetUrl() { return process.argv[5].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         //let ver = process.argv[4]
-         let ver = process.argv[6]
+         let ver = process.argv[4]
+         //let ver = process.argv[6]
          if(ver != null)
          {
              return ver.substr(2);
@@ -278,7 +285,6 @@ class TestLib{
                 this.CheckSiteFields();
             }
         }catch(err){
-            console.log(err)
             _Navigate2SiteIterator += 1;
             this.Navigate2Site(title, failSite);
         }finally
@@ -655,6 +661,10 @@ class TestLib{
                 _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
                 _AllDurchfWege = result['Config']['DurchfwegList'][0].$['all'];
                 _DurchfWege =  result['Config']['DurchfwegList'][0]['DurchfWeg'];
+
+                _AllTarife = result['Config']['TarifList'][0].$['all'];
+                _Tarife =  result['Config']['TarifList'][0]['Tarif'];
+                _TarifSmoke = result['Config']['TarifList'][0].$['smoke'];
                 _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
             }
 		})

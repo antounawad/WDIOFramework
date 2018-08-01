@@ -103,6 +103,14 @@ class Tarif{
 		return _It_Values;
 	}
 
+	GetAllTarife()
+	{
+		_It_Selector = '#'+testLib.TarifSelectoren[3]["Value"][0];
+		_It_List = $(_It_Selector);
+		_It_Values = _It_List.getAttribute(_ngoption, _value,true);
+		return _It_Values;
+	}
+
 	ExtractExcludeIds(versichererIds)
 	{
 		var online = [versichererIds.length-testLib.ExcludeVersicherer.length];
@@ -140,6 +148,22 @@ class Tarif{
 		return this.GetAllDurchfWege();
 	}
 
+	GetTarifArray()
+	{
+		if(!testLib.AllTarife)
+		{
+			var tarifArr = [testLib.Tarife.length];
+			testLib.Tarife.forEach(function(value, index) 
+			{
+				tarifArr[index] = value['Id'][0];
+			});			
+
+			return tarifArr;
+		}
+
+		return this.GetAllTarife();
+	}	
+
 	Init()
 	{
 		_selector = null;
@@ -167,7 +191,7 @@ class Tarif{
 					}
 				}
 
-				this.SetTarifSelector();
+				this.SetListBoxSelector();
 
 				try
 				{
@@ -181,7 +205,7 @@ class Tarif{
 					}
 					else
 					{
-						this.CheckDwfIsDisabled();
+						this.CheckSelectorIsDisabled();
 					}						
 				}catch(ex)
 				{
@@ -193,14 +217,14 @@ class Tarif{
 		testLib.ClickAction(_tarifSaveBtn);
 	}
 
-	SetTarifSelector()
+	SetListBoxSelector()
 	{
 		_list = $(_selector);
 		_values = _list.getAttribute(_ngoption, _value,true);
 		_ids = _list.getAttribute(_ngoption, _id,true);
 	}
 
-	CheckDwfIsDisabled()
+	CheckSelectorIsDisabled()
 	{
 		if(_ids.length > 1 && browser.getAttribute(_selector, "disabled") == null)
 		{
@@ -215,7 +239,7 @@ class Tarif{
 		{
 			var durchfWegLength = durchfWegeArr.length;
 
-			this.SetTarifSelector();
+			this.SetListBoxSelector();
 
 			testLib.OnlyClickAction(_selector);	
 			
@@ -228,6 +252,38 @@ class Tarif{
 		return 1;
 	}
 
+	CheckTarifIsEnabled(checkIsEnabled,tarifFound,tarifArr)
+	{
+		if(checkIsEnabled == null)
+		{
+			this.SetListBoxSelector();
+			testLib.OnlyClickAction(_selector);	
+			var tarifLength = tarifArr.length;
+			var x1 = _values.indexOf(tarifFound)
+			var selector = '#'+_ids[x1];
+			testLib.ClickAction(selector);
+			return tarifLength;
+		}
+
+		return 1;
+	}
+
+	SelectAndClick()
+	{
+		
+			
+		try
+		{
+			this.SetListBoxSelector();
+			testLib.OnlyClickAction(_selector);
+			this.CheckSelectorIsDisabled();
+
+		}catch(ex)
+		{
+			throw new Error(ex);
+		}		
+	}
+
 
 	CreateListTarif(versicherer, newTarif=true)
 	{
@@ -236,12 +292,13 @@ class Tarif{
 		try
 		{	
 			var durchfSel = 0;
+			var tarifSell = 0;
 			while(true)
 			{
 				
 				_selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
 
-				this.SetTarifSelector();
+				this.SetListBoxSelector();
 
 				testLib.OnlyClickAction(_selector);	
 				var selector = '#'+_ids[_values.indexOf(versicherer)];
@@ -253,7 +310,7 @@ class Tarif{
 
 				var durchfWegLength = 1;
 
-				this.SetTarifSelector();
+				this.SetListBoxSelector();
 
 				var durchfWegeArr = this.GetDurchfWegArray();
 				var dwFound = "";
@@ -280,40 +337,105 @@ class Tarif{
 				
 				durchfWegLength = this.CheckDfwIsEnabled(checkIsEnabled,dwFound,durchfWegeArr);
 
-				console.log("Versicher: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+"...");
+				console.log("Versicherer: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+"...");
 
-					for (var tarifSel = 2; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
+
+				// type
+
+				_selector = '#'+testLib.TarifSelectoren[2]["Value"][0];
+				if(testLib.TarifSelectoren[2]["CheckVisible"][0] == "true")
+				{
+					var CheckVisible = browser.isVisible(_selector); 
+					if(!CheckVisible)
 					{
-							_selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
-							if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
-							{
-								var CheckVisible = browser.isVisible(_selector); 
-								if(!CheckVisible)
-								{
-									continue;
-								}
-							}
-			
-							this.SetTarifSelector();
-			
-							try
-							{
-								testLib.OnlyClickAction(_selector);
-								this.CheckDwfIsDisabled();
-
-							}catch(ex)
-							{
-								throw new Error(ex);
-							}
-					
+						continue;
 					}
-					testLib.ClickAction(_tarifSaveBtn);
-					this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
+				}
+
+				this.SelectAndClick();
+				// end Type
+
+				// begin Tarif
+
+				var tarifArr = this.GetAllTarife();
+				var checkTarifIsDisabled = null;
+				var tarifLength = tarifArr.length;
+				if(testLib.TarifSmoke)
+				{
+					tarifLength = 1;
+				}
+				for(var t = tarifSell;t <= tarifLength -1;t++)
+				{
+
+					_selector = '#'+testLib.TarifSelectoren[3]["Value"][0];
+					checkTarifIsDisabled =	browser.getAttribute(_selector, "disabled");
+	
+					if(testLib.TarifSelectoren[3]["CheckVisible"][0] == "true")
+					{
+						var CheckVisible = browser.isVisible(_selector); 
+						if(!CheckVisible)
+						{
+							continue;
+						}
+					}
+
+					var tarifFound = tarifArr[tarifSell];
+	
+					var tarifLength = this.CheckTarifIsEnabled(checkTarifIsDisabled,tarifFound,tarifArr);
+
+					console.log("Versicher: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+" Tarif: "+String(tarifFound)+"...");
+	
+					// end Tarif
+					for (var tarifSel = 4; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
+					{
+						_selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
+						if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
+						{
+							var CheckVisible = browser.isVisible(_selector); 
+							if(!CheckVisible)
+							{
+								continue;
+							}
+						}
+			
+						this.SelectAndClick();
+					}
+					tarifSell++;
+					break;
+				
+				}
+
+				testLib.ClickAction(_tarifSaveBtn);
+				if(tarifSell > tarifLength -1 || checkTarifIsDisabled === 'true' || testLib.TarifSmoke)
+				{
+					tarifSell = 0;
 					durchfSel++;
-					if(durchfSel > durchfWegLength-1)
+				}
+
+
+				if(!newTarif)
+				{
+					newTarif = true;
+					if(durchfSel >= durchfWegLength-1 && tarifSell == 0)
 					{
-						break;
+						newTarif = false;
+						
 					}
+				}
+				this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
+				
+
+
+				if(durchfSel > durchfWegLength-1)
+				{
+					break;
+				}					
+
+
+
+				
+				
+			
 			}
 			
 

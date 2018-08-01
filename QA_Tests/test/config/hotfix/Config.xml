@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false"></Tests>
+  <Tests documents="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -86,7 +86,7 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="true">
+  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
  <!-- <Versicherer>  -->
 		 <!-- <Name>Si</Name>  -->
 		 <!-- <Id>9999</Id>  -->
@@ -112,19 +112,25 @@
 	 </VersichererList>
 	 
 	 <DurchfwegList all="false">
-	 <!-- <DurchfWeg> -->
-	  <!-- <Name>Direkt</Name> -->
-	  <!-- <Id>1</Id> -->
-	 <!-- </DurchfWeg> -->
 	 <DurchfWeg>
-	  <Name>Pensionskasse</Name>
-	  <Id>2</Id>
-	 </DurchfWeg>	 
+	  <Name>Direkt</Name>
+	  <Id>1</Id>
+	 </DurchfWeg>
+	 <!-- <DurchfWeg> -->
+	  <!-- <Name>Pensionskasse</Name> -->
+	  <!-- <Id>2</Id> -->
+	 <!-- </DurchfWeg>	  -->
 	 <DurchfWeg>
 	  <Name>SBU</Name>
 	  <Id>4</Id>
 	 </DurchfWeg>	 
 	 </DurchfwegList>
+	 <TarifList smoke="true" all="true">
+	 <Tarif>
+		<Name></Name>
+		<Id></Id>
+	</Tarif>
+	 </TarifList>
 	 <ExcludeList>
 	 
 	  <!-- <Versicherer>  -->
