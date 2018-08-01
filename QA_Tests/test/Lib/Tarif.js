@@ -181,7 +181,7 @@ class Tarif{
 					}
 					else
 					{
-						this.CheckIsEnabled();
+						this.CheckDwfIsDisabled();
 					}						
 				}catch(ex)
 				{
@@ -200,13 +200,32 @@ class Tarif{
 		_ids = _list.getAttribute(_ngoption, _id,true);
 	}
 
-	CheckIsEnabled()
+	CheckDwfIsDisabled()
 	{
 		if(_ids.length > 1 && browser.getAttribute(_selector, "disabled") == null)
 		{
 			testLib.ClickAction('#'+_ids[0]);	
 		}
 
+	}
+
+	CheckDfwIsEnabled(checkIsEnabled,dwFound,durchfWegeArr)
+	{
+		if(checkIsEnabled == null)
+		{
+			var durchfWegLength = durchfWegeArr.length;
+
+			this.SetTarifSelector();
+
+			testLib.OnlyClickAction(_selector);	
+			
+			var x1 = _values.indexOf(dwFound)
+			var selector = '#'+_ids[x1];
+			testLib.ClickAction(selector);
+			return durchfWegLength;
+		}
+
+		return 1;
 	}
 
 
@@ -258,18 +277,8 @@ class Tarif{
 				}
 
 				dwFound = durchfWegeArr[durchfSel];
-				if(checkIsEnabled == null)
-				{
-					durchfWegLength = durchfWegeArr.length;
-
-					this.SetTarifSelector();
-
-					testLib.OnlyClickAction(_selector);	
-					
-					var x1 = _values.indexOf(dwFound)
-					var selector = '#'+_ids[x1];
-					testLib.ClickAction(selector);
-				}
+				
+				durchfWegLength = this.CheckDfwIsEnabled(checkIsEnabled,dwFound,durchfWegeArr);
 
 				console.log("Versicher: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+"...");
 
@@ -290,7 +299,7 @@ class Tarif{
 							try
 							{
 								testLib.OnlyClickAction(_selector);
-								this.CheckIsEnabled();
+								this.CheckDwfIsDisabled();
 
 							}catch(ex)
 							{
