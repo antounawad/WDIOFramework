@@ -26,7 +26,7 @@ class VP {
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
         try{
-            testLib.WaitUntilEnabled(testLib.BtnNavNext);
+            testLib.WaitUntilEnabled(testLib.BtnNavNext,2000);
         }catch(ex){}
 
         if (!testLib.CheckisEnabled(testLib.BtnNavNext)) {
