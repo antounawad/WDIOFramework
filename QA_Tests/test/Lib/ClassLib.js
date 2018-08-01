@@ -67,9 +67,13 @@ var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
 var _StatusSiteTitle = 'Abschluss - Status';
 var _LinkAngebotKurzUebersicht = 'navViewLink_AngebotAngebotVersichererangebot';
 
+var _OnlyTarifCheck = false;
+
 
 
 class TestLib{
+
+    get OnlyTarifCheck(){return _OnlyTarifCheck === 'true'};
 
     get NavChapterTarif(){return _NavchapterTarif};
     get NavChapterAngebot(){return _NavchapterAngebot};
@@ -651,7 +655,7 @@ class TestLib{
                 _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
                 _AllDurchfWege = result['Config']['DurchfwegList'][0].$['all'];
                 _DurchfWege =  result['Config']['DurchfwegList'][0]['DurchfWeg'];
-                var x = "y";
+                _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
             }
 		})
     }
@@ -880,6 +884,13 @@ class TestLib{
         //     console.log('Config Datei: '+configFileName+' existiert nicht.')
         // }
 		});        
+    }
+
+    RefreshBrowser(selector)
+    {
+        browser.refresh();
+        this.WaitUntilVisible(selector);
+
     }
 
 

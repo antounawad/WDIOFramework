@@ -86,7 +86,7 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="false" breakAtError="false">
+  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="true">
  <!-- <Versicherer>  -->
 		 <!-- <Name>Si</Name>  -->
 		 <!-- <Id>9999</Id>  -->
@@ -111,7 +111,7 @@
 	 <!-- </versicherer>  -->
 	 </VersichererList>
 	 
-	 <DurchfwegList all="true">
+	 <DurchfwegList all="false">
 	 <!-- <DurchfWeg> -->
 	  <!-- <Name>Direkt</Name> -->
 	  <!-- <Id>1</Id> -->
@@ -120,10 +120,10 @@
 	  <Name>Pensionskasse</Name>
 	  <Id>2</Id>
 	 </DurchfWeg>	 
-	 <!-- <DurchfWeg> -->
-	  <!-- <Name>SBU</Name> -->
-	  <!-- <Id>4</Id> -->
-	 <!-- </DurchfWeg>	  -->
+	 <DurchfWeg>
+	  <Name>SBU</Name>
+	  <Id>4</Id>
+	 </DurchfWeg>	 
 	 </DurchfwegList>
 	 <ExcludeList>
 	 

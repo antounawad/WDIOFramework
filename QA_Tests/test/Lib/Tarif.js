@@ -10,6 +10,7 @@ var _deleteTarifSelector = '.ng-scope.md-font.mdi.mdi-24px.mdi-delete';
 var _deleteTarifBtnSelector = '#modalDeleteAreYouSure_btnLöschen';
 var _addTarifBtnSelector = '#btnNewTariffConfig';
 var _versorgunswerkSelector = '#navViewLink_VnVnVersorgungswerk';
+var _TarifCancelBtn = '#modalContainer_btnAbbrechen';
 
 
 var _ngoption = 'md-option[ng-repeat]';
@@ -31,9 +32,20 @@ class Tarif{
 	get TarifTitle(){return _tarifTitle};
 	get ResultArr(){return _ResultArr};
 	get ResultCounter(){return _ResultCounter++};
+	get TarifCancelBtn(){return _TarifCancelBtn};
 
     ShowTarif(timeout=10000,pause=3000){
    		testLib.ClickAction(testLib.BtnNavNext,_beratungTarifSelector, timeout, pause)
+	}
+
+	CancelTarif()
+	{
+		if(testLib.CheckIsVisible(_TarifCancelBtn))
+		{
+			testLib.OnlyClickAction(_TarifCancelBtn);
+			testLib.PauseAction(1000);
+		}
+		testLib.RefreshBrowser(_addTarifBtnSelector);
 	}
 
 
@@ -177,6 +189,24 @@ class Tarif{
 		testLib.ClickAction('#modalContainer_btnSpeichern');
 	}
 
+	CheckDurchfWege(newTarif, durchfSel, Values, durchfWegeArr)
+	{
+		var found = false;
+		var dfwfound = durchfWegeArr[durchfSel];
+		if(Values.indexOf(dfwfound) == -1)
+		{
+			if(newTarif)
+			{
+				testLib.RefreshBrowser(_addTarifBtnSelector);
+				this.AddTarif();
+				durchfSel++;
+			}
+									
+		}
+
+		return durchfSel;
+	}
+
 
 	CreateListTarif(versicherer, newTarif=true)
 	{
@@ -211,18 +241,16 @@ class Tarif{
 				Ids = List.getAttribute(_ngoption, _id,true);
 
 				var durchfWegeArr = this.GetDurchfWegArray();
-				
 
 				if(!testLib.AllDurchfWege)
 				{
 					var found = false;
-					var x0 = durchfWegeArr[durchfSel];
-					if(Values.indexOf(x0) == -1)
+					var dwFound = durchfWegeArr[durchfSel];
+					if(Values.indexOf(dwFound) == -1)
 					{
 						if(newTarif)
 						{
-							browser.refresh();
-							testLib.WaitUntilVisible(_addTarifBtnSelector)
+							testLib.RefreshBrowser(_addTarifBtnSelector);
 							this.AddTarif();
 							durchfSel++;
 							if(durchfSel > durchfWegeArr.length)
@@ -235,6 +263,7 @@ class Tarif{
 												
 					}
 				}
+
 
 				if(checkIsEnabled == null)
 				{
@@ -287,7 +316,7 @@ class Tarif{
 					
 					}
 					testLib.ClickAction('#modalContainer_btnSpeichern');
-					this.CheckAngebot(newTarif,true);
+					this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
 					durchfSel++;
 					if(durchfSel > durchfWegLength-1)
 					{
@@ -320,8 +349,7 @@ class Tarif{
 	CheckAngebot(newTarif=true,short=false) {
 		if(short)
 		{
-			browser.refresh();
-			testLib.WaitUntilVisible(_addTarifBtnSelector)
+			testLib.RefreshBrowser(_addTarifBtnSelector);
 			this.DeleteAllTarife(newTarif);
 			return;
 		}		

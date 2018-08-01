@@ -13,6 +13,7 @@ var Document = require('../Lib/Document.js')
 const document = new Document();
 var _ErrorList = [1000];
 var _ErrorCounter = 0;
+var _RepeatCounter = 0;
 
 
 
@@ -32,7 +33,16 @@ class RK {
 			if(String(ex.message).indexOf('AssertionError') >= 0)
 				throw new Error(ex);
 
+			_RepeatCounter++
+
+			tarif.CancelTarif();
+
 			this.CreateTarifOptions();
+			if(_RepeatCounter >= 10)
+			{
+				console.log("Fehler: Nach 10 maliger Wiederholung abgebrochen...")
+				assert.equal(1,0,message);
+			}
 		}
 	}
 
@@ -69,7 +79,7 @@ class RK {
 				try {
 					if (testLib.SmokeTest) {
 						tarif.CreateSmokeTarif(versicherer);
-						tarif.CheckAngebot(vArr.length != i+1,true);
+						tarif.CheckAngebot(vArr.length != i+1,testLib.OnlyTarifCheck);
 					}
 					else {
 						tarif.CreateListTarif(versicherer,vArr.length != i+1);
