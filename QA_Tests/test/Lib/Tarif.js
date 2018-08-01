@@ -11,6 +11,7 @@ var _deleteTarifBtnSelector = '#modalDeleteAreYouSure_btnLöschen';
 var _addTarifBtnSelector = '#btnNewTariffConfig';
 var _versorgunswerkSelector = '#navViewLink_VnVnVersorgungswerk';
 var _TarifCancelBtn = '#modalContainer_btnAbbrechen';
+var _tarifSaveBtn = '#modalContainer_btnSpeichern';
 
 
 var _ngoption = 'md-option[ng-repeat]';
@@ -138,51 +139,49 @@ class Tarif{
 
 		return this.GetAllDurchfWege();
 	}
+
+	Init()
+	{
+		_selector = null;
+		_list = null;
+		_values = null;
+		_ids = null;
+	}
 	
 	
 	
 
 	CreateSmokeTarif(versicherer)
 	{
-		var Selector = null;
-		var List = null;
-		var Values = null;
-		var Ids = null;
-	
+		this.Init();
+		
 		for (var tarifSel = 0; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
 		{
-
-				Selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
+				_selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
 				if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
 				{
-					var CheckVisible = browser.isVisible(Selector); 
+					var CheckVisible = browser.isVisible(_selector); 
 					if(!CheckVisible)
 					{
 						continue;
 					}
 				}
 
-				List = $(Selector);
-				Values = List.getAttribute(_ngoption, _value,true);
-				Ids = List.getAttribute(_ngoption, _id,true);
+				this.SetTarifSelector();
 
 				try
 				{
-					testLib.OnlyClickAction(Selector);
+					testLib.OnlyClickAction(_selector);
 
 					if(tarifSel == 0)
 					{
-						var selector = '#'+Ids[Values.indexOf(versicherer)];
+						var selector = '#'+_ids[_values.indexOf(versicherer)];
 						testLib.ClickAction(selector);
 
 					}
 					else
 					{
-						var checkIsEnabled =	browser.getAttribute(Selector, "disabled");
-						if(Ids.length > 1 && checkIsEnabled == null)
-						{
-							testLib.ClickAction('#'+Ids[0]);	
-						}
+						this.CheckIsEnabled();
 					}						
 				}catch(ex)
 				{
@@ -191,25 +190,7 @@ class Tarif{
 		
 		}
 		
-		testLib.ClickAction('#modalContainer_btnSpeichern');
-	}
-
-	CheckDurchfWege(newTarif, durchfSel, Values, durchfWegeArr)
-	{
-		var found = false;
-		var dfwfound = durchfWegeArr[durchfSel];
-		if(Values.indexOf(dfwfound) == -1)
-		{
-			if(newTarif)
-			{
-				testLib.RefreshBrowser(_addTarifBtnSelector);
-				this.AddTarif();
-				durchfSel++;
-			}
-									
-		}
-
-		return durchfSel;
+		testLib.ClickAction(_tarifSaveBtn);
 	}
 
 	SetTarifSelector()
@@ -219,13 +200,19 @@ class Tarif{
 		_ids = _list.getAttribute(_ngoption, _id,true);
 	}
 
+	CheckIsEnabled()
+	{
+		if(_ids.length > 1 && browser.getAttribute(_selector, "disabled") == null)
+		{
+			testLib.ClickAction('#'+_ids[0]);	
+		}
+
+	}
+
 
 	CreateListTarif(versicherer, newTarif=true)
 	{
-		_selector = null;
-		_list = null;
-		_values = null;
-		_ids = null;
+		this.Init();
 
 		try
 		{	
@@ -250,30 +237,27 @@ class Tarif{
 				this.SetTarifSelector();
 
 				var durchfWegeArr = this.GetDurchfWegArray();
-
+				var dwFound = "";
 				if(!testLib.AllDurchfWege)
 				{
-					var found = false;
-					var dwFound = durchfWegeArr[durchfSel];
+					dwFound = durchfWegeArr[durchfSel];
 					if(_values.indexOf(dwFound) == -1)
 					{
 						if(newTarif)
 						{
 							testLib.RefreshBrowser(_addTarifBtnSelector);
 							this.AddTarif();
-							durchfSel++;
-							if(durchfSel > durchfWegeArr.length)
-							{
-								break;
-							}
-							continue;
-								
 						}
-												
+						durchfSel++;
+						if(durchfSel > durchfWegeArr.length-1 || checkIsEnabled === 'true')
+						{
+							break;
+						}
+						continue;
 					}
 				}
 
-
+				dwFound = durchfWegeArr[durchfSel];
 				if(checkIsEnabled == null)
 				{
 					durchfWegLength = durchfWegeArr.length;
@@ -281,15 +265,16 @@ class Tarif{
 					this.SetTarifSelector();
 
 					testLib.OnlyClickAction(_selector);	
-					var x0 = durchfWegeArr[durchfSel];
-					var x1 = _values.indexOf(x0)
+					
+					var x1 = _values.indexOf(dwFound)
 					var selector = '#'+_ids[x1];
 					testLib.ClickAction(selector);
 				}
 
+				console.log("Versicher: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+"...");
+
 					for (var tarifSel = 2; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
 					{
-			
 							_selector = '#'+testLib.TarifSelectoren[tarifSel]["Value"][0];
 							if(testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true")
 							{
@@ -305,20 +290,15 @@ class Tarif{
 							try
 							{
 								testLib.OnlyClickAction(_selector);
-			
-									var checkIsEnabled =	browser.getAttribute(_selector, "disabled");
-									if(_ids.length > 1 && checkIsEnabled == null)
-									{
-										testLib.ClickAction('#'+_ids[0]);	
-									}
-														
+								this.CheckIsEnabled();
+
 							}catch(ex)
 							{
 								throw new Error(ex);
 							}
 					
 					}
-					testLib.ClickAction('#modalContainer_btnSpeichern');
+					testLib.ClickAction(_tarifSaveBtn);
 					this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
 					durchfSel++;
 					if(durchfSel > durchfWegLength-1)

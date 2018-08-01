@@ -85,6 +85,7 @@ class RK {
 						tarif.CreateListTarif(versicherer,vArr.length != i+1);
 					}
 					tarif.ResultArr[tarif.ResultCounter] = versicherer;
+					console.log("Versicher: "+String(versicherer)+" erfolgreich durchlaufen");
 				}
 				catch (ex) {
 					var message = 'Versicherer: '+versicherer+' ' + ex.message;
