@@ -17,11 +17,11 @@
 						<Id>1006</Id>
 					</Versicherer>
 				</Site>
-				<!-- <Site>  -->
+				<!-- <Site> -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
-					<!-- <NewBtn>btnNewTariffConfig</NewBtn>  -->
-					<!-- <FileName>Zuschüsse.xml</FileName>  -->
-				<!-- </Site>	 -->
+					<!-- <NewBtn>btnNewTariffConfig</NewBtn> -->
+					<!-- <FileName>Zuschüsse.xml</FileName> -->
+				<!-- </Site>		 -->
 				<Site>
 					<Url>Arbeitgeber – Zahlungsart / GwG</Url>
 					<FileName>Zahlungsart.xml</FileName>
@@ -86,17 +86,57 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="true" breakAtError="false">
- <Versicherer> 
-		 <Name>WWK</Name> 
-		 <Id>1103</Id> 
-	 </Versicherer>   	 
-	 </VersichererList>
-	 <ExcludeList>
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>KlinikRente</Name>  -->
-		 <!-- <Id>9994</Id>  -->
+  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
+ <!-- <Versicherer>  -->
+		 <!-- <Name>Si</Name>  -->
+		 <!-- <Id>9999</Id>  -->
 	 <!-- </Versicherer>    -->
+	  <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name> -->
+		  <!-- <Id>1006</Id> -->
+		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
+	  <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>SI</Name> 
+		 <Id>1048</Id> 
+	 </Versicherer> 
+ <Versicherer> 
+		 <Name>Zürich</Name> 
+		 <Id>1138</Id> 
+	 </Versicherer>   	 
+
+   <!-- <versicherer>   -->
+		 <!-- <name>hdi</name>  -->
+		 <!-- <id>1033</id>  -->
+	 <!-- </versicherer>  -->
+	 </VersichererList>
+	 
+	 <DurchfwegList all="false">
+	 <DurchfWeg>
+	  <Name>Direkt</Name>
+	  <Id>1</Id>
+	 </DurchfWeg>
+	 <!-- <DurchfWeg> -->
+	  <!-- <Name>Pensionskasse</Name> -->
+	  <!-- <Id>2</Id> -->
+	 <!-- </DurchfWeg>	  -->
+	 <DurchfWeg>
+	  <Name>SBU</Name>
+	  <Id>4</Id>
+	 </DurchfWeg>	 
+	 </DurchfwegList>
+	 <TarifList smoke="true" all="true">
+	 <Tarif>
+		<Name></Name>
+		<Id></Id>
+	</Tarif>
+	 </TarifList>
+	 <ExcludeList>
+	 
+	  <!-- <Versicherer>  -->
+		 <!-- <Name>Canada Life</Name> -->
+		  <!-- <Id>9997</Id> -->
+	  <!-- </Versicherer>	  -->
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
