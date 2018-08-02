@@ -86,103 +86,58 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="true">
-	 <Versicherer> 
-		 <Name>Allianz</Name> 
-		 <Id>1006</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Canada Life</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Continentale</Name> 
-		 <Id>1335</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Die Bayerische</Name> 
-		 <Id>1013</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Gothaer</Name> 
-		 <Id>1108</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>HDI</Name> 
-		 <Id>1033</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>KLinikrente</Name> 
-		 <Id>9994</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Metallrente</Name> 
-		 <Id>9993</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Nürnberger</Name> 
-		 <Id>1147</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Signal Iduna</Name> 
-		 <Id>1048</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Stuttgarter</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>1104</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>Volkswohl Bund</Name> 
-		 <Id>1099</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>WWK</Name> 
-		 <Id>1103</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>xbAV Testversicherer</Name> 
+  <VersichererList all="false" smoke="true" breakAtError="false">
+<<<<<<< HEAD
+  	  <Versicherer> 
+		 <Name>Testversicherer</Name>
+		  <Id>9999</Id>
+		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
+		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
+		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
+	  </Versicherer>
+  
+	  <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name> -->
+		  <!-- <Id>1006</Id> -->
+		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
+		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
+		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
+=======
+ <Versicherer> 
+		 <Name>Si</Name> 
 		 <Id>9999</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>Zurich Deutscher Herold</Name> 
+	 </Versicherer>   
+	  <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name> -->
+		  <!-- <Id>1006</Id> -->
+		 <!-- <Tarif>153494b7-5880-4d70-9935-d63576481526</Tarif> -->
+		 <!-- <DurchfWeg>1</DurchfWeg> Direkt  -->
+		 <!-- <DurchfWeg>4</DurchfWeg> Ukasse -->
+>>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
+	  <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Si</Name>  -->
+		 <!-- <Id>1048</Id>  -->
+	 <!-- </Versicherer>  -->
+<<<<<<< HEAD
+   <!-- <versicherer>   -->
+		 <!-- <name>hdi</name>  -->
+		 <!-- <id>1033</id>  -->
+	 <!-- </versicherer>  -->
+=======
+ <Versicherer> 
+		 <Name>Zürich</Name> 
 		 <Id>1138</Id> 
-	 </Versicherer>	 
+	 </Versicherer>   	 
+
+>>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
 	 </VersichererList>
-	 
-	 <DurchfwegList all="false">
-	 <DurchfWeg>
-	  <Name>Direkt</Name>
-	  <Id>1</Id>
-	 </DurchfWeg>
-	 <!-- <DurchfWeg> -->
-	  <!-- <Name>Pensionskasse</Name> -->
-	  <!-- <Id>2</Id> -->
-	 <!-- </DurchfWeg>	  -->
-	 <DurchfWeg>
-	  <Name>SBU</Name>
-	  <Id>4</Id>
-	 </DurchfWeg>	 
-	 </DurchfwegList>
-	 <TarifList smoke="false" all="true">
-	 <Tarif>
-		<Name></Name>
-		<Id></Id>
-	</Tarif>
-	 </TarifList>
 	 <ExcludeList>
 	 
-	  <!-- <Versicherer>  -->
-		 <!-- <Name>Canada Life</Name> -->
-		  <!-- <Id>9997</Id> -->
-	  <!-- </Versicherer>	  -->
+	  <Versicherer> 
+		 <Name>Canada Life</Name>
+		  <Id>9997</Id>
+	  </Versicherer>	 
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
