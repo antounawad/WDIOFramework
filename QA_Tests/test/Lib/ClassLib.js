@@ -114,15 +114,20 @@ class TestLib{
     // FileStream für Config Dateien
     get Fs(){return fs};
 
+
+
     // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() {return process.argv[3].substr(2)}
      //get TargetUrl() { return process.argv[5].substr(2)}
 
+     get TargetDom() { return process.argv[4].substr(2)}
+     //get TargetDom() { return process.argv[6].substr(2)}
+
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[4]
-         //let ver = process.argv[6]
+         let ver = process.argv[5]
+         //let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -398,6 +403,13 @@ class TestLib{
                     fieldname  = '#'+element['Name'][0];
                 }
                 fieldValue = element['Value'][0];
+
+
+                try
+                {
+                    this.WaitUntilExist(fieldname);
+                }catch(ex){}
+                
                 exist = browser.isExisting(fieldname);
 
                 if(fieldname == '#AgencyNumber')
@@ -412,7 +424,7 @@ class TestLib{
                 if(exist)
                 {
 
-                    this.PauseAction(1000);
+                    this.PauseAction(300);
 
                     if(list != null && list === "true")
                     {
@@ -721,9 +733,11 @@ class TestLib{
     
     CheckVersion()
     {
-		if(this.SmokeTest && this.Version !== '')
+		if(this.Version !== '')
 		{
-            assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
+            var t = browser.getText('#container-main');
+            console.log(t);
+            assert.notEqual(t.indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
 		}		
     }
 
@@ -805,6 +819,23 @@ class TestLib{
 
     }    
 
+    WaitUntilExist(waitUntilSelector, waitTime=5000, message="")
+    {
+        this.WaitUntilSelector = waitUntilSelector;
+        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
+        if(message != "")
+        {
+            _message = message;
+        }
+
+        browser.waitUntil(function ()
+        {
+            return browser.isExisting(_WaitUntilSelector);
+
+          }, waitTime, _message);
+
+    }        
+
     WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
@@ -849,6 +880,7 @@ class TestLib{
 
     AddChapter(chapter, btnNew, waitUntilSelector='',callbackFunc=null)
     {
+        this.PauseAction(1000);
         var Sites = this.GetElementFromConfig(this.GetNewChapterList(chapter));
         var path = Sites.$['path'];
         

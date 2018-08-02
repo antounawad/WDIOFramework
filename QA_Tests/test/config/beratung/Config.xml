@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Channel>hotfix</Channel>
+  <Channel>beratung</Channel>
   <New>
 	<Chapter>
 		<VN>
@@ -171,7 +171,7 @@
 	  <Id>4</Id>
 	 </DurchfWeg>	 
 	 </DurchfwegList>
-	 <TarifList smoke="false" all="true">
+	 <TarifList smoke="true" all="true">
 	 <Tarif>
 		<Name></Name>
 		<Id></Id>
@@ -187,10 +187,6 @@
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
 	  </Versicherer>
-	  <!-- <Versicherer>  -->
-		 <!-- <Name>SI</Name> -->
-		  <!-- <Id>1048</Id> -->
-	  <!-- </Versicherer> -->
 	  <Versicherer> 
 		 <Name>LV</Name>
 		  <Id>1062</Id>

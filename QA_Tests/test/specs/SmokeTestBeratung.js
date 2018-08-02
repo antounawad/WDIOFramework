@@ -30,8 +30,12 @@ describe('webdriver.io page', function () {
 	it('Smoke Test...', function () {
 
 
-
-		browser.url('http://'+ testLib.TargetUrl+'.xbav-berater.de/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F');
+		var url = 'http://'+ testLib.TargetUrl+'.'+testLib.TargetDom+'.de'+'/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F';
+		if(testLib.TargetUrl == 'beratung')
+		{
+			url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
+		}
+		browser.url(url);
 		this.timeout(testLib.UrlTimeOut);
 
 		// Erstmal die Standard configuration auslesen
@@ -44,6 +48,8 @@ describe('webdriver.io page', function () {
 		// Todo extrahieren
 		login.LoginUser();
 
+		
+
 		testLib.SelectHauptAgentur();
 
 		//vp.AddVP("AutomRKTestVP");
@@ -52,7 +58,7 @@ describe('webdriver.io page', function () {
 
 		//consultation.AddConsultation();
 
-
+		testLib.CheckVersion();
 
 		rk.StartRKTest(vn, vp);
 
