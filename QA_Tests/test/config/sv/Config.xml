@@ -171,25 +171,18 @@
 	  <Id>4</Id>
 	 </DurchfWeg>	 
 	 </DurchfwegList>
-	 <TarifList smoke="false" all="true">
+	 <TarifList smoke="true" all="true">
 	 <Tarif>
 		<Name></Name>
 		<Id></Id>
 	</Tarif>
 	 </TarifList>
 	 <ExcludeList>
-<<<<<<< HEAD
-	 <Versicherer> 
-		 <Name>CanadaLife</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>   
-=======
 	 
 	  <!-- <Versicherer>  -->
 		 <!-- <Name>Canada Life</Name> -->
 		  <!-- <Id>9997</Id> -->
 	  <!-- </Versicherer>	  -->
->>>>>>> 132c39f6b07f9a03e430e021539aa47378013027
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>

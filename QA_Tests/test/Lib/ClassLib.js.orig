@@ -10,8 +10,6 @@ var fs = require('fs'),
 var _Documents = false;
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
-var _DurchfWege = null;
-var _Tarife =  null;
 var _ExcludeVersicherer = null;
 // Speichert die TarifSelektoren
 var _TarifSelector = null;
@@ -32,25 +30,14 @@ var _ClearElementIterator = 0;
 
 var _WaitUntilSelector = "";
 
-var _TarifSmoke = false;
-
 var _BreakAtError = false;
 
 var _TarifSiteSelector = 'Arbeitgeber – Tarifvorgabe';
 
 var _MenueMinMax = '.fold-toggle.hide.show-gt-sm.md-font.mdi.mdi-24px.mdi-backburger';
 
-var _btnTarifSave = 'modalContainer_btnSpeichern';
-
-var _AllDurchfWege = false;
-var _AllTarife = false;
-
 var _btnNavNext = '#btnNavNext';
 var _btnNavPrev = '#btnNavBack';
-
-var _leftSiteMenu = '#navbar-left'
-
- 
 
 var _btnFastForward = '#btnFastForward';
 
@@ -64,31 +51,8 @@ var _btnMainAgency = '#btnXbavMainAgency';
 
 var _btnNewVn = '#btnNewVn';
 
-var _NavchapterTarif = '#navChapterLink_1'; // Arbeitgeber
-var _NavchapterAngebot = '#navChapterLink_6' // Angebot
-var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
-var _StatusSiteTitle = 'Abschluss - Status';
-var _LinkAngebotKurzUebersicht = 'navViewLink_AngebotAngebotVersichererangebot';
-
-var _OnlyTarifCheck = false;
-
-
 
 class TestLib{
-
-    get TarifSmoke(){return _TarifSmoke === 'true'};
-    get OnlyTarifCheck(){return _OnlyTarifCheck === 'true'};
-    get Tarife(){return _Tarife};
-
-    get AllTarife(){return _AllTarife === 'true'};
-
-    get NavChapterTarif(){return _NavchapterTarif};
-    get NavChapterAngebot(){return _NavchapterAngebot};
-    get NavChapterDokumente(){return _NavchapterDokumente};
-
-    get StatusSiteTitle(){return _StatusSiteTitle}
-
-    get LinkAngebotKurzUebersicht(){return _LinkAngebotKurzUebersicht};
 
    get UrlTimeOut(){return _UrlTimeOut};
 
@@ -96,15 +60,9 @@ class TestLib{
 
    get BreakAtError(){return _BreakAtError === 'true'};
 
-   get AllDurchfWege(){return _AllDurchfWege === 'true'};
-   
-   get DurchfWege(){return _DurchfWege};
-
     get BtnBlurredOverlay(){return _btnBlurredOverlay};
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
-
-    get ErrorShotPath(){return _executablePath+'errorShots\\'}
 
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer(){ return _Versicherer};
@@ -114,20 +72,21 @@ class TestLib{
     // FileStream für Config Dateien
     get Fs(){return fs};
 
-
-
     // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() {return process.argv[3].substr(2)}
      //get TargetUrl() { return process.argv[5].substr(2)}
 
-     get TargetDom() { return process.argv[4].substr(2)}
-     //get TargetDom() { return process.argv[6].substr(2)}
-
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[5]
-         //let ver = process.argv[7]
+<<<<<<< HEAD
+         //let ver = process.argv[4]
+         
+         let ver = process.argv[6]
+=======
+         let ver = process.argv[4]
+         //let ver = process.argv[6]
+>>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
          if(ver != null)
          {
              return ver.substr(2);
@@ -187,12 +146,6 @@ class TestLib{
 
 
     get TarifSiteSelector(){return _TarifSiteSelector};
-
-
-    TakeErrorShot(message)
-    {
-        browser.saveScreenshot(this.ErrorShotPath+message+'.png')
-    }
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
@@ -248,21 +201,26 @@ class TestLib{
     CheckIsVisible(selector)
     {
         var result = browser.isVisible(selector);
-        return result;
     }
 
     // Navigiert zur Seite des Übergebenen Seitentitels
-    Navigate2Site(title, failSite='')
+    Navigate2Site(title)
     {
         try{
-            this.PauseAction(500);
+            if(this.BrowserTitle.indexOf(title) >= 0)
+            {
+                _Navigate2SiteIterator = 0;
+                return;
+            }
 
-            if(_Navigate2SiteIterator >= 50)
+            if(_Navigate2SiteIterator >= 100)
             {
                 throw new Error("Zu viele Navigate2Site Iterationen");
             }
             while(true)
-            { 
+            {
+                this.ClickAction('#btnNavNext');
+
                 var index = this.BrowserTitle.indexOf(title);
                 if(index > -1 )
                 {
@@ -271,56 +229,19 @@ class TestLib{
                     break;
                 }
 
-                if(failSite != '')
-                {
-                    var fSiteArr = String(failSite).split(":");
-                    var indexFail = this.BrowserTitle.indexOf(fSiteArr[0]);
-                    if(indexFail >= 0)
-                    {
-                        this.Jump2Chapter(fSiteArr[1],fSiteArr[2]);
-                        this.Navigate2Site(title, failSite);
-                     }
-                }                
-
-               
-
                 this.WaitUntilVisible(this.BtnNavNext);
-                this.OnlyClickAction(this.BtnNavNext);
                
                 this.CheckSiteFields();
             }
         }catch(err){
+            console.log(err)
             _Navigate2SiteIterator += 1;
-            this.Navigate2Site(title, failSite);
+            this.Navigate2Site(title);
         }finally
         {
             this.CheckSiteFields();
         }
     }
-
-    Jump2FailSite(failSite,title)
-    {
-        if(failSite === '')
-        {
-            this.Navigate2Site(title);
-            return;
-        }
-        var chapterLink = String(failSite).split(":");
-        this.Jump2Chapter(chapterLink[0], chapterLink[1])
-    }
-
-    Jump2Chapter(chapter, link)
-    {
-        this.SetLeftMenuVisible();
-        if(!this.CheckIsVisible(link))
-        {
-            this.ClickAction(chapter, link);
-        }
-
-		this.ClickAction(link);
-    }
-
-
 
     GetXmlConfigPath(pathFile)
     {
@@ -403,13 +324,6 @@ class TestLib{
                     fieldname  = '#'+element['Name'][0];
                 }
                 fieldValue = element['Value'][0];
-
-
-                try
-                {
-                    this.WaitUntilExist(fieldname);
-                }catch(ex){}
-                
                 exist = browser.isExisting(fieldname);
 
                 if(fieldname == '#AgencyNumber')
@@ -424,7 +338,7 @@ class TestLib{
                 if(exist)
                 {
 
-                    this.PauseAction(300);
+                    this.PauseAction(1000);
 
                     if(list != null && list === "true")
                     {
@@ -519,8 +433,6 @@ class TestLib{
     }
 
     OnlyClickAction(selector, pauseTime=0){
-     try{
-        
         if(!browser.isExisting(selector))
         {
             return;
@@ -534,28 +446,6 @@ class TestLib{
             this.PauseAction(pauseTime);
         }
         return retValue;
-        }catch(ex)
-        {
-            if(!this.CheckPopUp(retValue.selector))
-            {
-                throw new Error(ex);
-            }
-        }
-    }
-
-    CheckPopUp(clickSelector)
-    {
-        var selectorLeaveOrGo = '.swal2-confirm.md-button.md-raised.md-accent';
-        if(this.CheckIsVisible(selectorLeaveOrGo))
-        {
-            browser.click(selectorLeaveOrGo);
-            browser.click(retValue.selector);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
     
     ClickAction(selector, waitforVisibleSelector='', timeout=50000, pauseTime=0, click=false){
@@ -575,25 +465,7 @@ class TestLib{
         }catch(ex)
         {
             _ClickIterator += 1;
-
-            if(!this.CheckPopUp(retValue.selector))
-            {
-                throw new Error(ex);
-            }
-            else
-            {
-                return;
-            }
-            
-            if(this.CheckIsVisible(_btnTarifSave))
-            {
-                browser.click(_btnTarifSave);
-            }
-            else if(this.CheckIsVisible(_btnNavPrev))
-            {
-                browser.click(_btnNavPrev);
-            }
-            
+            browser.click('btnNavBack');
             this.ClickAction(selector, waitforVisibleSelector, timeout, pauseTime, click);
         }
 
@@ -601,7 +473,7 @@ class TestLib{
         {
             if(!browser.isExisting(waitforVisibleSelector))
             {
-                waitforVisibleSelector = _btnNavNext;
+                waitforVisibleSelector = '#btnNavNext';
             }
         }
 
@@ -619,7 +491,6 @@ class TestLib{
         this.PauseAction(pauseTime);
 
         return retValue;
-       
 	}
 
     PauseAction(pauseTime){
@@ -640,22 +511,6 @@ class TestLib{
 
     }
 
-    SetLeftMenuVisible()
-    {
-
-        this.WaitUntilVisible(_leftSiteMenu);
-
-        var checkBlock = $(_leftSiteMenu);
-
-		if(checkBlock.state == 'success')
-		{
-			if(checkBlock.getAttribute('class').indexOf('navbar-folded') >= 0)
-			{
-                this.ClickAction(this.MenueMinMax);
-            }
-		}
-    }
-
     ReadXMLAttribute(standard=false){
         
         var callback = this.CheckFieldListAttribute;
@@ -671,13 +526,6 @@ class TestLib{
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
                 _Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
                 _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
-                _AllDurchfWege = result['Config']['DurchfwegList'][0].$['all'];
-                _DurchfWege =  result['Config']['DurchfwegList'][0]['DurchfWeg'];
-
-                _AllTarife = result['Config']['TarifList'][0].$['all'];
-                _Tarife =  result['Config']['TarifList'][0]['Tarif'];
-                _TarifSmoke = result['Config']['TarifList'][0].$['smoke'];
-                _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
             }
 		})
     }
@@ -733,11 +581,9 @@ class TestLib{
     
     CheckVersion()
     {
-		if(this.Version !== '')
+		if(this.SmokeTest && this.Version !== '')
 		{
-            var t = browser.getText('#container-main');
-            console.log(t);
-            assert.notEqual(t.indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
+            assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
 		}		
     }
 
@@ -792,50 +638,6 @@ class TestLib{
           }, waitTime, _message);
     }
 
-    WaitUntilEnabled(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
-    {
-        this.WaitUntilSelector = waitUntilSelector;
-        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
-        if(message != "")
-        {
-            _message = message;
-        }
-
-        if(this.CheckIsVisible(_btnBlurredOverlay))
-        {
-            this.OnlyClickAction(_btnBlurredOverlay);
-            if(this.CheckIsVisible(_gridSelector))
-            {
-                this.OnlyClickAction(_gridSelector);
-            }
-        }
-    
-
-        browser.waitUntil(function ()
-        {
-            return browser.isEnabled(_WaitUntilSelector);
-
-          }, waitTime, _message);
-
-    }    
-
-    WaitUntilExist(waitUntilSelector, waitTime=5000, message="")
-    {
-        this.WaitUntilSelector = waitUntilSelector;
-        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
-        if(message != "")
-        {
-            _message = message;
-        }
-
-        browser.waitUntil(function ()
-        {
-            return browser.isExisting(_WaitUntilSelector);
-
-          }, waitTime, _message);
-
-    }        
-
     WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
         this.WaitUntilSelector = waitUntilSelector;
@@ -880,7 +682,6 @@ class TestLib{
 
     AddChapter(chapter, btnNew, waitUntilSelector='',callbackFunc=null)
     {
-        this.PauseAction(1000);
         var Sites = this.GetElementFromConfig(this.GetNewChapterList(chapter));
         var path = Sites.$['path'];
         
@@ -926,13 +727,6 @@ class TestLib{
         //     console.log('Config Datei: '+configFileName+' existiert nicht.')
         // }
 		});        
-    }
-
-    RefreshBrowser(selector)
-    {
-        browser.refresh();
-        this.WaitUntilVisible(selector);
-
     }
 
 
