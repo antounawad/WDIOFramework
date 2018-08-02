@@ -126,8 +126,8 @@ class TestLib{
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[4]
-         //let ver = process.argv[6]
+         let ver = process.argv[5]
+         //let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -733,9 +733,11 @@ class TestLib{
     
     CheckVersion()
     {
-		if(this.SmokeTest && this.Version !== '')
+		if(this.Version !== '')
 		{
-            assert.notEqual(browser.getText('#container-main').indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
+            var t = browser.getText('#container-main');
+            console.log(t);
+            assert.notEqual(t.indexOf('Version '+this.Version), -1, "Fehlerhafte Version ausgliefert.");
 		}		
     }
 

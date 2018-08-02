@@ -48,6 +48,8 @@ describe('webdriver.io page', function () {
 		// Todo extrahieren
 		login.LoginUser();
 
+		
+
 		testLib.SelectHauptAgentur();
 
 		//vp.AddVP("AutomRKTestVP");
@@ -56,7 +58,7 @@ describe('webdriver.io page', function () {
 
 		//consultation.AddConsultation();
 
-
+		testLib.CheckVersion();
 
 		rk.StartRKTest(vn, vp);
 
