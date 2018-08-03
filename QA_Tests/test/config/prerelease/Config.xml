@@ -86,7 +86,7 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="true" breakAtError="false" onlyTarifCheck="false">
+  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="false">
 	 <Versicherer> 
 		 <Name>Allianz</Name> 
 		 <Id>1006</Id> 
@@ -133,11 +133,11 @@
 	 </Versicherer>
 	 <Versicherer> 
 		 <Name>Stuttgarter</Name> 
-		 <Id>1104</Id> 
+		 <Id></Id> 
 	 </Versicherer>
 	 	 <Versicherer> 
-		 <Name>Swisslife</Name> 
-		 <Id>1090</Id> 
+		 <Name>1104</Name> 
+		 <Id></Id> 
 	 </Versicherer>
 	 	 <Versicherer> 
 		 <Name>Volkswohl Bund</Name> 
@@ -167,12 +167,11 @@
 	  <!-- <Id>2</Id> -->
 	 <!-- </DurchfWeg>	  -->
 	 <!-- <DurchfWeg>
-	  <!-- <Name>SBU</Name> -->
-	  <!-- <Id>4</Id>
+	  <Name>SBU</Name>
+	  <Id>4</Id>
 	 </DurchfWeg>	  -->
 	 </DurchfwegList>
-
-	 <TarifList smoke="true" all="false">
+	 <TarifList smoke="false" all="true">
 	 <Tarif>
 		<Name></Name>
 		<Id></Id>
