@@ -133,11 +133,7 @@
 	 </Versicherer>
 	 <Versicherer> 
 		 <Name>Stuttgarter</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>1104</Name> 
-		 <Id></Id> 
+		 <Id>1104</Id> 
 	 </Versicherer>
 	 	 <Versicherer> 
 		 <Name>Volkswohl Bund</Name> 
@@ -166,10 +162,10 @@
 	  <!-- <Name>Pensionskasse</Name> -->
 	  <!-- <Id>2</Id> -->
 	 <!-- </DurchfWeg>	  -->
-	 <DurchfWeg>
+	 <!-- <DurchfWeg>
 	  <Name>SBU</Name>
 	  <Id>4</Id>
-	 </DurchfWeg>	 
+	 </DurchfWeg>	  -->
 	 </DurchfwegList>
 	 <TarifList smoke="true" all="true">
 	 <Tarif>
