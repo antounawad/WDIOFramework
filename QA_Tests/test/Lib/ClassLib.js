@@ -255,7 +255,6 @@ class TestLib{
     Navigate2Site(title, failSite='')
     {
         try{
-            this.PauseAction(500);
 
             try{
                 this.WaitUntilVisible('#title',5000);
@@ -897,7 +896,7 @@ class TestLib{
 
     AddChapter(chapter, btnNew, waitUntilSelector='',callbackFunc=null)
     {
-        this.PauseAction(1000);
+        this.PauseAction(500);
         var Sites = this.GetElementFromConfig(this.GetNewChapterList(chapter));
         var path = Sites.$['path'];
         
