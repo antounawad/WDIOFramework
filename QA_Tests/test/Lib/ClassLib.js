@@ -117,17 +117,17 @@ class TestLib{
 
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[3].substr(2)}
-     //get TargetUrl() { return process.argv[5].substr(2)}
+     //get TargetUrl() {return process.argv[3].substr(2)}
+     get TargetUrl() { return process.argv[5].substr(2)}
 
-     get TargetDom() { return process.argv[4].substr(2)}
-     //get TargetDom() { return process.argv[6].substr(2)}
+     //get TargetDom() { return process.argv[4].substr(2)}
+     get TargetDom() { return process.argv[6].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[5]
-         //let ver = process.argv[7]
+         //let ver = process.argv[5]
+         let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -256,21 +256,25 @@ class TestLib{
     {
         try{
 
-            try{
-                this.WaitUntilVisible('#title',5000);
-            }
-            catch(ex){}
-
-
-
             if(_Navigate2SiteIterator >= 50)
             {
                 throw new Error("Zu viele Navigate2Site Iterationen");
             }
             while(true)
             { 
-                var index = this.BrowserTitle.indexOf(title);
-                if(index > -1 )
+
+                this.WaitUntilVisible(this.BtnNavNext);
+                this.OnlyClickAction(this.BtnNavNext);
+    
+                try{
+                   
+                    this.WaitUntilTitle();
+                }
+                catch(ex){}
+    
+    
+
+                if(String(this.BrowserTitle).includes(title))
                 {
                     _Navigate2SiteIterator = 0;
                     this.PauseAction(500);
@@ -288,11 +292,6 @@ class TestLib{
                      }
                 }                
 
-               
-
-                this.WaitUntilVisible(this.BtnNavNext);
-                this.OnlyClickAction(this.BtnNavNext);
-               
                 this.CheckSiteFields();
             }
         }catch(err){
@@ -694,6 +693,7 @@ class TestLib{
                 _Tarife =  result['Config']['TarifList'][0]['Tarif'];
                 _TarifSmoke = result['Config']['TarifList'][0].$['smoke'];
                 _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
+                       
             }
 		})
     }
@@ -804,7 +804,7 @@ class TestLib{
 
         browser.waitUntil(function ()
         {
-            return  browser.isVisible(_WaitUntilSelector)
+            return browser.isVisible(_WaitUntilSelector);
           }, waitTime, _message);
     }
 
@@ -850,7 +850,24 @@ class TestLib{
 
           }, waitTime, _message);
 
-    }        
+    }  
+
+    WaitUntilTitle(waitTime=5000, message="")
+    {
+        var _message = 'expected: title to be different after: '+waitTime;
+        if(message != "")
+        {
+            _message = message;
+        }
+
+        browser.waitUntil(function ()
+        {
+            var title = browser.getTitle().includes('berater');
+            return title;
+
+          }, waitTime, _message);
+
+    }    
 
     WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
