@@ -117,17 +117,17 @@ class TestLib{
 
 
     // Übergebenes Projekt --hotfix aus Args
-     //get TargetUrl() {return process.argv[3].substr(2)}
-     get TargetUrl() { return process.argv[5].substr(2)}
+     get TargetUrl() {return process.argv[3].substr(2)}
+     //get TargetUrl() { return process.argv[5].substr(2)}
 
-     //get TargetDom() { return process.argv[4].substr(2)}
-     get TargetDom() { return process.argv[6].substr(2)}
+     get TargetDom() { return process.argv[4].substr(2)}
+     //get TargetDom() { return process.argv[6].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         //let ver = process.argv[5]
-         let ver = process.argv[7]
+         let ver = process.argv[5]
+         //let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
