@@ -30,10 +30,8 @@ class RK {
 			this.CreateTarifOptions();
 		}catch(ex)
 		{
-			if(ex != undefined)
-			{
-				console.log("Error: StartRKTest: "+ex.message);
-			}
+			console.log("Error: StartRKTest: "+ex.message);
+
 			if(String(ex.message).indexOf('AssertionError') >= 0)
 				throw new Error(ex);
 

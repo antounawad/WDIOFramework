@@ -298,7 +298,7 @@ class TestLib{
 
                 this.CheckSiteFields();
             }
-        }catch(err){
+        }catch(ex){
             _Navigate2SiteIterator += 1;
             console.log("Error: Navigate2Site: "+ex.message);
             this.Navigate2Site(title, failSite);

@@ -443,11 +443,7 @@ class Tarif{
 
 	}catch(ex)
 	{
-		if(ex != undefined)
-		{
-			console.log("Error: CreateListTarif: "+ex.message);
-			
-		}
+		console.log("Error: CreateListTarif: "+ex.message);
 		throw new Error(ex);
 	}
 		
