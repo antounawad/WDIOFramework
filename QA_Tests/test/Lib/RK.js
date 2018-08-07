@@ -30,7 +30,10 @@ class RK {
 			this.CreateTarifOptions();
 		}catch(ex)
 		{
-			console.log("Error: StartRKTest: "+ex.message);
+			if(ex != undefined)
+			{
+				console.log("Error: StartRKTest: "+ex.message);
+			}
 			if(String(ex.message).indexOf('AssertionError') >= 0)
 				throw new Error(ex);
 
@@ -42,7 +45,7 @@ class RK {
 			if(_RepeatCounter >= 10)
 			{
 				console.log("Fehler: Nach 10 maliger Wiederholung abgebrochen...")
-				assert.equal(1,0,message);
+				assert.equal(1,0,ex.message);
 			}
 		}
 	}
