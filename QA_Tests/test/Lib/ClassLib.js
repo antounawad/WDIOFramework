@@ -264,9 +264,6 @@ class TestLib{
             while(true)
             { 
 
-                this.WaitUntilVisible(this.BtnNavNext);
-                this.OnlyClickAction(this.BtnNavNext);
-    
                 try{
                    
                     this.WaitUntilTitle();
@@ -295,6 +292,9 @@ class TestLib{
                         this.Navigate2Site(title, failSite);
                      }
                 }                
+
+                this.WaitUntilVisible(this.BtnNavNext);
+                this.OnlyClickAction(this.BtnNavNext);
 
                 this.CheckSiteFields();
             }
@@ -719,7 +719,6 @@ class TestLib{
         }
         catch(ex)
         {
-            console.log("Error: CheckFieldAttribute: "+ex.message);
         }
         
         return result;
