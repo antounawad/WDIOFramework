@@ -209,6 +209,7 @@ class Tarif{
 					}						
 				}catch(ex)
 				{
+					console.log("Error: CreateSmokeTarif: "+ex.message);
 					throw new Error(ex);
 				}
 		
@@ -280,6 +281,7 @@ class Tarif{
 
 		}catch(ex)
 		{
+			console.log("Error: SelectAndClick: "+ex.message);
 			throw new Error(ex);
 		}		
 	}
@@ -441,6 +443,7 @@ class Tarif{
 
 	}catch(ex)
 	{
+		console.log("Error: CreateListTarif: "+ex.message);
 		throw new Error(ex);
 	}
 		

@@ -231,6 +231,7 @@ class TestLib{
             }
         }catch(ex)
         {
+            console.log("Error: SearchElement: "+ex.message);
             _SearchIterator += 1;
             this.SearchElement(selector, value, 1000);
 
@@ -270,7 +271,10 @@ class TestLib{
                    
                     this.WaitUntilTitle();
                 }
-                catch(ex){}
+                catch(ex)
+                {
+                    console.log("Error: Navigate2Site(WaitUntilTitle): "+ex.message);
+                }
     
     
 
@@ -296,6 +300,7 @@ class TestLib{
             }
         }catch(err){
             _Navigate2SiteIterator += 1;
+            console.log("Error: Navigate2Site: "+ex.message);
             this.Navigate2Site(title, failSite);
         }finally
         {
@@ -381,6 +386,7 @@ class TestLib{
         }
         catch(ex)
         {
+            console.log("Error: ClearElementValue: "+ex.message);
             _ClearElementIterator += 1;
 
         }
@@ -423,7 +429,10 @@ class TestLib{
                 try
                 {
                     this.WaitUntilExist(fieldname);
-                }catch(ex){}
+                }catch(ex)
+                {
+                    console.log("Error: CheckSiteFields(WaitUntilExists): "+fieldname+" "+ex.message);
+                }
                 
                 exist = browser.isExisting(fieldname);
 
@@ -461,6 +470,7 @@ class TestLib{
                             }
                             catch(ex)
                             {
+                                console.log("Error: CheckSiteFields: "+ex.message);
                                 List.setValue("1");
                                 browser.leftClick(List.selector,10,10);
 
@@ -551,6 +561,7 @@ class TestLib{
         return retValue;
         }catch(ex)
         {
+            console.log("Error: OnlyClickError: "+ex.message);
             if(!this.CheckPopUp(retValue.selector))
             {
                 throw new Error(ex);
@@ -589,6 +600,7 @@ class TestLib{
 
         }catch(ex)
         {
+            console.log("Error: ClickAction: "+ex.message);
             _ClickIterator += 1;
 
             if(!this.CheckPopUp(retValue.selector))
@@ -705,7 +717,10 @@ class TestLib{
             result = element[attributeName][0];
 
         }
-        catch(ex){}
+        catch(ex)
+        {
+            console.log("Error: CheckFieldAttribute: "+ex.message);
+        }
         
         return result;
     }
@@ -717,7 +732,10 @@ class TestLib{
             result = element[attributeName];
 
         }
-        catch(ex){}
+        catch(ex)
+        {
+            console.log("Error: CheckFieldListAttribute: "+ex.message);
+        }
         
         return result;
     }
@@ -739,7 +757,10 @@ class TestLib{
                         }
                     })
             })  
-        }catch(ex){}
+        }catch(ex)
+        {
+            console.log("Error: GetElementFromConfig: "+ex.message);
+        }
 
         
         return res;

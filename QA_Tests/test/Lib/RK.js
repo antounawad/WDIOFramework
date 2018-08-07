@@ -30,6 +30,7 @@ class RK {
 			this.CreateTarifOptions();
 		}catch(ex)
 		{
+			console.log("Error: StartRKTest: "+ex.message);
 			if(String(ex.message).indexOf('AssertionError') >= 0)
 				throw new Error(ex);
 
@@ -99,6 +100,7 @@ class RK {
 			};
 		}
 		catch (ex) {
+			console.log("Error: Navigate2RK: "+ex.message);
 			throw new Error(ex);
 		}
 	}
