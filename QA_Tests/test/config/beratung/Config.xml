@@ -86,51 +86,51 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="true">
-	 <Versicherer> 
-		 <Name>Allianz</Name> 
-		 <Id>1006</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Canada Life</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Continentale</Name> 
-		 <Id>1335</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Die Bayerische</Name> 
-		 <Id>1013</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Gothaer</Name> 
-		 <Id>1108</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>HDI</Name> 
-		 <Id>1033</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>KLinikrente</Name> 
-		 <Id>9994</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Metallrente</Name> 
-		 <Id>9993</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Nürnberger</Name> 
-		 <Id>1147</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Signal Iduna</Name> 
-		 <Id>1048</Id> 
-	 </Versicherer>
+  <VersichererList all="false" smoke="true" breakAtError="false" onlyTarifCheck="false">
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name>  -->
+		 <!-- <Id>1006</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Alte Leipziger</Name>  -->
+		 <!-- <Id>1007</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Canada Life</Name>  -->
+		 <!-- <Id>9997</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Continentale</Name>  -->
+		 <!-- <Id>1335</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Die Bayerische</Name>  -->
+		 <!-- <Id>1013</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Gothaer</Name>  -->
+		 <!-- <Id>1108</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>HDI</Name>  -->
+		 <!-- <Id>1033</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>KLinikrente</Name>  -->
+		 <!-- <Id>9994</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Metallrente</Name>  -->
+		 <!-- <Id>9993</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Nürnberger</Name>  -->
+		 <!-- <Id>1147</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Signal Iduna</Name>  -->
+		 <!-- <Id>1048</Id>  -->
+	 <!-- </Versicherer> -->
 	 <Versicherer> 
 		 <Name>Stuttgarter</Name> 
 		 <Id></Id> 
@@ -166,10 +166,10 @@
 	  <!-- <Name>Pensionskasse</Name> -->
 	  <!-- <Id>2</Id> -->
 	 <!-- </DurchfWeg>	  -->
-	 <DurchfWeg>
-	  <Name>SBU</Name>
-	  <Id>4</Id>
-	 </DurchfWeg>	 
+	 <!-- <DurchfWeg> -->
+	  <!-- <Name>SBU</Name> -->
+	  <!-- <Id>4</Id> -->
+	 <!-- </DurchfWeg>	  -->
 	 </DurchfwegList>
 	 <TarifList smoke="true" all="true">
 	 <Tarif>

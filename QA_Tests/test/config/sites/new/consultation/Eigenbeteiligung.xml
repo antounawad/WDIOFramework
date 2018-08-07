@@ -2,13 +2,12 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-	<Name>r_NettoBeitrag</Name>
+	<Name>r_GesamtBeitrag</Name>
 	<Value>Click</Value>
    </Field>
     <Field>
-	<Name>NettoVerzicht</Name>
-	<Value>120</Value>
-	<Add>true</Add>
+	<Name>btn_steuerfrei</Name>
+	<Value>Click</Value>
    </Field>
 </Fields>
 </Config>

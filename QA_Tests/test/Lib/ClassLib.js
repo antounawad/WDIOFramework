@@ -257,6 +257,13 @@ class TestLib{
         try{
             this.PauseAction(500);
 
+            try{
+                this.WaitUntilVisible('#title',5000);
+            }
+            catch(ex){}
+
+
+
             if(_Navigate2SiteIterator >= 50)
             {
                 throw new Error("Zu viele Navigate2Site Iterationen");
@@ -325,10 +332,18 @@ class TestLib{
     GetXmlConfigPath(pathFile)
     {
         var title = this.BrowserTitle;
+
+
+
         var index = title.indexOf('|');
         if(index >  0)
         {
             title = title.substr(0,index-1);
+        }
+
+        if(String(title).includes('Investmentauswahl'))
+        {
+            var x = "Y";
         }
 
         var path = this.ExecutablePath+'test\\config\\sites\\mandatory\\'+title+'.xml';
@@ -337,6 +352,8 @@ class TestLib{
         {
             path = pathFile;
         }
+
+        
         return path;
     }
 

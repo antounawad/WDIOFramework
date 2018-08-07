@@ -86,7 +86,7 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="true">
+  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="false">
 	 <Versicherer> 
 		 <Name>Allianz</Name> 
 		 <Id>1006</Id> 

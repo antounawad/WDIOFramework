@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="true"></Tests>
+  <Tests documents="false"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -91,10 +91,10 @@
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Alte Leipziger</Name>  -->
-		 <!-- <Id>1007</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Alte Leipziger</Name> 
+		 <Id>1007</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Canada Life</Name>  -->
 		 <!-- <Id>9997</Id>  -->
@@ -131,30 +131,30 @@
 		 <!-- <Name>Signal Iduna</Name>  -->
 		 <!-- <Id>1048</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Stuttgarter</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>1104</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>Volkswohl Bund</Name> 
-		 <Id>1099</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>WWK</Name> 
-		 <Id>1103</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>xbAV Testversicherer</Name> 
-		 <Id>9999</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>Zurich Deutscher Herold</Name> 
-		 <Id>1138</Id> 
-	 </Versicherer>	 
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Stuttgarter</Name>  -->
+		 <!-- <Id></Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>1104</Name>  -->
+		 <!-- <Id></Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>Volkswohl Bund</Name>  -->
+		 <!-- <Id>1099</Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>WWK</Name>  -->
+		 <!-- <Id>1103</Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>xbAV Testversicherer</Name>  -->
+		 <!-- <Id>9999</Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>Zurich Deutscher Herold</Name>  -->
+		 <!-- <Id>1138</Id>  -->
+	 <!-- </Versicherer>	  -->
 	 </VersichererList>
 	 
 	 <DurchfwegList all="false">
