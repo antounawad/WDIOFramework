@@ -300,7 +300,7 @@ class TestLib{
                 }                
 
                 this.WaitUntilVisible(this.BtnNavNext);
-                this.OnlyClickAction(this.BtnNavNext);
+                this.ClickAction(this.BtnNavNext);
 
                 this.CheckSiteFields();
             }
@@ -571,8 +571,6 @@ class TestLib{
         }
 		var retValue = $(selector);
         assert.notEqual(retValue.selector,"");
-
-        this.WaitUntilEnabled(selector);
 
         browser.click(retValue.selector);
         
