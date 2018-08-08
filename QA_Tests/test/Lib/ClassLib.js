@@ -68,7 +68,7 @@ var _NavchapterTarif = '#navChapterLink_1'; // Arbeitgeber
 var _NavchapterAngebot = '#navChapterLink_6' // Angebot
 var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
 var _StatusSiteTitle = 'Abschluss - Status';
-var _LinkAngebotKurzUebersicht = 'navViewLink_AngebotAngebotVersichererangebot';
+var _LinkAngebotKurzUebersicht = '#navViewLink_AngebotAngebotVersichererangebot';
 
 var _OnlyTarifCheck = false;
 
