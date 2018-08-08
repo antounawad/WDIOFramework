@@ -571,6 +571,9 @@ class TestLib{
         }
 		var retValue = $(selector);
         assert.notEqual(retValue.selector,"");
+
+        this.WaitUntilEnabled(selector);
+
         browser.click(retValue.selector);
         
         if(pauseTime>0)
