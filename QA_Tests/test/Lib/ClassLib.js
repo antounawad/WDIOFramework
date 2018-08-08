@@ -72,9 +72,14 @@ var _LinkAngebotKurzUebersicht = 'navViewLink_AngebotAngebotVersichererangebot';
 
 var _OnlyTarifCheck = false;
 
+var _CurrentCheckID = 0;
+
 
 
 class TestLib{
+
+    set CurrentID(value){_CurrentCheckID = value};
+
 
     get TarifSmoke(){return _TarifSmoke === 'true'};
     get OnlyTarifCheck(){return _OnlyTarifCheck === 'true'};
@@ -229,6 +234,7 @@ class TestLib{
                 _SearchIterator += 1;
                 this.SearchElement(selector, value, 1000);
             }
+            this.PauseAction(pauseTime);
         }catch(ex)
         {
             console.log("Error: SearchElement: "+ex.message);
@@ -344,7 +350,7 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Investmentauswahl'))
+        if(String(title).includes('Berufsinformationen'))
         {
             var x = "Y";
         }
@@ -417,9 +423,11 @@ class TestLib{
                 var clear = null;
                 var check = null;
                 var add = null;
+                var checkExist = null;
+
 
                 fieldname  = element['Name'][0];
-                if(fieldname.substr(0,1)!='.')
+                if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[')
                 {
                     fieldname  = '#'+element['Name'][0];
                 }
@@ -428,23 +436,29 @@ class TestLib{
 
                 try
                 {
+                    
+                    checkExist = this.CheckFieldAttribute('CheckExist',element);
+
+                    if(checkExist != null && String(checkExist) !== _CurrentCheckID)
+                    {
+                        return;
+                    }
+
+                    list =  this.CheckFieldAttribute('ListBox',element);
+                    clear = this.CheckFieldAttribute('Clear',element);
+                    check = this.CheckFieldAttribute('Check',element);
+                    add = this.CheckFieldAttribute('Add', element);
+
                     this.WaitUntilExist(fieldname);
+
                 }catch(ex)
                 {
                     console.log("Error: CheckSiteFields(WaitUntilExists): "+fieldname+" "+ex.message);
+                    return;
                 }
                 
                 exist = browser.isExisting(fieldname);
 
-                if(fieldname == '#AgencyNumber')
-                {
-                    var x = "eins";
-                }
-                list =  this.CheckFieldAttribute('ListBox',element);
-                clear = this.CheckFieldAttribute('Clear',element);
-                check = this.CheckFieldAttribute('Check',element);
-                add = this.CheckFieldAttribute('Add', element);
-                
                 if(exist)
                 {
 
@@ -511,8 +525,13 @@ class TestLib{
                             }
                             else
                             {
-        
-                                this.SearchElement(fieldname, fieldValue, 0, (check!=null && check==="true"));
+                                if(fieldname.substr(0,1)==='[')
+                                {
+                                    browser.click(fieldname);
+                                    this.SearchElement(fieldname, fieldValue, 1000, (check!=null && check==="true"));
+                                }
+                                this.SearchElement(fieldname, fieldValue, 100, (check!=null && check==="true"));
+                                
                             }
                         }
                     }                    

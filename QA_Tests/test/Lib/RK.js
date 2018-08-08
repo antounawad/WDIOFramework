@@ -78,6 +78,8 @@ class RK {
 			{
 				versicherer = vArr[i];
 
+				testLib.CurrentID = versicherer;
+
 				try {
 					if (testLib.SmokeTest) {
 						tarif.CreateSmokeTarif(versicherer);

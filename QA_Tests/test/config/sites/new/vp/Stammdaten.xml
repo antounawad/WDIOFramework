@@ -23,13 +23,10 @@
 	<ListBox>true</ListBox>
 	</Field>
 	<Field>
-	<Name>input_14</Name>
+	<Name>[class='md-datepicker-input md-input']</Name>
 	<Value>30.01.1990</Value>
+	<Check>true</Check>
    </Field>
-	<Field>
-	<Name>input_16</Name>
-	<Value>30.01.1990</Value>
-   </Field>   
 </Fields>
 </Config>
 
