@@ -449,7 +449,7 @@ class TestLib{
                 var add = null;
                 var checkExist = null;
 
-                fieldname = this.GetFieldName(ExceptionValue);
+                fieldname = this.GetFieldName(element['Name'][0]);
                 fieldValue = element['Value'][0];
 
 
