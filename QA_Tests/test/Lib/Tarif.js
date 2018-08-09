@@ -31,7 +31,7 @@ var _list = null;
 var _values = null;
 var _ids = null;
 var _counter = 0;
-
+var _errorCounter = 0;
 
 
 class Tarif{
@@ -641,6 +641,11 @@ class Tarif{
 						else
 						{
 							console.log("Versicherer: "+versicherer+" "+ex.message);
+							console.log("Bild: "+_errorCounter+'.png');
+							testLib.TakeErrorShot(String(_errorCounter)+'.png');
+							_errorCounter++;
+							this.DeleteAllTarife(newTarif,true);
+				
 						}
 					}
 					else
