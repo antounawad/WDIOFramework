@@ -363,7 +363,7 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Berufsinformationen'))
+        if(String(title).includes('Angebotsdaten'))
         {
             var x = "Y";
         }
@@ -412,6 +412,17 @@ class TestLib{
 
     }
 
+    GetFieldName(element)
+    {
+        var fieldname  = element;
+        if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[')
+        {
+            fieldname  = '#'+element;
+        }
+        return fieldname;
+
+    }
+
     // Methode zum Automatisierten Füllen von Pflichtfeldern
     // Die Methode wird während des Navigierens aufgerufen (kann auch separat aufgerufen werden)
     // Wenn pathFile nicht angegeben wird, ermittelt sich der Name aus dem Titel der aktuellen Seite 
@@ -438,12 +449,7 @@ class TestLib{
                 var add = null;
                 var checkExist = null;
 
-
-                fieldname  = element['Name'][0];
-                if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[')
-                {
-                    fieldname  = '#'+element['Name'][0];
-                }
+                fieldname = this.GetFieldName(ExceptionValue);
                 fieldValue = element['Value'][0];
 
 
@@ -462,7 +468,23 @@ class TestLib{
                     check = this.CheckFieldAttribute('Check',element);
                     add = this.CheckFieldAttribute('Add', element);
 
-                    this.WaitUntilExist(fieldname);
+                    try
+                    {
+                        this.WaitUntilExist(fieldname);
+                    }
+                    catch(ex)
+                    {
+                        var exfield = this.CheckFieldAttribute('ExceptionField', element);
+                        var exValue = this.CheckFieldAttribute('ExceptionValue', element);
+                        if(exfield != null && exValue != null)
+                        {
+                            fieldname = this.GetFieldName(exfield);
+                            fieldValue = exValue;
+                        }
+                    }
+
+                    check = this.CheckFieldAttribute('Check',element);
+                    add = this.CheckFieldAttribute('Add', element);
 
                 }catch(ex)
                 {

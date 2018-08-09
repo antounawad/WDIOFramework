@@ -257,7 +257,18 @@ class Tarif{
 					}
 				}
 
-				this.SetListBoxSelector();
+					try
+					{
+	
+						this.SetListBoxSelector();
+					}
+					catch(ex)
+					{
+						testLib.OnlyClickAction(_TarifCancelBtn,500);
+						testLib.RefreshBrowser(_addTarifBtnSelector,true);
+						continue;
+					}
+				
 
 				try
 				{
