@@ -45,6 +45,10 @@ var _btnTarifSave = 'modalContainer_btnSpeichern';
 var _AllDurchfWege = false;
 var _AllTarife = false;
 
+var _AllType = false;
+var _Types = null;
+var _TypeSmoke = null;
+
 var _btnNavNext = '#btnNavNext';
 var _btnNavPrev = '#btnNavBack';
 
@@ -77,6 +81,10 @@ var _CurrentCheckID = 0;
 
 
 class TestLib{
+
+    get TypeSmoke(){return _TypeSmoke === 'true'};
+    get Types(){return _Types};
+    get AllTypes(){return _AllType === 'true'};
 
     set CurrentID(value){_CurrentCheckID = value};
 
@@ -306,7 +314,11 @@ class TestLib{
             }
         }catch(ex){
             _Navigate2SiteIterator += 1;
-            console.log("Error: Navigate2Site: "+ex.message);
+            var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
+            if(conslog)
+            {
+                console.log("Error: Navigate2Site: "+ex.message);
+            }
             this.Navigate2Site(title, failSite);
         }finally
         {
@@ -620,7 +632,11 @@ class TestLib{
 
         }catch(ex)
         {
-            console.log("Error: ClickAction: "+ex.message);
+            var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
+            if(conslog)
+            {
+                console.log("Error: ClickAction: "+ex.message);
+            }
             _ClickIterator += 1;
 
             if(!this.CheckPopUp(retValue.selector))
@@ -725,7 +741,10 @@ class TestLib{
                 _Tarife =  result['Config']['TarifList'][0]['Tarif'];
                 _TarifSmoke = result['Config']['TarifList'][0].$['smoke'];
                 _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
-                       
+
+                _AllType = result['Config']['TypeList'][0].$['all'];
+                _Types =  result['Config']['TypeList'][0]['Type'];
+                _TypeSmoke = result['Config']['TypeList'][0].$['smoke'];
             }
 		})
     }
@@ -1001,10 +1020,17 @@ class TestLib{
 		});        
     }
 
-    RefreshBrowser(selector)
+    RefreshBrowser(selector=null,click=false)
     {
         browser.refresh();
-        this.WaitUntilVisible(selector);
+        if(selector != null)
+        {
+            this.WaitUntilVisible(selector);
+            if(click)
+            {
+                this.OnlyClickAction(selector);
+            }
+        }
 
     }
 
