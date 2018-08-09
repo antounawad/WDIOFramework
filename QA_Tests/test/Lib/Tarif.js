@@ -614,8 +614,9 @@ class Tarif{
 					}
 				}
 				console.log("counter: "+_counter++);
+				testLib.LogTime("Vor RK Test");
 				this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
-				
+				testLib.LogTime("Nach RK Test");
 
 
 				if(durchfSelCnt > durchfWegLength-1)
