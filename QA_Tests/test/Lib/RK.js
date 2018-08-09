@@ -76,6 +76,7 @@ class RK {
 		try {
 
 			var vArr = this.GetVersichererArray();
+			var counter = 0;
 			for(var i = 0; i <= vArr.length-1; i++)
 			{
 				versicherer = vArr[i];

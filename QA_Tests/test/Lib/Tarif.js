@@ -30,6 +30,7 @@ var _selector = null;
 var _list = null;
 var _values = null;
 var _ids = null;
+var _counter = 0;
 
 
 
@@ -419,6 +420,7 @@ class Tarif{
 				console.log("Versicherer: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+"...");
 
 
+
 				// type
 				var typeArr = null;
 				try
@@ -542,6 +544,7 @@ class Tarif{
 					}
 
 					console.log("Versicher: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+" Tarif: "+String(tarifFound)+"...");
+					
 	
 					// end Tarif
 					for (var tarifSel = 4; tarifSel <= testLib.TarifSelectoren.length-1; tarifSel++)
@@ -610,6 +613,7 @@ class Tarif{
 						
 					}
 				}
+				console.log("counter: "+_counter++);
 				this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
 				
 
