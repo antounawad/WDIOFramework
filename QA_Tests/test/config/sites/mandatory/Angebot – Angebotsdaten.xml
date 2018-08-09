@@ -11,6 +11,11 @@
 	<Name>Gesamtbeitrag</Name>
 	<Value>120</Value>
 	<Check>true</Check>
+  </Field>
+  <Field>
+	<Name>[name='BerufM']</Name>
+	<Value>Anwendungsprogrammierer</Value>
+	<Check>true</Check>
   </Field>  
 </Fields>
 </Config>
