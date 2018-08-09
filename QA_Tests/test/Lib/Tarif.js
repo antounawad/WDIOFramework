@@ -626,7 +626,28 @@ class Tarif{
 				}
 				console.log("counter: "+_counter++);
 				testLib.LogTime("Vor RK Test");
-				this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
+				try
+				{
+					this.CheckAngebot(newTarif,testLib.OnlyTarifCheck);
+				}
+				catch(ex)
+				{
+					if(!testLib.BreakAtError)
+					{
+						if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
+						{
+							throw new Error(ex);
+						}
+						else
+						{
+							console.log("Versicherer: "+versicherer+" "+ex.message);
+						}
+					}
+					else
+					{
+						throw new Error(ex);
+					}
+				}
 				testLib.LogTime("Nach RK Test");
 
 
