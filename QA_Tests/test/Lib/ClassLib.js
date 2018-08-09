@@ -1,6 +1,7 @@
 var assert = require('assert');
 var fs = require('fs'),
  xml2js=require('xml2js')
+ var date = require('date-and-time');
   
  var defaultTimout = 10000;
 
@@ -1032,6 +1033,15 @@ class TestLib{
             }
         }
 
+    }
+
+    LogTime(string='')
+    {
+        if(string!='')
+        {
+            console.log(string);
+        }
+        console.log(date.format(new Date(), 'YYYY/MM/DD HH:mm:ss'));
     }
 
 

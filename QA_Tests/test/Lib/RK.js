@@ -23,11 +23,13 @@ class RK {
 	StartRKTest(vn, vp) {
 		try
 		{
+			testLib.LogTime('Start RK Test...');
 			vn.AddVN('AutomRKTestVN', true);
 
 			vp.AddVP('AutomRKTestVP');
 
 			this.CreateTarifOptions();
+			testLib.LogTime('Ende RK Test');
 		}catch(ex)
 		{
 			console.log("Error: StartRKTest: "+ex.message);

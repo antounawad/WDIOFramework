@@ -131,13 +131,9 @@
 		 <Name>Signal Iduna</Name> 
 		 <Id>1048</Id> 
 	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Stuttgarter</Name> 
-		 <Id></Id> 
-	 </Versicherer>
 	 	 <Versicherer> 
-		 <Name>1104</Name> 
-		 <Id></Id> 
+		 <Name>Stuttgarter</Name> 
+		 <Id>1104</Id> 
 	 </Versicherer>
 	 	 <Versicherer> 
 		 <Name>Volkswohl Bund</Name> 
