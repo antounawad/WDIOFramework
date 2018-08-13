@@ -438,7 +438,7 @@ class TestLib{
         {
 
             var fields = this.ReadXMLFieldValues(configFile);
-            fields.forEach(element => {
+            for(var element=0;element <= fields.length-1;element++) {
 
                 var fieldname  =  null;
                 var fieldValue = null;
@@ -449,9 +449,10 @@ class TestLib{
                 var add = null;
                 var checkExist = null;
                 var fieldValueArr = null;
+                var warning = null;
 
-                fieldname = this.GetFieldName(element['Name'][0]);
-                fieldValue = element['Value'][0];
+                fieldname = this.GetFieldName(fields[element]['Name'][0]);
+                fieldValue = fields[element]['Value'][0];
                 if(fieldValue.includes("|"))
                 {
                    fieldValueArr = String(fieldValue).split('|');
@@ -460,17 +461,44 @@ class TestLib{
                 try
                 {
                     
-                    checkExist = this.CheckFieldAttribute('CheckExist',element);
+                    checkExist = this.CheckFieldAttribute('CheckExist',fields[element]);
 
                     if(checkExist != null && String(checkExist) !== _CurrentCheckID)
                     {
                         return;
                     }
 
-                    list =  this.CheckFieldAttribute('ListBox',element);
-                    clear = this.CheckFieldAttribute('Clear',element);
-                    check = this.CheckFieldAttribute('Check',element);
-                    add = this.CheckFieldAttribute('Add', element);
+                    list =  this.CheckFieldAttribute('ListBox',fields[element]);
+                    clear = this.CheckFieldAttribute('Clear',fields[element]);
+                    check = this.CheckFieldAttribute('Check',fields[element]);
+                    add = this.CheckFieldAttribute('Add', fields[element]);
+                    warning = this.CheckFieldAttribute('WarningField', fields[element]);
+
+                    if(warning != null)
+                    {
+                        this.PauseAction(3000);
+                        var warningBlock = $(warning);
+                        if(warningBlock != null)
+                        {
+                            var text = browser.getText(warningBlock.selector);
+                            if(text.includes(fieldValue))
+                            {
+                                var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
+                                var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
+                                if(exfield != null && exValue != null)
+                                {
+                                    fieldname = this.GetFieldName(exfield);
+                                    fieldname = $(fieldname);
+                                    browser.click(fieldname.selector);
+                                    this.WaitUntilEnabled();
+                                    this.PauseAction(5000);
+                                    this.OnlyClickAction(_btnNavNext);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+
 
                     try
                     {
@@ -484,8 +512,8 @@ class TestLib{
                     catch(ex)
                     {
                         console.log(ex.message);
-                        var exfield = this.CheckFieldAttribute('ExceptionField', element);
-                        var exValue = this.CheckFieldAttribute('ExceptionValue', element);
+                        var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
+                        var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                         if(exfield != null && exValue != null)
                         {
                             fieldname = this.GetFieldName(exfield);
@@ -493,8 +521,8 @@ class TestLib{
                         }
                     }
 
-                    check = this.CheckFieldAttribute('Check',element);
-                    add = this.CheckFieldAttribute('Add', element);
+                    check = this.CheckFieldAttribute('Check',fields[element]);
+                    add = this.CheckFieldAttribute('Add', fields[element]);
 
                 }catch(ex)
                 {
@@ -604,7 +632,7 @@ class TestLib{
                     }                    
                 }
               
-            });
+            };
         }
     }
 
