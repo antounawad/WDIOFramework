@@ -470,7 +470,7 @@ class TestLib{
 
                     try
                     {
-                        this.WaitUntilExist(fieldname,3000);
+                        this.WaitUntilExist(fieldname,2000);
                         var enabled  = browser.isEnabled(fieldname);
                         if(!enabled)
                         {
