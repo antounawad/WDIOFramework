@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false"></Tests>
+  <Tests documents="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -86,15 +86,15 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="true">
+  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Alte Leipziger</Name>  -->
-		 <!-- <Id>1007</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Alte Leipziger</Name> 
+		 <Id>1007</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Canada Life</Name>  -->
 		 <!-- <Id>9997</Id>  -->
@@ -103,10 +103,10 @@
 		 <!-- <Name>Continentale</Name>  -->
 		 <!-- <Id>1335</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Die Bayerische</Name> 
-		 <Id>1013</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Die Bayerische</Name>  -->
+		 <!-- <Id>1013</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Gothaer</Name>  -->
 		 <!-- <Id>1108</Id>  -->
@@ -166,20 +166,20 @@
 	  <!-- <Name>Pensionskasse</Name> -->
 	  <!-- <Id>2</Id> -->
 	 <!-- </DurchfWeg>	  -->
-	 <!-- <DurchfWeg>
-	  <Name>SBU</Name>
-	  <Id>4</Id>
-	 </DurchfWeg>	  -->
+	 <!-- <DurchfWeg> -->
+	  <!-- <Name>SBU</Name> -->
+	  <!-- <Id>4</Id> -->
+	 <!-- </DurchfWeg>	  -->
 	 </DurchfwegList>
 	 <TypeList  all="true">
-	 <!-- <Type> -->
-	 	<!-- <Name>Rentenversicherung</Name> -->
-		<!-- <Id>0</Id> -->
-	 <!-- </Type> -->
 	 <Type>
-	 	<Name>SBU</Name>
-		<Id>1</Id>
+	 	<Name>Rentenversicherung</Name>
+		<Id>0</Id>
 	 </Type>
+	 <!-- <Type> -->
+	 	<!-- <Name>SBU</Name> -->
+		<!-- <Id>1</Id> -->
+	 <!-- </Type> -->
 	 </TypeList>
 	 <TarifList smoke="false" all="true">
 	 <Tarif>

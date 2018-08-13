@@ -363,7 +363,7 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Angebotsdaten'))
+        if(String(title).includes('Investmentauswahl'))
         {
             var x = "Y";
         }
@@ -944,7 +944,7 @@ class TestLib{
 
         browser.waitUntil(function ()
         {
-            var title = browser.getTitle().includes('berater');
+            var title = browser.getTitle().includes('xbAV');
             return title;
 
           }, waitTime, _message);
