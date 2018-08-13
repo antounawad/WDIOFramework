@@ -363,7 +363,7 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Investmentauswahl'))
+        if(String(title).includes('Eigenbeteiligung'))
         {
             var x = "Y";
         }
@@ -471,9 +471,15 @@ class TestLib{
                     try
                     {
                         this.WaitUntilExist(fieldname);
+                        var enabled  = browser.isEnabled(fieldname);
+                        if(!enabled)
+                        {
+                            throw new Error(fieldName+" not enabled");
+                        }
                     }
                     catch(ex)
                     {
+                        console.log(ex.message);
                         var exfield = this.CheckFieldAttribute('ExceptionField', element);
                         var exValue = this.CheckFieldAttribute('ExceptionValue', element);
                         if(exfield != null && exValue != null)

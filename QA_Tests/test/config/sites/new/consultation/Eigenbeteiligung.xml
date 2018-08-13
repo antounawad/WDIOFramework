@@ -8,7 +8,7 @@
     <Field>
 	<Name>btn_steuerfrei</Name>
 	<Value>Click</Value>
-	<ExceptionField>Gesamtbetrag</ExceptionField>
+	<ExceptionField>Gesamtbeitrag</ExceptionField>
 	<ExceptionValue>100</ExceptionValue>
 	<Add>true</Add>
 	<Check>true</Check>
