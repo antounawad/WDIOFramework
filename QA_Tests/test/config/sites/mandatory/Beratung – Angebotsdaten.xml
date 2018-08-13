@@ -11,8 +11,10 @@
 	<Value>Bürogehilfe</Value>
 	<Check>true</Check>
   </Field>  
+  <Field>
+	<Name>[name='BuzHobby']</Name>
+	<Value>kein risikorelevantes Hobby</Value>
+	<Check>true</Check>
+  </Field>  
 </Fields>
 </Config>
-
-
-<Add>true</Add>
