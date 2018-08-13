@@ -448,10 +448,14 @@ class TestLib{
                 var check = null;
                 var add = null;
                 var checkExist = null;
+                var fieldValueArr = null;
 
                 fieldname = this.GetFieldName(element['Name'][0]);
                 fieldValue = element['Value'][0];
-
+                if(fieldValue.includes("|"))
+                {
+                   fieldValueArr = String(fieldValue).split('|');
+                }
 
                 try
                 {
@@ -569,9 +573,31 @@ class TestLib{
                                 if(fieldname.substr(0,1)==='[')
                                 {
                                     browser.click(fieldname);
-                                    this.SearchElement(fieldname, fieldValue, 1000, (check!=null && check==="true"));
+                                    if(fieldValueArr != null)
+                                    {
+                                        var t = browser.getTitle();
+                                        for(var fva = 0;fva <= fieldValueArr.length-1;fva++)
+                                        {
+                                            this.SearchElement(fieldname, fieldValueArr[fva], 1000, (check!=null && check==="true" && fva==0));        
+                                            this.OnlyClickAction(_btnNavNext);
+                                            
+                                            if(t !=browser.getTitle())
+                                            {
+                                                this.OnlyClickAction(_btnNavPrev);
+                                                break;
+                                            }
+                                            browser.click(fieldname);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.SearchElement(fieldname, fieldValue, 1000, (check!=null && check==="true"));
+                                    }
                                 }
-                                this.SearchElement(fieldname, fieldValue, 100, (check!=null && check==="true"));
+                                else
+                                {
+                                    this.SearchElement(fieldname, fieldValue, 100, (check!=null && check==="true"));
+                                }
                                 
                             }
                         }
@@ -581,6 +607,7 @@ class TestLib{
             });
         }
     }
+
 
     SelectHauptAgentur()
     {
