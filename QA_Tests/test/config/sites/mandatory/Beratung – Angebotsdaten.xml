@@ -6,7 +6,13 @@
 	<Value>Bürogehilfe</Value>
 	<Check>true</Check>
   </Field>  
+  <Field>
+	<Name>[name='JobM']</Name>
+	<Value>Bürogehilfe</Value>
+	<Check>true</Check>
+  </Field>  
 </Fields>
 </Config>
 
 
+<Add>true</Add>
