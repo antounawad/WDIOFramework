@@ -32,6 +32,7 @@ var _values = null;
 var _ids = null;
 var _counter = 0;
 var _errorCounter = 0;
+var _saveErrorCheck = '[class="swal2-confirm md-button md-raised md-accent"]';
 
 
 class Tarif{
@@ -629,16 +630,16 @@ class Tarif{
 
 			testLib.ClickAction(_tarifSaveBtn);
 
-			try{
-				testLib.OnlyClickAction(testLib.BtnNavNext);
-				testLib.CheckIsVisible(testLib.BtnNavNext);
-			}
-			catch(ex)
+		
+			if(testLib.CheckIsVisible(_saveErrorCheck))
 			{
 				testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 				console.log("Tarif Save Error...");
+				tarifSelCnt--;
 				continue;
+
 			}
+			
 
 
 			if(tarifSelCnt > tarifLength -1 || checkTarifIsDisabled === 'true' || testLib.TarifSmoke)
