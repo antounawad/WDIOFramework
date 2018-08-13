@@ -123,6 +123,10 @@ class Tarif{
 		_It_Selector = '#'+testLib.TarifSelectoren[3]["Value"][0];
 		_It_List = $(_It_Selector);
 		_It_Values = _It_List.getAttribute(_ngoption, _value,true);
+		if(!testLib.AllTarife)
+		{
+			_It_Values = this.ExtractExcludeTariffs(_It_Values);
+		}
 		return _It_Values;
 	}catch(ex)
 	{
@@ -178,6 +182,36 @@ class Tarif{
 
         return simpletypes;
 	}	
+
+	ExtractExcludeTariffs(tariffs)
+	{
+		var simpletariffs = [testLib.Tarife.length];
+		var stariffs = [testLib.Tarife.length];
+		testLib.Tarife.forEach(function(value, index) {
+			stariffs[index] = value.Id[0];
+		});
+
+		if(tariffs.length == 1)
+		{
+		  var c = stariffs.indexOf(tariffs);
+		  if(c == -1)
+		  {
+			  return null;
+		  }
+		}
+
+		var counter = 0;
+        tariffs.forEach(function(value, index) 
+        {
+			var ind = stariffs.indexOf(value);
+			if(ind >= 0)
+            {
+                simpletariffs[counter++] = value;
+            }
+        });
+
+        return simpletariffs;
+	}		
 
 	ExtractExcludeIds(versichererIds)
 	{
@@ -594,6 +628,18 @@ class Tarif{
 			}
 
 			testLib.ClickAction(_tarifSaveBtn);
+
+			try{
+				testLib.OnlyClickAction(testLib.BtnNavNext);
+				testLib.CheckIsVisible(testLib.BtnNavNext);
+			}
+			catch(ex)
+			{
+				testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
+				console.log("Tarif Save Error...");
+				continue;
+			}
+
 
 			if(tarifSelCnt > tarifLength -1 || checkTarifIsDisabled === 'true' || testLib.TarifSmoke)
 			{
