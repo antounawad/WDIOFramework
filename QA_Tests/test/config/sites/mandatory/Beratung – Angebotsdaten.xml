@@ -15,6 +15,11 @@
 	<Name>[name='BuzHobby']</Name>
 	<Value>kein risikorelevantes Hobby</Value>
 	<Check>true</Check>
-  </Field>  
+  </Field>
+  <Field>
+	<Name>[name='Beruf']</Name>
+	<Value>Bürogehilfe/-gehilfin</Value>
+	<Check>true</Check>
+  </Field>    
 </Fields>
 </Config>
