@@ -944,7 +944,7 @@ class TestLib{
 
         browser.waitUntil(function ()
         {
-            var title = browser.getTitle().includes('xbAV');
+            var title = browser.getTitle().includes(' | ');
             return title;
 
           }, waitTime, _message);
