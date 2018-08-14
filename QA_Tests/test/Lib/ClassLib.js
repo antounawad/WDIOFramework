@@ -80,6 +80,8 @@ var _OnlyTarifCheck = false;
 var _CurrentCheckID = 0;
 var _ExMessage =  [3];
 var _ExMessageCnt = 0;
+var _TestFolder = null; 
+var _TestConfigFolder = null;
 
 
 
@@ -133,8 +135,24 @@ class TestLib{
 
 
     // Übergebenes Projekt --hotfix aus Args
-     get TargetUrl() {return process.argv[3].substr(2)}
-     //get TargetUrl() { return process.argv[5].substr(2)}
+     get TargetUrl() 
+     { 
+        //var targetArr = String(process.argv[5 3].substr(2)).split(':');
+         var targetArr = String(process.argv[3].substr(2)).split(':');
+         _TestFolder = targetArr[1]+'\\';
+         _TestConfigFolder = targetArr[2]+'\\';
+         return targetArr[0];
+    }
+
+    get TestFolder()
+    {
+        return _TestFolder;
+    }
+
+    get TestConfigFolder()
+    {
+        return _TestConfigFolder;
+    }
 
      get TargetDom() { return process.argv[4].substr(2)}
      //get TargetDom() { return process.argv[6].substr(2)}
@@ -152,7 +170,10 @@ class TestLib{
      }
 
      // Returns Main Config Pfad
-     get MainConfigPath() {return this.ExecutablePath+'test\\config\\'+this.TargetUrl+'\\Config.xml'}
+     get MainConfigPath() 
+     {
+         return this.ExecutablePath+'test\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
+     }
 
      // Einheitliche Rückgabe des Titels
      get BrowserTitle() {return browser.getTitle()}
@@ -365,12 +386,12 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Eigenbeteiligung'))
+        if(String(title).includes('Investmentauswahl'))
         {
             var x = "Y";
         }
 
-        var path = this.ExecutablePath+'test\\config\\sites\\mandatory\\'+title+'.xml';
+        var path = this.ExecutablePath+'test\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
 
         if(pathFile != null)
         {
@@ -482,6 +503,7 @@ class TestLib{
                 var checkExist = null;
                 var fieldValueArr = null;
                 var warning = null;
+                var checkBefore = null;
 
                 fieldname = this.GetFieldName(fields[element]['Name'][0]);
                 fieldValue = fields[element]['Value'][0];
@@ -626,7 +648,22 @@ class TestLib{
                     {
                         if(fieldValue === 'Click')
                         {
-                            this.OnlyClickAction(fieldname)
+                            var checkBefore  = this.CheckFieldAttribute('CheckBefore', fields[element]);
+                            if(checkBefore != null)
+                            {
+                                var searchSelector = $('#'+checkBefore)
+                    
+                                var value = searchSelector.getValue();
+                               
+                                if(value != null)
+                                {
+                                    this.OnlyClickAction(fieldname)        
+                                }
+                            }
+                            else
+                            {
+                                this.OnlyClickAction(fieldname)
+                            }
                         }
                         else
                         {
@@ -1127,7 +1164,8 @@ class TestLib{
                 this.Navigate2Site(url);
             }
             var fileName = element['FileName'][0];
-            var configFileName = this.ExecutablePath+'test\\config\\sites\\new\\'+path+'\\'+fileName;    
+            var configFileName = this.ExecutablePath+'test\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\'+path+'\\'+fileName;    
+
             if(fileName == 'Callback' && callbackFunc != null)
             {
                 callbackFunc(element);
