@@ -18,7 +18,7 @@
   </Field>
   <Field>
 	<Name>[name='Beruf']</Name>
-	<Value>Bürogehilfe/-gehilfin|Fachinformatiker/in (Anwendungsentwicklung)</Value>
+	<Value>Bürogehilfe/-gehilfin|Bürogehilf(e/in)|Fachinformatiker/in (Anwendungsentwicklung)</Value>
 	<Check>true</Check>
   </Field>
 </Fields>
