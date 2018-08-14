@@ -169,6 +169,10 @@ class Tarif{
 		  {
 			  return null;
 		  }
+		  else
+		  {
+			  return types;
+		  }
 		}
 
 		var counter = 0;
@@ -198,6 +202,10 @@ class Tarif{
 		  if(c == -1)
 		  {
 			  return null;
+		  }
+		  else
+		  {
+			  return tariffs;
 		  }
 		}
 
