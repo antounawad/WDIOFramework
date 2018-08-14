@@ -78,6 +78,8 @@ var _LinkAngebotKurzUebersicht = '#navViewLink_AngebotAngebotVersichererangebot'
 var _OnlyTarifCheck = false;
 
 var _CurrentCheckID = 0;
+var _ExMessage =  [3];
+var _ExMessageCnt = 0;
 
 
 
@@ -423,6 +425,36 @@ class TestLib{
 
     }
 
+
+    CheckExMessage(message)
+    {
+        if(_ExMessageCnt > 2)
+        {
+            this.CleanUpExMessage();
+            console.log(message);
+            return;
+        }
+
+        if(_ExMessageCnt == 0 || _ExMessage.indexOf(message) >= 0)
+        {
+            _ExMessage[_ExMessageCnt++] = message;
+        }
+        else if(_ExMessage.indexOf(message) == -1)
+        {
+            this.CleanUpExMessage();
+            this.CheckExMessage(message);
+        }
+    }
+
+    CleanUpExMessage()
+    {
+        for(var i=0;i<= 2;i++)
+        {
+            _ExMessage[i] = '';
+        }
+        _ExMessageCnt = 0;
+    }
+
     // Methode zum Automatisierten Füllen von Pflichtfeldern
     // Die Methode wird während des Navigierens aufgerufen (kann auch separat aufgerufen werden)
     // Wenn pathFile nicht angegeben wird, ermittelt sich der Name aus dem Titel der aktuellen Seite 
@@ -511,7 +543,7 @@ class TestLib{
                     }
                     catch(ex)
                     {
-                        console.log(ex.message);
+                        
                         var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
                         var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                         if(exfield != null && exValue != null)
@@ -519,6 +551,11 @@ class TestLib{
                             fieldname = this.GetFieldName(exfield);
                             fieldValue = exValue;
                         }
+                        else
+                        {
+                            this.CheckExMessage(ex.message);
+                        }
+
                     }
 
                     check = this.CheckFieldAttribute('Check',fields[element]);
@@ -526,7 +563,10 @@ class TestLib{
 
                 }catch(ex)
                 {
-                    console.log("Error: CheckSiteFields(WaitUntilExists): "+fieldname+" "+ex.message);
+                    if(fieldname !== '#Warning')
+                    {
+                        console.log("Error: CheckSiteFields(WaitUntilExists): "+fieldname+" "+ex.message);
+                    }
                     return;
                 }
                 
