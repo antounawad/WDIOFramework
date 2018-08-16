@@ -9,6 +9,8 @@ var fs = require('fs'),
 
 // Mit Dokumentgenerierung oder nicht
 var _Documents = false;
+var _debug = false;
+
 // Versicher Liste (falls in config angegeben)
 var _Versicherer = null;
 var _DurchfWege = null;
@@ -87,6 +89,7 @@ var _TestConfigFolder = null;
 
 class TestLib{
 
+    get IsDebug(){return _debug === 'true'}
     get TypeSmoke(){return _TypeSmoke === 'true'};
     get Types(){return _Types};
     get AllTypes(){return _AllType === 'true'};
@@ -303,6 +306,10 @@ class TestLib{
                 try{
                    
                     this.WaitUntilTitle();
+                    if(this.IsDebug)
+                    {
+                        console.log(this.BrowserTitle);
+                    }
                 }
                 catch(ex)
                 {
@@ -888,6 +895,7 @@ class TestLib{
                 _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
                 _BreakAtError = result['Config']['VersichererList'][0].$['breakAtError'];
                 _Documents = result['Config']['Tests'][0].$['documents'];
+                _debug = result['Config']['Tests'][0].$['debug'];
                 
                 _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
                 _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];

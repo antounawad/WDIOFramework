@@ -86,7 +86,7 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
+  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="false">
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
@@ -107,14 +107,14 @@
 		 <!-- <Name>Die Bayerische</Name>  -->
 		 <!-- <Id>1013</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Gothaer</Name> 
-		 <Id>1108</Id> 
-	 </Versicherer>
 	 <!-- <Versicherer>  -->
-		 <!-- <Name>HDI</Name>  -->
-		 <!-- <Id>1033</Id>  -->
+		 <!-- <Name>Gothaer</Name>  -->
+		 <!-- <Id>1108</Id>  -->
 	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>HDI</Name> 
+		 <Id>1033</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>KLinikrente</Name>  -->
 		 <!-- <Id>9994</Id>  -->
