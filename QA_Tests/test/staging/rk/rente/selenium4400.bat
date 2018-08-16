@@ -1,1 +1,1 @@
-call ..\..\..\..\seleniumStart.bat 4400 ..\..\..\..\Driver
+call ..\..\..\..\selenium\seleniumStart.bat 4400 ..\..\..\..\Driver
