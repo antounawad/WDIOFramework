@@ -138,7 +138,7 @@ class TestLib{
      get TargetUrl() 
      { 
         //var targetArr = String(process.argv[5 3].substr(2)).split(':');
-         var targetArr = String(process.argv[3].substr(2)).split(':');
+         var targetArr = String(process.argv[5].substr(2)).split(':');
          _TestFolder = targetArr[1]+'\\';
          _TestConfigFolder = targetArr[2]+'\\';
          return targetArr[0];
@@ -154,14 +154,14 @@ class TestLib{
         return _TestConfigFolder;
     }
 
-     get TargetDom() { return process.argv[4].substr(2)}
-     //get TargetDom() { return process.argv[6].substr(2)}
+     //get TargetDom() { return process.argv[4].substr(2)}
+     get TargetDom() { return process.argv[6].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[5]
-         //let ver = process.argv[7]
+         //let ver = process.argv[5]
+         let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -172,7 +172,7 @@ class TestLib{
      // Returns Main Config Pfad
      get MainConfigPath() 
      {
-         return this.ExecutablePath+'test\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
+         return this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
      }
 
      // Einheitliche Rückgabe des Titels
@@ -391,7 +391,7 @@ class TestLib{
             var x = "Y";
         }
 
-        var path = this.ExecutablePath+'test\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
+        var path = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
 
         if(pathFile != null)
         {
@@ -1164,7 +1164,7 @@ class TestLib{
                 this.Navigate2Site(url);
             }
             var fileName = element['FileName'][0];
-            var configFileName = this.ExecutablePath+'test\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\'+path+'\\'+fileName;    
+            var configFileName = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\'+path+'\\'+fileName;    
 
             if(fileName == 'Callback' && callbackFunc != null)
             {
