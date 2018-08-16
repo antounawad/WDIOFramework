@@ -1,0 +1,1 @@
+node_modules\.bin\wdio  TestSuite\staging\rk\direkt1\wdio.conf.js --staging:rk:direkt1 --xbav-berater
