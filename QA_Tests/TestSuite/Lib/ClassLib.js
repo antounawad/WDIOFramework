@@ -688,8 +688,14 @@ class TestLib{
                                         var t = browser.getTitle();
                                         for(var fva = 0;fva <= fieldValueArr.length-1;fva++)
                                         {
+                                            if (this.IsDebug)
+                                            {
+                                                console.log('PushField: '+fieldValueArr[fva]);
+                                                console.log('fieldName: '+fieldname);
+                                            }
                                             this.SearchElement(fieldname, fieldValueArr[fva], 2000, (check!=null && check==="true" && fva==0));        
                                             this.OnlyClickAction(_btnNavNext);
+                                            this.WaitUntilTitle();
                                             
                                             if(t !=browser.getTitle())
                                             {
