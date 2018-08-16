@@ -91,30 +91,30 @@
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Canada Life</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Continentale</Name> 
-		 <Id>1335</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Die Bayerische</Name> 
-		 <Id>1013</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Alte Leipziger</Name>  -->
+		 <!-- <Id>1007</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Canada Life</Name>  -->
+		 <!-- <Id>9997</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Continentale</Name>  -->
+		 <!-- <Id>1335</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Die Bayerische</Name>  -->
+		 <!-- <Id>1013</Id>  -->
+	 <!-- </Versicherer> -->
 	 <Versicherer> 
 		 <Name>Gothaer</Name> 
 		 <Id>1108</Id> 
 	 </Versicherer>
-	 <Versicherer> 
-		 <Name>HDI</Name> 
-		 <Id>1033</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>HDI</Name>  -->
+		 <!-- <Id>1033</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>KLinikrente</Name>  -->
 		 <!-- <Id>9994</Id>  -->
@@ -183,8 +183,8 @@
 	 </TypeList>
 	 <TarifList smoke="false" all="true">
 	 <Tarif>
-		<Name></Name>
-		<Id></Id>
+		<Name>Test</Name>
+		<Id>db6f5857-2ffc-460c-9682-611f939ee439</Id>
 	</Tarif>
 	 </TarifList>
 	 <ExcludeList>

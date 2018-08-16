@@ -24,9 +24,6 @@ const vm = new VM();
 
 describe('webdriver.io page', function () {
 
-
-
-
 	it('Smoke Test...', function () {
 
 
