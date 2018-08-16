@@ -391,7 +391,7 @@ class TestLib{
             var x = "Y";
         }
 
-        var path = this.ExecutablePath+'test\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
+        var path = this.ExecutablePath+'test\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
 
         if(pathFile != null)
         {
