@@ -1,0 +1,1 @@
+node_modules\.bin\wdio  TestSuite\staging\rk\DirektversicherungTyp2\wdio.conf.js --staging:rk:DirektversicherungTyp2 --xbav-berater

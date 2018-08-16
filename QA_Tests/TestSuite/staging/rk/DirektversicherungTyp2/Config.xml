@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Channel>staging</Channel>
+  <Channel>prerelease</Channel>
   <New>
 	<Chapter>
 		<VN>
@@ -156,6 +156,12 @@
 		 <!-- <Id>1138</Id>  -->
 	 <!-- </Versicherer>	  -->
 	 </VersichererList>
+	  <ExcludeList>
+	  <Versicherer> 
+		 <Name>Gothaer</Name>
+		  <Id>1108</Id>
+	  </Versicherer>
+	  </ExcludeList>
 	 
 	 <DurchfwegList all="false">
 	 <DurchfWeg>
@@ -187,11 +193,7 @@
 		<Id>db6f5857-2ffc-460c-9682-611f939ee439</Id>
 	</Tarif>
 	 </TarifList>
-	 <Versicherer> 
-		 <Name>CanadaLife</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>   
->>>>>>> 132c39f6b07f9a03e430e021539aa47378013027
+	 <ExcludeList>
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
