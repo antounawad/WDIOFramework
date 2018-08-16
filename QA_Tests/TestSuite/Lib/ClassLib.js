@@ -138,7 +138,7 @@ class TestLib{
      get TargetUrl() 
      { 
         //var targetArr = String(process.argv[5 3].substr(2)).split(':');
-         var targetArr = String(process.argv[5].substr(2)).split(':');
+         var targetArr = String(process.argv[3].substr(2)).split(':');
          _TestFolder = targetArr[1]+'\\';
          _TestConfigFolder = targetArr[2]+'\\';
          return targetArr[0];
@@ -154,14 +154,14 @@ class TestLib{
         return _TestConfigFolder;
     }
 
-     //get TargetDom() { return process.argv[4].substr(2)}
-     get TargetDom() { return process.argv[6].substr(2)}
+     get TargetDom() { return process.argv[4].substr(2)}
+     //get TargetDom() { return process.argv[6].substr(2)}
 
      // Returns Version aus Args
      get Version() 
      {
-         //let ver = process.argv[5]
-         let ver = process.argv[7]
+         let ver = process.argv[5]
+         //let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
