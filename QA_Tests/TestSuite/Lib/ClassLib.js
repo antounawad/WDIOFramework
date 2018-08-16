@@ -132,8 +132,6 @@ class TestLib{
     // FileStream für Config Dateien
     get Fs(){return fs};
 
-
-
     // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() 
      { 
@@ -172,7 +170,7 @@ class TestLib{
      // Returns Main Config Pfad
      get MainConfigPath() 
      {
-         return this.ExecutablePath+'test\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
+         return this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
      }
 
      // Einheitliche Rückgabe des Titels
@@ -391,7 +389,7 @@ class TestLib{
             var x = "Y";
         }
 
-        var path = this.ExecutablePath+'test\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
+        var path = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'sites\\mandatory\\'+title+'.xml';
 
         if(pathFile != null)
         {
@@ -1164,7 +1162,7 @@ class TestLib{
                 this.Navigate2Site(url);
             }
             var fileName = element['FileName'][0];
-            var configFileName = this.ExecutablePath+'test\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\'+path+'\\'+fileName;    
+            var configFileName = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\'+path+'\\'+fileName;    
 
             if(fileName == 'Callback' && callbackFunc != null)
             {
