@@ -13,10 +13,6 @@
 	<Name>Lastname</Name>
 	<Value>AutomRKTestVP</Value>
    </Field>
-	 	<Field>
-	<Name>input_16</Name>
-	<Value>30.01.1990</Value>
-   </Field>   
   <Field>
 	<Name>Zip</Name>
 	<Value>66583</Value>
@@ -26,7 +22,7 @@
 	<Value>1</Value>
 	<ListBox>true</ListBox>
 	</Field>
-	<!-- <Field>
+	<Field>
 	<Name>[class='md-datepicker-input md-input']</Name>
 	<Value>30.01.1995</Value>
 	<Check>true</Check>
