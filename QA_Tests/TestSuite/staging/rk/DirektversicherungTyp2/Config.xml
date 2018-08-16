@@ -156,6 +156,12 @@
 		 <!-- <Id>1138</Id>  -->
 	 <!-- </Versicherer>	  -->
 	 </VersichererList>
+	  <ExcludeList>
+	  <Versicherer> 
+		 <Name>Gothaer</Name>
+		  <Id>1108</Id>
+	  </Versicherer>
+	  </ExcludeList>
 	 
 	 <DurchfwegList all="false">
 	 <DurchfWeg>
@@ -188,13 +194,6 @@
 	</Tarif>
 	 </TarifList>
 	 <ExcludeList>
-<<<<<<< HEAD
-	 <Versicherer> 
-		 <Name>CanadaLife</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>   
-=======
->>>>>>> 132c39f6b07f9a03e430e021539aa47378013027
 	  <Versicherer> 
 		 <Name>Swisslife</Name>
 		  <Id>1090</Id>
