@@ -1,0 +1,1 @@
+node_modules\.bin\wdio  test\staging\rk\rente\wdio.conf.js --staging:rk:rente --xbav-berater
