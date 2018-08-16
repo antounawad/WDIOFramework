@@ -681,7 +681,7 @@ class TestLib{
                                         var t = browser.getTitle();
                                         for(var fva = 0;fva <= fieldValueArr.length-1;fva++)
                                         {
-                                            this.SearchElement(fieldname, fieldValueArr[fva], 1000, (check!=null && check==="true" && fva==0));        
+                                            this.SearchElement(fieldname, fieldValueArr[fva], 2000, (check!=null && check==="true" && fva==0));        
                                             this.OnlyClickAction(_btnNavNext);
                                             
                                             if(t !=browser.getTitle())

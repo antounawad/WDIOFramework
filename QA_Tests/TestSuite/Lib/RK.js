@@ -24,9 +24,9 @@ class RK {
 		try
 		{
 			testLib.LogTime('Start RK Test...');
-			vn.AddVN('AutomRKTestVNDirekt', true);
+			vn.AddVN('AutomRKTestVN', true);
 
-			vp.AddVP('AutomRKTestVPDirekt');
+			vp.AddVP('AutomRKTestVP');
 
 			this.CreateTarifOptions();
 			testLib.LogTime('Ende RK Test');
