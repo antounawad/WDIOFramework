@@ -16,6 +16,11 @@
 	<Value>kein risikorelevantes Hobby</Value>
 	<Check>true</Check>
   </Field>
+   <Field>
+	<Name>[name='BuzJob']</Name>
+	<Value>Bürogehilf(e/in)| Büroangestellter (ausschließlich Bürotätigkeit)|Klebeabdichter</Value>
+	<Check>true</Check>
+  </Field>  
 </Fields>
 </Config>
 
