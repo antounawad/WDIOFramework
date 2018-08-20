@@ -1,0 +1,1 @@
+node_modules\.bin\wdio  TestSuite\staging\rk\sbu_sbu\wdio.conf.js --staging:rk:sbu_sbu --xbav-berater

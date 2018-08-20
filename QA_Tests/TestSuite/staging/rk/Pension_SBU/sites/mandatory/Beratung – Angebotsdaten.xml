@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>[name='BerufM']</Name>
+	<Value>Common:Beruf</Value>
+	<Check>true</Check>
+  </Field>  
+  <Field>
+	<Name>[name='JobM']</Name>
+	<Value>Common:Beruf</Value>
+	<Check>true</Check>
+  </Field>  
+  <Field>
+	<Name>[name='BuzHobby']</Name>
+	<Value>kein risikorelevantes Hobby</Value>
+	<Check>true</Check>
+  </Field>
+  <Field>
+	<Name>[name='Beruf']</Name>
+	<Value>Common:Beruf</Value>
+	<Check>true</Check>
+  </Field>
+   <Field>
+	<Name>[name='BuzJob']</Name>
+	<Value>Common:Beruf</Value>
+	<Check>true</Check>
+  </Field>
+</Fields>  
+</Config>
+
