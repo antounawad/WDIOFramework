@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>Beruf</Name>
+	<ValueList>
+		<Value>Bürogehilfe</Value>
+		<Value>Bürogehilfe/-gehilfin</Value>
+		<Value>Bürogehilf(e/in)</Value>
+		<Value>Fachinformatiker/in (Anwendungsentwicklung)</Value>
+		<Value>Anwendungsentwickler</Value>
+		<Value>Anwendungsentwickler/in</Value>
+		<Value>Abbrucharbeiter</Value>
+	</ValueList>
+  </Field>  
+</Fields>
+</Config>
+

@@ -20,6 +20,9 @@ var _ExcludeVersicherer = null;
 var _TarifSelector = null;
 // Alle Versicherer oder nur bestimmte
 var _AllVersicherer = false;
+
+var _VnName = null;
+var _VpName = null;
 // Smoke Test Ja oder Nein
 var _SmokeTest = false;
 // Liefert die Felder in Site Config
@@ -88,6 +91,9 @@ var _TestConfigFolder = null;
 
 
 class TestLib{
+
+    get VnName(){return _VnName};
+    get VpName(){return _VpName};
 
     get IsDebug(){return _debug === 'true'}
     get TypeSmoke(){return _TypeSmoke === 'true'};
@@ -174,6 +180,11 @@ class TestLib{
      get MainConfigPath() 
      {
          return this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
+     }
+
+     get CommonConfigPath()
+     {
+        return this.ExecutablePath+'TestSuite\\common\\Config.xml';
      }
 
      // Einheitliche Rückgabe des Titels
@@ -512,9 +523,9 @@ class TestLib{
 
                 fieldname = this.GetFieldName(fields[element]['Name'][0]);
                 fieldValue = fields[element]['Value'][0];
-                if(fieldValue.includes("|"))
+                if(fieldValue.includes("Common"))
                 {
-                   fieldValueArr = String(fieldValue).split('|');
+                   fieldValueArr = this.GetCommonConfig(String(fieldValue).split(':')[1]);
                 }
 
                 try
@@ -685,18 +696,17 @@ class TestLib{
                                     browser.click(fieldname);
                                     if(fieldValueArr != null)
                                     {
-                                        var t = browser.getTitle();
+                                        var sel = $(fieldname);    
                                         for(var fva = 0;fva <= fieldValueArr.length-1;fva++)
                                         {
-                                            this.SearchElement(fieldname, fieldValueArr[fva], 1000, (check!=null && check==="true" && fva==0));        
-                                            this.OnlyClickAction(_btnNavNext);
+                                            this.SearchElement(fieldname, fieldValueArr[fva], 300, (check!=null && check==="true" && fva==0));    
                                             
-                                            if(t !=browser.getTitle())
+                                            var ex = $('.ng-scope.md-input-invalid.md-input-has-value');
+
+                                            if(ex.type === 'NoSuchElement')
                                             {
-                                                this.OnlyClickAction(_btnNavPrev);
                                                 break;
                                             }
-                                            browser.click(fieldname);
                                         }
                                     }
                                     else
@@ -858,9 +868,9 @@ class TestLib{
 			}
     }
 
-    GetXmlParser()
+    GetXmlParser(path)
     {
-        var existsConfigFile = fs.existsSync(this.MainConfigPath);
+        var existsConfigFile = fs.existsSync(path);
 		assert.equal(existsConfigFile,true);
 
         var parser = new xml2js.Parser();
@@ -888,7 +898,7 @@ class TestLib{
     ReadXMLAttribute(standard=false){
         
         var callback = this.CheckFieldListAttribute;
-		this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
+		this.GetXmlParser(this.MainConfigPath).parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
 		{ 
 			if(standard)
 			{
@@ -913,7 +923,41 @@ class TestLib{
                 _Types =  result['Config']['TypeList'][0]['Type'];
                 _TypeSmoke = result['Config']['TypeList'][0].$['smoke'];
             }
-		})
+        })
+
+        var varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vn\\Stammdaten.xml';    
+
+        var fields = this.ReadXMLFieldValues(varBaseFile);
+        _VnName = fields[0]['Value'][0];
+        
+        varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vp\\Stammdaten.xml';    
+
+        fields = this.ReadXMLFieldValues(varBaseFile);
+        _VpName = fields[0]['Value'][0];
+    }
+
+
+    GetCommonConfig(xpath)
+    {
+        var varBaseFile = this.CommonConfigPath;
+        var fields = this.ReadXMLFieldValues(varBaseFile);
+        
+        fields.forEach(field =>{
+        
+            if(field.Name == xpath)
+            {
+                var berufList = [ field['ValueList'][0]['Value'].length];
+                var count = 0;
+                field['ValueList'][0]['Value'].forEach(element => {
+                    berufList[count++] = element;
+                });
+                xpath = berufList;
+            }
+        });
+
+        return xpath;
+
+        
     }
 
     CheckFieldAttribute(attributeName,element)
@@ -951,7 +995,7 @@ class TestLib{
         var res = null;
        
         try{
-            this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
+            this.GetXmlParser(this.MainConfigPath).parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
             { 
                     res = result['Config'];
                     elementArr.forEach(function(el) {
@@ -1000,7 +1044,7 @@ class TestLib{
     ReadXMLFieldValues(xmlFile){
     
         _SiteFields = null;
-		this.GetXmlParser().parseString(this.Fs.readFileSync(xmlFile), function(err,result)
+		this.GetXmlParser(xmlFile).parseString(this.Fs.readFileSync(xmlFile), function(err,result)
 		{
 			_SiteFields =  result['Config']['Fields'][0]['Field'];
         })
@@ -1008,6 +1052,7 @@ class TestLib{
         return _SiteFields;
 
     }
+
 
     WaitUntilVisible(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {

@@ -3,12 +3,12 @@
 <Fields>
   <Field>
 	<Name>[name='BerufM']</Name>
-	<Value>Bürogehilfe</Value>
+	<Value>Common:Beruf</Value>
 	<Check>true</Check>
   </Field>  
   <Field>
 	<Name>[name='JobM']</Name>
-	<Value>Bürogehilfe</Value>
+	<Value>Common:Beruf</Value>
 	<Check>true</Check>
   </Field>  
   <Field>
@@ -18,12 +18,12 @@
   </Field>
   <Field>
 	<Name>[name='Beruf']</Name>
-	<Value>Bürogehilfe/-gehilfin|Bürogehilf(e/in)|Fachinformatiker/in (Anwendungsentwicklung)|Abgeordneter|Landbautechniker/in</Value>
+	<Value>Common:Beruf</Value>
 	<Check>true</Check>
   </Field>
    <Field>
 	<Name>[name='BuzJob']</Name>
-	<Value>Bürogehilf(e/in)| Büroangestellter (ausschließlich Bürotätigkeit)</Value>
+	<Value>Common:Beruf</Value>
 	<Check>true</Check>
   </Field>
 </Fields>  
