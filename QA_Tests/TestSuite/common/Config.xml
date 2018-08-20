@@ -13,7 +13,17 @@
 		<Value>Anwendungsentwickler/in</Value>
 		<Value>Abbrucharbeiter</Value>
 	</ValueList>
+  </Field>
+  <Field>
+	<Name>InvestmentFond</Name>
+	<NameList>
+		<Name>model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage</Name>
+		<Name>model_PluginItemTypeValues_FondAuswahl_SelectedFonds_inneritem_Percentage</Name>
+		<Name>model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage</Name>
+	</NameList>	
   </Field>  
 </Fields>
 </Config>
+
+
 

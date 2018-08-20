@@ -111,10 +111,10 @@
 		 <!-- <Name>Gothaer</Name>  -->
 		 <!-- <Id>1108</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>HDI</Name>  -->
-		 <!-- <Id>1033</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>HDI</Name> 
+		 <Id>1033</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>KLinikrente</Name>  -->
 		 <!-- <Id>9994</Id>  -->
@@ -127,10 +127,10 @@
 		 <!-- <Name>Nürnberger</Name>  -->
 		 <!-- <Id>1147</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Signal Iduna</Name> 
-		 <Id>1048</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Signal Iduna</Name>  -->
+		 <!-- <Id>1048</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Stuttgarter</Name>  -->
 		 <!-- <Id></Id>  -->
@@ -172,14 +172,14 @@
 	 <!-- </DurchfWeg>	  -->
 	 </DurchfwegList>
 	 <TypeList  all="false">
-	 <!-- <Type> -->
-	 	<!-- <Name>Rentenversicherung</Name> -->
-		<!-- <Id>0</Id> -->
-		<!-- </Type> -->
 	 <Type>
-	 	<Name>SBU</Name>
-		<Id>1</Id>
-	 </Type>
+	 	<Name>Rentenversicherung</Name>
+		<Id>0</Id>
+		</Type>
+	 <!-- <Type> -->
+	 	<!-- <Name>SBU</Name> -->
+		<!-- <Id>1</Id> -->
+	 <!-- </Type> -->
 	 </TypeList>
 	 <TarifList smoke="false" all="true">
 	 <Tarif>
