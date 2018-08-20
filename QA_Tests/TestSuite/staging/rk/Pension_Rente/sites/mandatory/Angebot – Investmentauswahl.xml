@@ -12,15 +12,10 @@
 	<ListBox>true</ListBox>
   </Field>  
 	<Field>
-	<Name>model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage</Name>
+	<Name>Common:InvestmentFond</Name>
 	<Value>100</Value>	
 	<Add>true</Add>
   </Field>
-	<Field>
-	<Name>model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage</Name>
-	<Value>100</Value>	
-	<Add>true</Add>
-  </Field>  
     <Field>
 	<Name>btnNavNext</Name>
 	<Value>Click</Value>

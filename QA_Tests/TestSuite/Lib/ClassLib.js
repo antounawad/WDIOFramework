@@ -87,6 +87,8 @@ var _ExMessage =  [3];
 var _ExMessageCnt = 0;
 var _TestFolder = null; 
 var _TestConfigFolder = null;
+var __xpath = null;
+var __xpathResult = null;
 
 
 
@@ -509,57 +511,74 @@ class TestLib{
             var fields = this.ReadXMLFieldValues(configFile);
             for(var element=0;element <= fields.length-1;element++) {
 
-                var fieldname  =  null;
-                var fieldValue = null;
-                var list = null;
-                var exist = null;
-                var clear = null;
-                var check = null;
-                var add = null;
-                var checkExist = null;
-                var fieldValueArr = null;
-                var warning = null;
+                var __siteFieldName  =  null;
+                var __siteFieldValue = null;
+                var __siteFieldList = null;
+                var __siteFieldExist = null;
+                var __siteFieldClear = null;
+                var __siteFieldCheck = null;
+                var __siteFieldAdd = null;
+                var __siteFieldCheckExist = null;
+                var __siteFieldFieldValueArr = null;
+                var __siteFieldFieldNameArr = null;
+                var __siteFieldWarning = null;
                 var checkBefore = null;
 
-                fieldname = this.GetFieldName(fields[element]['Name'][0]);
-                fieldValue = fields[element]['Value'][0];
-                if(fieldValue.includes("Common"))
+                __siteFieldName = this.GetFieldName(fields[element]['Name'][0]);
+                if(__siteFieldName.includes("Common"))
                 {
-                   fieldValueArr = this.GetCommonConfig(String(fieldValue).split(':')[1]);
+                   __siteFieldFieldNameArr = this.GetCommonConfig(String(__siteFieldName).split(':')[1],false);
+                   for(var fna=0;fna<=__siteFieldFieldNameArr.length-1;fna++)
+                   {
+                    try
+                    {
+                        this.WaitUntilExist('#'+__siteFieldFieldNameArr[fna],1000);
+                        __siteFieldName = '#'+__siteFieldFieldNameArr[fna];
+                        break;
+                    }
+                    catch(ex){}
+                    
+                   };
+                }
+
+                __siteFieldValue = fields[element]['Value'][0];
+                if(__siteFieldValue.includes("Common"))
+                {
+                   __siteFieldFieldValueArr = this.GetCommonConfig(String(__siteFieldValue).split(':')[1]);
                 }
 
                 try
                 {
                     
-                    checkExist = this.CheckFieldAttribute('CheckExist',fields[element]);
+                    __siteFieldCheckExist = this.CheckFieldAttribute('CheckExist',fields[element]);
 
-                    if(checkExist != null && String(checkExist) !== _CurrentCheckID)
+                    if(__siteFieldCheckExist != null && String(__siteFieldCheckExist) !== _CurrentCheckID)
                     {
                         return;
                     }
 
-                    list =  this.CheckFieldAttribute('ListBox',fields[element]);
-                    clear = this.CheckFieldAttribute('Clear',fields[element]);
-                    check = this.CheckFieldAttribute('Check',fields[element]);
-                    add = this.CheckFieldAttribute('Add', fields[element]);
-                    warning = this.CheckFieldAttribute('WarningField', fields[element]);
+                    __siteFieldList =  this.CheckFieldAttribute('ListBox',fields[element]);
+                    __siteFieldClear = this.CheckFieldAttribute('Clear',fields[element]);
+                    __siteFieldCheck = this.CheckFieldAttribute('Check',fields[element]);
+                    __siteFieldAdd = this.CheckFieldAttribute('Add', fields[element]);
+                    __siteFieldWarning = this.CheckFieldAttribute('WarningField', fields[element]);
 
-                    if(warning != null)
+                    if(__siteFieldWarning != null)
                     {
                         this.PauseAction(3000);
-                        var warningBlock = $(warning);
+                        var warningBlock = $(__siteFieldWarning);
                         if(warningBlock != null)
                         {
                             var text = browser.getText(warningBlock.selector);
-                            if(text.includes(fieldValue))
+                            if(text.includes(__siteFieldValue))
                             {
                                 var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
                                 var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                                 if(exfield != null && exValue != null)
                                 {
-                                    fieldname = this.GetFieldName(exfield);
-                                    fieldname = $(fieldname);
-                                    browser.click(fieldname.selector);
+                                    __siteFieldName = this.GetFieldName(exfield);
+                                    __siteFieldName = $(__siteFieldName);
+                                    browser.click(__siteFieldName.selector);
                                     this.WaitUntilEnabled();
                                     this.PauseAction(5000);
                                     this.OnlyClickAction(_btnNavNext);
@@ -572,8 +591,8 @@ class TestLib{
 
                     try
                     {
-                        this.WaitUntilExist(fieldname,2000);
-                        var enabled  = browser.isEnabled(fieldname);
+                        this.WaitUntilExist(__siteFieldName,2000);
+                        var enabled  = browser.isEnabled(__siteFieldName);
                         if(!enabled)
                         {
                             throw new Error(fieldName+" not enabled");
@@ -586,8 +605,8 @@ class TestLib{
                         var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                         if(exfield != null && exValue != null)
                         {
-                            fieldname = this.GetFieldName(exfield);
-                            fieldValue = exValue;
+                            __siteFieldName = this.GetFieldName(exfield);
+                            __siteFieldValue = exValue;
                         }
                         else
                         {
@@ -596,41 +615,41 @@ class TestLib{
 
                     }
 
-                    check = this.CheckFieldAttribute('Check',fields[element]);
-                    add = this.CheckFieldAttribute('Add', fields[element]);
+                    __siteFieldCheck = this.CheckFieldAttribute('Check',fields[element]);
+                    __siteFieldAdd = this.CheckFieldAttribute('Add', fields[element]);
 
                 }catch(ex)
                 {
-                    if(fieldname !== '#Warning')
+                    if(__siteFieldName !== '#Warning')
                     {
-                        console.log("Error: CheckSiteFields(WaitUntilExists): "+fieldname+" "+ex.message);
+                        console.log("Error: CheckSiteFields(WaitUntilExists): "+__siteFieldName+" "+ex.message);
                     }
                     return;
                 }
                 
-                exist = browser.isExisting(fieldname);
+                __siteFieldExist = browser.isExisting(__siteFieldName);
 
-                if(exist)
+                if(__siteFieldExist)
                 {
 
                     this.PauseAction(300);
 
-                    if(list != null && list === "true")
+                    if(__siteFieldList != null && __siteFieldList === "true")
                     {
-                        var List     = $(fieldname);
+                        var List     = $(__siteFieldName);
                         var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
                         var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
 
 
-                        var index = values.indexOf(fieldValue);
+                        var index = values.indexOf(__siteFieldValue);
 
-                        var checkIsEnabled =	browser.getAttribute(fieldname, "disabled");
+                        var checkIsEnabled =	browser.getAttribute(__siteFieldName, "disabled");
 	
 
                         if(Ids.length > 1 && checkIsEnabled == null)
                         {
                             try{
-                                this.OnlyClickAction(fieldname,1000);
+                                this.OnlyClickAction(__siteFieldName,1000);
                                     
                             }
                             catch(ex)
@@ -662,7 +681,7 @@ class TestLib{
                     }
                     else
                     {
-                        if(fieldValue === 'Click')
+                        if(__siteFieldValue === 'Click')
                         {
                             var checkBefore  = this.CheckFieldAttribute('CheckBefore', fields[element]);
                             if(checkBefore != null)
@@ -673,33 +692,33 @@ class TestLib{
                                
                                 if(value != null)
                                 {
-                                    this.OnlyClickAction(fieldname)        
+                                    this.OnlyClickAction(__siteFieldName)        
                                 }
                             }
                             else
                             {
-                                this.OnlyClickAction(fieldname)
+                                this.OnlyClickAction(__siteFieldName)
                             }
                         }
                         else
                         {
-                            if(add != null && add === "true")
+                            if(__siteFieldAdd != null && __siteFieldAdd === "true")
                             {
-                                this.ClickAction(fieldname);
-                                var sel = $(fieldname);
-                                sel.addValue(fieldValue);
+                                this.ClickAction(__siteFieldName);
+                                var sel = $(__siteFieldName);
+                                sel.addValue(__siteFieldValue);
                             }
                             else
                             {
-                                if(fieldname.substr(0,1)==='[')
+                                if(__siteFieldName.substr(0,1)==='[')
                                 {
-                                    browser.click(fieldname);
-                                    if(fieldValueArr != null)
+                                    browser.click(__siteFieldName);
+                                    if(__siteFieldFieldValueArr != null)
                                     {
-                                        var sel = $(fieldname);    
-                                        for(var fva = 0;fva <= fieldValueArr.length-1;fva++)
+                                        var sel = $(__siteFieldName);    
+                                        for(var fva = 0;fva <= __siteFieldFieldValueArr.length-1;fva++)
                                         {
-                                            this.SearchElement(fieldname, fieldValueArr[fva], 300, (check!=null && check==="true" && fva==0));    
+                                            this.SearchElement(__siteFieldName, __siteFieldFieldValueArr[fva], 300, (__siteFieldCheck!=null && __siteFieldCheck==="true" && fva==0));    
                                             
                                             var ex = $('.ng-scope.md-input-invalid.md-input-has-value');
 
@@ -711,12 +730,12 @@ class TestLib{
                                     }
                                     else
                                     {
-                                        this.SearchElement(fieldname, fieldValue, 1000, (check!=null && check==="true"));
+                                        this.SearchElement(__siteFieldName, __siteFieldValue, 1000, (__siteFieldCheck!=null && __siteFieldCheck==="true"));
                                     }
                                 }
                                 else
                                 {
-                                    this.SearchElement(fieldname, fieldValue, 100, (check!=null && check==="true"));
+                                    this.SearchElement(__siteFieldName, __siteFieldValue, 100, (__siteFieldCheck!=null && __siteFieldCheck==="true"));
                                 }
                                 
                             }
@@ -936,29 +955,47 @@ class TestLib{
         _VpName = fields[0]['Value'][0];
     }
 
+    
 
-    GetCommonConfig(xpath)
+    _GetCommonConfig(list,value,field)
     {
+        
+            if(field.Name == __xpath)
+            {
+                var result = [field[list][0][value].length];
+                var count = 0;
+                field[list][0][value].forEach(element => {
+                    result[count++] = element;
+                });
+                __xpathResult = result;
+            }
+
+        return __xpathResult;
+    }    
+
+
+    GetCommonConfig(xpath,values=true)
+    {
+        __xpath = xpath;
+        __xpathResult = null;
         var varBaseFile = this.CommonConfigPath;
         var fields = this.ReadXMLFieldValues(varBaseFile);
+        var list = 'ValueList';
+        var value = 'Values';
+        if(!values)
+        {
+            list = 'NameList';
+            value = 'Name';
+        }
         
         fields.forEach(field =>{
-        
-            if(field.Name == xpath)
-            {
-                var berufList = [ field['ValueList'][0]['Value'].length];
-                var count = 0;
-                field['ValueList'][0]['Value'].forEach(element => {
-                    berufList[count++] = element;
-                });
-                xpath = berufList;
-            }
+            __xpathResult = this._GetCommonConfig(list,value,field);
         });
 
-        return xpath;
-
-        
+        return __xpathResult;
     }
+
+    
 
     CheckFieldAttribute(attributeName,element)
     {
