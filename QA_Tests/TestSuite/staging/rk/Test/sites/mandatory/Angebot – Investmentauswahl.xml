@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>btn_portfolio</Name>
+	<Value>Click</Value>
+  </Field>
+  <Field>
+	<Name>port_folio_select</Name>
+	<Value>AL Trust Aktien Deutschland</Value>
+	<ListBox>true</ListBox>
+  </Field>  
+	<Field>
+	<Name>model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage</Name>
+	<Value>100</Value>	
+	<Add>true</Add>
+  </Field>
+	<Field>
+	<Name>model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage</Name>
+	<Value>100</Value>	
+	<Add>true</Add>
+  </Field>  
+    <Field>
+	<Name>btnNavNext</Name>
+	<Value>Click</Value>
+  </Field>
+</Fields>
+</Config>
+
+
+
+
