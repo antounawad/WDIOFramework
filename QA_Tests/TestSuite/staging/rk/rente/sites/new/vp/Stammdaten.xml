@@ -3,7 +3,7 @@
 <Fields>
   <Field>
 	<Name>Firstname</Name>
-	<Value>AutomRKTestVP</Value>
+	<Value>AutomRKTesVP_HaPe</Value>
    </Field>
   <Field>
 	<Name>Street</Name>
@@ -26,7 +26,7 @@
 	<Value>1</Value>
 	<ListBox>true</ListBox>
 	</Field>
-	<!-- <Field>
+	<Field>
 	<Name>[class='md-datepicker-input md-input']</Name>
 	<Value>30.01.1995</Value>
 	<Check>true</Check>

@@ -3,12 +3,12 @@
 <Fields>
   <Field>
 	<Name>[aria-label='Beruf']</Name>
-	<Value>Anwendungsentwickler/in</Value>
+	<Value>Common:Beruf</Value>
 	<Check>true</Check>
   </Field>
   <Field>
 	<Name>[aria-label='Ausgeübte Tätigkeit']</Name>
-	<Value>Anwendungsentwickler</Value>
+	<Value>Common:Beruf</Value>
 	<Check>true</Check>
   </Field>
     <Field>
