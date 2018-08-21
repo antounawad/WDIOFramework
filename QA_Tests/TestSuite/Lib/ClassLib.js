@@ -133,7 +133,7 @@ class TestLib{
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
 
-    get ErrorShotPath(){return _executablePath+'errorShots\\'}
+    get ErrorShotPath(){return this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'errorShots\\'};
 
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer(){ return _Versicherer};
@@ -562,6 +562,13 @@ class TestLib{
                     }
                     
                    };
+
+                   if(__siteFieldName.includes("Common:"))
+                   {
+                        continue;
+                   }
+
+
                 }
 
                 __siteFieldValue = fields[element]['Value'][0];
