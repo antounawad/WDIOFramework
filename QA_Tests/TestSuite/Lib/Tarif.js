@@ -409,8 +409,6 @@ class Tarif{
 	{
 		this.Init();
 
-		try
-		{	
 			var durchfSelCnt = 0;
 			var tarifSelCnt = 0;
 			var typeSelCnt = 0;
@@ -420,8 +418,13 @@ class Tarif{
 
 			var loopBreaker = false;
 
+
 			while(true)
 			{
+
+				try
+				{	
+		
 				
 				_selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
 
@@ -737,18 +740,18 @@ class Tarif{
 
 
 
-				
+			}catch(ex)
+			{
+				if(testLib.IsDebug)
+				{
+					console.log('InnerLoop Error: '+ex.message);
+					testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
+				}
+			}
 				
 			
 			}
-			var x = "y";
-			
-
-	}catch(ex)
-	{
-		console.log("Error: CreateListTarif: "+ex.message);
-		throw new Error(ex);
-	}
+		
 		
 		
 	}
