@@ -4,6 +4,7 @@
   <Field>
 	<Name>btn_portfolio</Name>
 	<Value>Click</Value>
+	<CheckEnableBefore>true</CheckEnableBefore>
   </Field>
   <Field>
 	<Name>port_folio_select</Name>
