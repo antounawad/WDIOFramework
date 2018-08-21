@@ -24,6 +24,7 @@
   <Field>
 	<Name>InvestmentFond</Name>
 	<NameList>
+		<Name>[model='inneritem.Percentage']</Name>
 		<Name>model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage</Name>
 		<Name>model_PluginItemTypeValues_FondAuswahl_SelectedFonds_inneritem_Percentage</Name>
 		<Name>model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage</Name>
