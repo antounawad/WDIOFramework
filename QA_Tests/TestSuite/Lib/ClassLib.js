@@ -251,8 +251,9 @@ class TestLib{
     SearchElement(selector,value, pauseTime=0, checkExist=false){
         try
         {
-            if(_SearchIterator >= 100)
+            if(_SearchIterator >= 20)
             {
+                _SearchIterator = 0;
                 throw new Error("Zu viele SearchElement Iterationen");
             }
             var searchSelector = $(selector)
@@ -310,8 +311,9 @@ class TestLib{
     {
         try{
 
-            if(_Navigate2SiteIterator >= 50)
+            if(_Navigate2SiteIterator >= 20)
             {
+                _Navigate2SiteIterator = 0;
                 throw new Error("Zu viele Navigate2Site Iterationen");
             }
             while(true)
@@ -425,8 +427,9 @@ class TestLib{
     {
         try
         {
-            if(_ClearElementIterator >= 100)
+            if(_ClearElementIterator >= 20)
             {
+                _ClearElementIterator = 0;
                 throw new Error("Zu viele Iterationen ClearElement");
             }
             var element = $(elementName);
@@ -831,8 +834,9 @@ class TestLib{
     
     ClickAction(selector, waitforVisibleSelector='', timeout=50000, pauseTime=0, click=false){
 
-        if(_ClickIterator >= 100)
+        if(_ClickIterator >= 20)
         {
+            _ClickIterator = 0;
             throw new Error("Zu viele ClickAction Iterationen");
         }
 
@@ -1312,7 +1316,9 @@ class TestLib{
         {
             console.log(string);
         }
-        console.log(date.format(new Date(), 'YYYY/MM/DD HH:mm:ss'));
+        var dt = date.format(new Date(), 'YYYY/MM/DD HH:mm:ss');
+        console.log(dt);
+        return dt;
     }
 
 

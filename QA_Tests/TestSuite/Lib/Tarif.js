@@ -691,17 +691,18 @@ class Tarif{
 					{
 						if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
 						{
-							throw new Error(ex);
+							console.log('Common Error:'+ex.message);
 						}
 						else
 						{
 							console.log("Versicherer: "+versicherer+" "+ex.message);
-							console.log("Bild: "+_errorCounter+'.png');
-							testLib.TakeErrorShot(String(_errorCounter)+'.png');
-							_errorCounter++;
-							this.DeleteAllTarife(newTarif,true);
-				
 						}
+						var dt = testLib.LogTime();
+						console.log("Bild: "+_errorCounter+'_'+dt+'.png');
+						testLib.TakeErrorShot(String(_errorCounter+'_'+dt)+'.png');
+						_errorCounter++;
+						this.DeleteAllTarife(newTarif,true);
+
 					}
 					else
 					{
@@ -753,23 +754,62 @@ class Tarif{
 			testLib.RefreshBrowser(_addTarifBtnSelector);
 			this.DeleteAllTarife(newTarif);
 			return;
-		}		
+		}	
+		
+		if(testLib.IsDebug)
+		{
+			console.log('newTarif: '+String(newTarif));
+			console.log('short: '+String(short));
+		}
 		
 
-
+		if(testLib.IsDebug)
+		{
+			console.log('Beratungsübersicht pre')
+		}
 
 		testLib.Navigate2Site('Beratungsübersicht');
 
+		if(testLib.IsDebug)
+		{
+			console.log('Beratungsübersicht post')
+		}		
+
 	   consultation.AddConsultation();
+
+	   if(testLib.IsDebug)
+	   {
+		   console.log('AddConsultation post')
+	   }
 
 		var failSite = testLib.StatusSiteTitle+':'+testLib.NavChapterAngebot+':'+testLib.LinkAngebotKurzUebersicht;
 		testLib.Navigate2Site('Angebot – Kurzübersicht',failSite);
 
+		if(testLib.IsDebug)
+		{
+			console.log('Angebot - Kurzübersicht post')
+		}
+
 		this.CheckRKResult();
+
+		if(testLib.IsDebug)
+		{
+			console.log('CheckRKResult post')
+		}
 
 		document.GenerateDocuments();
 
+		if(testLib.IsDebug)
+		{
+			console.log('GenerateDocuments post')
+		}
+
 		this.DeleteAllTarife(newTarif);
+
+		if(testLib.IsDebug)
+		{
+			console.log('DeleteAllTarife post')
+		}
 	}	
 
 
