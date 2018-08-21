@@ -526,7 +526,7 @@ class TestLib{
                 var checkBefore = null;
 
                 __siteFieldName = this.GetFieldName(fields[element]['Name'][0]);
-                if(__siteFieldName.includes("Common"))
+                if(__siteFieldName.includes("Common:"))
                 {
                    __siteFieldFieldNameArr = this.GetCommonConfig(String(__siteFieldName).split(':')[1],false);
                    
@@ -563,6 +563,10 @@ class TestLib{
 
                 try
                 {
+                    if(__siteFieldName.includes('Common:'))
+                    {
+                        continue;
+                    }
                     
                     __siteFieldCheckExist = this.CheckFieldAttribute('CheckExist',fields[element]);
 
