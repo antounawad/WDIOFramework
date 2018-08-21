@@ -528,6 +528,7 @@ class TestLib{
                 if(__siteFieldName.includes("Common"))
                 {
                    __siteFieldFieldNameArr = this.GetCommonConfig(String(__siteFieldName).split(':')[1],false);
+                   
                    for(var fna=0;fna<=__siteFieldFieldNameArr.length-1;fna++)
                    {
                     try
@@ -992,6 +993,10 @@ class TestLib{
             __xpathResult = this._GetCommonConfig(list,value,field);
         });
 
+        if(__xpathResult == null)
+        {
+            __xpathResult = [0];
+        }
         return __xpathResult;
     }
 
