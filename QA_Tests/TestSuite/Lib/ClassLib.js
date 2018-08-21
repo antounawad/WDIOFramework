@@ -243,6 +243,12 @@ class TestLib{
 
     TakeErrorShot(message)
     {
+        // Todo verbessern :-)
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
         browser.saveScreenshot(this.ErrorShotPath+message+'.png')
     }
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
@@ -407,7 +413,7 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Berufsinformationen'))
+        if(String(title).includes('Investmentauswahl'))
         {
             var x = "Y";
         }
@@ -460,12 +466,12 @@ class TestLib{
     GetFieldName(element)
     {
         var fieldname  = element;
-        if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[')
+        if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[' && !fieldname.includes('Common:'))
         {
             fieldname  = '#'+element;
         }
+        
         return fieldname;
-
     }
 
 
@@ -566,10 +572,6 @@ class TestLib{
 
                 try
                 {
-                    if(__siteFieldName.includes('Common:'))
-                    {
-                        continue;
-                    }
                     
                     __siteFieldCheckExist = this.CheckFieldAttribute('CheckExist',fields[element]);
 
@@ -1180,7 +1182,8 @@ class TestLib{
 
         browser.waitUntil(function ()
         {
-            return browser.isExisting(_WaitUntilSelector);
+            var res = browser.isExisting(_WaitUntilSelector);
+            return res;
 
           }, waitTime, _message);
 
@@ -1316,7 +1319,8 @@ class TestLib{
         {
             console.log(string);
         }
-        var dt = date.format(new Date(), 'YYYY/MM/DD HH:mm:ss');
+        let dt = date.format(new Date(), 'YYYY:MM:DD HH:mm:ss').toString();
+        dt = dt.replace(' ','__');
         console.log(dt);
         return dt;
     }

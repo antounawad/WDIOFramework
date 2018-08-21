@@ -414,6 +414,10 @@ class Tarif{
 			var durchfSelCnt = 0;
 			var tarifSelCnt = 0;
 			var typeSelCnt = 0;
+			var pre_durchfSelCnt = 0;
+			var pre_tarifSelCnt = 0;
+			var pre_typeSelCnt = 0;
+
 			var loopBreaker = false;
 
 			while(true)
@@ -458,6 +462,7 @@ class Tarif{
 						{
 							testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 						}
+						pre_durchfSelCnt = durchfSelCnt;
 						durchfSelCnt++;
 						if(durchfSelCnt > durchfWegeArr.length-1 || checkIsEnabled === 'true')
 						{
@@ -498,8 +503,11 @@ class Tarif{
 				{
 					testLib.OnlyClickAction(_TarifCancelBtn,500);
 					
+					pre_typeSelCnt = 0;
 					typeSelCnt = 0;
+					pre_tarifSelCnt = 0;
 					tarifSelCnt = 0;
+					pre_durchfSelCnt = durchfSelCnt;
 					durchfSelCnt++;
 					testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 					if(durchfSelCnt > durchfWegLength-1)
@@ -622,6 +630,7 @@ class Tarif{
 					}
 					if(!loopBreaker)
 					{
+						pre_tarifSelCnt = tarifSelCnt;
 						tarifSelCnt++;
 					}
 					break;
@@ -643,6 +652,7 @@ class Tarif{
 			{
 				testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 				console.log("Tarif Save Error...");
+				pre_tarifSelCnt = tarifSelCnt;
 				tarifSelCnt--;
 				continue;
 
@@ -652,13 +662,18 @@ class Tarif{
 
 			if(tarifSelCnt > tarifLength -1 || checkTarifIsDisabled === 'true' || testLib.TarifSmoke)
 			{
+				pre_tarifSelCnt = 0;
 				tarifSelCnt = 0;
+				pre_typeSelCnt = typeSelCnt;
 				typeSelCnt ++;
 
 				if(typeSelCnt > typeLength -1 || checkTypeIsDisabled === 'true' || testLib.TypeSmoke)
 				{
+					pre_typeSelCnt = 0;
 					typeSelCnt = 0;
+					pre_tarifSelCnt = 0;
 					tarifSelCnt = 0;
+					pre_durchfSelCnt = durchfSelCnt;
 					durchfSelCnt++;
 				}
 					
@@ -692,14 +707,17 @@ class Tarif{
 						if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
 						{
 							console.log('Common Error:'+ex.message);
+							tarifSelCnt = pre_tarifSelCnt;
+							typeSelCnt = pre_typeSelCnt;
+							durchfSelCnt = pre_durchfSelCnt;
 						}
 						else
 						{
 							console.log("Versicherer: "+versicherer+" "+ex.message);
 						}
-						var dt = testLib.LogTime();
-						console.log("Bild: "+_errorCounter+'_'+dt+'.png');
-						testLib.TakeErrorShot(String(_errorCounter+'_'+dt)+'.png');
+						let dt = testLib.LogTime();
+						console.log("Bild: "+String(_errorCounter)+'_'+dt+'.png');
+						testLib.TakeErrorShot(String(_errorCounter+'_'+dt));
 						_errorCounter++;
 						this.DeleteAllTarife(newTarif,true);
 

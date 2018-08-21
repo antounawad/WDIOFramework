@@ -58,9 +58,11 @@ class RK {
 
 	ErrorFunction(message) {
 		if (!testLib.BreakAtError) {
+			let dt = testLib.LogTime();
 			console.log(message);
-			_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+'.png');
-			testLib.TakeErrorShot(String(_ErrorCounter)+'.png');
+			_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+dt+'.png');
+			
+			testLib.TakeErrorShot(String(_ErrorCounter)+dt+'.png');
 			tarif.DeleteAllTarife(true);
 			_ErrorCounter += 1;
 		}
