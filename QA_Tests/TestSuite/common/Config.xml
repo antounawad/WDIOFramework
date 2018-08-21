@@ -16,6 +16,12 @@
 	</ValueList>
   </Field>
   <Field>
+	<Name>Hobby</Name>
+	<ValueList>
+		<Value>kein risikorelevantes Hobby</Value>
+	</ValueList>
+  </Field>  
+  <Field>
 	<Name>InvestmentFond</Name>
 	<NameList>
 		<Name>model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage</Name>
@@ -35,6 +41,12 @@
 		<Name>[aria-label='Ausgeübte Tätigkeit']</Name>
 	</NameList>	
   </Field>
+    <Field>
+	<Name>HobbyAuswahl</Name>
+	<NameList>
+		<Name>[name='BuzHobby']</Name>
+	</NameList>	
+  </Field>  
 </Fields>
 </Config>
 

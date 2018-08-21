@@ -7,8 +7,8 @@
 	<Check>true</Check>
   </Field>
     <Field>
-	<Name>[aria-label='Hobby']</Name>
-	<Value>kein risikorelevantes Hobby</Value>
+	<Name>Common:HobbyAuswahl</Name>
+	<Value>Common:Hobby</Value>
 	<Check>true</Check>
   </Field>
 </Fields>
