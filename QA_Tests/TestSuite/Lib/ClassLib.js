@@ -143,10 +143,11 @@ class TestLib{
     // FileStream für Config Dateien
     get Fs(){return fs};
 
+    get ArgVOffset(){return 2};
+
     // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() 
      { 
-        //var targetArr = String(process.argv[5 3].substr(2)).split(':');
          var targetArr = String(process.argv[3].substr(2)).split(':');
          _TestFolder = targetArr[1]+'\\';
          _TestConfigFolder = targetArr[2]+'\\';
@@ -164,13 +165,12 @@ class TestLib{
     }
 
      get TargetDom() { return process.argv[4].substr(2)}
-     //get TargetDom() { return process.argv[6].substr(2)}
+     
 
      // Returns Version aus Args
      get Version() 
      {
          let ver = process.argv[5]
-         //let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -541,9 +541,16 @@ class TestLib{
                         }
                         this.WaitUntilExist(fn,1000);
                         __siteFieldName = fn;
+                        if(this.IsDebug)
+                        {
+                            console.log('SiteFieldName: '+__siteFieldName);
+                        }
                         break;
                     }
-                    catch(ex){}
+                    catch(ex)
+                    {
+
+                    }
                     
                    };
                 }
