@@ -96,7 +96,7 @@ class RK {
 				catch (ex) {
 					var message = 'Versicherer: '+versicherer+' ' + ex.message;
 					this.ErrorFunction(message);
-					if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
+					if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1 && ex.message.indexOf('Fehler bei der Dokumentegenerierung') == -1)
 					{
 						throw new Error(ex);
 					}
