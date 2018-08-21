@@ -233,6 +233,7 @@ class TestLib{
     get MenueMinMax(){return _MenueMinMax};
 
     get BtnNavNext(){return _btnNavNext};
+    get BtnNavPrev(){return _btnNavPrev};
 
     get BtnFastForward(){return _btnFastForward};
 
@@ -528,7 +529,6 @@ class TestLib{
                 if(__siteFieldName.includes("Common"))
                 {
                    __siteFieldFieldNameArr = this.GetCommonConfig(String(__siteFieldName).split(':')[1],false);
-                   this.PauseAction(1000);
                    
                    for(var fna=0;fna<=__siteFieldFieldNameArr.length-1;fna++)
                    {
@@ -539,7 +539,7 @@ class TestLib{
                         {
                             fn = '#'+fn;
                         }
-                        this.WaitUntilExist(fn,200);
+                        this.WaitUntilExist(fn,1000);
                         __siteFieldName = fn;
                         break;
                     }
