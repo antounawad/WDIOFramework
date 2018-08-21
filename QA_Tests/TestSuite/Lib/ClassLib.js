@@ -713,6 +713,14 @@ class TestLib{
                     {
                         if(__siteFieldValue === 'Click')
                         {
+                            var checkEnableBefore  = this.CheckFieldAttribute('CheckEnableBefore', fields[element]);
+                            if(checkEnableBefore != null && !browser.isEnabled(__siteFieldName))
+                            {
+                                break;
+                            }
+
+
+
                             var checkBefore  = this.CheckFieldAttribute('CheckBefore', fields[element]);
                             if(checkBefore != null)
                             {

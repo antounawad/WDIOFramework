@@ -34,6 +34,9 @@ var _counter = 0;
 var _errorCounter = 0;
 var _saveErrorCheck = '[class="swal2-confirm md-button md-raised md-accent"]';
 
+var _ErrorList = [1000];
+var _ErrorCounter = 0;
+
 
 class Tarif{
 
@@ -742,19 +745,43 @@ class Tarif{
 
 			}catch(ex)
 			{
+
+				var message = 'Versicherer: '+versicherer+' ' + ex.message;
+				
+				var rkError = (ex.message.indexOf('Fehler bei Angebotserstellung') >= 0 || ex.message.indexOf('Fehler bei der Dokumentegenerierung') >= 0);
+				
+				if(rkError)
+				{
+					this.ErrorFunction(message);	
+					continue;
+				}
+
 				if(testLib.IsDebug)
 				{
 					console.log('InnerLoop Error: '+ex.message);
-					testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
+					
 				}
+
+				testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 			}
 				
 			
 			}
 		
-		
-		
 	}
+
+	ErrorFunction(message) {
+		let dt = testLib.LogTime();
+		_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+dt+'.png');
+		testLib.TakeErrorShot(String(_ErrorCounter)+dt+'.png');
+		_ErrorCounter++;
+		console.log(message);
+
+		if (testLib.BreakAtError) {
+			console.log("BreakAtError = false; Fehler:")
+			assert.equal(1,0,message);
+		}
+	}	
 
 	DeleteAllTarife(newTarif=false, jump=true)
 	{
