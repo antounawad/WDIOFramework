@@ -16,6 +16,11 @@
 	<Value>kein risikorelevantes Hobby</Value>
 	<Check>true</Check>
   </Field>
+ <Field>
+	<Name>[name='JobM']</Name>
+	<Value>Common:Beruf</Value>
+	<Check>true</Check>
+  </Field>  
 </Fields>
 </Config>
 
