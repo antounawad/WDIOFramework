@@ -4,7 +4,6 @@
   <Field>
 	<Name>btn_portfolio</Name>
 	<Value>Click</Value>
-	<CheckBefore>port_folio_select</CheckBefore>
   </Field>
   <Field>
 	<Name>port_folio_select</Name>

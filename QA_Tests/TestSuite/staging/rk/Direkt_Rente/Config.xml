@@ -111,10 +111,10 @@
 		 <!-- <Name>Gothaer</Name>  -->
 		 <!-- <Id>1108</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>HDI</Name> 
-		 <Id>1033</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>HDI</Name>  -->
+		 <!-- <Id>1033</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>KLinikrente</Name>  -->
 		 <!-- <Id>9994</Id>  -->
@@ -127,10 +127,10 @@
 		 <!-- <Name>Nürnberger</Name>  -->
 		 <!-- <Id>1147</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Signal Iduna</Name>  -->
-		 <!-- <Id>1048</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Signal Iduna</Name> 
+		 <Id>1048</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Stuttgarter</Name>  -->
 		 <!-- <Id></Id>  -->
@@ -143,10 +143,10 @@
 		 <!-- <Name>Volkswohl Bund</Name>  -->
 		 <!-- <Id>1099</Id>  -->
 	 <!-- </Versicherer> -->
-	 	 <Versicherer> 
-		 <Name>WWK</Name> 
-		 <Id>1103</Id> 
-	 </Versicherer>
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>WWK</Name>  -->
+		 <!-- <Id>1103</Id>  -->
+	 <!-- </Versicherer> -->
 	 	 <!-- <Versicherer>  -->
 		 <!-- <Name>xbAV Testversicherer</Name>  -->
 		 <!-- <Id>9999</Id>  -->
