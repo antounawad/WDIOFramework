@@ -404,7 +404,7 @@ class TestLib{
             title = title.substr(0,index-1);
         }
 
-        if(String(title).includes('Investmentauswahl'))
+        if(String(title).includes('Berufsinformationen'))
         {
             var x = "Y";
         }
@@ -528,13 +528,19 @@ class TestLib{
                 if(__siteFieldName.includes("Common"))
                 {
                    __siteFieldFieldNameArr = this.GetCommonConfig(String(__siteFieldName).split(':')[1],false);
+                   this.PauseAction(1000);
                    
                    for(var fna=0;fna<=__siteFieldFieldNameArr.length-1;fna++)
                    {
                     try
                     {
-                        this.WaitUntilExist('#'+__siteFieldFieldNameArr[fna],1000);
-                        __siteFieldName = '#'+__siteFieldFieldNameArr[fna];
+                        var fn = __siteFieldFieldNameArr[fna];
+                        if(!String(fn).includes('['))
+                        {
+                            fn = '#'+fn;
+                        }
+                        this.WaitUntilExist(fn,200);
+                        __siteFieldName = fn;
                         break;
                     }
                     catch(ex){}
@@ -982,7 +988,7 @@ class TestLib{
         var varBaseFile = this.CommonConfigPath;
         var fields = this.ReadXMLFieldValues(varBaseFile);
         var list = 'ValueList';
-        var value = 'Values';
+        var value = 'Value';
         if(!values)
         {
             list = 'NameList';

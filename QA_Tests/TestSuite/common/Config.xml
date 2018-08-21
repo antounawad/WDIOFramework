@@ -22,7 +22,19 @@
 		<Name>model_PluginItemTypeValues_FondAuswahl_SelectedFonds_inneritem_Percentage</Name>
 		<Name>model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage</Name>
 	</NameList>	
-  </Field>  
+  </Field>
+    <Field>
+	<Name>JobAuswahl</Name>
+	<NameList>
+		<Name>[name='JobM']</Name>
+		<Name>[name='BerufM']</Name>
+		<Name>[name='BuzHobby']</Name>
+		<Name>[name='Beruf']</Name>
+		<Name>[name='BuzJob']</Name>
+		<Name>[aria-label='Beruf']</Name>
+		<Name>[aria-label='Ausgeübte Tätigkeit']</Name>
+	</NameList>	
+  </Field>
 </Fields>
 </Config>
 
