@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Channel>prerelease</Channel>
+  <Channel>staging</Channel>
   <New>
 	<Chapter>
 		<VN>
@@ -91,18 +91,18 @@
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Canada Life</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>
 	 <!-- <Versicherer>  -->
-		 <!-- <Name>Continentale</Name>  -->
-		 <!-- <Id>1335</Id>  -->
+		 <!-- <Name>Alte Leipziger</Name>  -->
+		 <!-- <Id>1007</Id>  -->
 	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Canada Life</Name>  -->
+		 <!-- <Id>9997</Id>  -->
+	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Continentale</Name> 
+		 <Id>1335</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Die Bayerische</Name>  -->
 		 <!-- <Id>1013</Id>  -->
@@ -111,10 +111,10 @@
 		 <!-- <Name>Gothaer</Name>  -->
 		 <!-- <Id>1108</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>HDI</Name> 
-		 <Id>1033</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>HDI</Name>  -->
+		 <!-- <Id>1033</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>KLinikrente</Name>  -->
 		 <!-- <Id>9994</Id>  -->
@@ -163,8 +163,8 @@
 	  <!-- <Id>1</Id> -->
 	 <!-- </DurchfWeg> -->
 	 <DurchfWeg>
-	  <Name>Pensionskasse</Name>
-	  <Id>2</Id>
+	  <Name>U-Kasse</Name>
+	  <Id>4</Id>
 	 </DurchfWeg>	 
 	 <!-- <DurchfWeg> -->
 	  <!-- <Name>SBU</Name> -->
@@ -177,8 +177,8 @@
 		<!-- <Id>0</Id> -->
 	 <!-- </Type> -->
 	 <Type>
-	 	<Name>SBU</Name>
-		<Id>1</Id>
+	 	<Name>Rentenversicherung</Name>
+		<Id>0</Id>
 	 </Type>
 	 </TypeList>
 	 <TarifList smoke="false" all="true">
