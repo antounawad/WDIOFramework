@@ -20,6 +20,9 @@ var _ExcludeVersicherer = null;
 var _TarifSelector = null;
 // Alle Versicherer oder nur bestimmte
 var _AllVersicherer = false;
+
+var _VnName = null;
+var _VpName = null;
 // Smoke Test Ja oder Nein
 var _SmokeTest = false;
 // Liefert die Felder in Site Config
@@ -84,10 +87,15 @@ var _ExMessage =  [3];
 var _ExMessageCnt = 0;
 var _TestFolder = null; 
 var _TestConfigFolder = null;
+var __xpath = null;
+var __xpathResult = null;
 
 
 
 class TestLib{
+
+    get VnName(){return _VnName};
+    get VpName(){return _VpName};
 
     get IsDebug(){return _debug === 'true'}
     get TypeSmoke(){return _TypeSmoke === 'true'};
@@ -125,7 +133,7 @@ class TestLib{
     //Wegen Config Dateien.
     get ExecutablePath(){ return _executablePath};
 
-    get ErrorShotPath(){return _executablePath+'errorShots\\'}
+    get ErrorShotPath(){return this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'errorShots\\'};
 
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer(){ return _Versicherer};
@@ -135,10 +143,11 @@ class TestLib{
     // FileStream für Config Dateien
     get Fs(){return fs};
 
+    get ArgVOffset(){return 2};
+
     // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() 
      { 
-        //var targetArr = String(process.argv[5 3].substr(2)).split(':');
          var targetArr = String(process.argv[3].substr(2)).split(':');
          _TestFolder = targetArr[1]+'\\';
          _TestConfigFolder = targetArr[2]+'\\';
@@ -156,13 +165,12 @@ class TestLib{
     }
 
      get TargetDom() { return process.argv[4].substr(2)}
-     //get TargetDom() { return process.argv[6].substr(2)}
+     
 
      // Returns Version aus Args
      get Version() 
      {
          let ver = process.argv[5]
-         //let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -174,6 +182,11 @@ class TestLib{
      get MainConfigPath() 
      {
          return this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\'+_TestFolder+_TestConfigFolder+'Config.xml'
+     }
+
+     get CommonConfigPath()
+     {
+        return this.ExecutablePath+'TestSuite\\common\\Config.xml';
      }
 
      // Einheitliche Rückgabe des Titels
@@ -220,6 +233,7 @@ class TestLib{
     get MenueMinMax(){return _MenueMinMax};
 
     get BtnNavNext(){return _btnNavNext};
+    get BtnNavPrev(){return _btnNavPrev};
 
     get BtnFastForward(){return _btnFastForward};
 
@@ -229,6 +243,12 @@ class TestLib{
 
     TakeErrorShot(message)
     {
+        // Todo verbessern :-)
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
+        message =  message.replace(':','_');
         browser.saveScreenshot(this.ErrorShotPath+message+'.png')
     }
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
@@ -237,8 +257,9 @@ class TestLib{
     SearchElement(selector,value, pauseTime=0, checkExist=false){
         try
         {
-            if(_SearchIterator >= 100)
+            if(_SearchIterator >= 20)
             {
+                _SearchIterator = 0;
                 throw new Error("Zu viele SearchElement Iterationen");
             }
             var searchSelector = $(selector)
@@ -296,8 +317,9 @@ class TestLib{
     {
         try{
 
-            if(_Navigate2SiteIterator >= 50)
+            if(_Navigate2SiteIterator >= 20)
             {
+                _Navigate2SiteIterator = 0;
                 throw new Error("Zu viele Navigate2Site Iterationen");
             }
             while(true)
@@ -411,8 +433,9 @@ class TestLib{
     {
         try
         {
-            if(_ClearElementIterator >= 100)
+            if(_ClearElementIterator >= 20)
             {
+                _ClearElementIterator = 0;
                 throw new Error("Zu viele Iterationen ClearElement");
             }
             var element = $(elementName);
@@ -443,12 +466,12 @@ class TestLib{
     GetFieldName(element)
     {
         var fieldname  = element;
-        if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[')
+        if(fieldname.substr(0,1)!='.' && fieldname.substr(0,1)!='[' && !fieldname.includes('Common:'))
         {
             fieldname  = '#'+element;
         }
+        
         return fieldname;
-
     }
 
 
@@ -498,57 +521,94 @@ class TestLib{
             var fields = this.ReadXMLFieldValues(configFile);
             for(var element=0;element <= fields.length-1;element++) {
 
-                var fieldname  =  null;
-                var fieldValue = null;
-                var list = null;
-                var exist = null;
-                var clear = null;
-                var check = null;
-                var add = null;
-                var checkExist = null;
-                var fieldValueArr = null;
-                var warning = null;
+                var __siteFieldName  =  null;
+                var __siteFieldValue = null;
+                var __siteFieldList = null;
+                var __siteFieldExist = null;
+                var __siteFieldClear = null;
+                var __siteFieldCheck = null;
+                var __siteFieldAdd = null;
+                var __siteFieldCheckExist = null;
+                var __siteFieldFieldValueArr = null;
+                var __siteFieldFieldNameArr = null;
+                var __siteFieldWarning = null;
                 var checkBefore = null;
 
-                fieldname = this.GetFieldName(fields[element]['Name'][0]);
-                fieldValue = fields[element]['Value'][0];
-                if(fieldValue.includes("|"))
+                __siteFieldName = this.GetFieldName(fields[element]['Name'][0]);
+                if(__siteFieldName.includes("Common:"))
                 {
-                   fieldValueArr = String(fieldValue).split('|');
+                   __siteFieldFieldNameArr = this.GetCommonConfig(String(__siteFieldName).split(':')[1],false);
+                   
+                   for(var fna=0;fna<=__siteFieldFieldNameArr.length-1;fna++)
+                   {
+                    try
+                    {
+                        var fn = __siteFieldFieldNameArr[fna];
+                        if(!String(fn).includes('['))
+                        {
+                            fn = '#'+fn;
+                        }
+                        this.WaitUntilExist(fn,1000);
+                        __siteFieldName = fn;
+                        if(this.IsDebug)
+                        {
+                            console.log('SiteFieldName: '+__siteFieldName);
+                        }
+                        break;
+                    }
+                    catch(ex)
+                    {
+
+                    }
+                    
+                   };
+
+                   if(__siteFieldName.includes("Common:"))
+                   {
+                        continue;
+                   }
+
+
+                }
+
+                __siteFieldValue = fields[element]['Value'][0];
+                if(__siteFieldValue.includes("Common"))
+                {
+                   __siteFieldFieldValueArr = this.GetCommonConfig(String(__siteFieldValue).split(':')[1]);
                 }
 
                 try
                 {
                     
-                    checkExist = this.CheckFieldAttribute('CheckExist',fields[element]);
+                    __siteFieldCheckExist = this.CheckFieldAttribute('CheckExist',fields[element]);
 
-                    if(checkExist != null && String(checkExist) !== _CurrentCheckID)
+                    if(__siteFieldCheckExist != null && String(__siteFieldCheckExist) !== _CurrentCheckID)
                     {
                         return;
                     }
 
-                    list =  this.CheckFieldAttribute('ListBox',fields[element]);
-                    clear = this.CheckFieldAttribute('Clear',fields[element]);
-                    check = this.CheckFieldAttribute('Check',fields[element]);
-                    add = this.CheckFieldAttribute('Add', fields[element]);
-                    warning = this.CheckFieldAttribute('WarningField', fields[element]);
+                    __siteFieldList =  this.CheckFieldAttribute('ListBox',fields[element]);
+                    __siteFieldClear = this.CheckFieldAttribute('Clear',fields[element]);
+                    __siteFieldCheck = this.CheckFieldAttribute('Check',fields[element]);
+                    __siteFieldAdd = this.CheckFieldAttribute('Add', fields[element]);
+                    __siteFieldWarning = this.CheckFieldAttribute('WarningField', fields[element]);
 
-                    if(warning != null)
+                    if(__siteFieldWarning != null)
                     {
                         this.PauseAction(3000);
-                        var warningBlock = $(warning);
+                        var warningBlock = $(__siteFieldWarning);
                         if(warningBlock != null)
                         {
                             var text = browser.getText(warningBlock.selector);
-                            if(text.includes(fieldValue))
+                            if(text.includes(__siteFieldValue))
                             {
                                 var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
                                 var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                                 if(exfield != null && exValue != null)
                                 {
-                                    fieldname = this.GetFieldName(exfield);
-                                    fieldname = $(fieldname);
-                                    browser.click(fieldname.selector);
+                                    __siteFieldName = this.GetFieldName(exfield);
+                                    __siteFieldName = $(__siteFieldName);
+                                    browser.click(__siteFieldName.selector);
                                     this.WaitUntilEnabled();
                                     this.PauseAction(5000);
                                     this.OnlyClickAction(_btnNavNext);
@@ -561,8 +621,8 @@ class TestLib{
 
                     try
                     {
-                        this.WaitUntilExist(fieldname,2000);
-                        var enabled  = browser.isEnabled(fieldname);
+                        this.WaitUntilExist(__siteFieldName,2000);
+                        var enabled  = browser.isEnabled(__siteFieldName);
                         if(!enabled)
                         {
                             throw new Error(fieldName+" not enabled");
@@ -575,8 +635,8 @@ class TestLib{
                         var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                         if(exfield != null && exValue != null)
                         {
-                            fieldname = this.GetFieldName(exfield);
-                            fieldValue = exValue;
+                            __siteFieldName = this.GetFieldName(exfield);
+                            __siteFieldValue = exValue;
                         }
                         else
                         {
@@ -585,41 +645,41 @@ class TestLib{
 
                     }
 
-                    check = this.CheckFieldAttribute('Check',fields[element]);
-                    add = this.CheckFieldAttribute('Add', fields[element]);
+                    __siteFieldCheck = this.CheckFieldAttribute('Check',fields[element]);
+                    __siteFieldAdd = this.CheckFieldAttribute('Add', fields[element]);
 
                 }catch(ex)
                 {
-                    if(fieldname !== '#Warning')
+                    if(__siteFieldName !== '#Warning')
                     {
-                        console.log("Error: CheckSiteFields(WaitUntilExists): "+fieldname+" "+ex.message);
+                        console.log("Error: CheckSiteFields(WaitUntilExists): "+__siteFieldName+" "+ex.message);
                     }
                     return;
                 }
                 
-                exist = browser.isExisting(fieldname);
+                __siteFieldExist = browser.isExisting(__siteFieldName);
 
-                if(exist)
+                if(__siteFieldExist)
                 {
 
                     this.PauseAction(300);
 
-                    if(list != null && list === "true")
+                    if(__siteFieldList != null && __siteFieldList === "true")
                     {
-                        var List     = $(fieldname);
+                        var List     = $(__siteFieldName);
                         var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
                         var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
 
 
-                        var index = values.indexOf(fieldValue);
+                        var index = values.indexOf(__siteFieldValue);
 
-                        var checkIsEnabled =	browser.getAttribute(fieldname, "disabled");
+                        var checkIsEnabled =	browser.getAttribute(__siteFieldName, "disabled");
 	
 
                         if(Ids.length > 1 && checkIsEnabled == null)
                         {
                             try{
-                                this.OnlyClickAction(fieldname,1000);
+                                this.OnlyClickAction(__siteFieldName,1000);
                                     
                             }
                             catch(ex)
@@ -651,8 +711,16 @@ class TestLib{
                     }
                     else
                     {
-                        if(fieldValue === 'Click')
+                        if(__siteFieldValue === 'Click')
                         {
+                            var checkEnableBefore  = this.CheckFieldAttribute('CheckEnableBefore', fields[element]);
+                            if(checkEnableBefore != null && !browser.isEnabled(__siteFieldName))
+                            {
+                                break;
+                            }
+
+
+
                             var checkBefore  = this.CheckFieldAttribute('CheckBefore', fields[element]);
                             if(checkBefore != null)
                             {
@@ -662,51 +730,50 @@ class TestLib{
                                
                                 if(value != null)
                                 {
-                                    this.OnlyClickAction(fieldname)        
+                                    this.OnlyClickAction(__siteFieldName)        
                                 }
                             }
                             else
                             {
-                                this.OnlyClickAction(fieldname)
+                                this.OnlyClickAction(__siteFieldName)
                             }
                         }
                         else
                         {
-                            if(add != null && add === "true")
+                            if(__siteFieldAdd != null && __siteFieldAdd === "true")
                             {
-                                this.ClickAction(fieldname);
-                                var sel = $(fieldname);
-                                sel.addValue(fieldValue);
+                                this.ClickAction(__siteFieldName);
+                                var sel = $(__siteFieldName);
+                                sel.addValue(__siteFieldValue);
                             }
                             else
                             {
-                                if(fieldname.substr(0,1)==='[')
+                                if(__siteFieldName.substr(0,1)==='[')
                                 {
-                                    browser.click(fieldname);
-                                    if(fieldValueArr != null)
+                                    browser.click(__siteFieldName);
+                                    if(__siteFieldFieldValueArr != null)
                                     {
-                                        var t = browser.getTitle();
-                                        for(var fva = 0;fva <= fieldValueArr.length-1;fva++)
+                                        var sel = $(__siteFieldName);    
+                                        for(var fva = 0;fva <= __siteFieldFieldValueArr.length-1;fva++)
                                         {
-                                            this.SearchElement(fieldname, fieldValueArr[fva], 1000, (check!=null && check==="true" && fva==0));        
-                                            this.OnlyClickAction(_btnNavNext);
+                                            this.SearchElement(__siteFieldName, __siteFieldFieldValueArr[fva], 300, (__siteFieldCheck!=null && __siteFieldCheck==="true" && fva==0));    
                                             
-                                            if(t !=browser.getTitle())
+                                            var ex = $('.ng-scope.md-input-invalid.md-input-has-value');
+
+                                            if(ex.type === 'NoSuchElement')
                                             {
-                                                this.OnlyClickAction(_btnNavPrev);
                                                 break;
                                             }
-                                            browser.click(fieldname);
                                         }
                                     }
                                     else
                                     {
-                                        this.SearchElement(fieldname, fieldValue, 1000, (check!=null && check==="true"));
+                                        this.SearchElement(__siteFieldName, __siteFieldValue, 1000, (__siteFieldCheck!=null && __siteFieldCheck==="true"));
                                     }
                                 }
                                 else
                                 {
-                                    this.SearchElement(fieldname, fieldValue, 100, (check!=null && check==="true"));
+                                    this.SearchElement(__siteFieldName, __siteFieldValue, 100, (__siteFieldCheck!=null && __siteFieldCheck==="true"));
                                 }
                                 
                             }
@@ -784,8 +851,9 @@ class TestLib{
     
     ClickAction(selector, waitforVisibleSelector='', timeout=50000, pauseTime=0, click=false){
 
-        if(_ClickIterator >= 100)
+        if(_ClickIterator >= 20)
         {
+            _ClickIterator = 0;
             throw new Error("Zu viele ClickAction Iterationen");
         }
 
@@ -858,9 +926,9 @@ class TestLib{
 			}
     }
 
-    GetXmlParser()
+    GetXmlParser(path)
     {
-        var existsConfigFile = fs.existsSync(this.MainConfigPath);
+        var existsConfigFile = fs.existsSync(path);
 		assert.equal(existsConfigFile,true);
 
         var parser = new xml2js.Parser();
@@ -888,7 +956,7 @@ class TestLib{
     ReadXMLAttribute(standard=false){
         
         var callback = this.CheckFieldListAttribute;
-		this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
+		this.GetXmlParser(this.MainConfigPath).parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
 		{ 
 			if(standard)
 			{
@@ -913,8 +981,64 @@ class TestLib{
                 _Types =  result['Config']['TypeList'][0]['Type'];
                 _TypeSmoke = result['Config']['TypeList'][0].$['smoke'];
             }
-		})
+        })
+
+        var varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vn\\Stammdaten.xml';    
+
+        var fields = this.ReadXMLFieldValues(varBaseFile);
+        _VnName = fields[0]['Value'][0];
+        
+        varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vp\\Stammdaten.xml';    
+
+        fields = this.ReadXMLFieldValues(varBaseFile);
+        _VpName = fields[0]['Value'][0];
     }
+
+    
+
+    _GetCommonConfig(list,value,field)
+    {
+        
+            if(field.Name == __xpath)
+            {
+                var result = [field[list][0][value].length];
+                var count = 0;
+                field[list][0][value].forEach(element => {
+                    result[count++] = element;
+                });
+                __xpathResult = result;
+            }
+
+        return __xpathResult;
+    }    
+
+
+    GetCommonConfig(xpath,values=true)
+    {
+        __xpath = xpath;
+        __xpathResult = null;
+        var varBaseFile = this.CommonConfigPath;
+        var fields = this.ReadXMLFieldValues(varBaseFile);
+        var list = 'ValueList';
+        var value = 'Value';
+        if(!values)
+        {
+            list = 'NameList';
+            value = 'Name';
+        }
+        
+        fields.forEach(field =>{
+            __xpathResult = this._GetCommonConfig(list,value,field);
+        });
+
+        if(__xpathResult == null)
+        {
+            __xpathResult = [0];
+        }
+        return __xpathResult;
+    }
+
+    
 
     CheckFieldAttribute(attributeName,element)
     {
@@ -951,7 +1075,7 @@ class TestLib{
         var res = null;
        
         try{
-            this.GetXmlParser().parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
+            this.GetXmlParser(this.MainConfigPath).parseString(this.Fs.readFileSync(this.MainConfigPath), function(err,result)
             { 
                     res = result['Config'];
                     elementArr.forEach(function(el) {
@@ -1000,7 +1124,7 @@ class TestLib{
     ReadXMLFieldValues(xmlFile){
     
         _SiteFields = null;
-		this.GetXmlParser().parseString(this.Fs.readFileSync(xmlFile), function(err,result)
+		this.GetXmlParser(xmlFile).parseString(this.Fs.readFileSync(xmlFile), function(err,result)
 		{
 			_SiteFields =  result['Config']['Fields'][0]['Field'];
         })
@@ -1008,6 +1132,7 @@ class TestLib{
         return _SiteFields;
 
     }
+
 
     WaitUntilVisible(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
     {
@@ -1072,7 +1197,8 @@ class TestLib{
 
         browser.waitUntil(function ()
         {
-            return browser.isExisting(_WaitUntilSelector);
+            var res = browser.isExisting(_WaitUntilSelector);
+            return res;
 
           }, waitTime, _message);
 
@@ -1208,7 +1334,10 @@ class TestLib{
         {
             console.log(string);
         }
-        console.log(date.format(new Date(), 'YYYY/MM/DD HH:mm:ss'));
+        let dt = date.format(new Date(), 'YYYY:MM:DD HH:mm:ss').toString();
+        dt = dt.replace(' ','__');
+        console.log(dt);
+        return dt;
     }
 
 

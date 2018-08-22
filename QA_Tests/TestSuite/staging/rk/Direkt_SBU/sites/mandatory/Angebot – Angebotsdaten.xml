@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>AgencyNumber</Name>
+	<Value>12</Value>
+	<ListBox>true</ListBox>
+	<Check>true</Check>
+  </Field>
+  <Field>
+	<Name>Gesamtbeitrag</Name>
+	<Value>120</Value>
+	<Check>true</Check>
+  </Field>
+</Fields>
+</Config>
+
+

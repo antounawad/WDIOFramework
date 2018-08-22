@@ -24,9 +24,9 @@ class RK {
 		try
 		{
 			testLib.LogTime('Start RK Test...');
-			vn.AddVN('AutomRKTestVNDirekt', true);
+			vn.AddVN(testLib.VnName, true);
 
-			vp.AddVP('AutomRKTestVPDirekt');
+			vp.AddVP(testLib.VpName);
 
 			this.CreateTarifOptions();
 			testLib.LogTime('Ende RK Test');
@@ -58,9 +58,11 @@ class RK {
 
 	ErrorFunction(message) {
 		if (!testLib.BreakAtError) {
+			let dt = testLib.LogTime();
 			console.log(message);
-			_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+'.png');
-			testLib.TakeErrorShot(String(_ErrorCounter)+'.png');
+			_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+dt+'.png');
+			
+			testLib.TakeErrorShot(String(_ErrorCounter)+dt+'.png');
 			tarif.DeleteAllTarife(true);
 			_ErrorCounter += 1;
 		}
@@ -91,12 +93,12 @@ class RK {
 						tarif.CreateListTarif(versicherer,vArr.length != i+1);
 					}
 					tarif.ResultArr[tarif.ResultCounter] = versicherer;
-					console.log("Versicher: "+String(versicherer)+" erfolgreich durchlaufen");
+					console.log("Versicherer: "+String(versicherer)+" erfolgreich durchlaufen");
 				}
 				catch (ex) {
 					var message = 'Versicherer: '+versicherer+' ' + ex.message;
 					this.ErrorFunction(message);
-					if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
+					if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1 && ex.message.indexOf('Fehler bei der Dokumentegenerierung') == -1)
 					{
 						throw new Error(ex);
 					}

@@ -1,0 +1,1 @@
+node_modules\.bin\wdio  TestSuite\staging\rk\direkt_rente\wdio.conf.js --staging:rk:direkt_rente --xbav-berater

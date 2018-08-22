@@ -1,0 +1,1 @@
+node_modules\.bin\wdio  TestSuite\staging\rk\pension_rente\wdio.conf.js --staging:rk:pension_rente --xbav-berater
