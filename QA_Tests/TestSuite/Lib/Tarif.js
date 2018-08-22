@@ -710,7 +710,7 @@ class Tarif{
 				{
 					if(!testLib.BreakAtError)
 					{
-						if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
+						if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1 && ex.message.indexOf('Fehler bei der Dokumentegenerierung') == -1)
 						{
 							console.log('Common Error:'+ex.message);
 							tarifSelCnt = pre_tarifSelCnt;
@@ -719,12 +719,21 @@ class Tarif{
 						}
 						else
 						{
-							console.log("Versicherer: "+versicherer+" "+ex.message);
+							if(dwFound == null)
+							{
+								dwFound = "";
+							}
+							if(typeFound == null)
+							{
+								typeFound = "";
+							}
+							if(tarifFound == null)
+							{
+								tarifFound = "";
+							}
+							var logmessage = ex.message + " Versicher: "+String(versicherer)+" Durchführungsweg: "+String(dwFound)+" Type: "+String(typeFound)+" Tarif: "+String(tarifFound);
 						}
-						let dt = testLib.LogTime();
-						console.log("Bild: "+String(_errorCounter)+'_'+dt+'.png');
-						testLib.TakeErrorShot(String(_errorCounter+'_'+dt));
-						_errorCounter++;
+						this.ErrorFunction(logmessage);	
 						this.DeleteAllTarife(newTarif,true);
 
 					}
