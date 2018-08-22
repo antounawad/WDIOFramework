@@ -11,6 +11,12 @@
 	<Value>Common:Hobby</Value>
 	<Check>true</Check>
   </Field>
+  <Field>
+	<Name>AgencyNumber</Name>
+	<Value>12</Value>
+	<ListBox>true</ListBox>
+	<Check>true</Check>
+  </Field>  
 </Fields>
 </Config>
 

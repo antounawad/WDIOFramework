@@ -719,6 +719,12 @@ class TestLib{
                                 break;
                             }
 
+                            var checkFieldBefore  = this.CheckFieldAttribute('CheckFieldBefore', fields[element]);
+                            if(checkFieldBefore != null && browser.isExisting(checkFieldBefore))
+                            {
+                                break;
+                            }
+
 
 
                             var checkBefore  = this.CheckFieldAttribute('CheckBefore', fields[element]);
