@@ -34,6 +34,9 @@ var _counter = 0;
 var _errorCounter = 0;
 var _saveErrorCheck = '[class="swal2-confirm md-button md-raised md-accent"]';
 
+var _ErrorList = [1000];
+var _ErrorCounter = 0;
+
 
 class Tarif{
 
@@ -409,15 +412,22 @@ class Tarif{
 	{
 		this.Init();
 
-		try
-		{	
 			var durchfSelCnt = 0;
 			var tarifSelCnt = 0;
 			var typeSelCnt = 0;
+			var pre_durchfSelCnt = 0;
+			var pre_tarifSelCnt = 0;
+			var pre_typeSelCnt = 0;
+
 			var loopBreaker = false;
+
 
 			while(true)
 			{
+
+				try
+				{	
+		
 				
 				_selector = '#'+testLib.TarifSelectoren[0]["Value"][0];
 
@@ -458,6 +468,7 @@ class Tarif{
 						{
 							testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 						}
+						pre_durchfSelCnt = durchfSelCnt;
 						durchfSelCnt++;
 						if(durchfSelCnt > durchfWegeArr.length-1 || checkIsEnabled === 'true')
 						{
@@ -498,8 +509,11 @@ class Tarif{
 				{
 					testLib.OnlyClickAction(_TarifCancelBtn,500);
 					
+					pre_typeSelCnt = 0;
 					typeSelCnt = 0;
+					pre_tarifSelCnt = 0;
 					tarifSelCnt = 0;
+					pre_durchfSelCnt = durchfSelCnt;
 					durchfSelCnt++;
 					testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 					if(durchfSelCnt > durchfWegLength-1)
@@ -622,6 +636,7 @@ class Tarif{
 					}
 					if(!loopBreaker)
 					{
+						pre_tarifSelCnt = tarifSelCnt;
 						tarifSelCnt++;
 					}
 					break;
@@ -643,6 +658,7 @@ class Tarif{
 			{
 				testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
 				console.log("Tarif Save Error...");
+				pre_tarifSelCnt = tarifSelCnt;
 				tarifSelCnt--;
 				continue;
 
@@ -652,13 +668,18 @@ class Tarif{
 
 			if(tarifSelCnt > tarifLength -1 || checkTarifIsDisabled === 'true' || testLib.TarifSmoke)
 			{
+				pre_tarifSelCnt = 0;
 				tarifSelCnt = 0;
+				pre_typeSelCnt = typeSelCnt;
 				typeSelCnt ++;
 
 				if(typeSelCnt > typeLength -1 || checkTypeIsDisabled === 'true' || testLib.TypeSmoke)
 				{
+					pre_typeSelCnt = 0;
 					typeSelCnt = 0;
+					pre_tarifSelCnt = 0;
 					tarifSelCnt = 0;
+					pre_durchfSelCnt = durchfSelCnt;
 					durchfSelCnt++;
 				}
 					
@@ -691,17 +712,21 @@ class Tarif{
 					{
 						if(ex.message.indexOf('Fehler bei Angebotserstellung') == -1)
 						{
-							throw new Error(ex);
+							console.log('Common Error:'+ex.message);
+							tarifSelCnt = pre_tarifSelCnt;
+							typeSelCnt = pre_typeSelCnt;
+							durchfSelCnt = pre_durchfSelCnt;
 						}
 						else
 						{
 							console.log("Versicherer: "+versicherer+" "+ex.message);
-							console.log("Bild: "+_errorCounter+'.png');
-							testLib.TakeErrorShot(String(_errorCounter)+'.png');
-							_errorCounter++;
-							this.DeleteAllTarife(newTarif,true);
-				
 						}
+						let dt = testLib.LogTime();
+						console.log("Bild: "+String(_errorCounter)+'_'+dt+'.png');
+						testLib.TakeErrorShot(String(_errorCounter+'_'+dt));
+						_errorCounter++;
+						this.DeleteAllTarife(newTarif,true);
+
 					}
 					else
 					{
@@ -718,21 +743,45 @@ class Tarif{
 
 
 
+			}catch(ex)
+			{
+
+				var message = 'Versicherer: '+versicherer+' ' + ex.message;
 				
+				var rkError = (ex.message.indexOf('Fehler bei Angebotserstellung') >= 0 || ex.message.indexOf('Fehler bei der Dokumentegenerierung') >= 0);
+				
+				if(rkError)
+				{
+					this.ErrorFunction(message);	
+					continue;
+				}
+
+				if(testLib.IsDebug)
+				{
+					console.log('InnerLoop Error: '+ex.message);
+					
+				}
+
+				testLib.RefreshBrowser(_addTarifBtnSelector,newTarif);
+			}
 				
 			
 			}
-			var x = "y";
-			
+		
+	}
 
-	}catch(ex)
-	{
-		console.log("Error: CreateListTarif: "+ex.message);
-		throw new Error(ex);
-	}
-		
-		
-	}
+	ErrorFunction(message) {
+		let dt = testLib.LogTime();
+		_ErrorList[_ErrorCounter] = message+' Bild: '+String(_ErrorCounter+dt+'.png');
+		testLib.TakeErrorShot(String(_ErrorCounter)+dt+'.png');
+		_ErrorCounter++;
+		console.log(message);
+
+		if (testLib.BreakAtError) {
+			console.log("BreakAtError = false; Fehler:")
+			assert.equal(1,0,message);
+		}
+	}	
 
 	DeleteAllTarife(newTarif=false, jump=true)
 	{
@@ -753,23 +802,62 @@ class Tarif{
 			testLib.RefreshBrowser(_addTarifBtnSelector);
 			this.DeleteAllTarife(newTarif);
 			return;
-		}		
+		}	
+		
+		if(testLib.IsDebug)
+		{
+			console.log('newTarif: '+String(newTarif));
+			console.log('short: '+String(short));
+		}
 		
 
-
+		if(testLib.IsDebug)
+		{
+			console.log('Beratungsübersicht pre')
+		}
 
 		testLib.Navigate2Site('Beratungsübersicht');
 
+		if(testLib.IsDebug)
+		{
+			console.log('Beratungsübersicht post')
+		}		
+
 	   consultation.AddConsultation();
+
+	   if(testLib.IsDebug)
+	   {
+		   console.log('AddConsultation post')
+	   }
 
 		var failSite = testLib.StatusSiteTitle+':'+testLib.NavChapterAngebot+':'+testLib.LinkAngebotKurzUebersicht;
 		testLib.Navigate2Site('Angebot – Kurzübersicht',failSite);
 
+		if(testLib.IsDebug)
+		{
+			console.log('Angebot - Kurzübersicht post')
+		}
+
 		this.CheckRKResult();
+
+		if(testLib.IsDebug)
+		{
+			console.log('CheckRKResult post')
+		}
 
 		document.GenerateDocuments();
 
+		if(testLib.IsDebug)
+		{
+			console.log('GenerateDocuments post')
+		}
+
 		this.DeleteAllTarife(newTarif);
+
+		if(testLib.IsDebug)
+		{
+			console.log('DeleteAllTarife post')
+		}
 	}	
 
 
