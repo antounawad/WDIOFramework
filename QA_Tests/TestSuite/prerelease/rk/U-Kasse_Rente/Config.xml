@@ -163,8 +163,8 @@
 	  <!-- <Id>1</Id> -->
 	 <!-- </DurchfWeg> -->
 	 <DurchfWeg>
-	  <Name>Pensionskasse</Name>
-	  <Id>2</Id>
+	  <Name>U-Kasse</Name>
+	  <Id>4</Id>
 	 </DurchfWeg>	 
 	 <!-- <DurchfWeg> -->
 	  <!-- <Name>SBU</Name> -->
@@ -177,8 +177,8 @@
 		<!-- <Id>0</Id> -->
 	 <!-- </Type> -->
 	 <Type>
-	 	<Name>SBU</Name>
-		<Id>1</Id>
+	 	<Name>Rentenversicherung</Name>
+		<Id>0</Id>
 	 </Type>
 	 </TypeList>
 	 <TarifList smoke="false" all="true">

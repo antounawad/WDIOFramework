@@ -1,1 +1,0 @@
-node_modules\.bin\wdio  TestSuite\prerelease\rk\pension_sbu\wdio.conf.js --prerelease:rk:pension_sbu --xbav-berater
