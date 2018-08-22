@@ -1,1 +1,0 @@
-node_modules\.bin\wdio  TestSuite\staging\rk\sbu_rente\wdio.conf.js --staging:rk:sbu_rente --xbav-berater
