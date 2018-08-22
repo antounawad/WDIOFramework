@@ -13,6 +13,7 @@
 		<Value>Anwendungsentwickler</Value>
 		<Value>Anwendungsentwickler/in</Value>
 		<Value>Abbrucharbeiter</Value>
+		<Value>Abbrucharbeiter,in</Value>
 	</ValueList>
   </Field>
   <Field>
@@ -28,6 +29,7 @@
 		<Name>[id='model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage']</Name>
 		<Name>[id='model_PluginItemTypeValues_FondAuswahl_SelectedFonds_inneritem_Percentage']</Name>
 		<Name>[id='model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage']</Name>
+		<Name>[id='model_PluginItemTypeValues_WertsicherungsFondsauswahlType_SelectedFonds_inneritem_Percentage']</Name>
 	</NameList>	
   </Field>
     <Field>
