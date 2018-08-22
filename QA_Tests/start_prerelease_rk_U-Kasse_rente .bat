@@ -1,1 +1,0 @@
-node_modules\.bin\wdio  TestSuite\prerelease\rk\U-Kasse_rente\wdio.conf.js --prerelease:rk:U-Kasse_rente --xbav-berater
