@@ -1015,7 +1015,7 @@ class TestLib{
                     _TypeSmoke = result['Config']['TypeList'][0].$['smoke'];
                 }catch(ex)
                 {
-                    this.LogDebug(ex.message);
+                    
                 }
             }
         })
