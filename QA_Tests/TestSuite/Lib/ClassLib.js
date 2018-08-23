@@ -299,6 +299,21 @@ class TestLib{
 		
     }
 
+    CompareValue(selector,value)
+    {
+        if(this.WaitUntilVisible(selector))
+        {
+            var searchSelector = $(selector)  
+            return searchSelector.getValue() === value; 
+        }
+        else
+        {
+            console.log("Selector: "+selector+" not found.")
+            return false;
+        }
+        
+    }
+
     CheckisEnabled(selector)
     {
         this.WaitUntilVisible(selector);
@@ -1180,11 +1195,23 @@ class TestLib{
             }
         }
     
+        var result =  false;
 
-        browser.waitUntil(function ()
+       try
+       {
+        var result =  browser.waitUntil(function ()
+            {
+                return browser.isVisible(_WaitUntilSelector);
+            }, waitTime, _message);
+        }
+        catch(ex)
         {
-            return browser.isVisible(_WaitUntilSelector);
-          }, waitTime, _message);
+            this.LogDebug(ex.message);
+        }
+        finally
+        {
+            return result;
+        }
     }
 
     WaitUntilEnabled(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
