@@ -24,11 +24,8 @@ class VN {
         this.SearchVN(testVNName);
         testLib.PauseAction(1000);
 
-        try{
-            testLib.WaitUntilEnabled(testLib.BtnNavNext,2000);
-        }catch(ex){}
 
-        if (!testLib.CheckisEnabled(testLib.BtnNavNext)) {
+        if (!testLib.WaitUntilEnabled(testLib.BtnNavNext,2000)) {
             this.AddChapter(testVNName);
         }
         else {
