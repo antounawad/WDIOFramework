@@ -25,11 +25,8 @@ class VP {
         testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
-        try{
-            testLib.WaitUntilEnabled(testLib.BtnNavNext,2000);
-        }catch(ex){}
 
-        if (!testLib.CheckisEnabled(testLib.BtnNavNext)) {
+        if (!testLib.WaitUntilEnabled(testLib.BtnNavNext,2000)) {
             this.AddChapter(testVPName);
         }
         else {

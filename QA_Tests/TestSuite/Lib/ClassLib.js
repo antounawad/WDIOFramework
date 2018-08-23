@@ -299,6 +299,21 @@ class TestLib{
 		
     }
 
+    CompareValue(selector,value)
+    {
+        if(this.WaitUntilVisible(selector))
+        {
+            var searchSelector = $(selector)  
+            return searchSelector.getValue() === value; 
+        }
+        else
+        {
+            console.log("Selector: "+selector+" not found.")
+            return false;
+        }
+        
+    }
+
     CheckisEnabled(selector)
     {
         this.WaitUntilVisible(selector);
@@ -609,9 +624,11 @@ class TestLib{
                                     __siteFieldName = this.GetFieldName(exfield);
                                     __siteFieldName = $(__siteFieldName);
                                     browser.click(__siteFieldName.selector);
-                                    this.WaitUntilEnabled();
-                                    this.PauseAction(5000);
-                                    this.OnlyClickAction(_btnNavNext);
+                                    if(this.WaitUntilEnabled())
+                                    {
+                                        this.PauseAction(5000);
+                                        this.OnlyClickAction(_btnNavNext);
+                                    }
                                     continue;
                                 }
                             }
@@ -959,6 +976,14 @@ class TestLib{
 		}
     }
 
+    LogDebug(logText)
+    {
+        if(this.IsDebug)
+        {
+            console.log(logText);
+        }
+    }
+
     ReadXMLAttribute(standard=false){
         
         var callback = this.CheckFieldListAttribute;
@@ -966,38 +991,50 @@ class TestLib{
 		{ 
 			if(standard)
 			{
-                _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
-                _BreakAtError = result['Config']['VersichererList'][0].$['breakAtError'];
-                _Documents = result['Config']['Tests'][0].$['documents'];
-                _debug = result['Config']['Tests'][0].$['debug'];
-                
-                _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
-                _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
-                _Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
-                _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
-                _AllDurchfWege = result['Config']['DurchfwegList'][0].$['all'];
-                _DurchfWege =  result['Config']['DurchfwegList'][0]['DurchfWeg'];
+                try
+                {
+                    _AllVersicherer = result['Config']['VersichererList'][0].$['all'];
+                    _BreakAtError = result['Config']['VersichererList'][0].$['breakAtError'];
+                    _Documents = result['Config']['Tests'][0].$['documents'];
+                    _debug = result['Config']['Tests'][0].$['debug'];
+                    
+                    _SmokeTest = result['Config']['VersichererList'][0].$['smoke'];
+                    _TarifSelector  = result['Config']['SelectorList'][0]['Selector'];
+                    _Versicherer =  result['Config']['VersichererList'][0]['Versicherer'];
+                    _ExcludeVersicherer =  callback('Versicherer',result['Config']['ExcludeList'][0]);
+                    _AllDurchfWege = result['Config']['DurchfwegList'][0].$['all'];
+                    _DurchfWege =  result['Config']['DurchfwegList'][0]['DurchfWeg'];
 
-                _AllTarife = result['Config']['TarifList'][0].$['all'];
-                _Tarife =  result['Config']['TarifList'][0]['Tarif'];
-                _TarifSmoke = result['Config']['TarifList'][0].$['smoke'];
-                _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
+                    _AllTarife = result['Config']['TarifList'][0].$['all'];
+                    _Tarife =  result['Config']['TarifList'][0]['Tarif'];
+                    _TarifSmoke = result['Config']['TarifList'][0].$['smoke'];
+                    _OnlyTarifCheck = result['Config']['VersichererList'][0].$['onlyTarifCheck'];
 
-                _AllType = result['Config']['TypeList'][0].$['all'];
-                _Types =  result['Config']['TypeList'][0]['Type'];
-                _TypeSmoke = result['Config']['TypeList'][0].$['smoke'];
+                    _AllType = result['Config']['TypeList'][0].$['all'];
+                    _Types =  result['Config']['TypeList'][0]['Type'];
+                    _TypeSmoke = result['Config']['TypeList'][0].$['smoke'];
+                }catch(ex)
+                {
+                    this.LogDebug(ex.message);
+                }
             }
         })
 
-        var varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vn\\Stammdaten.xml';    
+        try{
+            var varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vn\\Stammdaten.xml';    
 
-        var fields = this.ReadXMLFieldValues(varBaseFile);
-        _VnName = fields[0]['Value'][0];
-        
-        varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vp\\Stammdaten.xml';    
+            var fields = this.ReadXMLFieldValues(varBaseFile);
+            _VnName = fields[0]['Value'][0];
+            
+            varBaseFile = this.ExecutablePath+'TestSuite\\'+this.TargetUrl+'\\' +_TestFolder+_TestConfigFolder+'sites\\new\\vp\\Stammdaten.xml';    
 
-        fields = this.ReadXMLFieldValues(varBaseFile);
-        _VpName = fields[0]['Value'][0];
+            fields = this.ReadXMLFieldValues(varBaseFile);
+            _VpName = fields[0]['Value'][0];
+        }
+        catch(ex)
+        {
+            this.LogDebug(ex.message);
+        }
     }
 
     
@@ -1158,11 +1195,23 @@ class TestLib{
             }
         }
     
+        var result =  false;
 
-        browser.waitUntil(function ()
+       try
+       {
+        var result =  browser.waitUntil(function ()
+            {
+                return browser.isVisible(_WaitUntilSelector);
+            }, waitTime, _message);
+        }
+        catch(ex)
         {
-            return browser.isVisible(_WaitUntilSelector);
-          }, waitTime, _message);
+            this.LogDebug(ex.message);
+        }
+        finally
+        {
+            return result;
+        }
     }
 
     WaitUntilEnabled(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
@@ -1184,11 +1233,22 @@ class TestLib{
         }
     
 
-        browser.waitUntil(function ()
-        {
-            return browser.isEnabled(_WaitUntilSelector);
+        var result = false;
+        try{
 
-          }, waitTime, _message);
+            result =  browser.waitUntil(function ()
+            {
+                return browser.isEnabled(_WaitUntilSelector);
+
+            }, waitTime, _message);
+        }catch(ex)
+        {
+            result = false;
+        }
+        finally
+        {
+            return result;
+        }
 
     }    
 
@@ -1227,30 +1287,7 @@ class TestLib{
 
     }    
 
-    WaitUntilSelected(waitUntilSelector=_btnNavNext, waitTime=50000, message="")
-    {
-        this.WaitUntilSelector = waitUntilSelector;
-        var _message = 'expected: '+waitUntilSelector+' to be different after: '+waitTime;
-        if(message != "")
-        {
-            _message = message;
-        }
-
-        if(this.CheckIsVisible(_btnBlurredOverlay))
-        {
-            this.OnlyClickAction(_btnBlurredOverlay);
-            if(this.CheckIsVisible(_gridSelector))
-            {
-                this.OnlyClickAction(_gridSelector);
-            }
-        }
-    
-
-        browser.waitUntil(function ()
-        {
-            return  browser.isSelected(_WaitUntilSelector)
-          }, waitTime, _message);
-    }    
+ 
 
     GetNewChapterList(chapter){
         var resultArr = [_NewChapterList.length];
