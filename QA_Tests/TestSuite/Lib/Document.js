@@ -21,12 +21,15 @@ class Document{
         {
             var failSite = testLib.StatusSiteTitle+':'+testLib.NavChapterDokumente+':'+_NavLink;
             testLib.Navigate2Site(_SiteTitle,failSite);
-            if(testLib.BrowserTitle === _SiteTitle)
+            var title = browser.getTitle();
+            if(title.includes(_SiteTitle))
             {
                 testLib.OnlyClickAction(testLib.BtnNavPrev,failSite);
+                testLib.WaitUntilVisible(_DocumentsGenerateSelector);
             }
             testLib.OnlyClickAction(_DocumentsGenerateSelector,500);
             testLib.WaitUntilVisible(_DocumentsGenerateSelector,100000);
+            
             if(browser.getText('#generatedDocuments').indexOf('mdi-alert-circle-outline') >= 0)
             {
                 throw new Error("Fehler bei der Dokumentegenerierung");
