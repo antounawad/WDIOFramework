@@ -148,7 +148,7 @@ class TestLib{
     // Übergebenes Projekt --hotfix aus Args
      get TargetUrl() 
      { 
-         var targetArr = String(process.argv[3].substr(2)).split(':');
+         var targetArr = String(process.argv[5].substr(2)).split(':');
          _TestFolder = targetArr[1]+'\\';
          _TestConfigFolder = targetArr[2]+'\\';
          return targetArr[0];
@@ -164,13 +164,13 @@ class TestLib{
         return _TestConfigFolder;
     }
 
-     get TargetDom() { return process.argv[4].substr(2)}
+     get TargetDom() { return process.argv[6].substr(2)}
      
 
      // Returns Version aus Args
      get Version() 
      {
-         let ver = process.argv[5]
+         let ver = process.argv[7]
          if(ver != null)
          {
              return ver.substr(2);
@@ -251,6 +251,27 @@ class TestLib{
         message =  message.replace(':','_');
         browser.saveScreenshot(this.ErrorShotPath+message+'.png')
     }
+
+
+    InitBrowserStart()
+    {
+        var url = 'http://'+ this.TargetUrl+'.'+this.TargetDom+'.de'+'/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F';
+		if(this.TargetUrl == 'beratung')
+		{
+			url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
+		}
+		browser.url(url);
+     
+        
+        // Erstmal die Standard configuration auslesen
+		// Alle Versicherer oder nur spezielle
+		// Alle Kombinationen oder nur spezielle oder nur SmokeTest
+		// SmokeTest := Nur erste funtkionierende Kombination
+		this.ReadXMLAttribute(true);
+
+    }
+
+
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
@@ -304,7 +325,17 @@ class TestLib{
         if(this.WaitUntilVisible(selector))
         {
             var searchSelector = $(selector)  
-            return searchSelector.getValue() === value; 
+
+            var check= searchSelector.getValue()
+            if(check != null)
+            {
+                return searchSelector.getValue() === value; 
+            }
+            else
+            {
+              var text =  browser.getText(searchSelector.selector);
+              return(text.includes(value));
+            }
         }
         else
         {

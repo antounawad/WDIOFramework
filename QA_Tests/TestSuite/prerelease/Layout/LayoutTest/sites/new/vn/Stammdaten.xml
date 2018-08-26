@@ -3,7 +3,7 @@
 <Fields>
   <Field>
 	<Name>Name</Name>
-	<Value>AutomRKTestLayoutHaPe</Value>
+	<Value>AutomRKTesVNLayoutHaPe</Value>
    </Field>
    <Field>
 	<Name>Strasse</Name>
@@ -13,10 +13,11 @@
 	<Name>Plz</Name>
 	<Value>66583</Value>	
   </Field>
-	<Field>
-	<Name>[id='Wageslip']</Name>
-	<Value>An Sage angelehnt</Value>	
+ <Field>
+	<Name>Wageslip</Name>
+	<Value>4</Value>
+	<ListBox>true</ListBox>
   </Field>  
-
 </Fields>
 </Config>
+
