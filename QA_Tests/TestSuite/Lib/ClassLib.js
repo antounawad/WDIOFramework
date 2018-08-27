@@ -758,11 +758,25 @@ class TestLib{
                             break;
                         }
 
+                        var List     = null;
+                        var values   = null; 
+                        var Ids      = null; 
 
+                        try
+                        {
+                            List     = $(__siteFieldName);
+                            values   = List.getAttribute("md-option[ng-repeat]", "value",true);
+                            Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
+                        }
+                        catch(ex)
+                        {
+                            this.RefreshBrowser();
+                            this.PauseAction(500);
+                            List     = $(__siteFieldName);
+                            values   = List.getAttribute("md-option[ng-repeat]", "value",true);
+                            Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
 
-                        var List     = $(__siteFieldName);
-                        var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
-                        var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
+                        }
 
 
                         var index = values.indexOf(__siteFieldValue);
@@ -1358,7 +1372,7 @@ class TestLib{
             result = false;
         }finally
         {
-            return true;
+            return result;
         }
     }  
 
