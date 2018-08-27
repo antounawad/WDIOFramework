@@ -271,6 +271,36 @@ class TestLib{
 
     }
 
+    SetListBoxValue(selector,value)
+    {
+        
+
+        var exist = browser.isExisting(selector);
+
+        if(!exist)
+        {
+            throw new Error("Selector not found...");
+        }
+
+        var List     = $(selector);
+        var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
+        var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
+
+       var index = values.indexOf(value);
+
+        if(Ids.length > 1)
+        {
+            this.OnlyClickAction(selector,1000);
+            if(index > -1)
+            {
+                this.ClickAction('#'+Ids[index]);
+            }
+            else{
+                this.ClickAction('#'+Ids[0]);   
+            }
+        }
+    }
+
 
     // Sucht ein Element (Selector) und ruft die Methode zum Setzen eines Values auf
     // Wird der Selector nicht gefunden, wird abgebrochen
@@ -286,11 +316,12 @@ class TestLib{
             var searchSelector = $(selector)
             assert.notEqual(searchSelector, null)
 
-            var entryValue = searchSelector.getValue();
+            var entryValue = null;
            
 
             if(checkExist)
             {
+                entryValue = searchSelector.getValue();
                 if(entryValue != null && entryValue != "")
                 {
                     return;
@@ -334,6 +365,7 @@ class TestLib{
             else
             {
               var text =  browser.getText(searchSelector.selector);
+              
               return(text.includes(value));
             }
         }
@@ -849,8 +881,12 @@ class TestLib{
     }    
 
 
-    Next(waitTime=0)
+    Next(waitTime=0,checksitefields=false)
     {
+        if(checksitefields)
+        {
+            this.CheckSiteFields();
+        }
         this.PauseAction(waitTime);
         this.ClickAction(_btnNavNext);
     }

@@ -20,7 +20,7 @@ class VN {
         testLib.SearchElement(_searchSelector, searchValue)
     }
 
-    AddVN(testVNName, checkTarif = false) {
+    AddVN(testVNName, checkTarif = false, navnext=false) {
         this.SearchVN(testVNName);
         testLib.PauseAction(1000);
 
@@ -38,6 +38,10 @@ class VN {
             }
             else {
                 testLib.OnlyClickAction(_gridSelector);
+                if(navnext)
+                {
+                    testLib.Next();
+                }
             }
         }
 
