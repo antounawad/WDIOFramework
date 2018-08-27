@@ -273,16 +273,22 @@ class TestLib{
 
     SetListBoxValue(selector,value)
     {
+        var fieldname = this.GetFieldName(selector);
         
+        if(fieldname.includes('['))
+        {
+            var ex = $(fieldname);
+            fieldname = '#'+ex.getAttribute('id');
+        }
 
-        var exist = browser.isExisting(selector);
+        var exist = browser.isExisting(fieldname);
 
         if(!exist)
         {
             throw new Error("Selector not found...");
         }
 
-        var List     = $(selector);
+        var List     = $(fieldname);
         var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
         var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
 
@@ -290,7 +296,7 @@ class TestLib{
 
         if(Ids.length > 1)
         {
-            this.OnlyClickAction(selector,1000);
+            this.OnlyClickAction(fieldname,1000);
             if(index > -1)
             {
                 this.ClickAction('#'+Ids[index]);
