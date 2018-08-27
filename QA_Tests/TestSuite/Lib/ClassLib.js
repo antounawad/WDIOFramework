@@ -281,7 +281,7 @@ class TestLib{
             fieldname = '#'+ex.getAttribute('id');
         }
 
-        var exist = browser.isExisting(fieldname);
+        var exist = this.WaitUntilExist(fieldname);
 
         if(!exist)
         {
@@ -752,6 +752,20 @@ class TestLib{
 
                     if(__siteFieldList != null && __siteFieldList === "true")
                     {
+                        if(__siteFieldName.includes('['))
+                        {
+                            var ex = $(__siteFieldName);
+                            __siteFieldName = '#'+ex.getAttribute('id');
+                        }
+                
+                        var exist = this.WaitUntilExist(__siteFieldName);
+                        if(!exist)
+                        {
+                            break;
+                        }
+
+
+
                         var List     = $(__siteFieldName);
                         var values   = List.getAttribute("md-option[ng-repeat]", "value",true);
                         var Ids      = List.getAttribute("md-option[ng-repeat]", "id",true);
