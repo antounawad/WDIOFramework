@@ -1292,13 +1292,24 @@ class TestLib{
             _message = message;
         }
 
-        browser.waitUntil(function ()
+        var result = false;
+
+        try
         {
-            var res = browser.isExisting(_WaitUntilSelector);
-            return res;
 
-          }, waitTime, _message);
+        result = browser.waitUntil(function ()
+            {
+                var res = browser.isExisting(_WaitUntilSelector);
+                return res;
 
+            }, waitTime, _message);
+        }catch(ex)
+        {
+            result = false;
+        }finally
+        {
+            return true;
+        }
     }  
 
     WaitUntilTitle(waitTime=5000, message="")
