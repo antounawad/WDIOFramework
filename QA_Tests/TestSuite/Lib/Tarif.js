@@ -30,8 +30,6 @@ var _selector = null;
 var _list = null;
 var _values = null;
 var _ids = null;
-var _counter = 0;
-var _errorCounter = 0;
 var _saveErrorCheck = '[class="swal2-confirm md-button md-raised md-accent"]';
 
 var _ErrorList = [1000];

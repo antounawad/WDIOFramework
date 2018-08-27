@@ -92,6 +92,8 @@ var __xpathResult = null;
 
 
 
+
+
 class TestLib{
 
     get VnName(){return _VnName};
@@ -587,26 +589,20 @@ class TestLib{
                    
                    for(var fna=0;fna<=__siteFieldFieldNameArr.length-1;fna++)
                    {
-                    try
-                    {
                         var fn = __siteFieldFieldNameArr[fna];
                         if(!String(fn).includes('['))
                         {
                             fn = '#'+fn;
                         }
-                        this.WaitUntilExist(fn,1000);
-                        __siteFieldName = fn;
-                        if(this.IsDebug)
+                        if(this.WaitUntilExist(fn,1000))
                         {
-                            console.log('SiteFieldName: '+__siteFieldName);
+                            __siteFieldName = fn;
+                            if(this.IsDebug)
+                            {
+                                console.log('SiteFieldName: '+__siteFieldName);
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    catch(ex)
-                    {
-
-                    }
-                    
                    };
 
                    if(__siteFieldName.includes("Common:"))
@@ -666,19 +662,16 @@ class TestLib{
                         }
                     }
 
-
-                    try
+                    if(this.WaitUntilExist(__siteFieldName,2000))
                     {
-                        this.WaitUntilExist(__siteFieldName,2000);
                         var enabled  = browser.isEnabled(__siteFieldName);
                         if(!enabled)
                         {
                             throw new Error(fieldName+" not enabled");
                         }
                     }
-                    catch(ex)
+                    else
                     {
-                        
                         var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
                         var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                         if(exfield != null && exValue != null)
@@ -692,6 +685,7 @@ class TestLib{
                         }
 
                     }
+
 
                     __siteFieldCheck = this.CheckFieldAttribute('Check',fields[element]);
                     __siteFieldAdd = this.CheckFieldAttribute('Add', fields[element]);
