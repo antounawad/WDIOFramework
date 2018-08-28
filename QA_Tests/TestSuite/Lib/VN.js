@@ -13,11 +13,11 @@ var _checkIisEnabled = false;
 class VN {
 
     ShowVNs(timeout = 20000) {
-        testLib.ClickAction(_btnNewVn,'', timeout, 1000)
+        testLib.ClickElement(_btnNewVn,'', timeout, 1000)
     }
 
     SearchVN(searchValue, timeout = 200000) {
-        testLib.SearchElement(_searchSelector, searchValue)
+        testLib.SetValue(_searchSelector, searchValue)
     }
 
     AddVN(testVNName, checkTarif = false, navnext=false) {
@@ -25,19 +25,19 @@ class VN {
         testLib.PauseAction(1000);
 
 
-        if (!testLib.WaitUntilEnabled(testLib.BtnNavNext,2000)) {
+        if (!testLib.IsEnabled(testLib.BtnNavNext,2000)) {
             this.AddChapter(testVNName);
         }
         else {
             if (checkTarif) {
                 testLib.Navigate2Site(tarif.TarifTitle);
-                if (!testLib.CheckisEnabled(testLib.BtnNavNext)) {
+                if (!testLib.IsEnabled(testLib.BtnNavNext)) {
                     this.AddTarif(testLib);
                 }
 
             }
             else {
-                testLib.OnlyClickAction(_gridSelector);
+                testLib.ClickElementSimple(_gridSelector);
                 if(navnext)
                 {
                     testLib.Next();

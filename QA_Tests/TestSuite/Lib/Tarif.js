@@ -51,12 +51,12 @@ class Tarif {
 	get TarifCancelBtn() { return _TarifCancelBtn };
 
 	ShowTarif(timeout = 10000, pause = 3000) {
-		testLib.ClickAction(testLib.BtnNavNext, _beratungTarifSelector, timeout, pause)
+		testLib.ClickElement(testLib.BtnNavNext, _beratungTarifSelector, timeout, pause)
 	}
 
 	CancelTarif() {
-		if (testLib.CheckIsVisible(_TarifCancelBtn)) {
-			testLib.OnlyClickAction(_TarifCancelBtn);
+		if (testLib.IsVisible(_TarifCancelBtn,1000)) {
+			testLib.ClickElementSimple(_TarifCancelBtn);
 			testLib.PauseAction(1000);
 		}
 		testLib.RefreshBrowser(_addTarifBtnSelector);
@@ -64,16 +64,16 @@ class Tarif {
 
 
 	RemoveExistTariffs() {
-		testLib.WaitUntilVisible(_addTarifBtnSelector);
+		testLib.IsVisible(_addTarifBtnSelector);
 
 		while (browser.isExisting(_deleteTarifSelector)) {
-			testLib.OnlyClickAction(_deleteTarifSelector);
+			testLib.ClickElementSimple(_deleteTarifSelector);
 
-			testLib.WaitUntilVisible(_deleteTarifBtnSelector);
+			testLib.IsVisible(_deleteTarifBtnSelector);
 
-			testLib.ClickAction(_deleteTarifBtnSelector);
+			testLib.ClickElement(_deleteTarifBtnSelector);
 
-			testLib.WaitUntilVisible(_addTarifBtnSelector);
+			testLib.IsVisible(_addTarifBtnSelector);
 
 			testLib.PauseAction(500);
 
@@ -85,7 +85,7 @@ class Tarif {
 	}
 
 	AddTarif() {
-		testLib.ClickAction(_addTarifBtnSelector);
+		testLib.ClickElement(_addTarifBtnSelector);
 	}
 
 	GetAllVersicherer() {
@@ -267,11 +267,11 @@ class Tarif {
 
 				this.SetListBoxSelector();
 
-				testLib.OnlyClickAction(_selector);
+				testLib.ClickElementSimple(_selector);
 
 				if (tarifSel == 0) {
 					var selector = '#' + _ids[_values.indexOf(versicherer)];
-					testLib.ClickAction(selector);
+					testLib.ClickElement(selector);
 
 				}
 				else {
@@ -299,7 +299,7 @@ class Tarif {
 				}
 
 
-				testLib.OnlyClickAction(_TarifCancelBtn, 500);
+				testLib.ClickElementSimple(_TarifCancelBtn, 500);
 				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
 				
 				continue;
@@ -307,7 +307,7 @@ class Tarif {
 
 		}
 
-		testLib.ClickAction(_tarifSaveBtn);
+		testLib.ClickElement(_tarifSaveBtn);
 	}
 
 	SetListBoxSelector() {
@@ -318,7 +318,7 @@ class Tarif {
 
 	CheckSelectorIsDisabled() {
 		if (_ids.length > 1 && browser.getAttribute(_selector, "disabled") == null) {
-			testLib.ClickAction('#' + _ids[0]);
+			testLib.ClickElement('#' + _ids[0]);
 		}
 
 
@@ -330,11 +330,11 @@ class Tarif {
 
 			this.SetListBoxSelector();
 
-			testLib.OnlyClickAction(_selector);
+			testLib.ClickElementSimple(_selector);
 
 			var x1 = _values.indexOf(dwFound)
 			var selector = '#' + _ids[x1];
-			testLib.ClickAction(selector);
+			testLib.ClickElement(selector);
 			_sDurchfWeg = browser.getText(selector);
 			return durchfWegLength;
 		}
@@ -345,11 +345,11 @@ class Tarif {
 	CheckIsEnabled(checkIsEnabled, found, arr, logstring) {
 		if (checkIsEnabled == null) {
 			this.SetListBoxSelector();
-			testLib.OnlyClickAction(_selector);
+			testLib.ClickElementSimple(_selector);
 			var length = arr.length;
 			var x1 = _values.indexOf(found)
 			var selector = '#' + _ids[x1];
-			testLib.ClickAction(selector);
+			testLib.ClickElement(selector);
 			if (logstring == _sType)
 				_sType = browser.getText(selector);
 			else if (logstring == _sTarif)
@@ -362,7 +362,7 @@ class Tarif {
 
 	SelectAndClick() {
 		this.SetListBoxSelector();
-		testLib.OnlyClickAction(_selector);
+		testLib.ClickElementSimple(_selector);
 		this.CheckSelectorIsDisabled();
 		return true;
 
@@ -394,9 +394,9 @@ class Tarif {
 
 				this.SetListBoxSelector();
 
-				testLib.OnlyClickAction(_selector);
+				testLib.ClickElementSimple(_selector);
 				var selector = '#' + _ids[_values.indexOf(versicherer)];
-				testLib.OnlyClickAction(selector);
+				testLib.ClickElementSimple(selector);
 				_sVersicherer = browser.getText(selector);
 
 				console.log(_sVersicherer);
@@ -451,7 +451,7 @@ class Tarif {
 					typeLength = typeArr.length;
 				}
 				else {
-					testLib.OnlyClickAction(_TarifCancelBtn, 500);
+					testLib.ClickElementSimple(_TarifCancelBtn, 500);
 
 					pre_typeSelCnt = 0;
 					typeSelCnt = 0;
@@ -539,10 +539,10 @@ class Tarif {
 
 
 
-				testLib.ClickAction(_tarifSaveBtn);
+				testLib.ClickElement(_tarifSaveBtn);
 
 
-				if (testLib.CheckIsVisible(_saveErrorCheck)) {
+				if (testLib.IsVisible(_saveErrorCheck,1000)) {
 					pre_tarifSelCnt = tarifSelCnt;
 					tarifSelCnt--;
 					throw new Error("Tarif Save Error...")
@@ -603,7 +603,9 @@ class Tarif {
 
 				if (rkError) {
 					this.ErrorFunction(message);
+					this.DeleteAllTarife(true,newTarif);
 					continue;
+
 				}
 
 				_ErrorCounter ++;
@@ -618,7 +620,7 @@ class Tarif {
 				}
 
 
-				testLib.OnlyClickAction(_TarifCancelBtn, 500);
+				testLib.ClickElementSimple(_TarifCancelBtn, 500);
 				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
 				continue;
 			}
@@ -708,7 +710,7 @@ class Tarif {
 
 
 	CheckRKResult() {
-		testLib.WaitUntilVisible(testLib.BtnNavNext, 100000);
+		testLib.IsVisible(testLib.BtnNavNext, 100000);
 
 		var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 
