@@ -2,13 +2,19 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
+	<Name>BeitragBuRente</Name>
+	<Value>500</Value>
+	<CheckExist>1108</CheckExist>
+   </Field>
+<CheckExist>1033</CheckExist>
+  <Field>
 	<Name>r_GesamtBeitrag</Name>
 	<Value>Click</Value>
    </Field>
     <Field>
 	<Name>btn_steuerfrei</Name>
 	<Value>Click</Value>
-	<ExceptionField>[id='Gesamtbeitrag']</ExceptionField>
+	<ExceptionField>BeitragBuRente</ExceptionField>
 	<ExceptionValue>100</ExceptionValue>
 	<Add>true</Add>
 	<Check>true</Check>

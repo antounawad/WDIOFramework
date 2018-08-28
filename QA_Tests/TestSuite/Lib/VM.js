@@ -15,16 +15,16 @@ class VM{
         var refUrl = browser.getUrl();
         browser.url(this.url);
 
-        testLib.ClickAction('.fa.fa-industry','#FilterSearch');
-        testLib.SearchElement('#FilterSearch',agency);
-        testLib.ClickAction('.btn.btn-sm.btn-w-m.btn-outline.btn-search');
+        testLib.ClickElement('.fa.fa-industry','#FilterSearch');
+        testLib.SetValue('#FilterSearch',agency);
+        testLib.ClickElement('.btn.btn-sm.btn-w-m.btn-outline.btn-search');
         if(browser.isExisting('.fa.fa-trash-o'))
         {
             
-            testLib.OnlyClickAction('.fa.fa-trash-o');
-            testLib.WaitUntilVisible('.btn.btn-primary');          
-            testLib.OnlyClickAction('.modal-content')
-            testLib.OnlyClickAction('.btn btn-primary');
+            testLib.ClickElementSimple('.fa.fa-trash-o');
+            testLib.IsVisible('.btn.btn-primary');          
+            testLib.ClickElementSimple('.modal-content')
+            testLib.ClickElementSimple('.btn btn-primary');
         }
         
         browser.url(refUrl);

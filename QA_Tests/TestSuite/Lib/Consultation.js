@@ -12,11 +12,11 @@ class Consultation{
     get BtnFastForwardConsultation(){return _btnFastForwardConsultation};
 
     ShowConsultations(timeout=10000,pause=1000){
-   		testLib.ClickAction(testLib.BtnFastForward,'', timeout, pause)
+   		testLib.ClickElement(testLib.BtnFastForward,'', timeout, pause)
 	}
 
     SetBruttoLohn(value,timeout=10000){
-        testLib.SearchElement(_bruttoLohn,value)	
+        testLib.SetValue(_bruttoLohn,value)	
     }
 
     AddConsultation()

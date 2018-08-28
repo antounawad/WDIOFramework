@@ -13,30 +13,27 @@ var _siteTitle = 'Arbeitnehmer – Auswahl';
 class VP {
 
     ShowVps(timeout) {
-        testLib.ClickAction(consultation.BtnFastForwardConsultation, _btnNewVp, timeout)
+        testLib.ClickElement(consultation.BtnFastForwardConsultation, _btnNewVp, timeout)
     }
 
     SearchVP(searchValue, timeout = 2000, pause = 500) {
         //this.ShowVps(timeout)
-        testLib.SearchElement('#Search', searchValue)
+        testLib.SetValue('#Search', searchValue)
     }
 
     AddVP(testVPName) {
         testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
-        try{
-            testLib.WaitUntilEnabled(testLib.BtnNavNext,2000);
-        }catch(ex){}
 
-        if (!testLib.CheckisEnabled(testLib.BtnNavNext)) {
+        if (!testLib.IsEnabled(testLib.BtnNavNext,2000)) {
             this.AddChapter(testVPName);
         }
         else {
-            if (testLib.CheckIsVisible(testLib.BtnBlurredOverlay)) {
-                testLib.OnlyClickAction(testLib.BtnBlurredOverlay);
+            if (testLib.IsVisible(testLib.BtnBlurredOverlay,1000)) {
+                testLib.ClickElementSimple(testLib.BtnBlurredOverlay);
             }
-            testLib.OnlyClickAction(_gridSelector);
+            testLib.ClickElementSimple(_gridSelector);
         }
     }
 

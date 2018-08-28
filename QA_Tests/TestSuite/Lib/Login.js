@@ -16,7 +16,7 @@ class Login{
  		var passwdElement = browser.element(passwordSelector);
  		assert.notEqual(passwdElement, null);
  		passwdElement.setValue(password);
- 		testLib.ClickAction(loginBtnSelector);
+ 		testLib.ClickElement(loginBtnSelector);
 	}
 }
 module.exports = Login;
