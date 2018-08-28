@@ -314,7 +314,7 @@ class TestLib {
 
     Previous(waitTime = 0) {
         this.PauseAction(waitTime);
-        this.ClickElement(tgus,);
+        this.ClickElement(this.BtnNavPrev);
     }
 
     NextPrevious(waitTime = 0, checksitefields = false)

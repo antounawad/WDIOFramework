@@ -676,7 +676,20 @@ class Tarif {
 			console.log('Beratungsübersicht post')
 		}
 
-		consultation.AddConsultation();
+		try
+		{
+			
+			consultation.AddConsultation();
+		}
+		catch(ex)
+		{
+			testLib.Previous();
+			testLib.Previous();
+			testLib.Navigate2Site('Beratungsübersicht');
+			consultation.AddConsultation();
+		}
+
+		
 
 		if (testLib.IsDebug) {
 			console.log('AddConsultation post')

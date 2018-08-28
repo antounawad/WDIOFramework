@@ -21,7 +21,10 @@ class Consultation{
 
     AddConsultation()
     {
-        testLib.AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
+        if(testLib.IsVisible(_btnNewConsultation,5000))
+        {
+            testLib.AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
+        }
     }
 }
 module.exports = Consultation;
