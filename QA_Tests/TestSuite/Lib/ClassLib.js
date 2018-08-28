@@ -250,9 +250,19 @@ class TestLib {
         if (!this.IsVisible(link, 1000)) {
             this.ClickElement(chapter, link);
 
+
             if (!this.IsVisible(link, 1000)) {
-               throw new Error(link+' not visible in 1000 millisec.');
+                this.RefreshBrowser();
             }
+
+            if (!this.IsVisible(link, 1000)) {
+                this.ClickElement(chapter, link);
+                if (!this.IsVisible(link, 1000)) {
+                    throw new Error(link+' not visible in 1000 millisec.');
+                 }
+     
+             }            
+            
     
         }
 
