@@ -611,7 +611,7 @@ class KernelLib {
         var selectorLeaveOrGo = '.swal2-confirm.md-button.md-raised.md-accent';
         if (this.WaitUntilVisible(selectorLeaveOrGo,1000)) {
             browser.click(selectorLeaveOrGo);
-            browser.click(retValue.selector);
+            browser.click(clickSelector);
             return true;
         }
         else {
