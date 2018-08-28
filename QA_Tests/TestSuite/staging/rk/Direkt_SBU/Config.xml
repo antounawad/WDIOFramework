@@ -156,12 +156,6 @@
 		 <!-- <Id>1138</Id>  -->
 	 <!-- </Versicherer>	  -->
 	 </VersichererList>
-	  <ExcludeList>
-	  <Versicherer> 
-		 <Name>Gothaer</Name>
-		  <Id>1108</Id>
-	  </Versicherer>
-	  </ExcludeList>
 	 
 	 <DurchfwegList all="false">
 	 <DurchfWeg>
