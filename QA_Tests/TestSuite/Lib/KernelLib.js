@@ -258,7 +258,7 @@ class KernelLib {
     }
     SetValue(selector, value, pauseTime = 0, checkExist = false) {
         try {
-            if (_SearchIterator >= 20) {
+            if (_SearchIterator >= 10) {
                 _SearchIterator = 0;
                 throw new Error("Zu viele SetValue Iterationen");
             }
@@ -619,16 +619,19 @@ class KernelLib {
         }
     }
 
-    ClickAction(selector, waitforVisibleSelector = '', timeout = 50000, pauseTime = 0, click = false) {
+    ClickAction(selector, waitforVisibleSelector = '', timeout = 5000, pauseTime = 0, click = false) {
 
-        if (_ClickIterator >= 20) {
+        if (_ClickIterator >= 10) {
             _ClickIterator = 0;
             throw new Error("Zu viele ClickAction Iterationen");
         }
 
         var retValue = $(selector);
-        retValue.waitForVisible(timeout);
-        retValue.waitForEnabled(timeout);
+        if(!this.WaitUntilEnabled(selector,timeout))
+        {
+            throw new Error("Selector: "+selector+"not found after: "+String(timeout)+" sec.");
+
+        }
         try {
             browser.click(retValue.selector);
 
