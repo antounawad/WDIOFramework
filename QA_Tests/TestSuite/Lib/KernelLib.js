@@ -87,6 +87,7 @@ var _TestFolder = null;
 var _TestConfigFolder = null;
 var __xpath = null;
 var __xpathResult = null;
+var _FieldSearchCounter = 0;
 
 
 
@@ -413,13 +414,19 @@ class KernelLib {
                         }
                     }
 
-                    if (this.WaitUntilExist(__siteFieldName, 2000)) {
-                        var enabled = browser.isEnabled(__siteFieldName);
-                        if (!enabled) {
-                            throw new Error(fieldName + " not enabled");
+                    try
+                    {
+                        if (this.WaitUntilExist(__siteFieldName, 2000)) {
+                            var enabled = browser.isEnabled(__siteFieldName);
+                            if (!enabled) {
+                                throw new Error(fieldName + " not enabled");
+                            }
                         }
-                    }
-                    else {
+                        else
+                        {
+                            throw new Error(__siteFieldName+' not exist');
+                        }
+                    }catch(ex) {
                         var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
                         var exValue = this.CheckFieldAttribute('ExceptionValue', fields[element]);
                         if (exfield != null && exValue != null) {
@@ -440,7 +447,6 @@ class KernelLib {
                     if (__siteFieldName !== '#Warning') {
                         console.log("Error: CheckSiteFields(WaitUntilExists): " + __siteFieldName + " " + ex.message);
                     }
-                    return;
                 }
 
                 __siteFieldExist = browser.isExisting(__siteFieldName);
@@ -514,6 +520,13 @@ class KernelLib {
                         }
                     }
                     else {
+                        if(__siteFieldName.includes('Gesamtbeitrag'))
+                        {
+                            var x = "Y";
+                        }
+
+
+
                         if (__siteFieldValue === 'Click') {
                             var checkEnableBefore = this.CheckFieldAttribute('CheckEnableBefore', fields[element]);
                             if (checkEnableBefore != null && !browser.isEnabled(__siteFieldName)) {
