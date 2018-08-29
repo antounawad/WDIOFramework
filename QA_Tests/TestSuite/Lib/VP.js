@@ -21,25 +21,32 @@ class VP {
         testLib.SetValue('#Search', searchValue)
     }
 
-    AddVP(testVPName) {
+    AddVP(testVPName, navnext=true) {
         testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
 
         if (!testLib.IsEnabled(testLib.BtnNavNext,2000)) {
-            this.AddChapter(testVPName);
+            this.AddChapter(testVPName,navnext);
         }
         else {
             if (testLib.IsVisible(testLib.BtnBlurredOverlay,1000)) {
                 testLib.ClickElementSimple(testLib.BtnBlurredOverlay);
             }
             testLib.ClickElementSimple(_gridSelector);
+            if(navnext)
+            {
+                testLib.Next();
+            }
         }
     }
 
-    AddChapter(testVNName) {
+    AddChapter(testVNName,navnext=true) {
         testLib.AddChapter(_vpNode, _btnNewVp);
-        testLib.Next();
+        if(navnext)
+        {
+            testLib.Next();
+        }
     }
 }
 module.exports = VP;

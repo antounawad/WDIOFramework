@@ -26,19 +26,10 @@ class RK {
 		var vArr = this.GetVersichererArray();
 		for (var i = 0; i <= vArr.length - 1; i++) {
 			versicherer = vArr[i];
-
 			testLib.CurrentID = versicherer;
-
-			if (testLib.SmokeTest) {
-				tarif.CreateSmokeTarif(versicherer);
-				tarif.CheckAngebot(vArr.length != i + 1, testLib.OnlyTarifCheck);
-			}
-			else {
-				tarif.CreateListTarif(versicherer, vArr.length != i + 1);
-			}
+			tarif.CreateListTarif(versicherer, vArr.length != i + 1);
 			tarif.ResultArr[tarif.ResultCounter] = versicherer;
 			console.log("Versicherer: " + String(versicherer) + " erfolgreich durchlaufen" + _crlf);
-
 		};
 	}
 

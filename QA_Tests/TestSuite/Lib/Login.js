@@ -7,6 +7,7 @@ var _user   = 'hans-peter.bremer';
 var _loginBtnSelector = '#ID_Login_Button';
 var _passwordSelector = '#Password';
 var _usernameSelector = '#Username';
+var _sessionBusy = '#btnLogOffOthers';
 
 class Login{
     LoginUser(password=_passwd,username=_user,passwordSelector=_passwordSelector, loginBtnSelector=_loginBtnSelector,usernameSelector=_usernameSelector){
@@ -16,7 +17,15 @@ class Login{
  		var passwdElement = browser.element(passwordSelector);
  		assert.notEqual(passwdElement, null);
  		passwdElement.setValue(password);
- 		testLib.ClickElement(loginBtnSelector);
+		testLib.ClickElement(loginBtnSelector);
+
+		if(testLib.IsVisible(_sessionBusy))
+		{
+			testLib.ClickElementSimple(_sessionBusy);
+		}
+
+		 
+
 	}
 }
 module.exports = Login;
