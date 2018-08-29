@@ -32,11 +32,9 @@ describe('webdriver.io page', function () {
 	
  		// Login
 		// Todo extrahieren
-		login.LoginUser();
+		login.LoginUser('AutomatikTest','AutomatikTestAgentur@eulg.de')
 
 		testLib.CheckVersion();		
-		
-		testLib.SelectHauptAgentur();
 
 		rk.StartRKTest(vn, vp);
 

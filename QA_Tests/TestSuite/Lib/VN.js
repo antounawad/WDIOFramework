@@ -26,7 +26,7 @@ class VN {
 
 
         if (!testLib.IsEnabled(testLib.BtnNavNext,2000)) {
-            this.AddChapter(testVNName);
+            this.AddChapter(testVNName,navnext);
         }
         else {
             if (checkTarif) {
@@ -47,13 +47,17 @@ class VN {
 
     }
 
-    AddChapter(testVNName) {
+    AddChapter(testVNName,navnext) {
         testLib.AddChapter(_vnNode, _btnNewVn, '', this.AddTarif);
+        if(navnext)
+        {
+            testLib.Next();
+        }
     }
 
     AddTarif(element) {
         tarif.AddTarif();
-        tarif.CreateSmokeTarif(element['Versicherer'][0]['Id'][0]);
+        tarif.CreateListTarif(element['Versicherer'][0]['Id'][0], false);
     }
 }
 module.exports = VN;

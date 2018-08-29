@@ -395,7 +395,7 @@ class KernelLib {
                     if (__siteFieldWarning != null) {
                         this.PauseAction(3000);
                         var warningBlock = $(__siteFieldWarning);
-                        if (warningBlock != null) {
+                        if (warningBlock.state !== 'failure') {
                             var text = browser.getText(warningBlock.selector);
                             if (text.includes(__siteFieldValue)) {
                                 var exfield = this.CheckFieldAttribute('ExceptionField', fields[element]);
@@ -408,10 +408,11 @@ class KernelLib {
                                         this.PauseAction(5000);
                                         this.OnlyClickAction(_btnNavNext);
                                     }
-                                    continue;
+                                    
                                 }
                             }
                         }
+                        continue;
                     }
 
                     try
@@ -419,7 +420,7 @@ class KernelLib {
                         if (this.WaitUntilExist(__siteFieldName, 2000)) {
                             var enabled = browser.isEnabled(__siteFieldName);
                             if (!enabled) {
-                                throw new Error(fieldName + " not enabled");
+                                throw new Error(__siteFieldName + " not enabled");
                             }
                         }
                         else
@@ -449,7 +450,7 @@ class KernelLib {
                     }
                 }
 
-                __siteFieldExist = browser.isExisting(__siteFieldName);
+                __siteFieldExist = this.WaitUntilExist(__siteFieldName,2000);
 
                 if (__siteFieldExist) {
 
@@ -589,6 +590,11 @@ class KernelLib {
                             return;
                         }
                     }
+                }
+                else
+                {
+                    ///if(this.IsDebug)
+                        console.log("WaitUntilExist not found!!!!!"+__siteFieldName+' Title: '+browser.getTitle());
                 }
 
             };

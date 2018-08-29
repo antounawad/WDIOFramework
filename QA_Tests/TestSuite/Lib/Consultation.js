@@ -5,6 +5,8 @@ var _btnNewConsultation = '#btnNewConsultation';
 var _bruttoLohn = '#Bruttolohn';
 var _btnFastForwardConsultation = '#btnFastForwardConsultation';
 var _consultation = 'Consultation';
+var _consultationDeleteSelector = '.md-font.mdi.mdi-24px.mdi-delete';
+var _consultationConfirmDelete = '#modalDeleteConsultation_btnLöschen';
 
 
 class Consultation{
@@ -19,13 +21,32 @@ class Consultation{
         testLib.SetValue(_bruttoLohn,value)	
     }
 
-    AddConsultation()
+    AddConsultation(deleteTariffs=true)
     {
         if(testLib.IsVisible(_btnNewConsultation,5000))
         {
+            if(deleteTariffs)
+            {
+                this.RemoveExistConsultations();
+            }
             testLib.AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
         }
     }
+
+    RemoveExistConsultations() {
+
+		while (browser.isExisting(_consultationDeleteSelector)) {
+			testLib.ClickElementSimple(_consultationDeleteSelector);
+
+			testLib.IsVisible(_consultationConfirmDelete);
+
+			testLib.ClickElement(_consultationConfirmDelete);
+
+			testLib.PauseAction(500);
+
+		}
+	}
+
 }
 module.exports = Consultation;
 
