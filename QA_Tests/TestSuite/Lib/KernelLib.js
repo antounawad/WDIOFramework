@@ -87,13 +87,17 @@ var _TestFolder = null;
 var _TestConfigFolder = null;
 var __xpath = null;
 var __xpathResult = null;
-var _FieldSearchCounter = 0;
+
+var _ChapterNewBusy = false;
 
 
 
 
 
 class KernelLib {
+
+    get ChapterNewBusy(){ return _ChapterNewBusy};
+    set ChapterNewBusy(value){_ChapterNewBusy = value};
 
     get VnName() { return _VnName };
     get VpName() { return _VpName };
@@ -224,8 +228,8 @@ class KernelLib {
 
     get TarifSiteSelector() { return _TarifSiteSelector };
 
-
-    GetXmlConfigPath(pathFile) {
+    CutBrowserTitle()
+    {
         var title = this.Get_BrowserTitle;
 
 
@@ -235,11 +239,18 @@ class KernelLib {
             title = title.substr(0, index - 1);
         }
 
-        if (String(title).includes('Investmentauswahl')) {
-            var x = "Y";
+        index = title.indexOf('/');
+        if (index > 0) {
+            title = title.substr(0, index - 1);
         }
+               
+    }
 
-        var path = this.ExecutablePath + 'TestSuite\\' + this.TargetUrl + '\\' + _TestFolder + _TestConfigFolder + 'sites\\mandatory\\' + title + '.xml';
+
+    GetXmlConfigPath(pathFile) {
+        var title = this.CutBrowserTitle();
+
+      var path = this.ExecutablePath + 'TestSuite\\' + this.TargetUrl + '\\' + _TestFolder + _TestConfigFolder + 'sites\\mandatory\\' + title + '.xml';
 
         if (pathFile != null) {
             path = pathFile;
@@ -326,7 +337,8 @@ class KernelLib {
     // Ansonsten aus der Übergebenen Variablen
     // Falls eine Seite gefunden wird, werden die Felder extrahiert und ggfs. die Values gesetzt
     // Noch ein bisschen dirty aber schon funktionsfähig
-    CheckSiteFields(pathFile) {
+    CheckSiteFields(pathFile='') {
+
 
         var configFile = this.GetXmlConfigPath(pathFile);
 

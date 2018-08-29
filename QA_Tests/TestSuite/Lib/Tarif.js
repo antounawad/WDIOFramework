@@ -324,7 +324,7 @@ class Tarif {
 	}
 
 
-	CreateListTarif(versicherer, newTarif = true) {
+	CreateListTarif(versicherer, newTarif = true, callback=false) {
 		this.Init();
 
 		var durchfSelCnt = 0;
@@ -489,6 +489,9 @@ class Tarif {
 
 				testLib.ClickElement(_tarifSaveBtn);
 
+				if(callback)
+					break;
+
 
 				if (testLib.IsVisible(_saveErrorCheck, 1000)) {
 					pre_tarifSelCnt = tarifSelCnt;
@@ -530,6 +533,8 @@ class Tarif {
 				}
 				//console.log("counter: " + _counter++);
 				//testLib.LogTime("Vor RK Test");
+
+
 
 				this.CheckAngebot(newTarif, testLib.OnlyTarifCheck);
 				console.log(_crlf);

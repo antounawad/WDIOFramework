@@ -13,7 +13,7 @@ class TestLib {
     get VnName() { return kernelLib.VnName };
     get VpName() { return kernelLib.VpName };
 
-    get BtnMainAgency(){return kernelLib.BtnMainAgency};
+    get BtnMainAgency() { return kernelLib.BtnMainAgency };
 
     get IsDebug() { return kernelLib.IsDebug };
     get TypeSmoke() { return kernelLib.TypeSmoke };
@@ -80,8 +80,8 @@ class TestLib {
     get TarifSiteSelector() { return kernelLib.TarifSiteSelector };
 
 
-     // Loggt den Browser Title und prüft, falls assertString nicht leer ist
-     ShowBrowserTitle(assertString = '') {
+    // Loggt den Browser Title und prüft, falls assertString nicht leer ist
+    ShowBrowserTitle(assertString = '') {
         console.log("Broser Title: " + this.Get_BrowserTitle)
         if (assertString != '') {
             assert.equal(this.Get_BrowserTitle, assertString);
@@ -152,7 +152,7 @@ class TestLib {
     // Wird der Selector nicht gefunden, wird abgebrochen
     // Wenn ein Pause value übergeben wird, wird Pausiert
     SetValue(selector, value, pauseTime = 0, checkExist = false) {
-       kernelLib.SetValue(selector, value, pauseTime, checkExist);
+        kernelLib.SetValue(selector, value, pauseTime, checkExist);
 
     }
 
@@ -178,11 +178,11 @@ class TestLib {
     }
 
     IsEnabled(selector, waitTime = 3000) {
-      return kernelLib.WaitUntilEnabled(selector, waitTime);
+        return kernelLib.WaitUntilEnabled(selector, waitTime);
     }
 
     IsVisible(selector, waitTime = 10000) {
-      return kernelLib.WaitUntilVisible(selector, waitTime);
+        return kernelLib.WaitUntilVisible(selector, waitTime);
     }
 
 
@@ -233,13 +233,14 @@ class TestLib {
             }
         } catch (ex) {
             _Navigate2SiteIterator += 1;
-            var conslog = !ex.message.includes('is not clickable at point') && !ex.message.includes('obscures it')  && !ex.message.includes('BtnNavNext not visible in 5 sec');
+            var conslog = !ex.message.includes('is not clickable at point') && !ex.message.includes('obscures it') && !ex.message.includes('BtnNavNext not visible in 5 sec');
             if (conslog) {
                 kernelLib.LogDebug("Error: Navigate2Site: " + ex.message);
             }
             this.Navigate2Site(title, failSite);
         } finally {
-            kernelLib.CheckSiteFields();
+            if(!kernelLib.ChapterNewBusy)
+                kernelLib.CheckSiteFields();
         }
     }
 
@@ -256,12 +257,12 @@ class TestLib {
             if (!this.IsVisible(link, 1000)) {
                 this.ClickElement(chapter, link);
                 if (!this.IsVisible(link, 1000)) {
-                    throw new Error(link+' not visible in 1000 millisec.');
-                 }
-     
-             }            
-            
-    
+                    throw new Error(link + ' not visible in 1000 millisec.');
+                }
+
+            }
+
+
         }
 
 
@@ -315,18 +316,17 @@ class TestLib {
         this.ClickElement(this.BtnNavPrev);
     }
 
-    NextPrevious(waitTime = 0, checksitefields = false)
-    {
+    NextPrevious(waitTime = 0, checksitefields = false) {
         this.Next(waitTime, checksitefields);
         this.Previous(waitTime);
     }
 
     ClickElementSimple(selector, pauseTime = 0) {
-     return kernelLib.OnlyClickAction(selector, pauseTime)
+        return kernelLib.OnlyClickAction(selector, pauseTime)
     }
 
     ClickElement(selector, waitforVisibleSelector = '', timeout = 50000, pauseTime = 0, click = false) {
-      return   kernelLib.ClickAction(selector, waitforVisibleSelector, timeout, pauseTime, click)
+        return kernelLib.ClickAction(selector, waitforVisibleSelector, timeout, pauseTime, click)
     }
 
     PauseAction(pauseTime) {
@@ -348,50 +348,45 @@ class TestLib {
         this.PauseAction(500);
         var Sites = kernelLib.GetElementFromConfig(kernelLib.GetNewChapterList(chapter));
         var path = Sites.$['path'];
-        
-        Sites['Site'].forEach(element => {
-           
-            // if(fs.existsSync(configFileName))
-            // {
-    
-            var url = element['Url'][0];
-            var BtnClick = kernelLib.CheckFieldAttribute('NewBtn',element);
-            if(url == 'new')
-            {
-                this.IsVisible(btnNew,3000);
-                this.ClickElement(btnNew);
-                if(waitUntilSelector !== '')
-                {
-                    this.IsVisible(waitUntilSelector);
+        kernelLib.ChapterNewBusy = true;
+        try {
+            Sites['Site'].forEach(element => {
+
+                // if(fs.existsSync(configFileName))
+                // {
+
+                var url = element['Url'][0];
+                var BtnClick = kernelLib.CheckFieldAttribute('NewBtn', element);
+                if (url == 'new') {
+                    this.IsVisible(btnNew, 3000);
+                    this.ClickElement(btnNew);
+                    if (waitUntilSelector !== '') {
+                        this.IsVisible(waitUntilSelector);
+                    }
+
                 }
+                else if (BtnClick != null) {
+                    this.Navigate2Site(url);
+                    this.ClickElement('#' + BtnClick)
+                }
+                else {
+                    this.Navigate2Site(url);
+                }
+                var fileName = element['FileName'][0];
+                var configFileName = kernelLib.ExecutablePath + 'TestSuite\\' + kernelLib.TargetUrl + '\\' + kernelLib.TestFolder + kernelLib.TestConfigFolder + 'sites\\new\\' + path + '\\' + fileName;
 
-            }
-            else if(BtnClick != null)
-            {
-                this.Navigate2Site(url);
-                this.ClickElement('#'+BtnClick)
-            }
-            else
-            {
-                this.Navigate2Site(url);
-            }
-            var fileName = element['FileName'][0];
-            var configFileName = kernelLib.ExecutablePath+'TestSuite\\'+kernelLib.TargetUrl+'\\' +kernelLib.TestFolder+kernelLib.TestConfigFolder+'sites\\new\\'+path+'\\'+fileName;    
-
-            if(fileName == 'Callback' && callbackFunc != null)
-            {
-                callbackFunc(element);
-            }
-            else
-            {
-                   kernelLib.CheckSiteFields(configFileName);
-            }
-        //}
-        // else
-        // {
-        //     console.log('Config Datei: '+configFileName+' existiert nicht.')
-        // }
-		});        
+                if (fileName == 'Callback' && callbackFunc != null) {
+                    callbackFunc(element);
+                }
+                else {
+                    kernelLib.CheckSiteFields(configFileName, true);
+                }
+            });
+        } catch (ex) {
+            kernelLib.LogDebug(ex.message);
+        } finally {
+            kernelLib.ChapterNewBusy = false;
+        }
     }
 
     RefreshBrowser(selector = null, click = false) {

@@ -57,7 +57,8 @@ class VN {
 
     AddTarif(element) {
         tarif.AddTarif();
-        tarif.CreateListTarif(element['Versicherer'][0]['Id'][0], false);
+        tarif.CreateListTarif(element['Versicherer'][0]['Id'][0], false,true);
+
     }
 }
 module.exports = VN;

@@ -21,11 +21,11 @@ class Consultation{
         testLib.SetValue(_bruttoLohn,value)	
     }
 
-    AddConsultation(deleteTariffs=true)
+    AddConsultation(deleteConsultations=true)
     {
         if(testLib.IsVisible(_btnNewConsultation,5000))
         {
-            if(deleteTariffs)
+            if(deleteConsultations)
             {
                 this.RemoveExistConsultations();
             }
