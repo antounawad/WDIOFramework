@@ -4,6 +4,7 @@
   <Field>
 	<Name>BeitragBuRente</Name>
 	<Value>500</Value>
+	<Add>true</Add>
 	<CheckExist>1108</CheckExist>
    </Field>
   <Field>

@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="true" debug="true"></Tests>
+  <Tests documents="false" debug="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
