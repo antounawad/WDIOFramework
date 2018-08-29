@@ -8,6 +8,7 @@ var _loginBtnSelector = '#ID_Login_Button';
 var _passwordSelector = '#Password';
 var _usernameSelector = '#Username';
 var _sessionBusy = '#btnLogOffOthers';
+var _newlogin = '.md-raised.md-accent.md-button.md-ink-ripple.flex-none';
 
 class Login{
     LoginUser(password=_passwd,username=_user,passwordSelector=_passwordSelector, loginBtnSelector=_loginBtnSelector,usernameSelector=_usernameSelector){
@@ -19,9 +20,13 @@ class Login{
  		passwdElement.setValue(password);
 		testLib.ClickElement(loginBtnSelector);
 
-		if(testLib.IsVisible(_sessionBusy))
+		if(testLib.IsVisible(_sessionBusy,1000))
 		{
 			testLib.ClickElementSimple(_sessionBusy);
+		}
+		if(testLib.IsVisible(_newlogin,1000))
+		{
+			this.LoginUser(password,username);
 		}
 
 		 
