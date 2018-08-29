@@ -171,7 +171,7 @@ class TestLib {
             }
         }
         else {
-            this.LogDebug("Selector: " + selector + " not found.")
+            kernelLib.LogDebug("Selector: " + selector + " not found.")
             return false;
         }
 
@@ -200,10 +200,10 @@ class TestLib {
                 try {
 
                     kernelLib.WaitUntilTitle();
-                    this.LogDebug(this.Get_BrowserTitle);
+                    kernelLib.LogDebug(this.Get_BrowserTitle);
                 }
                 catch (ex) {
-                    this.LogDebug("Error: Navigate2Site(WaitUntilTitle): " + ex.message);
+                    kernelLib.LogDebug("Error: Navigate2Site(WaitUntilTitle): " + ex.message);
                 }
 
 
@@ -235,7 +235,7 @@ class TestLib {
             _Navigate2SiteIterator += 1;
             var conslog = !ex.message.includes('is not clickable at point') && !ex.message.includes('obscures it')  && !ex.message.includes('BtnNavNext not visible in 5 sec');
             if (conslog) {
-                this.LogDebug("Error: Navigate2Site: " + ex.message);
+                kernelLib.LogDebug("Error: Navigate2Site: " + ex.message);
             }
             this.Navigate2Site(title, failSite);
         } finally {
@@ -289,7 +289,7 @@ class TestLib {
 
         }
         catch (ex) {
-            this.LogDebug("Error: ClearElementValue: " + ex.message);
+            kernelLib.LogDebug("Error: ClearElementValue: " + ex.message);
             _ClearValueIterator += 1;
 
         }
@@ -338,7 +338,7 @@ class TestLib {
     CheckVersion() {
         if (kernelLib.Version !== '') {
             var t = browser.getText('#container-main');
-            this.LogDebug(t);
+            kernelLib.LogDebug(t);
             assert.notEqual(t.indexOf('Version ' + kernelLib.Version), -1, "Fehlerhafte Version ausgliefert.");
         }
     }
