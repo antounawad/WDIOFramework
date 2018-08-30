@@ -7,6 +7,7 @@ var _btnFastForwardConsultation = '#btnFastForwardConsultation';
 var _consultation = 'Consultation';
 var _consultationDeleteSelector = '.md-font.mdi.mdi-24px.mdi-delete';
 var _consultationConfirmDelete = '#modalDeleteConsultation_btnLöschen';
+var _siteTitle = 'Beratungsübersicht';
 
 
 class Consultation{
@@ -21,8 +22,12 @@ class Consultation{
         testLib.SetValue(_bruttoLohn,value)	
     }
 
-    AddConsultation(deleteConsultations=true)
+    AddConsultation(deleteConsultations=true,navigate=true)
     {
+        if(navigate)
+        {
+            testLib.Navigate2Site(_siteTitle);
+        }
         if(testLib.IsVisible(_btnNewConsultation,5000))
         {
             if(deleteConsultations)
