@@ -112,7 +112,7 @@ exports.config = {
     // with "/", then the base url gets prepended.
     baseUrl: 'http://localhost',
 	
-	port: 4473,
+	port: 4003,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,

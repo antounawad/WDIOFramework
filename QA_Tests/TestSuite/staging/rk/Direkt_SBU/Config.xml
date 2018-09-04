@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Channel>prerelease</Channel>
+  <Channel>staging</Channel>
   <New>
 	<Chapter>
 		<VN>
@@ -156,8 +156,7 @@
 		 <!-- <Id>1138</Id>  -->
 	 <!-- </Versicherer>	  -->
 	 </VersichererList>
-	 
-	 <DurchfwegList all="false">
+		 <DurchfwegList all="false">
 	 <DurchfWeg>
 	  <Name>Direkt</Name>
 	  <Id>1</Id>
