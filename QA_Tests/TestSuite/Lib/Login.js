@@ -18,19 +18,16 @@ class Login{
  		var passwdElement = browser.element(passwordSelector);
  		assert.notEqual(passwdElement, null);
  		passwdElement.setValue(password);
-		testLib.ClickElement(loginBtnSelector);
+ 		testLib.ClickElement(loginBtnSelector);
 
-		if(testLib.IsVisible(_sessionBusy,1000))
+		if(testLib.CheckIsVisible(_sessionBusy))
 		{
 			testLib.ClickElementSimple(_sessionBusy);
 		}
-		if(testLib.IsVisible(_newlogin,1000))
+		if(testLib.CheckIsVisible(_newlogin))
 		{
 			this.LoginUser(password,username);
 		}
-
-		 
-
 	}
 }
 module.exports = Login;

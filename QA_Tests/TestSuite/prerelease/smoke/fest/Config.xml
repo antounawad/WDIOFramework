@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false" debug="false"></Tests>
+  <Tests documents="true" debug="false"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -157,7 +157,7 @@
 	 <!-- </Versicherer>	  -->
 	 </VersichererList>
 	 
-	 <DurchfwegList all="false">
+	 <DurchfwegList all="true">
 	 <DurchfWeg>
 	  <Name>Direkt</Name>
 	  <Id>1</Id>
@@ -171,7 +171,7 @@
 	  <!-- <Id>4</Id> -->
 	 <!-- </DurchfWeg>	  -->
 	 </DurchfwegList>
-	 <TypeList  all="false">
+	 <TypeList  all="true">
 	 <Type>
 	 	<Name>Rentenversicherung</Name>
 		<Id>0</Id>

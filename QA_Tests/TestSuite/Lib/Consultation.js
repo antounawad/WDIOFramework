@@ -22,28 +22,31 @@ class Consultation{
         testLib.SetValue(_bruttoLohn,value)	
     }
 
-    AddConsultation(deleteConsultations=true,navigate=true)
+    AddConsultation(deleteConsultations=true,navigate=false)
     {
         if(navigate)
         {
             testLib.Navigate2Site(_siteTitle);
         }
-        if(testLib.IsVisible(_btnNewConsultation,5000))
+
+        if(testLib.CheckIsVisible(_btnNewConsultation))
         {
             if(deleteConsultations)
             {
                 this.RemoveExistConsultations();
             }
-            testLib.AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
+            testLib._AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
         }
     }
 
-    RemoveExistConsultations() {
+
+    RemoveExistConsultations() 
+	{
 
 		while (browser.isExisting(_consultationDeleteSelector)) {
-			testLib.ClickElementSimple(_consultationDeleteSelector);
+			testLib.ClickElement(_consultationDeleteSelector);
 
-			testLib.IsVisible(_consultationConfirmDelete);
+			testLib.CheckIsVisible(_consultationConfirmDelete);
 
 			testLib.ClickElement(_consultationConfirmDelete);
 
@@ -51,7 +54,6 @@ class Consultation{
 
 		}
 	}
-
 }
 module.exports = Consultation;
 

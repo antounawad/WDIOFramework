@@ -22,7 +22,7 @@ class VM{
         {
             
             testLib.ClickElementSimple('.fa.fa-trash-o');
-            testLib.IsVisible('.btn.btn-primary');          
+            testLib.WaitUntilVisible('.btn.btn-primary');          
             testLib.ClickElementSimple('.modal-content')
             testLib.ClickElementSimple('.btn btn-primary');
         }

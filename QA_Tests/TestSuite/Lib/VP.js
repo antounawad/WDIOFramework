@@ -1,5 +1,4 @@
 var TestLib = require('../Lib/ClassLib.js')
-var assert = require('assert');
 const testLib = new TestLib();
 var Consultation = require('../Lib/Consultation.js')
 const consultation = new Consultation();
@@ -25,24 +24,27 @@ class VP {
         testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
+        try{
+            testLib._WaitUntilEnabled(testLib.BtnNavNext,2000);
+        }catch(ex){}
 
-        if (!testLib.IsEnabled(testLib.BtnNavNext,2000)) {
-            this.AddChapter(testVPName,navnext);
+        if (!testLib._CheckisEnabled(testLib.BtnNavNext)) {
+            this.AddChapter(testVPName);
         }
         else {
-            if (testLib.IsVisible(testLib.BtnBlurredOverlay,1000)) {
+            if (testLib.CheckIsVisible(testLib.BtnBlurredOverlay)) {
                 testLib.ClickElementSimple(testLib.BtnBlurredOverlay);
             }
             testLib.ClickElementSimple(_gridSelector);
-            if(navnext)
+			if(navnext)
             {
                 testLib.Next();
             }
         }
     }
 
-    AddChapter(testVNName,navnext=true) {
-        testLib.AddChapter(_vpNode, _btnNewVp);
+      AddChapter(testVNName,navnext=true) {
+        testLib._AddChapter(_vpNode, _btnNewVp);
         if(navnext)
         {
             testLib.Next();

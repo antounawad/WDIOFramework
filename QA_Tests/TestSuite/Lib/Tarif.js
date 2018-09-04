@@ -55,7 +55,7 @@ class Tarif {
 	}
 
 	CancelTarif() {
-		if (testLib.IsVisible(_TarifCancelBtn, 1000)) {
+		if (testLib.CheckIsVisible(_TarifCancelBtn)) {
 			testLib.ClickElementSimple(_TarifCancelBtn);
 			testLib.PauseAction(1000);
 		}
@@ -64,16 +64,16 @@ class Tarif {
 
 
 	RemoveExistTariffs() {
-		testLib.IsVisible(_addTarifBtnSelector);
+		testLib._WaitUntilVisible(_addTarifBtnSelector);
 
 		while (browser.isExisting(_deleteTarifSelector)) {
 			testLib.ClickElementSimple(_deleteTarifSelector);
 
-			testLib.IsVisible(_deleteTarifBtnSelector);
+			testLib._WaitUntilVisible(_deleteTarifBtnSelector);
 
 			testLib.ClickElement(_deleteTarifBtnSelector);
 
-			testLib.IsVisible(_addTarifBtnSelector);
+			testLib._WaitUntilVisible(_addTarifBtnSelector);
 
 			testLib.PauseAction(500);
 
@@ -120,17 +120,14 @@ class Tarif {
 			_It_List = $(_It_Selector);
 			_It_Values = _It_List.getAttribute(_ngoption, _value, true);
 			if (!testLib.AllTarife || testLib.SmokeTest || testLib.TarifSmoke) {
-				if((testLib.SmokeTest || testLib.TarifSmoke) && _It_Values.length > 0)
-				{
+				if ((testLib.SmokeTest || testLib.TarifSmoke) && _It_Values.length > 0) {
 					var values = [1];
-					values[0] =  _It_Values[0];
+					values[0] = _It_Values[0];
 					_It_Values = values;
 					return _It_Values;
 				}
 				_It_Values = this.ExtractExcludeTariffs(_It_Values);
 			}
-
-
 			return _It_Values;
 		} catch (ex) {
 			throw new Error(ex);
@@ -146,7 +143,7 @@ class Tarif {
 				_It_Values = this.ExtractExcludeTypes(_It_Values);
 			}
 
-			if(testLib.SmokeTest && _It_Values.length > 0)
+			if (testLib.SmokeTest && _It_Values.length > 0)
 				return _It_Values[0];
 
 			return _It_Values;
@@ -243,8 +240,7 @@ class Tarif {
 					durchfwegArr[index] = value['Id'][0];
 				});
 
-				if(testLib.SmokeTest && durchfwegArr.length > 0)
-				{
+				if (testLib.SmokeTest && durchfwegArr.length > 0) {
 					return durchfwegArr[0];
 				}
 				return durchfwegArr;
@@ -265,6 +261,8 @@ class Tarif {
 		_ids = null;
 	}
 
+
+
 	SetListBoxSelector() {
 		_list = $(_selector);
 		_values = _list.getAttribute(_ngoption, _value, true);
@@ -275,7 +273,6 @@ class Tarif {
 		if (_ids.length > 1 && browser.getAttribute(_selector, "disabled") == null) {
 			testLib.ClickElement('#' + _ids[0]);
 		}
-
 
 	}
 
@@ -316,15 +313,19 @@ class Tarif {
 	}
 
 	SelectAndClick() {
-		this.SetListBoxSelector();
-		testLib.ClickElementSimple(_selector);
-		this.CheckSelectorIsDisabled();
-		return true;
+		try {
+			this.SetListBoxSelector();
+			testLib.ClickElementSimple(_selector);
+			this.CheckSelectorIsDisabled();
+			return true;
 
+		} catch (ex) {
+			return false;
+		}
 	}
 
 
-	CreateListTarif(versicherer, newTarif = true, callback=false) {
+	CreateListTarif(versicherer, newTarif = true, callback = false) {
 		this.Init();
 
 		var durchfSelCnt = 0;
@@ -456,7 +457,7 @@ class Tarif {
 
 				var checkTarifIsDisabled = null;
 				var tarifLength = tarifArr.length;
-								
+
 				_selector = '#' + testLib.TarifSelectoren[3]["Value"][0];
 				_sTarif = browser.getText(_selector);
 				checkTarifIsDisabled = browser.getAttribute(_selector, "disabled");
@@ -489,11 +490,11 @@ class Tarif {
 
 				testLib.ClickElement(_tarifSaveBtn);
 
-				if(callback)
+				if (callback)
 					break;
 
 
-				if (testLib.IsVisible(_saveErrorCheck, 1000)) {
+				if (testLib.CheckIsVisible(_saveErrorCheck)) {
 					pre_tarifSelCnt = tarifSelCnt;
 					tarifSelCnt--;
 					throw new Error("Tarif Save Error...")
@@ -539,11 +540,11 @@ class Tarif {
 				this.CheckAngebot(newTarif, testLib.OnlyTarifCheck);
 				console.log(_crlf);
 
-				if(testLib.SmokeTest)
+				if (testLib.SmokeTest)
 					break;
 
 				//testLib.LogTime("Nach RK Test");
-				
+
 
 
 				if (durchfSelCnt > durchfWegLength - 1) {
@@ -561,7 +562,7 @@ class Tarif {
 				if (rkError) {
 					this.ErrorFunction(message);
 					this.DeleteAllTarife(true, newTarif);
-					if(testLib.SmokeTest)
+					if (testLib.SmokeTest)
 						break;
 
 					continue;
@@ -582,7 +583,7 @@ class Tarif {
 
 				testLib.ClickElementSimple(_TarifCancelBtn, 500);
 				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
-				if(testLib.SmokeTest)
+				if (testLib.SmokeTest)
 					break;
 				continue;
 			}
@@ -595,7 +596,7 @@ class Tarif {
 	ErrorFunction(message) {
 		let dt = testLib.LogTime();
 		_ErrorList[_ErrorCounter] = message + ' Bild: ' + String(_ErrorCounter + dt + '.png');
-		testLib.TakeErrorShot(String(_ErrorCounter) + dt + '.png');
+		testLib._TakeErrorShot(String(_ErrorCounter) + dt + '.png');
 		_ErrorCounter++;
 		console.log(message);
 
@@ -638,18 +639,7 @@ class Tarif {
 			console.log('Beratungsübersicht post')
 		}
 
-		try {
-
-			consultation.AddConsultation();
-		}
-		catch (ex) {
-			testLib.Previous();
-			testLib.Previous();
-			testLib.Navigate2Site('Beratungsübersicht');
-			consultation.AddConsultation();
-		}
-
-
+		consultation.AddConsultation();
 
 		if (testLib.IsDebug) {
 			console.log('AddConsultation post')
@@ -683,7 +673,7 @@ class Tarif {
 
 
 	CheckRKResult() {
-		testLib.IsVisible(testLib.BtnNavNext, 100000);
+		testLib._WaitUntilVisible(testLib.BtnNavNext, 100000);
 
 		var errorBlock = $("md-card[ng-show='HasErrorMessages']");
 
