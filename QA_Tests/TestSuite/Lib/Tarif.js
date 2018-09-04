@@ -561,10 +561,11 @@ class Tarif {
 
 				if (rkError) {
 					this.ErrorFunction(message);
-					this.DeleteAllTarife(true, newTarif);
-					if (testLib.SmokeTest)
+					this.DeleteAllTarife(newTarif,true);
+					if(testLib.SmokeTest && !newTarif)
+					{
 						break;
-
+					}
 					continue;
 
 				}
@@ -583,8 +584,11 @@ class Tarif {
 
 				testLib.ClickElementSimple(_TarifCancelBtn, 500);
 				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
-				if (testLib.SmokeTest)
+				if (testLib.SmokeTest && !newTarif)
+				{
 					break;
+				}
+					
 				continue;
 			}
 
