@@ -7,9 +7,9 @@ var Document = require('../Lib/Document.js')
 class RK {
 
 	StartRKTest(vn, vp) {
-		testLib.LogTime('Start RK Test...');
 		vn.AddVN(testLib.VnName, true);
 		vp.AddVP(testLib.VpName);
+		testLib.LogTime('Start RK Test...');
 		this.CreateTarifOptions();
 		testLib.LogTime('Ende RK Test');
 	}

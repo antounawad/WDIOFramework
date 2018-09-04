@@ -28,7 +28,7 @@ class VP {
             testLib._WaitUntilEnabled(testLib.BtnNavNext,2000);
         }catch(ex){}
 
-        if (!testLib._CheckisEnabled(testLib.BtnNavNext)) {
+        if (!testLib._CheckisEnabled(testLib.BtnNavNext,3000)) {
             this.AddChapter(testVPName);
         }
         else {

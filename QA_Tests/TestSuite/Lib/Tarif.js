@@ -562,7 +562,7 @@ class Tarif {
 				if (rkError) {
 					this.ErrorFunction(message);
 					this.DeleteAllTarife(newTarif,true);
-					if(testLib.SmokeTest && !newTarif)
+					if(testLib.SmokeTest)
 					{
 						break;
 					}
@@ -584,7 +584,7 @@ class Tarif {
 
 				testLib.ClickElementSimple(_TarifCancelBtn, 500);
 				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
-				if (testLib.SmokeTest && !newTarif)
+				if (testLib.SmokeTest)
 				{
 					break;
 				}

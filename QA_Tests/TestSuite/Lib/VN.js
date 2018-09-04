@@ -25,13 +25,13 @@ class VN {
             testLib._WaitUntilEnabled(testLib.BtnNavNext,2000);
         }catch(ex){}
 
-        if (!testLib._CheckisEnabled(testLib.BtnNavNext)) {
+        if (!testLib._CheckisEnabled(testLib.BtnNavNext,3000)) {
             this.AddChapter(testVNName);
         }
         else {
             if (checkTarif) {
                 testLib.Navigate2Site(tarif.TarifTitle);
-                if (!testLib._CheckisEnabled(testLib.BtnNavNext)) {
+                if (!testLib._CheckisEnabled(testLib.BtnNavNext,3000)) {
                     this.AddTarif(testLib);
                 }
 
