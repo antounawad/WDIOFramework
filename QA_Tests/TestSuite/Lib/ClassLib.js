@@ -1567,6 +1567,7 @@ class TestLib {
             
             this.Next();
             if(url != null && url != 'new')
+            {
                 this.Navigate2SitePrev(url);
             }
             else
@@ -1583,6 +1584,8 @@ class TestLib {
         var result =  browser.isEnabled(selector);
         return result;
     }
+
+}
 
 
 
