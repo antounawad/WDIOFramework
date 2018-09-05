@@ -831,10 +831,22 @@ class TestLib {
         return dt;
     }
 
-    _GetTime()
+    _GetTime(withoutSpecChar=false)
     {
         let dt = date.format(new Date(), 'YYYY:MM:DD HH:mm:ss').toString();
         dt = dt.replace(' ', '__');
+        if(withoutSpecChar)
+        {
+            let dtNew = '';
+            for(var i=0;i<=dt.length-1;i++)
+            {
+                if(dt[i] != ':' && dt[i] != '_' && dt[i] != ' ')
+                {
+                    dtNew += dt[i];
+                }
+            }
+            return dtNew;
+        }
         return dt;
     }
 
@@ -903,41 +915,43 @@ class TestLib {
     }
 
 
-    AddCompleteChapter(vn, vp, consultation)
+    AddChapter(vn=null, vp=null, consultation=null)
     {
         try
         {
-            vn.AddVN(this.VnName, true, true);
-            throw new Error("Test");
+            if(vn != null)
+            {
+                vn.AddVN(this.VnName, true, true);
+            }
         }catch(ex)
         {
             this.Navigate2SitePrev(_VnAuswahl);
-            vn.AddVN(this.VnName+this._GetTime(),true,true);
+            vn.AddVN(this._GetTime(true),true,true);
         }
 
         try
         {
-            vp.AddVP(this.VpName);
-            throw new Error("Test");
+            if(vp != null)
+            {
+                vp.AddVP(this.VpName);
+            }
         }catch(ex)
         {
-
             this.Navigate2SitePrev(this._VpAuswahl);
-            vn.AddVP(this.VpName+this._GetTime());
+            vn.AddVP(this._GetTime(true));
         }
 
         try
         {
-            consultation.AddConsultation(true,true);
-            throw new Error("Test");
+            if(consultation != null)
+            {
+                consultation.AddConsultation(true,true);
+            }
         }catch(ex)
         {
-
             this.Navigate2SitePrev(this._ConsultationAuswahl);
             consultation.AddConsultation(true);
         }
-        
-        
     }
 
     Compare2Values(value1, value2)
@@ -1519,6 +1533,7 @@ class TestLib {
         this.PauseAction(500);
         var Sites = this._GetElementFromConfig(this._GetNewChapterList(chapter));
         var path = Sites.$['path'];
+        var url = null;
 
         Sites['Site'].forEach(element => {
 
@@ -1554,9 +1569,16 @@ class TestLib {
         });
         if(saveLastSite)
         {
+            
             this.Next();
-            this.Prev();
-            this._WaitUntilTitle();
+            if(url != null && url != 'new')
+                this.Navigate2SitePrev(url);
+            }
+            else
+            {
+                this.Prev();
+                this.PauseAction(1000);
+            }
         }
     }
 
