@@ -739,7 +739,7 @@ class TestLib {
     }
 
 
-    _WaitUntilVisible(waitUntilSelector = _btnNavNext, waitTime = 50000, message = "") {
+    _WaitUntilVisible(waitUntilSelector = _btnNavNext, waitTime = 10000, message = "") {
         _WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: ' + waitUntilSelector + ' to be different after: ' + waitTime;
         if (message != "") {
@@ -1023,11 +1023,6 @@ class TestLib {
         browser.saveScreenshot(this.ErrorShotPath + message + '.png')
     }    
 
-    _CheckisEnabled(selector, waitTime) {
-        this._WaitUntilVisible(selector, waitTime);
-        var result = browser.isEnabled(selector);
-        return result;
-    }
 
     _GetXmlConfigPath(pathFile) {
         var title = this.BrowserTitle;
@@ -1582,12 +1577,14 @@ class TestLib {
         }
     }
 
-	_CheckisEnabled(selector)
+	_CheckisEnabled(selector, waitTime=3000)
     {
-        this._WaitUntilVisible(selector,3000);
+        this._WaitUntilVisible(selector,waitTime);
         var result =  browser.isEnabled(selector);
         return result;
     }
+
+
 
 module.exports = TestLib;
 
