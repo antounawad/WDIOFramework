@@ -242,7 +242,7 @@ class TestLib {
         var exist = this.WaitUntilExist(fieldname);
 
         if (!exist) {
-            throw new Error("Selector not found...");
+            throw new Error("Warning: Selector not found...");
         }
 
         var List = $(fieldname);
@@ -271,7 +271,7 @@ class TestLib {
         }
         else {
             if(this.IsDebug)
-				console.log("Selector: " + selector + " not found.")
+				console.log("Warning: Selector: " + selector + " not found.")
             return false;
         }
 
@@ -288,7 +288,7 @@ class TestLib {
         }
         else {
             if(this.IsDebug)
-				console.log("Selector: " + selector + " not found.")
+				console.log("Warning: Selector " + selector + " not found.")
             return false;
         }
 
@@ -303,7 +303,7 @@ class TestLib {
         }
         else {
             if(this.IsDebug)
-				console.log("Selector: " + selector + " not found.")
+				console.log("Warning: Selector " + selector + " not found.")
             return false;
         }
 
@@ -326,7 +326,7 @@ class TestLib {
         }
         else {
             if(this.IsDebug)
-				console.log("Selector: " + selector + " not found.")
+				console.log("Warning Selector " + selector + " not found.")
             return false;
         }
 
@@ -366,7 +366,7 @@ class TestLib {
             }
             this.PauseAction(pauseTime);
         } catch (ex) {
-            console.log("Error: SearchElement: " + ex.message);
+            console.log("Warning: SearchElement: " + ex.message);
             _SearchIterator += 1;
             this.SetValue(selector, value, 1000);
 
@@ -437,7 +437,7 @@ class TestLib {
 
             if (_Navigate2SiteIterator >= 20) {
                 _Navigate2SiteIterator = 0;
-                throw new Error("Zu viele Navigate2Site Iterationen");
+                throw new Error("Warning: Zu viele Navigate2Site Iterationen");
             }
             while (true) {
 
@@ -449,7 +449,7 @@ class TestLib {
                     }
                 }
                 catch (ex) {
-                    console.log("Error: Navigate2Site(WaitUntilTitle): " + ex.message);
+                    console.log("Warning: Navigate2Site(WaitUntilTitle): " + ex.message);
                 }
 
 
@@ -478,7 +478,7 @@ class TestLib {
             _Navigate2SiteIterator += 1;
             var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
             if (conslog) {
-                console.log("Error: Navigate2Site: " + ex.message);
+                console.log("Warining: Navigate2Site: " + ex.message);
             }
             this.Navigate2Site(title, failSite);
         } finally {
@@ -511,7 +511,7 @@ class TestLib {
         try {
             if (_ClearElementIterator >= 20) {
                 _ClearElementIterator = 0;
-                throw new Error("Zu viele Iterationen ClearElement");
+                throw new Error("Warning: Zu viele Iterationen ClearElement");
             }
             var element = $(elementName);
 
@@ -528,7 +528,7 @@ class TestLib {
 
         }
         catch (ex) {
-            console.log("Error: ClearElementValue: " + ex.message);
+            console.log("Warning: ClearElementValue: " + ex.message);
             _ClearElementIterator += 1;
 
         }
@@ -569,7 +569,7 @@ class TestLib {
             }
             return retValue;
         } catch (ex) {
-            console.log("Error: OnlyClickError: " + ex.message);
+            console.log("Warning: ClickElementSimple: " + ex.message);
             if (!this._CheckPopUp(retValue.selector)) {
                 throw new Error(ex);
             }
@@ -580,7 +580,7 @@ class TestLib {
 
         if (_ClickIterator >= 20) {
             _ClickIterator = 0;
-            throw new Error("Zu viele ClickAction Iterationen");
+            throw new Error("Warning: Zu viele ClickAction Iterationen");
         }
 
         var retValue = $(selector);
@@ -592,7 +592,7 @@ class TestLib {
         } catch (ex) {
             var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
             if (conslog) {
-                console.log("Error: ClickAction: " + ex.message);
+                console.log("Warning: ClickAction: " + ex.message);
             }
             _ClickIterator += 1;
 
@@ -914,9 +914,9 @@ class TestLib {
             title = title.substr(0, index - 1);
         }
 
-        if (String(title).includes('Investmentauswahl')) {
-            var x = "Y";
-        }
+        // if (String(title).includes('Investmentauswahl')) {
+        //     var x = "Y";
+        // }
 
         var path = this.ExecutablePath + 'TestSuite\\' + this.TargetUrl + '\\' + _TestFolder + _TestConfigFolder + 'sites\\mandatory\\' + title + '.xml';
 
