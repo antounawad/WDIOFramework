@@ -22,7 +22,7 @@ class Consultation{
         testLib.SetValue(_bruttoLohn,value)	
     }
 
-    AddConsultation(deleteConsultations=true,navigate=false)
+    AddConsultation(deleteConsultations=true,navigate=false,saveLastSite=true)
     {
         if(navigate)
         {
@@ -35,7 +35,7 @@ class Consultation{
             {
                 this.RemoveExistConsultations();
             }
-            testLib._AddChapter(_consultation, _btnNewConsultation, _bruttoLohn);
+            testLib._AddChapter(_consultation, _btnNewConsultation, _bruttoLohn,saveLastSite);
         }
     }
 
