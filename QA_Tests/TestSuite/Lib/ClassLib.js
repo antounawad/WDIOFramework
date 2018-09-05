@@ -79,6 +79,9 @@ var _NavchapterAngebot = '#navChapterLink_6' // Angebot
 var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
 var _StatusSiteTitle = 'Abschluss - Status';
 var _LinkAngebotKurzUebersicht = '#navViewLink_AngebotAngebotVersichererangebot';
+var _VnAuswahl = 'Arbeitgeber – Auswahl';
+var _VpAuswahl = 'Arbeitnehmer – Auswahl';
+var _ConsultationAuswahl = 'Beratungsübersicht';
 
 var _OnlyTarifCheck = false;
 
@@ -149,7 +152,7 @@ class TestLib {
 
     // Übergebenes Projekt --hotfix aus Args
     get TargetUrl() {
-        var targetArr = String(process.argv[3].substr(2)).split(':');
+        var targetArr = String(process.argv[5].substr(2)).split(':');
         _TestFolder = targetArr[1] + '\\';
         _TestConfigFolder = targetArr[2] + '\\';
         return targetArr[0];
@@ -163,12 +166,12 @@ class TestLib {
         return _TestConfigFolder;
     }
 
-    get TargetDom() { return process.argv[4].substr(2) }
+    get TargetDom() { return process.argv[6].substr(2) }
 
 
     // Returns Version aus Args
     get Version() {
-        let ver = process.argv[5]
+        let ver = process.argv[7]
         if (ver != null) {
             return ver.substr(2);
         }
@@ -231,6 +234,12 @@ class TestLib {
 
     get TarifSiteSelector() { return _TarifSiteSelector };
 
+
+    CompareTitle(title)
+    {
+        return  browser.getTitle().includes(title);
+    }
+
     SetListBoxValue(selector, value) {
         var fieldname = this.GetFieldName(selector);
 
@@ -283,7 +292,7 @@ class TestLib {
 
             var check = searchSelector.getValue()
             if (check != null) {
-                return searchSelector.getValue() === value;
+                return check;
             }
         }
         else {
@@ -485,6 +494,58 @@ class TestLib {
             this._CheckSiteFields();
         }
     }
+
+
+    Navigate2SitePrev(title, failSite = '') {
+        try {
+
+            if (_Navigate2SiteIterator >= 20) {
+                _Navigate2SiteIterator = 0;
+                throw new Error("Zu viele Navigate2Site Iterationen");
+            }
+            while (true) {
+
+                try {
+
+                    this._WaitUntilTitle();
+                    if (this.IsDebug) {
+                        console.log(this.BrowserTitle);
+                    }
+                }
+                catch (ex) {
+                    console.log("Error: Navigate2Site(WaitUntilTitle): " + ex.message);
+                }
+
+
+
+                if (String(this.BrowserTitle).includes(title)) {
+                    _Navigate2SiteIterator = 0;
+                    this.PauseAction(500);
+                    break;
+                }
+
+                if (failSite != '') {
+                    var fSiteArr = String(failSite).split(":");
+                    var indexFail = this.BrowserTitle.indexOf(fSiteArr[0]);
+                    if (indexFail >= 0) {
+                        this.Jump2Chapter(fSiteArr[1], fSiteArr[2]);
+                        this.Navigate2SitePrev(title, failSite);
+                    }
+                }
+
+                this._WaitUntilVisible(this.BtnNavPrev);
+                this.ClickElement(this.BtnNavPrev);
+
+            }
+        } catch (ex) {
+            _Navigate2SiteIterator += 1;
+            var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
+            if (conslog) {
+                console.log("Error: Navigate2SitePrev: " + ex.message);
+            }
+            this.Navigate2SitePrev(title, failSite);
+        }
+    }    
 
     Jump2FailSite(failSite, title) {
         if (failSite === '') {
@@ -765,9 +826,27 @@ class TestLib {
         if (string != '') {
             console.log(string);
         }
+        var dt = this._GetTime();
+        console.log(dt);
+        return dt;
+    }
+
+    _GetTime(withoutSpecChar=false)
+    {
         let dt = date.format(new Date(), 'YYYY:MM:DD HH:mm:ss').toString();
         dt = dt.replace(' ', '__');
-        console.log(dt);
+        if(withoutSpecChar)
+        {
+            let dtNew = '';
+            for(var i=0;i<=dt.length-1;i++)
+            {
+                if(dt[i] != ':' && dt[i] != '_' && dt[i] != ' ')
+                {
+                    dtNew += dt[i];
+                }
+            }
+            return dtNew;
+        }
         return dt;
     }
 
@@ -835,14 +914,58 @@ class TestLib {
 
     }
 
+
+    AddChapter(vn=null, vp=null, consultation=null)
+    {
+        try
+        {
+            if(vn != null)
+            {
+                vn.AddVN(this.VnName, true, true);
+            }
+        }catch(ex)
+        {
+            this.Navigate2SitePrev(_VnAuswahl);
+            vn.AddVN(this._GetTime(true),true,true);
+        }
+
+        try
+        {
+            if(vp != null)
+            {
+                vp.AddVP(this.VpName);
+            }
+        }catch(ex)
+        {
+            this.Navigate2SitePrev(this._VpAuswahl);
+            vn.AddVP(this._GetTime(true));
+        }
+
+        try
+        {
+            if(consultation != null)
+            {
+                consultation.AddConsultation(true,true);
+            }
+        }catch(ex)
+        {
+            this.Navigate2SitePrev(this._ConsultationAuswahl);
+            consultation.AddConsultation(true);
+        }
+    }
+
+    Compare2Values(value1, value2)
+    {
+        var result = value1 === values2;
+        return result;
+    }
+
     GetValue(selector) {
         if (browser.isVisible(selector)) {
             var searchSelector = $(selector)
 
             var check = searchSelector.getValue()
-            if (check != null) {
-                return searchSelector.getValue() === value;
-            }
+            return check;
         }
         else {
             if (this.IsDebug)
@@ -1406,10 +1529,11 @@ class TestLib {
         return resultArr;
     }
 
-    _AddChapter(chapter, btnNew, waitUntilSelector = '', callbackFunc = null) {
+    _AddChapter(chapter, btnNew, waitUntilSelector = '', callbackFunc = null, saveLastSite=true) {
         this.PauseAction(500);
         var Sites = this._GetElementFromConfig(this._GetNewChapterList(chapter));
         var path = Sites.$['path'];
+        var url = null;
 
         Sites['Site'].forEach(element => {
 
@@ -1443,6 +1567,19 @@ class TestLib {
                 this._CheckSiteFields(configFileName);
             }
         });
+        if(saveLastSite)
+        {
+            
+            this.Next();
+            if(url != null && url != 'new')
+                this.Navigate2SitePrev(url);
+            }
+            else
+            {
+                this.Prev();
+                this.PauseAction(1000);
+            }
+        }
     }
 
 	_CheckisEnabled(selector)
