@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Test_Administration": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Git\\Shared\\QA_Tests TestSuite staging smoke fest xbav-berater"
+    }
+  }
+}
