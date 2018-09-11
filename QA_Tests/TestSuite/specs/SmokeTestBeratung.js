@@ -25,25 +25,30 @@ const vm = new VM();
 describe('webdriver.io page', function () {
 
 	it('Smoke Test...', function () {
-
-		this.timeout(testLib.UrlTimeOut);
-
-		testLib.InitBrowserStart();
-	
- 		// Login
-		// Todo extrahieren
-		login.LoginUser()
 		
-		testLib.SelectHauptAgentur();
+		try
+		{
+		
+			this.timeout(testLib.UrlTimeOut);
 
-		testLib.CheckVersion();		
+			testLib.InitBrowserStart();
+		
+			// Login
+			// Todo extrahieren
+			login.LoginUser()
+			
+			testLib.SelectHauptAgentur();
 
-		rk.StartRKTest(vn, vp);
+			testLib.CheckVersion();		
 
-	   console.log("Test is ready");
+			rk.StartRKTest(vn, vp);
 
-		 
-	
+			console.log("Test is ready");
+			
+		}catch(ex)
+		{
+			console.log("Error Test: "+ex.message);
+		}
 	});
 
 });
