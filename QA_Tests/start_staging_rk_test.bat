@@ -1,1 +1,0 @@
-node_modules\.bin\wdio  TestSuite\hotfix\smoke\fest\wdio.conf.js --hotfix:smoke:fest --xbav-berater 
