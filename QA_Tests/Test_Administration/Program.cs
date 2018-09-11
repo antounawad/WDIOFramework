@@ -7,7 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace Test_Administration.second
+namespace Test_Administration
 {
 
     public class PRC
@@ -58,19 +58,16 @@ namespace Test_Administration.second
 
             IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
 
-            //getting active connections
             TcpConnectionInformation[] connections = properties.GetActiveTcpConnections();
             portArray.AddRange(from n in connections
                                where n.LocalEndPoint.Port >= startingPort
                                select n.LocalEndPoint.Port);
 
-            //getting active tcp listners - WCF service listening in tcp
             endPoints = properties.GetActiveTcpListeners();
             portArray.AddRange(from n in endPoints
                                where n.Port >= startingPort
                                select n.Port);
 
-            //getting active udp listeners
             endPoints = properties.GetActiveUdpListeners();
             portArray.AddRange(from n in endPoints
                                where n.Port >= startingPort
@@ -107,7 +104,7 @@ namespace Test_Administration.second
                 {
                     throw new Exception("UsedPort File exist.");
                 }
-                if(init.appCall == OnlyStart && !File.Exists(init.portFile))
+                if (init.appCall == OnlyStart && !File.Exists(init.portFile))
                 {
                     throw new Exception("Only Start and UsedPort File not exist.");
                 }
@@ -142,7 +139,11 @@ namespace Test_Administration.second
                     startInfo.WindowStyle = ProcessWindowStyle.Normal;
                     startInfo.Arguments = appParams;
 
-                    Process.Start(startInfo);
+
+                    using (Process exeProcessSel = Process.Start(startInfo))
+                    {
+                        exeProcessSel.Close();
+                    }
 
 
                     // Falls nur Selenium gestartet werden soll, wird die Anwendung beendet;
@@ -152,30 +153,39 @@ namespace Test_Administration.second
                     }
 
                 }
-                else if(init.appCall == OnlyStart)
+                else if (init.appCall == OnlyStart)
                 {
                     // Andernfalls wurde der Port bereits vergeben (JenkinsCall OnlySelenium und muss aus portfile herausgelesen werden...
                     init.port = Convert.ToInt32(File.ReadAllText(init.portFile));
                     Console.WriteLine("Used Port: " + init.port);
                 }
 
-                app = init.rootPath + "\\node_modules\\.bin\\wdio";
-                Console.WriteLine("App: " + app);
-                appParams = init.confFile + " --" + init.channel + ":" + init.test + ":" + init.testConfig + " --" + init.domaene;
-                Console.WriteLine("AppParams: " + appParams);
-
                 startInfo = new ProcessStartInfo();
+                // Diese Unterscheidung musste ich leider machen wegen Jenkins. Ansonsten konnte ich den StandardOutput nicht umleiten und hatte im Jenkins somit keine Logausgabe.
+                if (init.appCall == OnlyStart)
+                {
+                    startInfo.RedirectStandardOutput = true;
+                    startInfo.UseShellExecute = false;
+                    app = "start.bat";
+                    appParams = init.channel + " " + init.test + " " + init.testConfig + " " + init.domaene;
+                }
+                else
+                {
+                    startInfo.UseShellExecute = true;
+                    app = init.rootPath + "\\node_modules\\.bin\\wdio";
+                    appParams = init.confFile + " --" + init.channel + ":" + init.test + ":" + init.testConfig + " --" + init.domaene;
+                }
+
                 startInfo.FileName = app;
-                startInfo.WindowStyle = ProcessWindowStyle.Normal;
                 startInfo.Arguments = appParams;
                 startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-
-                Console.WriteLine("Pre process start: ");
 
                 using (Process exeProcess = Process.Start(startInfo))
                 {
-                    Console.WriteLine("inner prozess start ");
+                    if (init.appCall == OnlyStart)
+                    {
+                        Console.WriteLine(exeProcess.StandardOutput.ReadToEnd());
+                    }
                     exeProcess.WaitForExit();
                 }
             }
@@ -208,7 +218,7 @@ namespace Test_Administration.second
                         Console.WriteLine("No process to kill!");
                     }
 
-                    if(File.Exists(init.portFile))
+                    if (File.Exists(init.portFile))
                     {
                         File.Delete(init.portFile);
                     }
@@ -254,14 +264,14 @@ namespace Test_Administration.second
 
                 var len = parts.Length;
                 if (len > 1)
+                {
                     result.Add(new PRC
                     {
                         Protocol = parts[0],
                         Port = int.Parse(parts[1].Split(':').Last()),
                         PID = int.Parse(parts[len - 1])
                     });
-
-
+                }
             }
             return result;
         }
