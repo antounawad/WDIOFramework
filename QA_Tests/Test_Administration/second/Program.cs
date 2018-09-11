@@ -7,7 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace Test_Administration
+namespace Test_Administration.second
 {
 
     public class PRC
@@ -25,8 +25,12 @@ namespace Test_Administration
         public string test;
         public string testConfig;
         public string domaene;
+        public string appCall;
         public int port;
-        public string confpath;
+        public string confFile;
+        public string confPath;
+        public string portFile;
+        public bool singleCall;
 
         public Init(string[] args)
         {
@@ -36,8 +40,15 @@ namespace Test_Administration
             test = args[3];
             testConfig = args[4];
             domaene = args[5];
+            if (args.Length == 7)
+            {
+                appCall = args[6];
+            }
             port = GetAvailablePort(4000);
-            confpath = rootPath + "\\" + testSuite + "\\" + channel + "\\" + test + "\\" + testConfig + "\\wdio.conf.js";
+            confPath = rootPath + "\\" + testSuite + "\\" + channel + "\\" + test + "\\" + testConfig;
+            portFile = confPath + "\\" + "UsedPort.txt";
+            confFile = confPath + "\\wdio.conf.js";
+            singleCall = string.IsNullOrEmpty(appCall);
         }
 
         private int GetAvailablePort(int startingPort)
@@ -79,42 +90,79 @@ namespace Test_Administration
 
     class Program
     {
+        private const string OnlySelenium = "OnlySelenium";
+        private const string OnlyStart = "OnlyStart";
+
         public static void Main(string[] args)
         {
             Init init = null;
             try
             {
-
+                // Lesen der Argumente
                 init = new Init(args);
 
-                var wdioConfLines = File.ReadAllLines(init.confpath).ToList();
-                var lineIndex = wdioConfLines.FindIndex(p => !p.StartsWith("//") && p.Contains("\tport:"));
-                if (lineIndex >= 0)
+                // Falls nur Selenium gestartet werden soll oder alles auf einmal gemacht werden soll (zu Testzwecken auf lokalem PC...)
+                // darf die PortDatei nicht existieren.
+                if ((init.singleCall || init.appCall == OnlySelenium) && File.Exists(init.portFile))
                 {
-                    wdioConfLines[lineIndex] = "\tport:" + init.port.ToString() + ",";
+                    throw new Exception("UsedPort File exist.");
                 }
-                File.WriteAllLines(init.confpath, wdioConfLines);
-
-                string app = init.rootPath + "\\selenium\\seleniumStart.bat";
-                string appParams = init.port + " " + init.rootPath + "\\Driver";
-
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.CreateNoWindow = false;
-                startInfo.UseShellExecute = true;
-                startInfo.FileName = app;
-                startInfo.WindowStyle = ProcessWindowStyle.Normal;
-                startInfo.Arguments = appParams;
-
-                // Start the process with the info we specified.
-                // Call WaitForExit and then the using-statement will close.
-                using (Process exeProcess = Process.Start(startInfo))
+                if(init.appCall == OnlyStart && !File.Exists(init.portFile))
                 {
-                    //exeProcess.WaitForExit();
-                    exeProcess.Start();
+                    throw new Exception("Only Start and UsedPort File not exist.");
+                }
+
+                string app = "";
+                string appParams = "";
+                ProcessStartInfo startInfo = null;
+
+                // Schreiben der wdio conf, nur bei SelenimStart oder SingleCall
+                if (init.appCall == OnlySelenium || init.singleCall)
+                {
+                    var wdioConfLines = File.ReadAllLines(init.confFile).ToList();
+                    var lineIndex = wdioConfLines.FindIndex(p => !p.StartsWith("//") && p.Contains("\tport:"));
+                    if (lineIndex >= 0)
+                    {
+                        wdioConfLines[lineIndex] = "\tport:" + init.port.ToString() + ",";
+                    }
+                    File.WriteAllLines(init.confFile, wdioConfLines);
+
+                    // Portfile schreiben
+                    string[] usedPort = new string[] { init.port.ToString() };
+                    File.WriteAllLines(init.portFile, usedPort);
+
+                    // Selenim Server auf dem freien Port starten
+                    app = init.rootPath + "\\selenium\\seleniumStart.bat";
+                    appParams = init.port + " " + init.rootPath + "\\Driver";
+
+                    startInfo = new ProcessStartInfo();
+                    startInfo.CreateNoWindow = false;
+                    startInfo.UseShellExecute = true;
+                    startInfo.FileName = app;
+                    startInfo.WindowStyle = ProcessWindowStyle.Normal;
+                    startInfo.Arguments = appParams;
+
+                    Process.Start(startInfo);
+
+
+                    // Falls nur Selenium gestartet werden soll, wird die Anwendung beendet;
+                    if (init.appCall == OnlySelenium)
+                    {
+                        return;
+                    }
+
+                }
+                else if(init.appCall == OnlyStart)
+                {
+                    // Andernfalls wurde der Port bereits vergeben (JenkinsCall OnlySelenium und muss aus portfile herausgelesen werden...
+                    init.port = Convert.ToInt32(File.ReadAllText(init.portFile));
+                    Console.WriteLine("Used Port: " + init.port);
                 }
 
                 app = init.rootPath + "\\node_modules\\.bin\\wdio";
-                appParams = init.confpath + " --" + init.channel + ":" + init.test + ":" + init.testConfig + " --" + init.domaene;
+                Console.WriteLine("App: " + app);
+                appParams = init.confFile + " --" + init.channel + ":" + init.test + ":" + init.testConfig + " --" + init.domaene;
+                Console.WriteLine("AppParams: " + appParams);
 
                 startInfo = new ProcessStartInfo();
                 startInfo.FileName = app;
@@ -123,40 +171,51 @@ namespace Test_Administration
                 startInfo.CreateNoWindow = false;
                 startInfo.UseShellExecute = true;
 
+                Console.WriteLine("Pre process start: ");
 
                 using (Process exeProcess = Process.Start(startInfo))
                 {
+                    Console.WriteLine("inner prozess start ");
                     exeProcess.WaitForExit();
                 }
-
-
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Error: " + ex.Message);
             }
             finally
             {
-                if (init?.port >= 4000)
+                if (init?.appCall != OnlySelenium && init?.port >= 4000)
                 {
                     var processes = GetAllProcesses(init.port.ToString());
                     if (processes.Any(p => p.Port == init.port))
                         try
                         {
                             Process.GetProcessById(processes.First(p => p.Port == init.port).PID).Kill();
+                            Console.WriteLine("Process: " + init.port + " is killed...");
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
+                            if (File.Exists(init.portFile))
+                            {
+                                File.Delete(init.portFile);
+                            }
+
                         }
                     else
                     {
                         Console.WriteLine("No process to kill!");
                     }
+
+                    if(File.Exists(init.portFile))
+                    {
+                        File.Delete(init.portFile);
+                    }
                 }
 
             }
+            return;
         }
 
 
@@ -194,7 +253,7 @@ namespace Test_Administration
                 var parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 var len = parts.Length;
-                if (len > 2)
+                if (len > 1)
                     result.Add(new PRC
                     {
                         Protocol = parts[0],
