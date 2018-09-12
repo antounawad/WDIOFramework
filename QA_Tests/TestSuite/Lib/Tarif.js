@@ -582,13 +582,18 @@ class Tarif {
 				}
 
 
-				testLib.ClickElementSimple(_TarifCancelBtn, 500);
+				//testLib.ClickElementSimple(_TarifCancelBtn, 500);
 				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
+				this.DeleteAllTarife(newTarif,true);
 				if (testLib.SmokeTest)
 				{
 					break;
 				}
-					
+				
+				durchfSelCnt = pre_durchfSelCnt;
+				typeSelCnt   = pre_typeSelCnt;
+				tarifSelCnt = pre_tarifSelCnt;
+
 				continue;
 			}
 
@@ -643,6 +648,7 @@ class Tarif {
 			console.log('Beratungsübersicht post')
 		}
 
+		throw new Error("Expected:");
 		consultation.AddConsultation();
 
 		if (testLib.IsDebug) {
