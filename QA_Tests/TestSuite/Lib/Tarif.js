@@ -583,7 +583,7 @@ class Tarif {
 
 
 				//testLib.ClickElementSimple(_TarifCancelBtn, 500);
-				testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
+				testLib.RefreshBrowser();
 				this.DeleteAllTarife(newTarif,true);
 				if (testLib.SmokeTest)
 				{
@@ -648,7 +648,6 @@ class Tarif {
 			console.log('Beratungsübersicht post')
 		}
 
-		throw new Error("Expected:");
 		consultation.AddConsultation();
 
 		if (testLib.IsDebug) {
