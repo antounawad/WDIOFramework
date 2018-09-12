@@ -1542,12 +1542,13 @@ class TestLib {
             var url = element['Url'][0];
             var BtnClick = this._CheckFieldAttribute('NewBtn', element);
             if (url == 'new') {
-                this._WaitUntilVisible(btnNew, 10000);
-                this.ClickElement(btnNew);
-                if (waitUntilSelector !== '') {
-                    this._WaitUntilVisible(waitUntilSelector);
+                if(this.CheckIsVisible(btnNew,15000))
+                {
+                    this.ClickElement(btnNew,waitUntilSelector);
+                    if (waitUntilSelector !== '') {
+                        this._WaitUntilVisible(waitUntilSelector);
+                    }
                 }
-
             }
             else if (BtnClick != null) {
                 this.Navigate2Site(url);

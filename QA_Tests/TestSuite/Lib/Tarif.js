@@ -42,6 +42,7 @@ let _sVersicherer = '';
 let _sDurchfWeg = '';
 let _sType = '';
 let _sTarif = '';
+var _testcounter = 0;
 
 class Tarif {
 

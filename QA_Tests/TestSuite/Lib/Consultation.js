@@ -35,7 +35,17 @@ class Consultation{
             {
                 this.RemoveExistConsultations();
             }
-            testLib._AddChapter(_consultation, _btnNewConsultation, _bruttoLohn,saveLastSite);
+            try{
+                testLib._AddChapter(_consultation, _btnNewConsultation, _bruttoLohn,saveLastSite);
+            }catch(ex)
+            {
+                if(testLib.IsDebug)
+                {
+                    console.log(ex.message);
+                }
+                testLib.Navigate2SitePrev(_siteTitle);
+                this.AddConsultation();
+            }
         }
     }
 
