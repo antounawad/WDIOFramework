@@ -1342,6 +1342,10 @@ class TestLib {
                     }
                 }
 
+                if (__siteFieldCheckExist != null && String(__siteFieldCheckExist) === _CurrentCheckID) {
+                    break;
+                }
+
             };
         }
     }
