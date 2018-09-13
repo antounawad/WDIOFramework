@@ -80,6 +80,7 @@ upgrade:
 	
 
 
-   
+npm install wdio-iedriver-service --save-dev   
+
 
 
