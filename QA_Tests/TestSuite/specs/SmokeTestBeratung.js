@@ -26,29 +26,24 @@ describe('webdriver.io page', function () {
 
 	it('Smoke Test...', function () {
 		
-		try
-		{
 		
-			this.timeout(testLib.UrlTimeOut);
+		this.timeout(testLib.UrlTimeOut);
 
-			testLib.InitBrowserStart();
+		testLib.InitBrowserStart();
+	
+		// Login
+		// Todo extrahieren
+		login.LoginUser()
 		
-			// Login
-			// Todo extrahieren
-			login.LoginUser()
+		testLib.SelectHauptAgentur();
+
+		testLib.CheckVersion();		
+
+		rk.StartRKTest(vn, vp);
+
+		console.log("Test is ready");
 			
-			testLib.SelectHauptAgentur();
 
-			testLib.CheckVersion();		
-
-			rk.StartRKTest(vn, vp);
-
-			console.log("Test is ready");
-			
-		}catch(ex)
-		{
-			console.log("Error Test: "+ex.message);
-		}
 	});
 
 });

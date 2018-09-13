@@ -52,9 +52,9 @@ exports.config = {
         'C:/git/shared/QA_Tests/TestSuite/specs/SmokeTestBeratung.js'
     ],
     // Patterns to exclude.
-    exclude: [
-         'path/to/excluded/files'
-    ],
+    // exclude: [
+         // 'path/to/excluded/files'
+    // ],
     //
     // ============
     // Capabilities

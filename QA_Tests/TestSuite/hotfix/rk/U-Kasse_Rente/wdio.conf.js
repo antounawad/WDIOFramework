@@ -49,12 +49,12 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        'C:/git/shared/QA_Tests/TestSuite/specs/**/*.js'
+        'C:/git/shared/QA_Tests/TestSuite/specs/SmokeTestBeratung.js'
     ],
     // Patterns to exclude.
-    exclude: [
-         'path/to/excluded/files'
-    ],
+    // exclude: [
+         // 'path/to/excluded/files'
+    // ],
     //
     // ============
     // Capabilities
@@ -112,7 +112,7 @@ exports.config = {
     // with "/", then the base url gets prepended.
     baseUrl: 'http://localhost',
 	
-	port: 4014,
+	port:4000,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
