@@ -92,13 +92,14 @@ var _TestFolder = null;
 var _TestConfigFolder = null;
 var __xpath = null;
 var __xpathResult = null;
-
+var _takeScreenShotAllDialogs = false;
 
 
 
 
 class TestLib {
 
+    set TakeScreenShotAllDialogs(value){_takeScreenShotAllDialogs = value};
     get VnName() { return _VnName };
     get VpName() { return _VpName };
 
@@ -607,11 +608,23 @@ class TestLib {
     Next(waitTime = 0) {
         this.PauseAction(waitTime);
         this.ClickElement(_btnNavNext);
+        
+        if(_takeScreenShotAllDialogs)
+        {
+            this._WaitUntilTitle();
+            this._TakeErrorShot(this.BrowserTitle());
+        }
+
     }
 
     Prev(waitTime = 0) {
         this.PauseAction(waitTime);
         this.ClickElement(_btnNavPrev);
+        if(_takeScreenShotAllDialogs)
+        {
+            this._WaitUntilTitle();
+            this._TakeErrorShot(this.BrowserTitle());
+        }
     }
 
     ClickElementSimple(selector, pauseTime = 0) {
