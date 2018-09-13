@@ -480,7 +480,7 @@ class TestLib {
                 }
 
                 this._WaitUntilVisible(this.BtnNavNext);
-                this.ClickElement(this.BtnNavNext);
+                this.Next();
 
                 this._CheckSiteFields();
             }
@@ -535,7 +535,7 @@ class TestLib {
                 }
 
                 this._WaitUntilVisible(this.BtnNavPrev);
-                this.ClickElement(this.BtnNavPrev);
+                this.Prev();
 
             }
         } catch (ex) {
@@ -601,6 +601,7 @@ class TestLib {
         this._WaitUntilVisible(_btnMainAgency);
         this.ClickElementSimple(_btnMainAgency);
         this._WaitUntilVisible(_btnNewVn);
+        this.SaveScreenShot();
 
     }
 
@@ -608,23 +609,11 @@ class TestLib {
     Next(waitTime = 0) {
         this.PauseAction(waitTime);
         this.ClickElement(_btnNavNext);
-        
-        if(_takeScreenShotAllDialogs)
-        {
-            this._WaitUntilTitle();
-            this._TakeErrorShot(this.BrowserTitle());
-        }
-
     }
 
     Prev(waitTime = 0) {
         this.PauseAction(waitTime);
         this.ClickElement(_btnNavPrev);
-        if(_takeScreenShotAllDialogs)
-        {
-            this._WaitUntilTitle();
-            this._TakeErrorShot(this.BrowserTitle());
-        }
     }
 
     ClickElementSimple(selector, pauseTime = 0) {
@@ -650,6 +639,15 @@ class TestLib {
         }
     }
 
+    SaveScreenShot()
+    {
+        if(_takeScreenShotAllDialogs === true)
+        {
+            this._WaitUntilTitle();
+            this._TakeErrorShot(this.BrowserTitle);
+        }
+    }
+
     ClickElement(selector, waitforVisibleSelector = '', timeout = 50000, pauseTime = 0, click = false) {
 
         if (_ClickIterator >= 20) {
@@ -662,6 +660,10 @@ class TestLib {
         retValue.waitForEnabled(timeout);
         try {
             browser.click(retValue.selector);
+            if(retValue.selector == _btnNavPrev || selector == _btnNavNext)
+            {
+               this.SaveScreenShot();
+            }
 
         } catch (ex) {
             var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
@@ -682,6 +684,7 @@ class TestLib {
             }
             else if (this.CheckIsVisible(_btnNavPrev)) {
                 browser.click(_btnNavPrev);
+                this.SaveScreenShot();          
             }
 
             this.ClickElement(selector, waitforVisibleSelector, timeout, pauseTime, click);
@@ -871,6 +874,8 @@ class TestLib {
         }
         browser.url(url);
 
+        this.SaveScreenShot();
+
 
         // Erstmal die Standard configuration auslesen
         // Alle Versicherer oder nur spezielle
@@ -1028,12 +1033,23 @@ class TestLib {
 
     _TakeErrorShot(message) {
         // Todo verbessern :-)
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        browser.saveScreenshot(this.ErrorShotPath + message + '.png')
+
+        var path = this.ErrorShotPath + message + '.png';
+        console.log("path: "+path);
+
+        let newMessage = '';
+        if(message != null)
+        {
+            for(var i=0;i<=message.length-1;i++)
+            {
+                if(message[i] != ':' && message[i] != '_' && message[i] != ' ' && message[i] != '|'  && message[i] !=  '–')
+                {
+                    newMessage += message[i];
+                }
+            }
+        }
+
+        browser.saveScreenshot(this.ErrorShotPath + newMessage + '.png')
     }    
 
 

@@ -19,13 +19,13 @@ describe('webdriver.io page', function () {
 		
 		
 			this.timeout(testLib.UrlTimeOut);
-
+			
             testLib.InitBrowserStart();
             
-            testLib.TakeScreenShotAllDialogs(true);
+            testLib.TakeScreenShotAllDialogs = true;
 		
-			// Login
-			// Todo extrahieren
+			// // Login
+			// // Todo extrahieren
 			login.LoginUser()
 			
             testLib.SelectHauptAgentur();

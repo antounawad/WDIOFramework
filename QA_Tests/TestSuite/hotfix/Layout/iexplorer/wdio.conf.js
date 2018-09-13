@@ -84,6 +84,7 @@ exports.config = {
         maxInstances: 5,
         //
         browserName: 'internet explorer',
+		INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS: true,
     }],
     //
     // ===================
@@ -112,7 +113,8 @@ exports.config = {
     // with "/", then the base url gets prepended.
     baseUrl: 'http://localhost',
 	
-	port:4000,
+	port:4444,
+	//path: './',
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -146,7 +148,8 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['firefox-profile','selenium-standalone','phantomjs','iedriver'],
+    //services: ['firefox-profile','selenium-standalone','phantomjs','iedriver'],
+	services: ['firefox-profile','selenium-standalone','phantomjs','iedriver'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber

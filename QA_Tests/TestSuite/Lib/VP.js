@@ -18,9 +18,11 @@ class VP {
     SearchVP(searchValue, timeout = 2000, pause = 500) {
         //this.ShowVps(timeout)
         testLib.SetValue('#Search', searchValue)
+        testLib.SaveScreenShot();
     }
 
     AddVP(testVPName, navnext=true) {
+        testLib.SaveScreenShot();
         testLib.Navigate2Site(_siteTitle);
         this.SearchVP(testVPName);
         testLib.PauseAction(1000);
