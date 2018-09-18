@@ -31,6 +31,7 @@ namespace Test_Administration
         public string confPath;
         public string portFile;
         public bool singleCall;
+        public string driver;
 
         public Init(string[] args)
         {
@@ -40,9 +41,13 @@ namespace Test_Administration
             test = args[3];
             testConfig = args[4];
             domaene = args[5];
-            if (args.Length == 7)
+            if (args.Length >= 7)
             {
-                appCall = args[6];
+                driver = args[6];
+            }
+            if (args.Length <= 8)
+            {
+                appCall = args[7];
             }
             port = GetAvailablePort(4000);
             confPath = rootPath + "\\" + testSuite + "\\" + channel + "\\" + test + "\\" + testConfig;
@@ -129,7 +134,14 @@ namespace Test_Administration
                     File.WriteAllLines(init.portFile, usedPort);
 
                     // Selenim Server auf dem freien Port starten
-                    app = init.rootPath + "\\selenium\\seleniumStart.bat";
+                    if (init.driver == "firefox")
+                    {
+                        app = init.rootPath + "\\selenium\\seleniumStart.bat";
+                    }
+                    else if(init.driver == "iexplorer")
+                    {
+                        app = init.rootPath + "\\selenium\\iedriverstart.bat";
+                    }
                     appParams = init.port + " " + init.rootPath + "\\Driver";
 
                     startInfo = new ProcessStartInfo();
@@ -142,7 +154,10 @@ namespace Test_Administration
 
                     using (Process exeProcessSel = Process.Start(startInfo))
                     {
-                        exeProcessSel.Close();
+                        if (init.appCall == OnlyStart)
+                        {
+                            exeProcessSel.Close();
+                        }
                     }
 
 
@@ -171,9 +186,10 @@ namespace Test_Administration
                 }
                 else
                 {
-                    startInfo.UseShellExecute = true;
+                    startInfo.UseShellExecute = false;
                     app = init.rootPath + "\\node_modules\\.bin\\wdio";
                     appParams = init.confFile + " --" + init.channel + ":" + init.test + ":" + init.testConfig + " --" + init.domaene;
+                    startInfo.WindowStyle = ProcessWindowStyle.Normal;
                 }
 
                 startInfo.FileName = app;
