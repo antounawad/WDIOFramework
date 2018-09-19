@@ -36,9 +36,9 @@
 
 
 exports.config = {
-  		debug: true,
-		//execArgv: ['--inspect=127.0.0.1:5859/0f2c936f-b1cd-4ac9-aab3-f63b0f33d55e'],
-		execArgv: ['--inspect-brk=127.0.0.1:5859'],
+  		// // debug: true,
+		// // //execArgv: ['--inspect=127.0.0.1:5859/0f2c936f-b1cd-4ac9-aab3-f63b0f33d55e'],
+		// // execArgv: ['--inspect-brk=127.0.0.1:5859'],
     //
     // ==================
     // Specify Test Files
@@ -49,12 +49,12 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        //'./test/specs/**/*.js'
+        'C:/git/shared/QA_Tests/TestSuite/specs/SmokeTestPre.js'
     ],
     // Patterns to exclude.
-    exclude: [
-        // 'path/to/excluded/files'
-    ],
+    // exclude: [
+         // 'path/to/excluded/files'
+    // ],
     //
     // ============
     // Capabilities
@@ -83,7 +83,7 @@ exports.config = {
         // 5 instances get started at a time.
         maxInstances: 5,
         //
-        browserName: 'internet explorer',
+        browserName: 'firefox',
     }],
     //
     // ===================
@@ -97,8 +97,7 @@ exports.config = {
     sync: true,
     //
     // Level of logging verbosity: silent | verbose | command | data | result | error
-    logLevel: 'silent',
-    //
+    logLevel: 'silent',    //
     // Enables colors for log output.
     coloredLogs: true,
     //
@@ -113,7 +112,7 @@ exports.config = {
     // with "/", then the base url gets prepended.
     baseUrl: 'http://localhost',
 	
-	port: 4444,
+	port: 4005,
     //
     // Default timeout for all waitFor* commands.
     waitforTimeout: 10000,
@@ -147,8 +146,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    //services: ['firefox-profile','selenium-standalone','phantomjs'],
-    services: ['firefox-profile','selenium-standalone','phantomjs','iedriver'],
+    services: ['firefox-profile','selenium-standalone','phantomjs'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber

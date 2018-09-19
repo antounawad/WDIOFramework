@@ -600,7 +600,7 @@ class TestLib {
     SelectHauptAgentur() {
         this._WaitUntilVisible(_btnMainAgency);
         this.ClickElementSimple(_btnMainAgency);
-        this._WaitUntilVisible(_btnNewVn);
+        this._WaitUntilVisible(_btnNewVn,50000);
         this.SaveScreenShot();
 
     }

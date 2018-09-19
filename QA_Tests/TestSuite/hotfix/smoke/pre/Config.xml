@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Channel>staging</Channel>
+  <Channel>hotfix</Channel>
   <New>
 	<Chapter>
 		<VN>
@@ -131,30 +131,30 @@
 		 <Name>Signal Iduna</Name> 
 		 <Id>1048</Id> 
 	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Stuttgarter</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>1104</Name> 
-		 <Id></Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>Volkswohl Bund</Name> 
-		 <Id>1099</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>WWK</Name> 
-		 <Id>1103</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>xbAV Testversicherer</Name> 
-		 <Id>9999</Id> 
-	 </Versicherer>
-	 	 <Versicherer> 
-		 <Name>Zurich Deutscher Herold</Name> 
-		 <Id>1138</Id> 
-	 </Versicherer>	 
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Stuttgarter</Name>  -->
+		 <!-- <Id></Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>1104</Name>  -->
+		 <!-- <Id></Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>Volkswohl Bund</Name>  -->
+		 <!-- <Id>1099</Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>WWK</Name>  -->
+		 <!-- <Id>1103</Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>xbAV Testversicherer</Name>  -->
+		 <!-- <Id>9999</Id>  -->
+	 <!-- </Versicherer> -->
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>Zurich Deutscher Herold</Name>  -->
+		 <!-- <Id>1138</Id>  -->
+	 <!-- </Versicherer>	  -->
 	 </VersichererList>
 	 
 	 <DurchfwegList all="true">

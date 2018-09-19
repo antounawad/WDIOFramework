@@ -74,11 +74,9 @@ upgrade:
 1- npm -g install npm
 2- npm -v
 	
-	
-	
 
-	
 
+Treiber für Internet Explorer	
 
 npm install wdio-iedriver-service --save-dev   
 

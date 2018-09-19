@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<channels path="C:\git\shared\qa_tests\testsuite">
+	<hotfix>
+		<tests>
+			<layout>
+				<configs>
+					<iexplorer>
+					</iexplorer>
+				</configs>
+			</layout>
+			<rk>
+				<direkt_rente>
+				</direkt_rente>
+				<direkt_sbu>
+				</direkt_sbu>
+				<pension_rente>
+				</pension_rente>
+				<u-kasse_rente>
+				</u-kasse_rente>
+			</rk>
+			<smoke>
+				<fest>
+				</fest>
+			</smoke>
+		</tests>
+	</hotfix>
+	<staging>
+		<tests>
+			<layout>
+				<configs>
+					<iexplorer>
+					</iexplorer>
+				</configs>
+			</layout>
+			<rk>
+				<direkt_rente>
+				</direkt_rente>
+				<direkt_sbu>
+				</direkt_sbu>
+				<pension_rente>
+				</pension_rente>
+				<u-kasse_rente>
+				</u-kasse_rente>
+			</rk>
+			<smoke>
+				<fest>
+				</fest>
+			</smoke>
+		</tests>	
+	</staging>
+	<prerelease>
+		<tests>
+			<layout>
+				<configs>
+					<iexplorer>
+					</iexplorer>
+				</configs>
+			</layout>
+			<rk>
+				<direkt_rente>
+				</direkt_rente>
+				<direkt_sbu>
+				</direkt_sbu>
+				<pension_rente>
+				</pension_rente>
+				<u-kasse_rente>
+				</u-kasse_rente>
+			</rk>
+			<smoke>
+				<fest>
+				</fest>
+			</smoke>
+		</tests>	
+	</prerelease>	
+</channels>
+</Config>
+
+
+
