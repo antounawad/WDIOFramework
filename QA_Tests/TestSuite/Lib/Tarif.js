@@ -606,7 +606,7 @@ class Tarif {
 	ErrorFunction(message) {
 		let dt = testLib.LogTime();
 		_ErrorList[_ErrorCounter] = message + ' Bild: ' + String(_ErrorCounter + dt + '.png');
-		testLib._TakeErrorShot(String(_ErrorCounter) + dt + '.png');
+		testLib._TakeErrorShot(String(_ErrorCounter) + dt);
 		_ErrorCounter++;
 		console.log(message);
 
