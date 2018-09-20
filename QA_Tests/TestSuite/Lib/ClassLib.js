@@ -2,6 +2,7 @@ var assert = require('assert');
 var fs = require('fs'),
     xml2js = require('xml2js')
 var date = require('date-and-time');
+var path = require('path');
 
 var defaultTimout = 10000;
 
@@ -78,6 +79,7 @@ var _NavchapterTarif = '#navChapterLink_1'; // Arbeitgeber
 var _NavchapterAngebot = '#navChapterLink_6' // Angebot
 var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
 var _StatusSiteTitle = 'Abschluss - Status';
+var _Leistungsphase = 'Leistungsphase - Rentenleistung aus bAV';
 var _LinkAngebotKurzUebersicht = '#navViewLink_AngebotAngebotVersichererangebot';
 var _VnAuswahl = 'Arbeitgeber – Auswahl';
 var _VpAuswahl = 'Arbeitnehmer – Auswahl';
@@ -99,7 +101,17 @@ var _takeScreenShotAllDialogs = false;
 
 class TestLib {
 
-    set TakeScreenShotAllDialogs(value){_takeScreenShotAllDialogs = value};
+    set TakeScreenShotAllDialogs(value)
+    {
+
+        _takeScreenShotAllDialogs = value
+
+        if(value === true)
+        {
+            this._DeleteAllFilesFromDirectory(this.ErrorShotPath);
+        }
+    
+    };
     get VnName() { return _VnName };
     get VpName() { return _VpName };
 
@@ -122,6 +134,8 @@ class TestLib {
     get NavChapterDokumente() { return _NavchapterDokumente };
 
     get StatusSiteTitle() { return _StatusSiteTitle }
+
+    get LeistungsphaseTitle() { return _Leistungsphase };
 
     get LinkAngebotKurzUebersicht() { return _LinkAngebotKurzUebersicht };
 
@@ -1049,6 +1063,11 @@ class TestLib {
             }
         }
 
+        if(_takeScreenShotAllDialogs ===  true)
+        {
+            this.PauseAction(2000);
+        }
+
         browser.saveScreenshot(this.ErrorShotPath + newMessage + '.png')
     }    
 
@@ -1617,6 +1636,19 @@ class TestLib {
         this._WaitUntilVisible(selector,waitTime);
         var result =  browser.isEnabled(selector);
         return result;
+    }
+
+    _DeleteAllFilesFromDirectory(directory)
+    {
+        fs.readdir(directory, (err, files) => {
+            if (err) throw err;
+          
+            for (const file of files) {
+              fs.unlink(path.join(directory, file), err => {
+                if (err) throw err;
+              });
+            }
+          });
     }
 
 }

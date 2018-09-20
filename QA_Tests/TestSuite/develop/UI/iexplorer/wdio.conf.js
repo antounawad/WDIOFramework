@@ -49,7 +49,7 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        'C:/git/shared/QA_Tests/TestSuite/specs/LayoutTest.js'
+        'C:/git/shared/QA_Tests/TestSuite/specs/UITest.js'
     ],
     // Patterns to exclude.
     // exclude: [
