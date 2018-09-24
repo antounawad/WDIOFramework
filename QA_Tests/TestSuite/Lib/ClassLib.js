@@ -2,6 +2,7 @@ var assert = require('assert');
 var fs = require('fs'),
     xml2js = require('xml2js')
 var date = require('date-and-time');
+var path = require('path');
 
 var defaultTimout = 10000;
 
@@ -78,6 +79,7 @@ var _NavchapterTarif = '#navChapterLink_1'; // Arbeitgeber
 var _NavchapterAngebot = '#navChapterLink_6' // Angebot
 var _NavchapterDokumente = '#navChapterLink_8' // Dokumente
 var _StatusSiteTitle = 'Abschluss - Status';
+var _Leistungsphase = 'Leistungsphase - Rentenleistung aus bAV';
 var _LinkAngebotKurzUebersicht = '#navViewLink_AngebotAngebotVersichererangebot';
 var _VnAuswahl = 'Arbeitgeber – Auswahl';
 var _VpAuswahl = 'Arbeitnehmer – Auswahl';
@@ -99,7 +101,17 @@ var _takeScreenShotAllDialogs = false;
 
 class TestLib {
 
-    set TakeScreenShotAllDialogs(value){_takeScreenShotAllDialogs = value};
+    set TakeScreenShotAllDialogs(value)
+    {
+
+        _takeScreenShotAllDialogs = value
+
+        if(value === true)
+        {
+            this._DeleteAllFilesFromDirectory(this.ErrorShotPath);
+        }
+    
+    };
     get VnName() { return _VnName };
     get VpName() { return _VpName };
 
@@ -122,6 +134,8 @@ class TestLib {
     get NavChapterDokumente() { return _NavchapterDokumente };
 
     get StatusSiteTitle() { return _StatusSiteTitle }
+
+    get LeistungsphaseTitle() { return _Leistungsphase };
 
     get LinkAngebotKurzUebersicht() { return _LinkAngebotKurzUebersicht };
 
@@ -480,7 +494,7 @@ class TestLib {
                 }
 
                 this._WaitUntilVisible(this.BtnNavNext);
-                this.ClickElement(this.BtnNavNext);
+                this.Next();
 
                 this._CheckSiteFields();
             }
@@ -535,7 +549,7 @@ class TestLib {
                 }
 
                 this._WaitUntilVisible(this.BtnNavPrev);
-                this.ClickElement(this.BtnNavPrev);
+                this.Prev();
 
             }
         } catch (ex) {
@@ -600,7 +614,8 @@ class TestLib {
     SelectHauptAgentur() {
         this._WaitUntilVisible(_btnMainAgency);
         this.ClickElementSimple(_btnMainAgency);
-        this._WaitUntilVisible(_btnNewVn);
+        this._WaitUntilVisible(_btnNewVn,50000);
+        this.SaveScreenShot();
 
     }
 
@@ -608,23 +623,11 @@ class TestLib {
     Next(waitTime = 0) {
         this.PauseAction(waitTime);
         this.ClickElement(_btnNavNext);
-        
-        if(_takeScreenShotAllDialogs)
-        {
-            this._WaitUntilTitle();
-            this._TakeErrorShot(this.BrowserTitle());
-        }
-
     }
 
     Prev(waitTime = 0) {
         this.PauseAction(waitTime);
         this.ClickElement(_btnNavPrev);
-        if(_takeScreenShotAllDialogs)
-        {
-            this._WaitUntilTitle();
-            this._TakeErrorShot(this.BrowserTitle());
-        }
     }
 
     ClickElementSimple(selector, pauseTime = 0) {
@@ -650,6 +653,15 @@ class TestLib {
         }
     }
 
+    SaveScreenShot()
+    {
+        if(_takeScreenShotAllDialogs === true)
+        {
+            this._WaitUntilTitle();
+            this._TakeErrorShot(this.BrowserTitle);
+        }
+    }
+
     ClickElement(selector, waitforVisibleSelector = '', timeout = 50000, pauseTime = 0, click = false) {
 
         if (_ClickIterator >= 20) {
@@ -662,6 +674,10 @@ class TestLib {
         retValue.waitForEnabled(timeout);
         try {
             browser.click(retValue.selector);
+            if(retValue.selector == _btnNavPrev || selector == _btnNavNext)
+            {
+               this.SaveScreenShot();
+            }
 
         } catch (ex) {
             var conslog = !ex.message.includes('is not clickable at point') && ex.message.includes('obscures it');
@@ -682,6 +698,7 @@ class TestLib {
             }
             else if (this.CheckIsVisible(_btnNavPrev)) {
                 browser.click(_btnNavPrev);
+                this.SaveScreenShot();          
             }
 
             this.ClickElement(selector, waitforVisibleSelector, timeout, pauseTime, click);
@@ -871,6 +888,8 @@ class TestLib {
         }
         browser.url(url);
 
+        this.SaveScreenShot();
+
 
         // Erstmal die Standard configuration auslesen
         // Alle Versicherer oder nur spezielle
@@ -1028,12 +1047,28 @@ class TestLib {
 
     _TakeErrorShot(message) {
         // Todo verbessern :-)
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        message = message.replace(':', '_');
-        browser.saveScreenshot(this.ErrorShotPath + message + '.png')
+
+        var path = this.ErrorShotPath + message + '.png';
+        console.log("path: "+path);
+
+        let newMessage = '';
+        if(message != null)
+        {
+            for(var i=0;i<=message.length-1;i++)
+            {
+                if(message[i] != ':' && message[i] != '_' && message[i] != ' ' && message[i] != '|'  && message[i] !=  '–')
+                {
+                    newMessage += message[i];
+                }
+            }
+        }
+
+        if(_takeScreenShotAllDialogs ===  true)
+        {
+            this.PauseAction(2000);
+        }
+
+        browser.saveScreenshot(this.ErrorShotPath + newMessage + '.png')
     }    
 
 
@@ -1601,6 +1636,19 @@ class TestLib {
         this._WaitUntilVisible(selector,waitTime);
         var result =  browser.isEnabled(selector);
         return result;
+    }
+
+    _DeleteAllFilesFromDirectory(directory)
+    {
+        fs.readdir(directory, (err, files) => {
+            if (err) throw err;
+          
+            for (const file of files) {
+              fs.unlink(path.join(directory, file), err => {
+                if (err) throw err;
+              });
+            }
+          });
     }
 
 }

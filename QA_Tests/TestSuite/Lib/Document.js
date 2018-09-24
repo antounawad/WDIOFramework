@@ -10,11 +10,12 @@ var _errorCircle = 'mdi-alert-circle-outline';
 var _documentSelector = '#generatedDocuments';
 
 
+
 class Document {
 
     get DocumentsGenerateSelector() { return _DocumentsGenerateSelector };
 
-    GenerateDocuments() {
+    GenerateDocuments(errorcounter=0) {
         if (!testLib.DocumentTest) {
             return;
         }
@@ -35,7 +36,14 @@ class Document {
                 var x = errorBlock.getAttribute('class');
                 if(!String(x).includes('ng-hide'))
                 {
-                    throw new Error(_errorText);
+                    if(errorcounter > 0)
+                    {
+                        throw new Error(_errorText);
+                    }
+                    else
+                    {
+                        this.GenerateDocuments(1)
+                    }
                 }
             }
 

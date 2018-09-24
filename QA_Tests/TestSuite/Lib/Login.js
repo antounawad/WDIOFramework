@@ -18,7 +18,9 @@ class Login{
  		var passwdElement = browser.element(passwordSelector);
  		assert.notEqual(passwdElement, null);
  		passwdElement.setValue(password);
- 		testLib.ClickElement(loginBtnSelector);
+		 testLib.ClickElement(loginBtnSelector);
+		 
+		 testLib.SaveScreenShot();
 
 		if(testLib.CheckIsVisible(_sessionBusy))
 		{
@@ -28,6 +30,8 @@ class Login{
 		{
 			this.LoginUser(password,username);
 		}
+
+		testLib.SaveScreenShot();
 	}
 }
 module.exports = Login;
