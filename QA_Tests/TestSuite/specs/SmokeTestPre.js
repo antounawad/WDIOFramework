@@ -26,7 +26,7 @@ describe('webdriver.io page', function () {
 		
 		testLib.SelectHauptAgentur();
 
-		testLib.AddChapter(vn, vp, consultation);
+		testLib.AddChapter(vn, vp );
 
 
 		console.log("Test is ready");
