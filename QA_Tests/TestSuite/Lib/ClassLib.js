@@ -120,6 +120,7 @@ class TestLib {
     get SplitVersicherer(){ return _SplitVersicherer};
     get SplitFrom(){ return _SplitFrom};
     get SplitTo(){ return _SplitTo};
+    set SplitTo(value){_SplitTo = value};
 
     get IsDebug() { return _debug === 'true' }
     get TypeSmoke() { return _TypeSmoke === 'true' };
@@ -173,9 +174,7 @@ class TestLib {
 
     // Übergebenes Projekt --hotfix aus Args
     get TargetUrl() {
-        var targetArr = String(process.argv[5].substr(2)).split(':');
-        //console.log("TargetArr: "+targetArr);
-
+        var targetArr = String(process.argv[3].substr(2)).split(':');
         _TestFolder = targetArr[1] + '\\';
         _TestConfigFolder = targetArr[2] + '\\';
         if(targetArr.length > 3)
@@ -184,10 +183,6 @@ class TestLib {
             var split = String(targetArr[3]).split('-');
             _SplitFrom = Number(split[0]);
             _SplitTo   = Number(split[1]);
-            // console.log("splitfrom: "+_SplitFrom);
-            // console.log("splitto: "+_SplitTo);
-
-
         }
         return targetArr[0];
     }
@@ -200,12 +195,12 @@ class TestLib {
         return _TestConfigFolder;
     }
 
-    get TargetDom() { return process.argv[6].substr(2) }
+    get TargetDom() { return process.argv[4].substr(2) }
 
 
     // Returns Version aus Args
     get Version() {
-        let ver = process.argv[7]
+        let ver = process.argv[5]
         if (ver != null) {
             return ver.substr(2);
         }

@@ -213,41 +213,27 @@ class Tarif {
 
 	ExtractExcludeIds(versichererIds) {
 		try {
-			var online = [100];
-			// if(!testLib.SplitVersicherer)
-			// {
-			// 	online = [versichererIds.length - testLib.ExcludeVersicherer.length];
-			// }
-			// else
-			// {
-			// 	console.log("Splitversicherer: "+testLib.SplitVersicherer);
-			// 	if(testLib.SplitTo == 0)
-			// 	{
-			// 		online = [versichererIds.length - testLib.ExcludeVersicherer.length];
-			// 		console.log("online null: "+online);
-			// 	}
-			// 	else
-			// 	{
-			// 		online = [testLib.SplitTo - testLib.SplitFrom + 1];
-			// 		console.log("online not null: "+online);
-			// 	}
-				
-			// }
+			var online = [versichererIds.length - testLib.ExcludeVersicherer.length];
 			var offline = [testLib.ExcludeVersicherer.length];
 			testLib.ExcludeVersicherer.forEach(function (value, index) {
 				offline[index] = value.Id[0];
 			});
+
+			if(testLib.SplitVersicherer && (testLib.SplitTo == 0 || testLib.SplitTo > (versichererIds.length-testLib.ExcludeVersicherer.length)))
+			{
+				testLib.SplitTo = versichererIds.length;
+			}
+
+
 			var counter = 0;
-			var splitCounter = 1;
+			var splitCounter = testLib.SplitFrom-1;
 			versichererIds.forEach(function (value, index) {
 				var ind = offline.indexOf(value);
 				var ind2 = _ResultArr.indexOf(value);
 
 				if (ind == -1 && ind2 == -1 && 
-					(!testLib.SplitVersicherer || (testLib.SplitVersicherer && splitCounter >= testLib.SplitFrom && 
-						(splitCounter <= testLib.SplitTo || testLib.SplitTo == 0)))) {
+					(!testLib.SplitVersicherer || (testLib.SplitVersicherer && index >= testLib.SplitFrom  && index <= testLib.SplitTo))) {
 					online[counter++] = value;
-					splitCounter ++;
 				}
 				
 			});
