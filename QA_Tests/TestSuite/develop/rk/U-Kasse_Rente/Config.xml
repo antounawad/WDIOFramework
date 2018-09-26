@@ -12,10 +12,10 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-					<Versicherer>
-						<Name>Allianz</Name>
-						<Id>1006</Id>
-					</Versicherer>
+	 <Versicherer> 
+		 <Name>Alte Leipziger</Name> 
+		 <Id>1007</Id> 
+	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
@@ -91,10 +91,10 @@
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Alte Leipziger</Name>  -->
-		 <!-- <Id>1007</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Alte Leipziger</Name> 
+		 <Id>1007</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Canada Life</Name>  -->
 		 <!-- <Id>9997</Id>  -->

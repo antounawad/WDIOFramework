@@ -12,10 +12,10 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-					<Versicherer>
-						<Name>Allianz</Name>
-						<Id>1006</Id>
-					</Versicherer>
+	 <Versicherer> 
+		 <Name>Alte Leipziger</Name> 
+		 <Id>1007</Id> 
+	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
@@ -87,6 +87,10 @@
 
 	</SelectorList>  
   <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
+	 <Versicherer> 
+		 <Name>Alte Leipziger</Name> 
+		 <Id>1007</Id> 
+	 </Versicherer>  
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->

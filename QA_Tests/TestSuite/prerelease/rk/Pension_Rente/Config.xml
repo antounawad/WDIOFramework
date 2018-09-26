@@ -12,10 +12,10 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-					<Versicherer>
-						<Name>Allianz</Name>
-						<Id>1006</Id>
-					</Versicherer>
+	 <Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
+	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false" debug="true"></Tests>
+  <Tests documents="true" debug="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -87,18 +87,18 @@
 
 	</SelectorList>  
   <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
-	 <Versicherer> 
-		 <Name>Allianz</Name> 
-		 <Id>1006</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
-	 </Versicherer>
-	 <Versicherer> 
-		 <Name>Canada Life</Name> 
-		 <Id>9997</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name>  -->
+		 <!-- <Id>1006</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Alte Leipziger</Name>  -->
+		 <!-- <Id>1007</Id>  -->
+	 <!-- </Versicherer> -->
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Canada Life</Name>  -->
+		 <!-- <Id>9997</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Continentale</Name>  -->
 		 <!-- <Id>1335</Id>  -->
@@ -107,10 +107,10 @@
 		 <!-- <Name>Die Bayerische</Name>  -->
 		 <!-- <Id>1013</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Gothaer</Name>  -->
-		 <!-- <Id>1108</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
+	 </Versicherer>
 	 <Versicherer> 
 		 <Name>HDI</Name> 
 		 <Id>1033</Id> 

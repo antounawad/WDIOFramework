@@ -87,9 +87,9 @@
 
 	</SelectorList>  
   <VersichererList all="true" smoke="true" breakAtError="false" onlyTarifCheck="false">
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Allianz</Name>  -->
-		 <!-- <Id>1006</Id>  -->
+	 <Versicherer> 
+		 <Name>Allianz</Name> 
+		 <Id>1006</Id> 
 	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Alte Leipziger</Name>  -->
@@ -143,10 +143,10 @@
 		 <!-- <Name>Volkswohl Bund</Name>  -->
 		 <!-- <Id>1099</Id>  -->
 	 <!-- </Versicherer> -->
-	 	 <Versicherer> 
-		 <Name>WWK</Name> 
-		 <Id>1103</Id> 
-	 </Versicherer>
+	 	 <!-- <Versicherer>  -->
+		 <!-- <Name>WWK</Name>  -->
+		 <!-- <Id>1103</Id>  -->
+	 <!-- </Versicherer> -->
 	 	 <!-- <Versicherer>  -->
 		 <!-- <Name>xbAV Testversicherer</Name>  -->
 		 <!-- <Id>9999</Id>  -->
