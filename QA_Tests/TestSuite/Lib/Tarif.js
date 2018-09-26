@@ -213,19 +213,45 @@ class Tarif {
 
 	ExtractExcludeIds(versichererIds) {
 		try {
-			var online = [versichererIds.length - testLib.ExcludeVersicherer.length];
+			var online = [100];
+			// if(!testLib.SplitVersicherer)
+			// {
+			// 	online = [versichererIds.length - testLib.ExcludeVersicherer.length];
+			// }
+			// else
+			// {
+			// 	console.log("Splitversicherer: "+testLib.SplitVersicherer);
+			// 	if(testLib.SplitTo == 0)
+			// 	{
+			// 		online = [versichererIds.length - testLib.ExcludeVersicherer.length];
+			// 		console.log("online null: "+online);
+			// 	}
+			// 	else
+			// 	{
+			// 		online = [testLib.SplitTo - testLib.SplitFrom + 1];
+			// 		console.log("online not null: "+online);
+			// 	}
+				
+			// }
 			var offline = [testLib.ExcludeVersicherer.length];
 			testLib.ExcludeVersicherer.forEach(function (value, index) {
 				offline[index] = value.Id[0];
 			});
 			var counter = 0;
+			var splitCounter = 1;
 			versichererIds.forEach(function (value, index) {
 				var ind = offline.indexOf(value);
 				var ind2 = _ResultArr.indexOf(value);
-				if (ind == -1 && ind2 == -1) {
+
+				if (ind == -1 && ind2 == -1 && 
+					(!testLib.SplitVersicherer || (testLib.SplitVersicherer && splitCounter >= testLib.SplitFrom && 
+						(splitCounter <= testLib.SplitTo || testLib.SplitTo == 0)))) {
 					online[counter++] = value;
+					splitCounter ++;
 				}
+				
 			});
+
 
 			return online;
 		} catch (ex) {
