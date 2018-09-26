@@ -32,6 +32,7 @@ namespace Test_Administration
         public string portFile;
         public bool singleCall;
         public string driver;
+        public string range = "";
 
         public Init(string[] args)
         {
@@ -40,6 +41,13 @@ namespace Test_Administration
             channel = args[2];
             test = args[3];
             testConfig = args[4];
+            if(args[4].Contains(":"))
+            {
+                testConfig = args[4].Split(':')[0];
+                range = ":"+ args[4].Split(':')[1];
+            }
+
+
             domaene = args[5];
             if (args.Length >= 7)
             {
@@ -182,13 +190,13 @@ namespace Test_Administration
                     startInfo.RedirectStandardOutput = true;
                     startInfo.UseShellExecute = false;
                     app = "start.bat";
-                    appParams = init.channel + " " + init.test + " " + init.testConfig + " " + init.domaene;
+                    appParams = init.channel + " " + init.test + " " + init.testConfig + " " + init.domaene+" " + init.range;
                 }
                 else
                 {
                     startInfo.UseShellExecute = false;
                     app = init.rootPath + "\\node_modules\\.bin\\wdio";
-                    appParams = init.confFile + " --" + init.channel + ":" + init.test + ":" + init.testConfig + " --" + init.domaene;
+                    appParams = init.confFile + " --" + init.channel + ":" + init.test + ":" + init.testConfig+init.range + " --" + init.domaene;
                     startInfo.WindowStyle = ProcessWindowStyle.Normal;
                 }
 
