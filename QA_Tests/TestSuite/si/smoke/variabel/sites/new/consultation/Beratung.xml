@@ -2,25 +2,14 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <Fields>
   <Field>
-	<Name>r_NettoBeitrag</Name>
+	<Name>KirchensteuerPflichtig</Name>
 	<Value>Click</Value>
-<<<<<<< HEAD
-   </Field>   
-  <Field>
-=======
    </Field>
-    <Field>
->>>>>>> 3ea3a1677add666b433adb39533088a48b6e5fd5
-	<Name>NettoVerzicht</Name>
-	<Value>120</Value>
+  <Field>
+	<Name>Bruttolohn</Name>
+	<Value>3000</Value>
 	<Add>true</Add>
    </Field>
 </Fields>
 </Config>
-
-
-
-
-
-
 
