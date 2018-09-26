@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>Firstname</Name>
+	<Value>AutomRKTestVPDRTS</Value>
+   </Field>
+  <Field>
+	<Name>Street</Name>
+	<Value>Teststrasse 11</Value>
+   </Field>
+  <Field>
+	<Name>Lastname</Name>
+	<Value>AutomRKTestVP</Value>
+   </Field>
+  <Field>
+	<Name>Zip</Name>
+	<Value>66583</Value>
+   </Field>   
+     <Field>
+	<Name>Title</Name>
+	<Value>1</Value>
+	<ListBox>true</ListBox>
+	</Field>
+	<Field>
+	<Name>[class='md-datepicker-input md-input']</Name>
+	<Value>30.01.1995</Value>
+	<Check>true</Check>
+   </Field>
+</Fields>
+</Config>
+
+
+
+
+

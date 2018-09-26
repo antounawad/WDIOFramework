@@ -182,7 +182,9 @@ class TestLib {
             _SplitVersicherer = true;
             var split = String(targetArr[3]).split('-');
             _SplitFrom = Number(split[0]);
+            //console.log("splitfrom: "+_SplitFrom)
             _SplitTo   = Number(split[1]);
+            //console.log("splitto: "+_SplitTo)
         }
         return targetArr[0];
     }
@@ -897,12 +899,13 @@ class TestLib {
 
     InitBrowserStart() {
         var url = 'http://' + this.TargetUrl + '.' + this.TargetDom + '.de' + '/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F';
-        if (this.TargetUrl == 'beratung') {
+        if (String(this.TargetUrl).toUpperCase() ==  'BERATUNG') {
             url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
         }
         browser.url(url);
 
         this.SaveScreenShot();
+
 
 
         // Erstmal die Standard configuration auslesen

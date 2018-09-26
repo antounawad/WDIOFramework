@@ -26,10 +26,12 @@ describe('webdriver.io page', function () {
 		
 			// // Login
 			// // Todo extrahieren
-			login.LoginUser()
+			//login.LoginUser()
 			
-            testLib.SelectHauptAgentur();
-            
+           // testLib.SelectHauptAgentur();
+         			login.LoginUser("ProduktivAutomatikTest@xbav.de","ProduktivAutomatikTest@xbav.de")
+   
+			
             testLib.AddChapter(vn,vp,consultation);
 
             testLib.Navigate2Site(testLib.StatusSiteTitle);
