@@ -95,6 +95,9 @@ var _TestConfigFolder = null;
 var __xpath = null;
 var __xpathResult = null;
 var _takeScreenShotAllDialogs = false;
+var _SplitVersicherer = false;
+var _SplitFrom = 0;
+var _SplitTo = 0;
 
 
 
@@ -114,6 +117,10 @@ class TestLib {
     };
     get VnName() { return _VnName };
     get VpName() { return _VpName };
+    get SplitVersicherer(){ return _SplitVersicherer};
+    get SplitFrom(){ return _SplitFrom};
+    get SplitTo(){ return _SplitTo};
+    set SplitTo(value){_SplitTo = value};
 
     get IsDebug() { return _debug === 'true' }
     get TypeSmoke() { return _TypeSmoke === 'true' };
@@ -170,6 +177,13 @@ class TestLib {
         var targetArr = String(process.argv[3].substr(2)).split(':');
         _TestFolder = targetArr[1] + '\\';
         _TestConfigFolder = targetArr[2] + '\\';
+        if(targetArr.length > 3)
+        {
+            _SplitVersicherer = true;
+            var split = String(targetArr[3]).split('-');
+            _SplitFrom = Number(split[0]);
+            _SplitTo   = Number(split[1]);
+        }
         return targetArr[0];
     }
 

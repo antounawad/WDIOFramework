@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false" debug="true"></Tests>
+  <Tests documents="true" debug="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -86,7 +86,7 @@
 	</Selector>	
 
 	</SelectorList>  
-  <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
+  <VersichererList all="false" smoke="false" breakAtError="false" onlyTarifCheck="false">
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
@@ -127,34 +127,30 @@
 		 <!-- <Name>Nürnberger</Name>  -->
 		 <!-- <Id>1147</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Signal Iduna</Name> 
-		 <Id>1048</Id> 
-	 </Versicherer>
 	 <!-- <Versicherer>  -->
-		 <!-- <Name>Stuttgarter</Name>  -->
-		 <!-- <Id></Id>  -->
+		 <!-- <Name>Signal Iduna</Name>  -->
+		 <!-- <Id>1048</Id>  -->
 	 <!-- </Versicherer> -->
-	 	 <!-- <Versicherer>  -->
-		 <!-- <Name>1104</Name>  -->
-		 <!-- <Id></Id>  -->
-	 <!-- </Versicherer> -->
-	 	 <!-- <Versicherer>  -->
-		 <!-- <Name>Volkswohl Bund</Name>  -->
-		 <!-- <Id>1099</Id>  -->
-	 <!-- </Versicherer> -->
-	 	 <!-- <Versicherer>  -->
-		 <!-- <Name>WWK</Name>  -->
-		 <!-- <Id>1103</Id>  -->
-	 <!-- </Versicherer> -->
-	 	 <!-- <Versicherer>  -->
-		 <!-- <Name>xbAV Testversicherer</Name>  -->
-		 <!-- <Id>9999</Id>  -->
-	 <!-- </Versicherer> -->
-	 	 <!-- <Versicherer>  -->
-		 <!-- <Name>Zurich Deutscher Herold</Name>  -->
-		 <!-- <Id>1138</Id>  -->
-	 <!-- </Versicherer>	  -->
+	 <Versicherer> 
+		 <Name>Stuttgarter</Name> 
+		 <Id>1104</Id> 
+	 </Versicherer>
+	 	 <Versicherer> 
+		 <Name>Volkswohl Bund</Name> 
+		 <Id>1099</Id> 
+	 </Versicherer>
+	 	 <Versicherer> 
+		 <Name>WWK</Name> 
+		 <Id>1103</Id> 
+	 </Versicherer>
+	 	 <Versicherer> 
+		 <Name>xbAV Testversicherer</Name> 
+		 <Id>9999</Id> 
+	 </Versicherer>
+	 	 <Versicherer> 
+		 <Name>Zurich Deutscher Herold</Name> 
+		 <Id>1138</Id> 
+	 </Versicherer>	 
 	 </VersichererList>
 	 
 	 <DurchfwegList all="false">

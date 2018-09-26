@@ -12,10 +12,10 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-					<Versicherer>
-						<Name>Allianz</Name>
-						<Id>1006</Id>
-					</Versicherer>
+<Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
+	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
@@ -87,6 +87,10 @@
 
 	</SelectorList>  
   <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
+	 <Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
+	 </Versicherer>  
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
@@ -107,10 +111,7 @@
 		 <!-- <Name>Die Bayerische</Name>  -->
 		 <!-- <Id>1013</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Gothaer</Name>  -->
-		 <!-- <Id>1108</Id>  -->
-	 <!-- </Versicherer> -->
+
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>HDI</Name>  -->
 		 <!-- <Id>1033</Id>  -->
