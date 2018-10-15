@@ -40,6 +40,7 @@ var _crlf = '\r\n';
 
 let _sVersicherer = '';
 let _sDurchfWeg = '';
+let _sContractType = '';
 let _sType = '';
 let _sTarif = '';
 var _testcounter = 0;
@@ -111,6 +112,18 @@ class Tarif {
 
 	GetAllDurchfWege() {
 		try {
+			_It_Selector = '#' + testLib.TarifSelectoren[2]["Value"][0];
+			_It_List = $(_It_Selector);
+			_It_Values = _It_List.getAttribute(_ngoption, _value, true);
+
+			return _It_Values;
+		} catch (ex) {
+			throw new Error(ex);
+		}
+	}
+
+	GetAllContractTypes() {
+		try {
 			_It_Selector = '#' + testLib.TarifSelectoren[1]["Value"][0];
 			_It_List = $(_It_Selector);
 			_It_Values = _It_List.getAttribute(_ngoption, _value, true);
@@ -123,7 +136,7 @@ class Tarif {
 
 	GetAllTarife() {
 		try {
-			_It_Selector = '#' + testLib.TarifSelectoren[3]["Value"][0];
+			_It_Selector = '#' + testLib.TarifSelectoren[4]["Value"][0];
 			_It_List = $(_It_Selector);
 			_It_Values = _It_List.getAttribute(_ngoption, _value, true);
 			if (!testLib.AllTarife || testLib.SmokeTest || testLib.TarifSmoke) {
@@ -143,7 +156,7 @@ class Tarif {
 
 	GetAllTypes() {
 		try {
-			_It_Selector = '#' + testLib.TarifSelectoren[2]["Value"][0];
+			_It_Selector = '#' + testLib.TarifSelectoren[3]["Value"][0];
 			_It_List = $(_It_Selector);
 			_It_Values = _It_List.getAttribute(_ngoption, _value, true);
 			if (!testLib.AllTypes) {
@@ -271,6 +284,25 @@ class Tarif {
 		}
 	}
 
+	GetContractTypeArray() {
+		try {
+			// if (!testLib.AllDurchfWege || testLib.SmokeTest) {
+			// 	var durchfwegArr = [testLib.DurchfWege.length];
+			// 	testLib.DurchfWege.forEach(function (value, index) {
+			// 		durchfwegArr[index] = value['Id'][0];
+			// 	});
+
+			// 	if (testLib.SmokeTest && durchfwegArr.length > 0) {
+			// 		return durchfwegArr[0];
+			// 	}
+			// 	return durchfwegArr;
+			// }
+
+			return this.GetAllContractTypes();
+		} catch (ex) {
+			throw new Error(ex);
+		}
+	}	
 
 
 	Init() {
@@ -312,6 +344,24 @@ class Tarif {
 
 		return 1;
 	}
+
+	CheckContractTypeIsEnabled(checkIsEnabled, contractTypeFound, contractTypeArr) {
+		if (checkIsEnabled == null) {
+			var contractTypeLength = contractTypeArr.length;
+
+			this.SetListBoxSelector();
+
+			testLib.ClickElementSimple(_selector);
+
+			var x1 = _values.indexOf(contractTypeFound)
+			var selector = '#' + _ids[x1];
+			testLib.ClickElement(selector);
+			_sContractType = browser.getText(selector);
+			return contractTypeLength;
+		}
+
+		return 1;
+	}	
 
 	CheckIsEnabled(checkIsEnabled, found, arr, logstring) {
 		if (checkIsEnabled == null) {
@@ -386,8 +436,48 @@ class Tarif {
 
 				console.log(_sVersicherer);
 
+				// Ende Versicherer
 
+				// Beginn Contract_Type
 				_selector = '#' + testLib.TarifSelectoren[1]["Value"][0];
+				var checkIsEnabled = browser.getAttribute(_selector, "disabled");
+				_sContractType = browser.getText(_selector);
+
+				var contractTypeLength = 1;
+
+				this.SetListBoxSelector();
+
+				var contractTypeArr = null;
+
+				contractTypeArr = this.GetContractTypeArray();
+
+				var contractTypeFound =  contractTypeArr[0];
+				
+				// if (!testLib.AllDurchfWege) {
+				// 	dwFound = durchfWegeArr[durchfSelCnt];
+				// 	if (_values.indexOf(dwFound) == -1) {
+				// 		if (newTarif) {
+				// 			testLib.RefreshBrowser(_addTarifBtnSelector, newTarif);
+				// 		}
+				// 		pre_durchfSelCnt = durchfSelCnt;
+				// 		durchfSelCnt++;
+				// 		if (durchfSelCnt > durchfWegeArr.length - 1 || checkIsEnabled === 'true') {
+				// 			console.log('Nothing to do at choosed combination...')
+				// 			break;
+				// 		}
+				// 		continue;
+				// 	}
+				// }
+
+				// dwFound = durchfWegeArr[durchfSelCnt];
+
+				contractTypeLength = this.CheckContractTypeIsEnabled(checkIsEnabled, contractTypeFound, contractTypeArr);
+
+
+				console.log(_sContractType);
+
+				// Ende ContractType
+				_selector = '#' + testLib.TarifSelectoren[2]["Value"][0];
 				var checkIsEnabled = browser.getAttribute(_selector, "disabled");
 				_sDurchfWeg = browser.getText(_selector);
 
@@ -456,7 +546,7 @@ class Tarif {
 
 
 
-				_selector = '#' + testLib.TarifSelectoren[2]["Value"][0];
+				_selector = '#' + testLib.TarifSelectoren[3]["Value"][0];
 				_sType = browser.getText(_selector);
 				checkTypeIsDisabled = browser.getAttribute(_selector, "disabled");
 
@@ -486,7 +576,7 @@ class Tarif {
 				var checkTarifIsDisabled = null;
 				var tarifLength = tarifArr.length;
 
-				_selector = '#' + testLib.TarifSelectoren[3]["Value"][0];
+				_selector = '#' + testLib.TarifSelectoren[4]["Value"][0];
 				_sTarif = browser.getText(_selector);
 				checkTarifIsDisabled = browser.getAttribute(_selector, "disabled");
 
@@ -498,7 +588,7 @@ class Tarif {
 
 
 				// end Tarif
-				for (var tarifSel = 4; tarifSel <= testLib.TarifSelectoren.length - 1; tarifSel++) {
+				for (var tarifSel = 5; tarifSel <= testLib.TarifSelectoren.length - 1; tarifSel++) {
 					_selector = '#' + testLib.TarifSelectoren[tarifSel]["Value"][0];
 					if (testLib.TarifSelectoren[tarifSel]["CheckVisible"][0] == "true") {
 						var CheckVisible = browser.isVisible(_selector);

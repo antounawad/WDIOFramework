@@ -56,6 +56,10 @@
 		<Value>SelectedItem_VrId</Value>
 		<CheckVisible>false</CheckVisible>
 		</Selector>
+	<Selector>
+		<Value>SelectedItem_ContractTypeId</Value>
+		<CheckVisible>true</CheckVisible>
+	</Selector>			
 		<Selector>
 		<Value>SelectedItem_ImplementationMethodId</Value>
 		<CheckVisible>false</CheckVisible>
@@ -76,10 +80,6 @@
 		<Value>SelectedItem_BavPledgeId</Value>
 		<CheckVisible>true</CheckVisible>
 	</Selector>
-		<Selector>
-		<Value>SelectedItem_ContractTypeId</Value>
-		<CheckVisible>true</CheckVisible>
-	</Selector>	
 		<Selector>
 		<Value>SelectedItem_AssociationId</Value>
 		<CheckVisible>true</CheckVisible>
