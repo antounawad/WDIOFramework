@@ -12,10 +12,10 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-					<Versicherer>
-						<Name>Allianz</Name>
-						<Id>1006</Id>
-					</Versicherer>
+					 <Versicherer> 
+		 <Name>Signal Iduna</Name> 
+		 <Id>1048</Id> 
+	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
 					<!-- <Url>Arbeitgeber – Zusch</Url> -->
@@ -87,10 +87,10 @@
 
 	</SelectorList>  
   <VersichererList all="true" smoke="true" breakAtError="false" onlyTarifCheck="false">
-	 <Versicherer> 
-		 <Name>Allianz</Name> 
-		 <Id>1006</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Allianz</Name>  -->
+		 <!-- <Id>1006</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Alte Leipziger</Name>  -->
 		 <!-- <Id>1007</Id>  -->
@@ -127,10 +127,10 @@
 		 <!-- <Name>Nürnberger</Name>  -->
 		 <!-- <Id>1147</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Signal Iduna</Name>  -->
-		 <!-- <Id>1048</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Signal Iduna</Name> 
+		 <Id>1048</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Stuttgarter</Name>  -->
 		 <!-- <Id></Id>  -->
@@ -142,10 +142,6 @@
 	 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Volkswohl Bund</Name>  -->
 		 <!-- <Id>1099</Id>  -->
-	 <!-- </Versicherer> -->
-	 	 <!-- <Versicherer>  -->
-		 <!-- <Name>WWK</Name>  -->
-		 <!-- <Id>1103</Id>  -->
 	 <!-- </Versicherer> -->
 	 	 <!-- <Versicherer>  -->
 		 <!-- <Name>xbAV Testversicherer</Name>  -->
