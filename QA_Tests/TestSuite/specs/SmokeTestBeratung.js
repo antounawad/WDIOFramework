@@ -32,6 +32,9 @@ describe('webdriver.io page', function () {
 		testLib.InitBrowserStart();
 	
 		login.LoginUser("ProduktivAutomatikTest@xbav.de","ProduktivAutomatikTest@xbav.de")
+		//login.LoginUser();
+
+		//testLib.SelectHauptAgentur();
 
 		testLib.CheckVersion();		
 

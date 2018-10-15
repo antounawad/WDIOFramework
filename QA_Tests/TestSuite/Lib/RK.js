@@ -20,14 +20,25 @@ class RK {
 	Navigate2RK(versicherer) {
 
 		var vArr = this.GetVersichererArray();
-		for (var i = 0; i <= vArr.length - 1; i++) {
-			versicherer = vArr[i];
-
-			testLib.CurrentID = versicherer;
-			tarif.CreateListTarif(versicherer, vArr.length != i + 1);
+		if(vArr === '1048')
+		{
+			testLib.CurrentID = vArr;
+			tarif.CreateListTarif(vArr, false);
 			tarif.ResultArr[tarif.ResultCounter] = versicherer;
-			console.log("Versicherer: " + String(versicherer) + " erfolgreich durchlaufen");
-		};
+			console.log("Versicherer: " + String(vArr) + " erfolgreich durchlaufen");
+
+		}
+		else
+		{
+			for (var i = 0; i <= vArr.length - 1; i++) {
+				versicherer = vArr[i];
+				
+				testLib.CurrentID = versicherer;
+				tarif.CreateListTarif(versicherer, vArr.length != i + 1);
+				tarif.ResultArr[tarif.ResultCounter] = versicherer;
+				console.log("Versicherer: " + String(versicherer) + " erfolgreich durchlaufen");
+			};
+		}
 	}
 
 

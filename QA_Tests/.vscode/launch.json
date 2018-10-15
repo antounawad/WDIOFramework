@@ -25,7 +25,7 @@
                 //"--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
                 //"wdio.conf.js", "--spec", "C:/Automatic_Test/test/specs/SmokeTestBeratung.js"
                 //"C:/Git/shared/QA_Tests/test/staging/rk/sbu/wdio.conf_debug.js", "--spec", "C:/Git/shared/QA_Tests/test/specs/SmokeTestBeratung.js", "--staging:rk:rente", "--xbav-berater", 
-                "c:/git/shared/QA_Tests/wdio.conf_debug.js", "--spec", "C:/Git/Shared/QA_Tests/TestSuite/specs/SmokeTestBeratung.js", "--staging:rk:rente", "--xbav-berater"
+                "c:/git/shared/QA_Tests/wdio.conf_debug.js", "--spec", "C:/Git/Shared/QA_Tests/TestSuite/specs/SmokeTestBeratung.js", "--beratung:smoke:variabel", "--xbav-berater"
                 //"wdio.conf.js", "--hotfix"
 
             ]

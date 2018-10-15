@@ -94,6 +94,12 @@ class Tarif {
 			_It_Selector = '#' + testLib.TarifSelectoren[0]["Value"][0];
 			_It_List = $(_It_Selector);
 			_It_Values = _It_List.getAttribute(_ngoption, _value, true);
+
+			if(_It_Values === '1048')
+			{
+				return _It_Values;
+			}
+			
 			_It_Values = this.ExtractExcludeIds(_It_Values);
 
 			return _It_Values;
@@ -361,15 +367,24 @@ class Tarif {
 
 				_selector = '#' + testLib.TarifSelectoren[0]["Value"][0];
 
-				this.SetListBoxSelector();
+				
+				var checkIsEnabled = browser.getAttribute(_selector, "disabled");
 
-				testLib.ClickElementSimple(_selector);
-				var selector = '#' + _ids[_values.indexOf(versicherer)];
-				testLib.ClickElementSimple(selector);
-				_sVersicherer = browser.getText(selector);
+				if(checkIsEnabled == null)
+				{
+					this.SetListBoxSelector();
+
+					testLib.ClickElementSimple(_selector);
+					var selector = '#' + _ids[_values.indexOf(versicherer)];
+					testLib.ClickElementSimple(selector);
+					_sVersicherer = browser.getText(selector);
+				}
+				else
+				{
+					_sVersicherer = browser.getText(_selector);
+				}
 
 				console.log(_sVersicherer);
-
 
 
 				_selector = '#' + testLib.TarifSelectoren[1]["Value"][0];
