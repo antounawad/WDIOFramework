@@ -4,16 +4,29 @@
   <Field>
 	<Name>Beruf</Name>
 	<ValueList>
-		<Value>Bürogehilfe</Value>
-		<Value>Bürogehilfe/-gehilfin</Value>
-		<Value>Bürogehilf(e/in)</Value>
-		<Value>Bürokaufmann</Value>
-		<Value>Büroangestellter</Value>
-		<Value>Fachinformatiker/in (Anwendungsentwicklung)</Value>
-		<Value>Anwendungsentwickler</Value>
-		<Value>Anwendungsentwickler/in</Value>
-		<Value>Abbrucharbeiter</Value>
-		<Value>Abbrucharbeiter,in</Value>
+		<Value>A</Value>
+		<Value>An</Value>
+		<!-- <Value>Angestellter</Value> -->
+		<!-- <Value>Angestellte</Value> -->
+		<!-- <Value>Anwendungsentwickler</Value> -->
+		<!-- <Value>Anwendungsentwickler/in</Value> -->
+		<!-- <Value>B</Value> -->
+		<!-- <Value>Bü</Value> -->
+		<!-- <Value>Bürogehilfe</Value> -->
+		<!-- <Value>Bürogehilfe/-gehilfin</Value> -->
+		<!-- <Value>Bürogehilf(e/in)</Value> -->
+		<!-- <Value>Bürokaufmann</Value> -->
+		<!-- <Value>Büroangestellter</Value> -->
+		<Value>F</Value>
+		<Value>Fa</Value>
+		<!-- <Value>Fachinformatiker/in (Anwendungsentwicklung)</Value> -->
+		<Value>A</Value>
+		<Value>Ab</Value>
+		<!-- <Value>Abbrucharbeiter</Value> -->
+		<!-- <Value>Abbrucharbeiter,in</Value> -->
+		<Value>Bankangestellter - Bankfachleute</Value>
+		<Value>Informatiker - Informatiker</Value>
+		<Value>Informatiker - Informatiker</Value>
 	</ValueList>
   </Field>
   <Field>
