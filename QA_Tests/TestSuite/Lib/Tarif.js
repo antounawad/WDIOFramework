@@ -6,12 +6,12 @@ const consultation = new Consultation();
 var Document = require('../Lib/Document.js')
 const document = new Document();
 
-var _deleteTarifSelector = '.ng-scope.md-font.mdi.mdi-24px.mdi-delete';
-var _deleteTarifBtnSelector = '#modalDeleteAreYouSure_btnLöschen';
+var _deleteTarifSelector = '.ng-scope.md-font.mdi.mdi-24px.mdi-delete';//'.ng-scope.md-font.mdi.mdi-24px.mdi-delete';
+var _deleteTarifBtnSelector = '.md-primary.md-confirm-button.md-button.md-ink-ripple.md-default-theme';// '.md-primary.md-confirm-button.md-button.md-ink-ripple.md-default-theme';// '#modalDeleteAreYouSure_btnLöschen';
 var _addTarifBtnSelector = '#btnNewTariffConfig';
 var _versorgunswerkSelector = '#navViewLink_VnVnVersorgungswerk';
-var _TarifCancelBtn = '#modalContainer_btnAbbrechen';
-var _tarifSaveBtn = '#modalContainer_btnSpeichern';
+var _TarifCancelBtn = '#modalContainerTarif_btnAbbrechen';// '#modalContainer_btnAbbrechen';
+var _tarifSaveBtn = '#modalContainerTarif_btnSpeichern';// '#modalContainer_btnSpeichern';
 
 
 var _ngoption = 'md-option[ng-repeat]';
@@ -70,6 +70,7 @@ class Tarif {
 
 		while (browser.isExisting(_deleteTarifSelector)) {
 			testLib.ClickElementSimple(_deleteTarifSelector);
+
 
 			testLib._WaitUntilVisible(_deleteTarifBtnSelector);
 

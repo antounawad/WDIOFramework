@@ -12,9 +12,9 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
+<Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
 	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
@@ -50,7 +50,7 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false" debug="true"></Tests>
+  <Tests documents="true" debug="false"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
@@ -59,7 +59,7 @@
 		<Selector>
 		<Value>SelectedItem_ContractTypeId</Value>
 		<CheckVisible>false</CheckVisible>
-		</Selector>
+	</Selector>			
 		<Selector>
 		<Value>SelectedItem_ImplementationMethodId</Value>
 		<CheckVisible>false</CheckVisible>
@@ -80,10 +80,7 @@
 		<Value>SelectedItem_BavPledgeId</Value>
 		<CheckVisible>true</CheckVisible>
 	</Selector>
-		<Selector>
-		<Value>SelectedItem_ContractTypeId</Value>
-		<CheckVisible>true</CheckVisible>
-	</Selector>	
+
 		<Selector>
 		<Value>SelectedItem_AssociationId</Value>
 		<CheckVisible>true</CheckVisible>
@@ -92,8 +89,8 @@
 	</SelectorList>  
   <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
 	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
 	 </Versicherer>  
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
@@ -115,10 +112,7 @@
 		 <!-- <Name>Die Bayerische</Name>  -->
 		 <!-- <Id>1013</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Gothaer</Name>  -->
-		 <!-- <Id>1108</Id>  -->
-	 <!-- </Versicherer> -->
+
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>HDI</Name>  -->
 		 <!-- <Id>1033</Id>  -->

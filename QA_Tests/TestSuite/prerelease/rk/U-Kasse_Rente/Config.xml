@@ -12,9 +12,9 @@
 				<Site>
 					<Url>Arbeitgeber – Tarifvorgabe</Url>
 					<FileName>Callback</FileName>
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
+<Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
 	 </Versicherer>
 				</Site>
 				<!-- <Site> -->
@@ -50,21 +50,21 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="true" debug="false"></Tests>
+  <Tests documents="false" debug="true"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
 		<CheckVisible>false</CheckVisible>
-	</Selector>
-	<Selector>
+		</Selector>
+		<Selector>
 		<Value>SelectedItem_ContractTypeId</Value>
-		<CheckVisible>true</CheckVisible>
-	</Selector>	
-	<Selector>		
+		<CheckVisible>false</CheckVisible>
+	</Selector>			
+		<Selector>
 		<Value>SelectedItem_ImplementationMethodId</Value>
 		<CheckVisible>false</CheckVisible>
-	</Selector>
-	<Selector>
+		</Selector>
+		<Selector>
 		<Value>SelectedItem_InsuranceTypeId</Value>
 		<CheckVisible>false</CheckVisible>
 	</Selector>
@@ -76,25 +76,30 @@
 		<Value>SelectedItem_TariffOptionId</Value>
 		<CheckVisible>true</CheckVisible>
 	</Selector>
-	<Selector>
+		<Selector>
 		<Value>SelectedItem_BavPledgeId</Value>
 		<CheckVisible>true</CheckVisible>
 	</Selector>
-	<Selector>
+
+		<Selector>
 		<Value>SelectedItem_AssociationId</Value>
 		<CheckVisible>true</CheckVisible>
 	</Selector>	
 
 	</SelectorList>  
   <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
+	 <Versicherer> 
+		 <Name>Gothaer</Name> 
+		 <Id>1108</Id> 
+	 </Versicherer>  
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Allianz</Name>  -->
 		 <!-- <Id>1006</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Alte Leipziger</Name> 
-		 <Id>1007</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Alte Leipziger</Name>  -->
+		 <!-- <Id>1007</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Canada Life</Name>  -->
 		 <!-- <Id>9997</Id>  -->
@@ -107,10 +112,7 @@
 		 <!-- <Name>Die Bayerische</Name>  -->
 		 <!-- <Id>1013</Id>  -->
 	 <!-- </Versicherer> -->
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Gothaer</Name>  -->
-		 <!-- <Id>1108</Id>  -->
-	 <!-- </Versicherer> -->
+
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>HDI</Name>  -->
 		 <!-- <Id>1033</Id>  -->

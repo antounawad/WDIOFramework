@@ -50,12 +50,17 @@
 		</Consultation>
 	</Chapter>
   </New>
-  <Tests documents="false" debug="true"></Tests>
+  <Tests documents="true" debug="false"></Tests>
 	<SelectorList>
 	<Selector>
 		<Value>SelectedItem_VrId</Value>
 		<CheckVisible>false</CheckVisible>
 		</Selector>
+		<Selector>
+		<Value>SelectedItem_ContractTypeId</Value>
+		<CheckVisible>false</CheckVisible>
+	</Selector>	
+		
 		<Selector>
 		<Value>SelectedItem_ImplementationMethodId</Value>
 		<CheckVisible>false</CheckVisible>
@@ -77,20 +82,16 @@
 		<CheckVisible>true</CheckVisible>
 	</Selector>
 		<Selector>
-		<Value>SelectedItem_ContractTypeId</Value>
-		<CheckVisible>true</CheckVisible>
-	</Selector>	
-		<Selector>
 		<Value>SelectedItem_AssociationId</Value>
 		<CheckVisible>true</CheckVisible>
 	</Selector>	
 
 	</SelectorList>  
   <VersichererList all="true" smoke="false" breakAtError="false" onlyTarifCheck="false">
-	 <!-- <Versicherer>  -->
-		 <!-- <Name>Allianz</Name>  -->
-		 <!-- <Id>1006</Id>  -->
-	 <!-- </Versicherer> -->
+	 <Versicherer> 
+		 <Name>Allianz</Name> 
+		 <Id>1006</Id> 
+	 </Versicherer>
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Alte Leipziger</Name>  -->
 		 <!-- <Id>1007</Id>  -->
@@ -127,10 +128,10 @@
 		 <!-- <Name>Nürnberger</Name>  -->
 		 <!-- <Id>1147</Id>  -->
 	 <!-- </Versicherer> -->
-	 <Versicherer> 
-		 <Name>Signal Iduna</Name> 
-		 <Id>1048</Id> 
-	 </Versicherer>
+	 <!-- <Versicherer>  -->
+		 <!-- <Name>Signal Iduna</Name>  -->
+		 <!-- <Id>1048</Id>  -->
+	 <!-- </Versicherer> -->
 	 <!-- <Versicherer>  -->
 		 <!-- <Name>Stuttgarter</Name>  -->
 		 <!-- <Id></Id>  -->
@@ -184,7 +185,7 @@
 	 <TarifList smoke="false" all="true">
 	 <Tarif>
 		<Name>Test</Name>
-		<Id>e27dd6d8-6958-e511-80cf-14dda9d3349f</Id>
+		<Id>9253ed7e-ee19-4268-b989-682ab0486abb</Id>
 	</Tarif>
 	 </TarifList>
 	 <ExcludeList>
