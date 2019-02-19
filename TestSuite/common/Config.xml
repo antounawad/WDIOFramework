@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>Beruf</Name>
+	<ValueList>
+		<Value>Angestellter</Value>
+		<Value>Angestellte</Value>
+		<Value>Angestellte/r (Bürofachkraft)</Value>
+		<Value>Anwendungsentwickler</Value>
+		<Value>Anwendungsentwickler/in</Value>
+		<Value>Bürogehilfe</Value>
+		<Value>Bürogehilfe/-gehilfin</Value>
+		<Value>Bürogehilf(e/in)</Value>
+		<Value>Bürokaufmann</Value>
+		<Value>Büroangestellter</Value>
+		<Value>Fachinformatiker/in (Anwendungsentwicklung)</Value>
+		<Value>Abbrucharbeiter</Value>
+		<Value>Abbrucharbeiter,in</Value>
+		<Value>Bankangestellter - Bankfachleute</Value>
+		<Value>Informatiker - Informatiker</Value>
+		<Value>Abfertigungsangestellte/r</Value>
+		<Value>Abgeordnete/r</Value>
+		<Value>Kraftfahrzeughandwerker/in</Value>
+	</ValueList>
+  </Field>
+  <Field>
+	<Name>Hobby</Name>
+	<ValueList>
+		<Value>kein risikorelevantes Hobby</Value>
+	</ValueList>
+  </Field>  
+  <Field>
+	<Name>InvestmentFond</Name>
+	<NameList>
+		<Name>[id='model_PluginItemTypeValues_FondsAuswahl_SelectedFonds_inneritem_Percentage']</Name>
+		<Name>[id='model_PluginItemTypeValues_Fondsauswahl_SelectedFonds_inneritem_Percentage']</Name>
+		<Name>[id='model_PluginItemTypeValues_FondAuswahl_SelectedFonds_inneritem_Percentage']</Name>
+		<Name>[id='model_PluginItemTypeValues_Investmentfonds_SelectedFonds_inneritem_Percentage']</Name>
+		<Name>[id='model_PluginItemTypeValues_WertsicherungsFondsauswahlType_SelectedFonds_inneritem_Percentage']</Name>
+	</NameList>	
+  </Field>
+    <Field>
+	<Name>JobAuswahl</Name>
+	<NameList>
+		<Name>[name='JobM']</Name>
+		<Name>[name='BerufM']</Name>
+		<Name>[name='BuzHobby']</Name>
+		<Name>[name='Beruf']</Name>
+		<Name>[name='BuzJob']</Name>
+		<Name>[aria-label='Beruf']</Name>
+		<Name>[aria-label='Ausgeübte Tätigkeit']</Name>
+	</NameList>	
+  </Field>
+    <Field>
+	<Name>HobbyAuswahl</Name>
+	<NameList>
+		<Name>[name='BuzHobby']</Name>
+	</NameList>	
+  </Field>
+</Fields>
+</Config>
+
+
+

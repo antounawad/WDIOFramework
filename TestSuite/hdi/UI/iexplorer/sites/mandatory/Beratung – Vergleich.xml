@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Fields>
+  <Field>
+	<Name>Warning</Name>
+	<WarningField>[class='validationSummary animated bounce layout-align-end-center layout-row']</WarningField>
+	<Value>€ nicht überschreiten</Value>
+	<ExceptionField>[ng-click='buRenteMinus()']</ExceptionField>
+	<ExceptionValue>click</ExceptionValue>
+  </Field>
+</Fields>
+</Config>
+
+
+
+
