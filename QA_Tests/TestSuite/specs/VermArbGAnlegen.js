@@ -46,6 +46,7 @@ describe('webdriver.io page', () => {
         testLib.ClickElement(bsSave);
 
         //Tab Zahlungsart 
+        // TO-DO HAPE , WHY?
         testLib.PauseAction(1000);
         testLib.ClickElement('//md-tab-item[text()="Zahlungsart / GwG"]','#Iban');
 
