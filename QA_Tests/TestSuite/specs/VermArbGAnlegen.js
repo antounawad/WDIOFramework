@@ -20,57 +20,62 @@ describe('webdriver.io page', () => {
 
         browser.url('https://automatictest.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F');
         login.LoginUser("antoun.awad@xbav.de", "qatestAantoun")
-        testLib.PauseAction(2000);
+
+        
+
+        
         // Click the ArbG Chapter and click add new ArbG
         testLib.ClickElementByAttribute('title', 'Arbeitgeber');
         testLib.ClickElementByAttribute('class', 'md-button-small md-accent md-button md-ink-ripple');
         // Fill in the ArbG data 
-        testLib.ClickElementSimple("#Stammdaten_Name")
+        testLib.ClickElement("#Stammdaten_Name")
         testLib.SetValue("#Stammdaten_Name", 'FirstTest');
-        testLib.PauseAction(2000);
         testLib.ClickElementSimple("#Stammdaten_MehrereBetriebsstaetten");
-        testLib.PauseAction(1000);
         // xpath on text() Click tab BS and add a new BS
-        var tabClick = $('//md-tab-item[text()="Betriebsstätten"]');
-        tabClick.click();
-        testLib.PauseAction(1000);
-        testLib.ClickElementSimple("#btnNewFacility");
-        testLib.PauseAction(2000);
-        var bsName = $('#Betriebsstaetten_SelectedItem_Name');
-        bsName.click();
-        bsName.setValue('MainBS');
-        var bsStreet = $('#Betriebsstaetten_SelectedItem_Street');
-        bsStreet.click();
-        bsStreet.setValue('Street');
-        testLib.PauseAction(2000);
-        var bsPLZ = $('#FacilityPlz');
-        bsPLZ.click();
-        bsPLZ.setValue('66111');
-        testLib.PauseAction(2000);
-        var bsSave = $('#modalEditFacility_btnSpeichern');
-        bsSave.click();
-        testLib.PauseAction(2000);
+        var tabClick = '//md-tab-item[text()="Betriebsstätten"]';
+        testLib.ClickElement(tabClick,"#btnNewFacility")
+        var bsName = '#Betriebsstaetten_SelectedItem_Name';
+        testLib.ClickElement("#btnNewFacility",bsName);
+        testLib.SetValue(bsName,'MainBS')
+        var bsStreet = '#Betriebsstaetten_SelectedItem_Street';
+        testLib.SetValue(bsStreet,'Street');
+
+        var bsPLZ = '#FacilityPlz';
+        testLib.SetValue(bsPLZ,'66111');
+        var bsSave = '#modalEditFacility_btnSpeichern';
+        testLib.ClickElement(bsSave);
+
         //Tab Zahlungsart 
-        var tabClick = $('//md-tab-item[text()="Zahlungsart / GwG"]');
-        tabClick.click();
-        var paymentMethod = $('#Kontodaten_PaymentMethod');
-        paymentMethod.click();
+        testLib.PauseAction(1000);
+        testLib.ClickElement('//md-tab-item[text()="Zahlungsart / GwG"]','#Iban');
+
+        //testLib.ClickElement('//md-content[text()="Lastschrift');
+        var paymentMethod = '#Kontodaten_PaymentMethod';
+        testLib.ClickElement(paymentMethod);
         var clickTransfer = $('#select_option_139');
-        //var clickTransfer = $('//md-option[text()="Überweisung"]');
         clickTransfer.click();
-        var moneyLaundry = $('#Kontodaten_HandeltAufEigeneRechnung');
-        moneyLaundry.click();
-        testLib.ClickElementByAttribute("ng-click", "saveVn($event)")//  $('//button[text()="Speichern"]');
+
+        testLib.ClickElementSimple('#Kontodaten_HandeltAufEigeneRechnung');
+
+        //testLib.SetValue(paymentMethod, 'Lastschrift')
+        //HaPe prüfen und ClassLib ergänzen testLib.SetSimpleListBoxValue(paymentMethod, '2')
+        //var clickTransfer = $('//md-option[text()="Überweisung"]');
+        //clickTransfer.click();
+        testLib.ClickElementByAttribute("ng-click", "saveVn($event)",'#Search')//  $('//button[text()="Speichern"]');
 
         // Check if the ArbG is created and exsits in the list 
-        testLib.PauseAction(1000);
-        var searchArbG = $('#Search');
-        searchArbG.click();
-        searchArbG.setValue('FirstTest');
-        var tabClick = $('//button[text()="Suchen"]');
-        tabClick.click();
-        var tabClick = $('//a[text()="FirstTest"]');
-        if (tabClick.isDisplayed()) {
+        var searchArbG = '#Search';
+        testLib.SetValue(searchArbG, 'FirstTest');
+
+        var searchButton = '//button[text()="Suchen"]';
+        testLib.ClickElementSimple(searchButton);
+
+
+
+        var searchElement = '//a[text()="FirstTest"]';
+        var result = testLib.CheckIsVisible(searchElement)
+        
+        if (result) {
             console.log("FirstTest is there!!")
         }
         else {
@@ -81,7 +86,7 @@ describe('webdriver.io page', () => {
 
 
 
-
+        var x = "_";
 
 
 

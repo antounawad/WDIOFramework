@@ -25,6 +25,10 @@ describe('webdriver.io page', () => {
 
         vn.SearchVN("Edocbox", 2000);
 
+        testLib.Navigate2Site('Arbeitgeber – Stammdaten')
+
+        testLib._test("name","Name");
+
         testLib.Navigate2Site("Arbeitnehmer – Auswahl");
 
         vp.SearchVP("Nachname, VPEdocBox", 2000);
@@ -32,9 +36,11 @@ describe('webdriver.io page', () => {
         testLib.Navigate2Site("Beratungsübersicht");
         testLib.PauseAction(500);
         testLib.ClickElement('#btnFastForward');
-        testLib.PauseAction(500);
-        testLib.Navigate2Site("Angebot – Kurzübersicht");
+        testLib.PauseAction(2000);
+        // testLib.GetAttributeValueOfSelector('tabindex', -1);
 
+        testLib.ClickElementByAttribute('class', 'md-tab');
+        // testLib.GetInnerTextByAttribute('class', 'md-tab');
         testLib.CompareAndClickIfMatch('ng-click', "setOrder('AngelegtAm')", 'Angelegt');
 
 

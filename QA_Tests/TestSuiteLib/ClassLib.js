@@ -34,7 +34,6 @@ var _Navigate2SiteIterator = 0;
 var _ClickIterator = 0;
 var _SearchIterator = 0;
 var _ClearElementIterator = 0;
-var __TempSelector = null;
 
 var _WaitUntilSelector = "";
 
@@ -97,6 +96,7 @@ var _SplitTo = 0;
 var _SelectorIndexArr = [100]
 var _SelectorArr = [100]
 
+
 class TestLib {
 
     set TakeScreenShotAllDialogs(value) {
@@ -114,7 +114,6 @@ class TestLib {
     get SplitFrom() { return _SplitFrom };
     get SplitTo() { return _SplitTo };
     set SplitTo(value) { _SplitTo = value };
-    set TempSelector(value) { __TempSelector = value };
 
     get IsDebug() { return _debug === 'true' }
     get TypeSmoke() { return _TypeSmoke === 'true' };
@@ -265,10 +264,10 @@ class TestLib {
     }
 
     SetListBoxValue(selector, value) {
-        var fieldname = this.GetFieldName(selector);
+        var fieldname = this._GetFieldName(selector);
 
         if (fieldname.includes('[')) {
-            var ex = $(fieldname);
+            var ex = this._GetSelector(fieldname);
             fieldname = '#' + ex.getAttribute('id');
         }
 
@@ -278,7 +277,7 @@ class TestLib {
             throw new Error("Warning: Selector not found...");
         }
 
-        var List = $(fieldname);
+        var List = this._GetSelector(fieldname);
         var values = List.getAttribute("md-option[ng-repeat]", "value", true);
         var Ids = List.getAttribute("md-option[ng-repeat]", "id", true);
 
@@ -297,25 +296,23 @@ class TestLib {
 
     GetText(selector) {
 
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
+       var selObj = this._GetSelector(selector);
+        if (selObj !== null && selObj.isDisplayed()) {
 
-            return searchSelector.getText();
-
+            return selObj.getText();
         }
         else {
             if (this.IsDebug)
                 console.log("Warning: Selector: " + selector + " not found.")
-            return false;
+            return "";
         }
 
     }
 
     GetValue(selector) {
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
-
-            var check = searchSelector.getValue()
+        var selObj = this._GetSelector(selector);
+        if (selObj !== null && selObj.isDisplayed()) {
+            var check = selObj.getValue()
             if (check != null) {
                 return check;
             }
@@ -323,34 +320,34 @@ class TestLib {
         else {
             if (this.IsDebug)
                 console.log("Warning: Selector " + selector + " not found.")
-            return false;
+            return "";
         }
 
     }
 
     GetAttributeValue(selector, attribute) {
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
+        var selObj = this._GetSelector(selector);
+        if (selObj !== null && selObj.isDisplayed()) {
 
-            var x = searchSelector.getAttribute(attribute);
-            return x;
+            var value = selObj.getAttribute(attribute);
+            return value;
         }
         else {
             if (this.IsDebug)
                 console.log("Warning: Selector " + selector + " not found.")
-            return false;
+            return "";
         }
 
     }
 
 
     CompareValue(selector, value) {
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
+        var selObj = this._GetSelector(selector);
+        if (selObj !== null && selObj.isDisplayed()) {
 
-            var check = searchSelector.getValue()
+            var check = selObj.getValue()
             if (check != null) {
-                return searchSelector.getValue() === value;
+                return check === value;
             }
             else {
                 var text = searchSelector.getText();
@@ -375,7 +372,7 @@ class TestLib {
                 _SearchIterator = 0;
                 throw new Error("Zu viele SearchElement Iterationen");
             }
-            var searchSelector = $(selector)
+            var searchSelector = this._GetSelector(selector);
             assert.notEqual(searchSelector, null)
 
             var entryValue = searchSelector.getValue();
@@ -411,12 +408,20 @@ class TestLib {
 
 
     CheckisEnabled(selector, waitTime = 300) {
+
         try {
-            var retValue = $(selector);
-            retValue.waitForEnabled(waitTime);
+
+            var selObj = this._GetSelector(selector)
+            selObj.waitForEnabled(waitTime);
+            if(selObj !== null)
+            {
+                
+                this._WaitUntilEnabled(selector, waitTime);
+            }
+            
         } catch (ex) {
         } finally {
-            return retValue.isDisplayed();
+            return selObj.isDisplayed();
         }
     }
 
@@ -424,7 +429,7 @@ class TestLib {
 
     CheckIsVisible(selector, waitTime = 300) {
         try {
-            var retValue = $(selector);
+            var retValue = this._GetSelector(selector);
             retValue.waitForDisplayed(waitTime);
         } catch (ex) {
         } finally {
@@ -434,7 +439,7 @@ class TestLib {
 
     CheckIsVisibleGetSelector(selector, waitTime = 300, click = false) {
         try {
-            var retValue = $(selector);
+            var retValue = this._GetSelector(selector);
             retValue.waitForDisplayed(waitTime);
             if (click) {
                 retValue.click();
@@ -453,10 +458,18 @@ class TestLib {
         }
 
         var res = true;
-
+        var funcSel = this._GetSelector;
         try {
             res = browser.waitUntil(function () {
-                return $(waitUntilSelector).isExisting();
+                var selObj = funcSel(waitUntilSelector);
+                if(selObj !== null)
+                {
+                    return selObj.isExisting();
+                }
+                else
+                {
+                    return false;
+                }
             }, waitTime, _message);
         } catch (ex) {
             res = false;
@@ -604,7 +617,7 @@ class TestLib {
                 _ClearElementIterator = 0;
                 throw new Error("Warning: Zu viele Iterationen ClearElement");
             }
-            var element = $(elementName);
+            var element = this._GetSelector(elementName);
 
             if (_ClearElementIterator > 0) {
                 this.PauseAction(1000);
@@ -627,8 +640,7 @@ class TestLib {
     }
 
     SelectHauptAgentur() {
-        this._WaitUntilVisible(_btnMainAgency);
-        this.ClickElementSimple(_btnMainAgency);
+        this._WaitUntilVisibleWithClick(_btnMainAgency,true);
         this._WaitUntilVisible(_btnNewVn, 50000);
         this.SaveScreenShot();
 
@@ -648,45 +660,20 @@ class TestLib {
     ClickElementSimple(selector, pauseTime = 0) {
         try {
 
-            if (__TempSelector != null) {
-                __TempSelector.click();
-
+            var selObj = this._GetSelector(selector);
+            if (selObj === null || !selObj.isExisting())
+            {
+                return;
             }
-            else {
+            assert.notEqual(selObj.selector, "");
 
-                var retValue = $(selector);
-                if (!retValue.isExisting()) {
-                    return;
-                }
-
-                assert.notEqual(retValue.selector, "");
-
-                retValue.click();
-
-                if (pauseTime > 0) {
-                    this.PauseAction(pauseTime);
-                }
-                return retValue;
-            }
-        } catch (ex) {
-            console.log("Warning: ClickElementSimple: " + ex.message);
-            if (!this._CheckPopUp(retValue.selector)) {
-                throw new Error(ex);
-            }
-        }
-    }
-
-    ClickElementSimpleAtSelector(selector, waitUntilSelector = "", pauseTime = 0) {
-        try {
-
-            selector
-
-            this._WaitUntilVisible(waitUntilSelector);
+            selObj.click();
+            this._CheckAndClearSelectorArr(selector);
 
             if (pauseTime > 0) {
                 this.PauseAction(pauseTime);
             }
-            return retValue;
+            return selObj;
         } catch (ex) {
             console.log("Warning: ClickElementSimple: " + ex.message);
             if (!this._CheckPopUp(retValue.selector)) {
@@ -702,6 +689,14 @@ class TestLib {
         }
     }
 
+    _CheckAndClearSelectorArr(selector)
+    {
+        if(selector.includes("next"))
+        {
+            this._InitSelectorIndex();
+        }
+    }
+
     ClickElement(selector, waitforVisibleSelector = '', timeout = 50000, pauseTime = 0, click = false) {
 
         if (_ClickIterator >= 20) {
@@ -709,7 +704,7 @@ class TestLib {
             throw new Error("Warning: Zu viele ClickAction Iterationen");
         }
 
-        var retValue = $(selector);
+        var retValue = this._GetSelector(selector);
 
         this._WaitUntilVisible(retValue.selector)
         this._WaitUntilEnabled(retValue.selector)
@@ -717,6 +712,8 @@ class TestLib {
 
         try {
             retValue.click();
+            this._CheckAndClearSelectorArr(selector);
+           
             if (retValue.selector == _btnNavPrev || selector == _btnNavNext) {
                 this.SaveScreenShot();
             }
@@ -736,10 +733,10 @@ class TestLib {
             }
 
             if (this.CheckIsVisible(_btnTarifSave)) {
-                $(_btnTarifSave).click();
+                this._GetSelector(_btnTarifSave).click();
             }
             else if (this.CheckIsVisible(_btnNavPrev)) {
-                $(_btnNavPrev).click();
+                this._GetSelector(_btnNavPrev).click();
                 this.SaveScreenShot();
             }
 
@@ -747,14 +744,18 @@ class TestLib {
         }
 
         if (waitforVisibleSelector == '#btnFastForward') {
-            if (!$(waitforVisibleSelector).isDisplayed()) {
+            if (!this._GetSelector(waitforVisibleSelector).isDisplayed()) {
                 waitforVisibleSelector = _btnNavNext;
             }
         }
 
 
         if (waitforVisibleSelector != '') {
-            waitforVisibleSelector.waitForVisible();
+            var selObj = this._GetSelector(waitforVisibleSelector)
+            if(selObj !== null)
+            {
+                selObj.waitForDisplayed(timeout)
+            }
         }
 
         if (click) {
@@ -788,7 +789,7 @@ class TestLib {
     CheckText(selector, text) {
         var index = -1;
         if (this.SmokeTest && this.Version != '') {
-            var elem = $(selector);
+            var elem = this._GetSelector(selector);
             var text = elem.getText();
             if (text != null && text.length > 0)
                 index = text.indexOf(text);
@@ -811,6 +812,41 @@ class TestLib {
 
     }
 
+    _WaitUntilVisibleWithClick(waitUntilSelector = _btnNavNext, click = false, waitTime = 10000,  message = "") {
+        _WaitUntilSelector = waitUntilSelector;
+        var _message = 'expected: ' + waitUntilSelector + ' to be different after: ' + waitTime;
+        if (message != "") {
+            _message = message;
+        }
+
+        if (this.CheckIsVisible(_btnBlurredOverlay)) {
+            this.ClickElementSimple(_btnBlurredOverlay);
+            if (this.CheckIsVisible(_gridSelector)) {
+                this.ClickElementSimple(_gridSelector);
+            }
+        }
+
+        var funcSel = this._GetSelector;
+        var result = browser.waitUntil(function () {
+            var elem = funcSel(waitUntilSelector);
+            if(elem != null)
+            {
+                return elem.isDisplayed();
+            }
+            return false;
+            
+        }, waitTime, _message);
+
+        if(result && click)
+        {
+            var selObj = funcSel(waitUntilSelector)
+            if(selObj !== null)
+            {
+                selObj.click();
+            }
+        }
+    }    
+
 
     _WaitUntilVisible(waitUntilSelector = _btnNavNext, waitTime = 10000, message = "") {
         _WaitUntilSelector = waitUntilSelector;
@@ -826,11 +862,17 @@ class TestLib {
             }
         }
 
-
-        browser.waitUntil(function () {
-            var elem = $(waitUntilSelector);
-            return elem.isDisplayed();
+        var funcSel = this._GetSelector;
+        var result = browser.waitUntil(function () {
+            var elem = funcSel(waitUntilSelector);
+            if(elem != null)
+            {
+                return elem.isDisplayed();
+            }
+            return false;
+            
         }, waitTime, _message);
+        return result;
     }
 
     _WaitUntilEnabled(waitUntilSelector = _btnNavNext, waitTime = 50000, message = "") {
@@ -847,37 +889,37 @@ class TestLib {
             }
         }
 
+        var funcSel = this._GetSelector;
 
-        browser.waitUntil(function () {
-            var elem = $(waitUntilSelector)
-            return elem.isDisplayed();
+       var result =  browser.waitUntil(function () {
+            var elem = funcSel(waitUntilSelector)// this._GetSelector(selector)
+            if(elem != null)
+            {
+                return elem.isDisplayed();
+            }
+            return false;
 
         }, waitTime, _message);
 
     }
 
-    _WaitUntilExist(waitUntilSelector, waitTime = 5000, message = "") {
+    _WaitUntilExist(waitUntilSelector, waitTime = 50000, message = "") {
         _WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: ' + waitUntilSelector + ' to be different after: ' + waitTime;
         if (message != "") {
             _message = message;
         }
 
+        var funcSel = this._GetSelector;
+
         var result = browser.waitUntil(function () {
 
-            var isString = typeof (waitUntilSelector) === "string";
-
-            if (isString) {
-                var res = $(_WaitUntilSelector);
-                if (res != null) {
-                    __TempSelector = res;
+                var res = funcSel(_WaitUntilSelector);
+                if(res !== null)
+                {
+                    return res.isExisting();
                 }
-                return res.isExisting();
-            }
-            else {
-                return _WaitUntilSelector;
-            }
-
+                return false;
         }, waitTime, _message);
 
         return result;
@@ -887,16 +929,21 @@ class TestLib {
 
     // in some Special Cases where there is no ID or the ID is Dynamic, u can Click any Elem by giving a unique Attribute as a complete String 
     //example : var sel = $('[ng-click="showWageslipCarousel($event)"]') >> attribute = ng-click att-value= show...
-    ClickElementByAttribute(attribute, attributeValue) {
-
-
+    ClickElementByAttribute(attribute, attributeValue, waitForUntilVisible="") {
         var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
-        var sel = $(searchSelector);
-        if (searchSelector != null) {
-            sel.click();
+
+        if(this._WaitUntilVisible(searchSelector))
+        {
+            var sel = this._GetSelector(searchSelector);
+            if (sel != null) {
+                sel.click();
+                if(waitForUntilVisible != "")
+                {
+                    this._WaitUntilVisible(waitForUntilVisible);
+                }
+            }
+    
         }
-
-
     }
 
     // compare a value of innerText of a given Attribute with a give Text from the Usre and Click the element if match 
@@ -904,7 +951,7 @@ class TestLib {
 
 
         var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']';
-        var sel = $(searchSelector);
+        var sel = this._GetSelector(searchSelector);
         if (sel != null) {
             var selectorValue = sel.getText();
             if (selectorValue === compareValue) {
@@ -914,28 +961,6 @@ class TestLib {
 
 
     }
-
-    // ReadAttributeSelectors(select,click=false)
-    // {
-
-
-
-    //     var sel = $(select);
-    //     if(sel != null)
-    //     {
-    //         var a = sel.getValue();
-    //         var b = sel.getAttribute("name");
-    //         var c = sel.getAttribute("class");
-    //         var d = sel.getAttribute("id");
-    //         if(click)
-    //         {
-    //             sel.click();
-    //         }
-
-    //     }    
-
-    // }
-
 
     _WaitUntilTitle(waitTime = 5000, message = "") {
         var _message = 'expected: title to be different after: ' + waitTime;
@@ -987,7 +1012,7 @@ class TestLib {
         return dt;
     }
 
-
+    
     InitBrowserStartVermittler(readxml = false) {
         var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de' + 'Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F';
         if (String(this.TargetUrl).toUpperCase() == 'BERATUNG') {
@@ -1034,7 +1059,7 @@ class TestLib {
         var fieldname = this._GetFieldName(selector);
 
         if (fieldname.includes('[')) {
-            var ex = $(fieldname);
+            var ex = this._GetSelector(fieldname);
             fieldname = '#' + ex.getAttribute('id');
         }
 
@@ -1044,7 +1069,7 @@ class TestLib {
             throw new Error("Selector not found...");
         }
 
-        var List = $(fieldname);
+        var List = this._GetSelector(fieldname);
         var values = List.getAttribute("md-option[ng-repeat]", "value", true);
         var Ids = List.getAttribute("md-option[ng-repeat]", "id", true);
 
@@ -1061,11 +1086,25 @@ class TestLib {
         }
     }
 
-    GetText(selector) {
-        if ($(selector).isVisible()) {
-            var searchSelector = $(selector)
+    SetSimpleListBoxValue(selector, value) {
 
-            return searchSelector.getText();
+        var exist = this._WaitUntilExist(selector);
+
+        if (!exist) {
+            throw new Error("Selector not found...");
+        }
+
+        var List = this._GetSelector(selector).getValue();
+        //List.click();
+        //List.click();
+        List.setValue('Lastschrift');
+    }    
+
+    GetText(selector) {
+        var selObj = this._GetSelector(selector);
+        if (selObj !== null && selObj.isDisplayed()) {
+
+            return selObj.getText();
 
         }
         else {
@@ -1107,86 +1146,10 @@ class TestLib {
     }
 
     Compare2Values(value1, value2) {
-        var result = value1 === values2;
+        var result = value1 === value2;
         return result;
     }
 
-
-    GetAttributeValue(selector, attribute) {
-        var selector = $(selector);
-
-        if (selector.isExisting() && selector.isDisplayed()) {
-            return selector.getAttribute(attribute);
-        }
-        else {
-            if (this.IsDebug)
-                console.log("Selector: " + selector + " not found.")
-            return "";
-        }
-
-    }
-
-
-    GetValue(selector) {
-
-        var test = $(selector);
-
-
-        var x = test.getAttribute("name");
-
-        var test2 = test.isExisting();
-
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
-
-            var check = searchSelector.getValue()
-            return check;
-        }
-        else {
-            if (this.IsDebug)
-                console.log("Selector: " + selector + " not found.")
-            return false;
-        }
-
-    }
-
-    GetAttributeValue(selector, attribute) {
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
-
-            var x = searchSelector.getAttribute(attribute);
-            return x;
-        }
-        else {
-            if (this.IsDebug)
-                console.log("Selector: " + selector + " not found.")
-            return false;
-        }
-
-    }
-
-
-    CompareValue(selector, value) {
-        if ($(selector).isDisplayed()) {
-            var searchSelector = $(selector)
-
-            var check = searchSelector.getValue()
-            if (check != null) {
-                return searchSelector.getValue() === value;
-            }
-            else {
-                var text = searchSelector.getText();
-
-                return (text.includes(value));
-            }
-        }
-        else {
-            if (this.IsDebug)
-                console.log("Selector: " + selector + " not found.")
-            return false;
-        }
-
-    }
 
     _TakeErrorShot(message) {
         // Todo verbessern :-)
@@ -1345,34 +1308,32 @@ class TestLib {
 
                     if (__siteFieldWarning != null) {
                         this.PauseAction(3000);
-                        var warningBlock = $(__siteFieldWarning);
+                        var warningBlock = this._GetSelector(__siteFieldWarning);
                         if (warningBlock != null) {
-                            var text = warningBlock.getText();
+                            var text = browser.getText(warningBlock.selector);
                             if (text.includes(__siteFieldValue)) {
                                 var exfield = this._CheckFieldAttribute('ExceptionField', fields[element]);
                                 var exValue = this._CheckFieldAttribute('ExceptionValue', fields[element]);
                                 if (exfield != null && exValue != null) {
                                     __siteFieldName = this._GetFieldName(exfield);
-                                    __siteFieldName = $(__siteFieldName);
-                                    __siteFieldName.click();
+                                    __siteFieldName = this._GetSelector(__siteFieldName);
+                                    browser.click(__siteFieldName.selector);
                                     this._WaitUntilEnabled();
                                     this.PauseAction(5000);
                                     this.ClickElementSimple(_btnNavNext);
-
+                                    
                                 }
                             }
                         }
-                        continue;
+						continue;
                     }
 
 
                     try {
-                        var retvalue = this._WaitUntilExist(__siteFieldName, 2000);
-                        if (typeof (retvalue) === "string") {
-                            var enabled = $(__siteFieldName).isEnabled();
-                            if (!enabled) {
-                                throw new Error(fieldName + " not enabled");
-                            }
+                        this._WaitUntilExist(__siteFieldName, 2000);
+                        var enabled = browser.isEnabled(__siteFieldName);
+                        if (!enabled) {
+                            throw new Error(fieldName + " not enabled");
                         }
                     }
                     catch (ex) {
@@ -1399,19 +1360,19 @@ class TestLib {
                     return;
                 }
 
-                __siteFieldExist = this.CheckExist(__siteFieldName, 500);
+                __siteFieldExist = this.CheckExist(__siteFieldName,500);
 
                 if (__siteFieldExist) {
 
                     this.PauseAction(300);
 
                     if (__siteFieldList != null && __siteFieldList === "true") {
-                        if (__siteFieldName.includes('[')) {
-                            var ex = $(__siteFieldName);
+						if (__siteFieldName.includes('[')) {
+                            var ex = this._GetSelector(__siteFieldName);
                             __siteFieldName = '#' + ex.getAttribute('id');
                         }
 
-                        var exist = this.CheckExist(__siteFieldName, 500);
+                        var exist =  this.CheckExist(__siteFieldName,500);
                         if (!exist) {
                             break;
                         }
@@ -1421,14 +1382,14 @@ class TestLib {
                         var Ids = null;
 
                         try {
-                            List = $(__siteFieldName);
+                            List = this._GetSelector(__siteFieldName);
                             values = List.getAttribute("md-option[ng-repeat]", "value", true);
                             Ids = List.getAttribute("md-option[ng-repeat]", "id", true);
                         }
                         catch (ex) {
                             this.RefreshBrowser();
                             this.PauseAction(500);
-                            List = $(__siteFieldName);
+                            List = this._GetSelector(__siteFieldName);
                             values = List.getAttribute("md-option[ng-repeat]", "value", true);
                             Ids = List.getAttribute("md-option[ng-repeat]", "id", true);
 
@@ -1437,7 +1398,7 @@ class TestLib {
 
                         var index = values.indexOf(__siteFieldValue);
 
-                        var checkIsEnabled = __siteFieldName.getAttribute("disabled");
+                        var checkIsEnabled = browser.getAttribute(__siteFieldName, "disabled");
 
 
                         if (Ids.length > 1 && checkIsEnabled == null) {
@@ -1448,11 +1409,11 @@ class TestLib {
                             catch (ex) {
                                 console.log("Error: CheckSiteFields: " + ex.message);
                                 List.setValue("1");
-                                List.click();
+                                browser.leftClick(List.selector, 10, 10);
 
 
                                 var arrowSelektor = '.md-select-icon';
-                                List = $(arrowSelektor);
+                                List = this._GetSelector(arrowSelektor);
                                 if (List != null) {
                                     this.ClickElementSimple(arrowSelektor, 1000);
                                 }
@@ -1472,12 +1433,12 @@ class TestLib {
                     else {
                         if (__siteFieldValue === 'Click') {
                             var checkEnableBefore = this._CheckFieldAttribute('CheckEnableBefore', fields[element]);
-                            if (checkEnableBefore != null && !$(__siteFieldName).isEnabled()) {
+                            if (checkEnableBefore != null && !browser.isEnabled(__siteFieldName)) {
                                 break;
                             }
 
                             var checkFieldBefore = this._CheckFieldAttribute('CheckFieldBefore', fields[element]);
-                            if (checkFieldBefore != null && $(checkFieldBefore).isExisting()) {
+                            if (checkFieldBefore != null && browser.isExisting(checkFieldBefore)) {
                                 break;
                             }
 
@@ -1485,7 +1446,7 @@ class TestLib {
 
                             var checkBefore = this._CheckFieldAttribute('CheckBefore', fields[element]);
                             if (checkBefore != null) {
-                                var searchSelector = $('#' + checkBefore)
+                                var searchSelector = this._GetSelector('#' + checkBefore)
 
                                 var value = searchSelector.getValue();
 
@@ -1500,18 +1461,18 @@ class TestLib {
                         else {
                             if (__siteFieldAdd != null && __siteFieldAdd === "true") {
                                 this.ClickElement(__siteFieldName);
-                                var sel = $(__siteFieldName);
+                                var sel = this._GetSelector(__siteFieldName);
                                 sel.addValue(__siteFieldValue);
                             }
                             else {
                                 if (__siteFieldName.substr(0, 1) === '[') {
-                                    $(__siteFieldName).click();
+                                    browser.click(__siteFieldName);
                                     if (__siteFieldFieldValueArr != null) {
-                                        var sel = $(__siteFieldName);
+                                        var sel = this._GetSelector(__siteFieldName);
                                         for (var fva = 0; fva <= __siteFieldFieldValueArr.length - 1; fva++) {
                                             this.SetValue(__siteFieldName, __siteFieldFieldValueArr[fva], 300, (__siteFieldCheck != null && __siteFieldCheck === "true" && fva == 0));
 
-                                            var ex = $('.ng-scope.md-input-invalid.md-input-has-value');
+                                            var ex = this._GetSelector('.ng-scope.md-input-invalid.md-input-has-value');
 
                                             if (ex.type === 'NoSuchElement') {
                                                 break;
@@ -1537,16 +1498,14 @@ class TestLib {
 
             };
         }
-        __TempSelector = null;
     }
-
 
 
 
     _CheckPopUp(clickSelector) {
         var selectorLeaveOrGo = '.swal2-confirm.md-button.md-raised.md-accent';
         if (this.CheckIsVisible(selectorLeaveOrGo)) {
-            $(selectorLeaveOrGo).click();
+            this._GetSelector(selectorLeaveOrGo).click();
             return true;
         }
         else {
@@ -1568,7 +1527,7 @@ class TestLib {
 
         this._WaitUntilVisible(_leftSiteMenu);
 
-        var checkBlock = $(_leftSiteMenu);
+        var checkBlock = this._GetSelector(_leftSiteMenu);
 
         if (checkBlock.state == 'success') {
             if (checkBlock.getAttribute('class').indexOf('navbar-folded') >= 0) {
@@ -1791,7 +1750,7 @@ class TestLib {
 
     _CheckisEnabled(selector, waitTime = 3000) {
         this._WaitUntilVisible(selector, waitTime);
-        var result = $(selector).isEnabled();
+        var result = this._GetSelector(selector).isEnabled();
         return result;
     }
 
@@ -1816,8 +1775,71 @@ class TestLib {
         }
     }
 
+    _GetSelector(selector) 
+      {
+    
+        try{
+    
+          var selectorPos = _SelectorIndexArr.indexOf(selector);
+          if(selectorPos < 0)
+          {
+            var sel = $(selector);
 
+            if(sel !== null)
+            {
+              _SelectorIndexArr.push(selector);
+              _SelectorArr.push(sel);
+              return  sel;
+            }
+          }
+          else
+          {
+              var sel = _SelectorArr[selectorPos];
+              return sel;
+          }
+        }catch(ex)
+        {
+                return null;
+        }
+      }    
 
+    _GetSelectorFromAttribute(attribute,attributeValue) 
+      {
+    
+        try{
+    
+          var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
+          return this._GetSelector(searchSelector);
+        }catch(ex)
+        {
+                return null;
+        }
+      } 
+
+    _InitSelectorIndex()
+      {
+        try{
+          for (var i = 0; i <= _SelectorArr.length - 1; i++) 
+          { 
+            _SelectorArr[i] = null;
+            _SelectorIndexArr[i]= null;
+          }
+        }catch(ex)
+        {
+
+        }
+      }
+
+     _test(eins, zwei)
+     {
+         var x = this._GetSelector(eins,zwei);
+         var z = x.isDisplayed();
+          x = this._GetSelector(eins,zwei);
+          z = x.isDisplayed();
+
+     }
+	 
+	 
 
 }
 
