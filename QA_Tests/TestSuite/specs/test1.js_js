@@ -1,0 +1,45 @@
+var TestLib = require('C:/git/shared/QA_Tests/TestSuiteLib/ClassLib.js')
+const testLib = new TestLib();
+const assert = require('assert');
+var Login = require('C:/git/shared/QA_Tests/TestSuiteLib/Login.js')
+const login = new Login()
+
+
+describe('webdriver.io page', () => {
+    it('should have the right title', () => {
+
+		testLib.InitBrowserStart(true);
+	
+        login.LoginUser("ProduktivAutomatikTest@xbav.de","ProduktivAutomatikTest@xbav.de")
+
+        testLib.Navigate2Site('Arbeitgeber – Zahlungsart');
+
+        var val1 = testLib.GetAttributeValue('#Iban', 'restrict');
+
+        var val1 = testLib.GetValue('#accept');
+        var val2 = testLib.GetValue('#container-content');
+
+        var val1 = testLib.GetValue('#name');
+
+        var x = "y";
+
+        // Beispiel Class Selector
+        //md-fab md-mini md-button md-ink-ripple
+        //".md-fab.md-mini.md-button.md-ink-ripple"
+
+        // Beispiel ID
+        // layout="Column"
+        // "#layout"
+
+        
+
+        // testLib.GetAttributeValue(selector, attribute);
+
+        // testLib.CompareValue(selector, value);
+        // testLib.CheckText(selector, text);
+
+        
+        
+    
+    });
+});

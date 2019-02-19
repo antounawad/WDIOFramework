@@ -42,6 +42,7 @@ describe('default-downloads', function() {
 
   // Ensure that any internal state of the module is clean for each test
   beforeEach(function() {
+    this.timeout(60000);
     computeDownloadUrls = require('../lib/compute-download-urls');
   });
   afterEach(function() {
@@ -129,20 +130,7 @@ describe('default-downloads', function() {
         });
       });
 
-      it('ia32 download exists', function(done) {
-        opts = merge(opts, {
-          drivers: {
-            chrome: {
-              arch: 'ia32'
-            }
-          }
-        });
-
-        computedUrls = computeDownloadUrls(opts);
-
-        assert(computedUrls.chrome.indexOf('linux32') > 0);
-        doesDownloadExist(computedUrls.chrome, done);
-      });
+      // No x32 for latest chromedriver on linux
 
       it('x64 download exists', function(done) {
         opts = merge(opts, {
