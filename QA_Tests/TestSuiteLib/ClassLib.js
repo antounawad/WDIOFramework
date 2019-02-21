@@ -296,7 +296,7 @@ class TestLib {
 
     GetText(selector) {
 
-       var selObj = this._GetSelector(selector);
+        var selObj = this._GetSelector(selector);
         if (selObj !== null && selObj.isDisplayed()) {
 
             return selObj.getText();
@@ -413,12 +413,11 @@ class TestLib {
 
             var selObj = this._GetSelector(selector)
             selObj.waitForEnabled(waitTime);
-            if(selObj !== null)
-            {
-                
+            if (selObj !== null) {
+
                 this._WaitUntilEnabled(selector, waitTime);
             }
-            
+
         } catch (ex) {
         } finally {
             return selObj.isDisplayed();
@@ -462,12 +461,10 @@ class TestLib {
         try {
             res = browser.waitUntil(function () {
                 var selObj = funcSel(waitUntilSelector);
-                if(selObj !== null)
-                {
+                if (selObj !== null) {
                     return selObj.isExisting();
                 }
-                else
-                {
+                else {
                     return false;
                 }
             }, waitTime, _message);
@@ -640,7 +637,7 @@ class TestLib {
     }
 
     SelectHauptAgentur() {
-        this._WaitUntilVisibleWithClick(_btnMainAgency,true);
+        this._WaitUntilVisibleWithClick(_btnMainAgency, true);
         this._WaitUntilVisible(_btnNewVn, 50000);
         this.SaveScreenShot();
 
@@ -661,8 +658,7 @@ class TestLib {
         try {
 
             var selObj = this._GetSelector(selector);
-            if (selObj === null || !selObj.isExisting())
-            {
+            if (selObj === null || !selObj.isExisting()) {
                 return;
             }
             assert.notEqual(selObj.selector, "");
@@ -689,10 +685,8 @@ class TestLib {
         }
     }
 
-    _CheckAndClearSelectorArr(selector)
-    {
-        if(selector.includes("next"))
-        {
+    _CheckAndClearSelectorArr(selector) {
+        if (selector.includes("next")) {
             this._InitSelectorIndex();
         }
     }
@@ -713,7 +707,7 @@ class TestLib {
         try {
             retValue.click();
             this._CheckAndClearSelectorArr(selector);
-           
+
             if (retValue.selector == _btnNavPrev || selector == _btnNavNext) {
                 this.SaveScreenShot();
             }
@@ -752,8 +746,7 @@ class TestLib {
 
         if (waitforVisibleSelector != '') {
             var selObj = this._GetSelector(waitforVisibleSelector)
-            if(selObj !== null)
-            {
+            if (selObj !== null) {
                 selObj.waitForDisplayed(timeout)
             }
         }
@@ -812,7 +805,7 @@ class TestLib {
 
     }
 
-    _WaitUntilVisibleWithClick(waitUntilSelector = _btnNavNext, click = false, waitTime = 10000,  message = "") {
+    _WaitUntilVisibleWithClick(waitUntilSelector = _btnNavNext, click = false, waitTime = 10000, message = "") {
         _WaitUntilSelector = waitUntilSelector;
         var _message = 'expected: ' + waitUntilSelector + ' to be different after: ' + waitTime;
         if (message != "") {
@@ -829,23 +822,20 @@ class TestLib {
         var funcSel = this._GetSelector;
         var result = browser.waitUntil(function () {
             var elem = funcSel(waitUntilSelector);
-            if(elem != null)
-            {
+            if (elem != null) {
                 return elem.isDisplayed();
             }
             return false;
-            
+
         }, waitTime, _message);
 
-        if(result && click)
-        {
+        if (result && click) {
             var selObj = funcSel(waitUntilSelector)
-            if(selObj !== null)
-            {
+            if (selObj !== null) {
                 selObj.click();
             }
         }
-    }    
+    }
 
 
     _WaitUntilVisible(waitUntilSelector = _btnNavNext, waitTime = 10000, message = "") {
@@ -865,12 +855,11 @@ class TestLib {
         var funcSel = this._GetSelector;
         var result = browser.waitUntil(function () {
             var elem = funcSel(waitUntilSelector);
-            if(elem != null)
-            {
+            if (elem != null) {
                 return elem.isDisplayed();
             }
             return false;
-            
+
         }, waitTime, _message);
         return result;
     }
@@ -891,10 +880,9 @@ class TestLib {
 
         var funcSel = this._GetSelector;
 
-       var result =  browser.waitUntil(function () {
+        var result = browser.waitUntil(function () {
             var elem = funcSel(waitUntilSelector)// this._GetSelector(selector)
-            if(elem != null)
-            {
+            if (elem != null) {
                 return elem.isDisplayed();
             }
             return false;
@@ -914,12 +902,11 @@ class TestLib {
 
         var result = browser.waitUntil(function () {
 
-                var res = funcSel(_WaitUntilSelector);
-                if(res !== null)
-                {
-                    return res.isExisting();
-                }
-                return false;
+            var res = funcSel(_WaitUntilSelector);
+            if (res !== null) {
+                return res.isExisting();
+            }
+            return false;
         }, waitTime, _message);
 
         return result;
@@ -927,22 +914,46 @@ class TestLib {
     }
 
 
-    // in some Special Cases where there is no ID or the ID is Dynamic, u can Click any Elem by giving a unique Attribute as a complete String 
-    //example : var sel = $('[ng-click="showWageslipCarousel($event)"]') >> attribute = ng-click att-value= show...
-    ClickElementByAttribute(attribute, attributeValue, waitForUntilVisible="") {
+
+    GenerateRandomEmail(emailDomain) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        var finalText = text + Math.floor((Math.random() * 1000000000) + 1) + emailDomain;
+        return finalText;
+    }
+
+
+    ScrollToView(attribute, attributeValue, waitForUntilVisible = "") {
         var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
 
-        if(this._WaitUntilVisible(searchSelector))
-        {
+        if (this._WaitUntilVisible(searchSelector)) {
             var sel = this._GetSelector(searchSelector);
             if (sel != null) {
-                sel.click();
-                if(waitForUntilVisible != "")
-                {
+                sel.scrollIntoView();
+                if (waitForUntilVisible != "") {
                     this._WaitUntilVisible(waitForUntilVisible);
                 }
             }
-    
+
+        }
+    }
+
+    // in some Special Cases where there is no ID or the ID is Dynamic, u can Click any Elem by giving a unique Attribute as a complete String 
+    //example : var sel = $('[ng-click="showWageslipCarousel($event)"]') >> attribute = ng-click att-value= show...
+    ClickElementByAttribute(attribute, attributeValue, waitForUntilVisible = "") {
+        var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
+
+        if (this._WaitUntilVisible(searchSelector)) {
+            var sel = this._GetSelector(searchSelector);
+            if (sel != null) {
+                sel.click();
+                if (waitForUntilVisible != "") {
+                    this._WaitUntilVisible(waitForUntilVisible);
+                }
+            }
+
         }
     }
 
@@ -1012,7 +1023,7 @@ class TestLib {
         return dt;
     }
 
-    
+
     InitBrowserStartVermittler(readxml = false) {
         var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de' + 'Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F';
         if (String(this.TargetUrl).toUpperCase() == 'BERATUNG') {
@@ -1098,7 +1109,7 @@ class TestLib {
         //List.click();
         //List.click();
         List.setValue('Lastschrift');
-    }    
+    }
 
     GetText(selector) {
         var selObj = this._GetSelector(selector);
@@ -1321,11 +1332,11 @@ class TestLib {
                                     this._WaitUntilEnabled();
                                     this.PauseAction(5000);
                                     this.ClickElementSimple(_btnNavNext);
-                                    
+
                                 }
                             }
                         }
-						continue;
+                        continue;
                     }
 
 
@@ -1360,19 +1371,19 @@ class TestLib {
                     return;
                 }
 
-                __siteFieldExist = this.CheckExist(__siteFieldName,500);
+                __siteFieldExist = this.CheckExist(__siteFieldName, 500);
 
                 if (__siteFieldExist) {
 
                     this.PauseAction(300);
 
                     if (__siteFieldList != null && __siteFieldList === "true") {
-						if (__siteFieldName.includes('[')) {
+                        if (__siteFieldName.includes('[')) {
                             var ex = this._GetSelector(__siteFieldName);
                             __siteFieldName = '#' + ex.getAttribute('id');
                         }
 
-                        var exist =  this.CheckExist(__siteFieldName,500);
+                        var exist = this.CheckExist(__siteFieldName, 500);
                         if (!exist) {
                             break;
                         }
@@ -1775,71 +1786,60 @@ class TestLib {
         }
     }
 
-    _GetSelector(selector) 
-      {
-    
-        try{
-    
-          var selectorPos = _SelectorIndexArr.indexOf(selector);
-          if(selectorPos < 0)
-          {
-            var sel = $(selector);
+    _GetSelector(selector) {
 
-            if(sel !== null)
-            {
-              _SelectorIndexArr.push(selector);
-              _SelectorArr.push(sel);
-              return  sel;
-            }
-          }
-          else
-          {
-              var sel = _SelectorArr[selectorPos];
-              return sel;
-          }
-        }catch(ex)
-        {
-                return null;
-        }
-      }    
+        try {
 
-    _GetSelectorFromAttribute(attribute,attributeValue) 
-      {
-    
-        try{
-    
-          var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
-          return this._GetSelector(searchSelector);
-        }catch(ex)
-        {
-                return null;
-        }
-      } 
+            var selectorPos = _SelectorIndexArr.indexOf(selector);
+            if (selectorPos < 0) {
+                var sel = $(selector);
 
-    _InitSelectorIndex()
-      {
-        try{
-          for (var i = 0; i <= _SelectorArr.length - 1; i++) 
-          { 
-            _SelectorArr[i] = null;
-            _SelectorIndexArr[i]= null;
-          }
-        }catch(ex)
-        {
+                if (sel !== null) {
+                    _SelectorIndexArr.push(selector);
+                    _SelectorArr.push(sel);
+                    return sel;
+                }
+            }
+            else {
+                var sel = _SelectorArr[selectorPos];
+                return sel;
+            }
+        } catch (ex) {
+            return null;
+        }
+    }
 
-        }
-      }
+    _GetSelectorFromAttribute(attribute, attributeValue) {
 
-     _test(eins, zwei)
-     {
-         var x = this._GetSelector(eins,zwei);
-         var z = x.isDisplayed();
-          x = this._GetSelector(eins,zwei);
-          z = x.isDisplayed();
+        try {
 
-     }
-	 
-	 
+            var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
+            return this._GetSelector(searchSelector);
+        } catch (ex) {
+            return null;
+        }
+    }
+
+    _InitSelectorIndex() {
+        try {
+            for (var i = 0; i <= _SelectorArr.length - 1; i++) {
+                _SelectorArr[i] = null;
+                _SelectorIndexArr[i] = null;
+            }
+        } catch (ex) {
+
+        }
+    }
+
+    _test(eins, zwei) {
+        var x = this._GetSelector(eins, zwei);
+        var z = x.isDisplayed();
+        x = this._GetSelector(eins, zwei);
+        z = x.isDisplayed();
+
+    }
+
+
 
 }
 
