@@ -21,9 +21,9 @@ describe('webdriver.io page', () => {
         browser.url('https://automatictest.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F');
         login.LoginUser("antoun.awad@xbav.de", "qatestAantoun")
 
-        
 
-        
+
+
         // Click the ArbG Chapter and click add new ArbG
         testLib.ClickElementByAttribute('title', 'Arbeitgeber');
         testLib.ClickElementByAttribute('class', 'md-button-small md-accent md-button md-ink-ripple');
@@ -33,22 +33,22 @@ describe('webdriver.io page', () => {
         testLib.ClickElementSimple("#Stammdaten_MehrereBetriebsstaetten");
         // xpath on text() Click tab BS and add a new BS
         var tabClick = '//md-tab-item[text()="Betriebsstätten"]';
-        testLib.ClickElement(tabClick,"#btnNewFacility")
+        testLib.ClickElement(tabClick, "#btnNewFacility")
         var bsName = '#Betriebsstaetten_SelectedItem_Name';
-        testLib.ClickElement("#btnNewFacility",bsName);
-        testLib.SetValue(bsName,'MainBS')
+        testLib.ClickElement("#btnNewFacility", bsName);
+        testLib.SetValue(bsName, 'MainBS')
         var bsStreet = '#Betriebsstaetten_SelectedItem_Street';
-        testLib.SetValue(bsStreet,'Street');
+        testLib.SetValue(bsStreet, 'Street');
 
         var bsPLZ = '#FacilityPlz';
-        testLib.SetValue(bsPLZ,'66111');
+        testLib.SetValue(bsPLZ, '66111');
         var bsSave = '#modalEditFacility_btnSpeichern';
         testLib.ClickElement(bsSave);
 
         //Tab Zahlungsart 
         // TO-DO HAPE , WHY?
         testLib.PauseAction(1000);
-        testLib.ClickElement('//md-tab-item[text()="Zahlungsart / GwG"]','#Iban');
+        testLib.ClickElement('//md-tab-item[text()="Zahlungsart / GwG"]', '#Iban');
 
         //testLib.ClickElement('//md-content[text()="Lastschrift');
         var paymentMethod = '#Kontodaten_PaymentMethod';
@@ -62,7 +62,7 @@ describe('webdriver.io page', () => {
         //HaPe prüfen und ClassLib ergänzen testLib.SetSimpleListBoxValue(paymentMethod, '2')
         //var clickTransfer = $('//md-option[text()="Überweisung"]');
         //clickTransfer.click();
-        testLib.ClickElementByAttribute("ng-click", "saveVn($event)",'#Search')//  $('//button[text()="Speichern"]');
+        testLib.ClickElementByAttribute("ng-click", "saveVn($event)", '#Search')//  $('//button[text()="Speichern"]');
 
         // Check if the ArbG is created and exsits in the list 
         var searchArbG = '#Search';
@@ -75,21 +75,13 @@ describe('webdriver.io page', () => {
 
         var searchElement = '//a[text()="FirstTest"]';
         var result = testLib.CheckIsVisible(searchElement)
-        
+
         if (result) {
             console.log("FirstTest is there!!")
         }
         else {
             console.log("Opppss FirstTest is not there!!!")
         }
-
-
-
-
-
-        var x = "_";
-
-
 
         // testLib.ClickElementByAttribute('aria-controls', 'tab-content-264');
         // var tabClick = $("//*[contains(text(),'Betriebsstätten')]/../md-icon");
