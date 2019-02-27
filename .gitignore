@@ -1,4 +1,4 @@
-﻿<<<<<<< HEAD
+<<<<<<< HEAD
 /.vs/
 /packages//**/bin/
 /**/obj/
@@ -23,9 +23,9 @@ Pages.g.*
 **/[Bb]in/intermediate/
 **/QA_Tests/errorShots/*.png
 **/QA_Tests/docs/*.pdf
-**/QA_Tests/node_modules/
-**/QA_Tests/wdio.conf.js
-**/QA_Tests/package-lock.json
+./QA_Tests/node_modules/
+./QA_Tests/wdio.conf.js
+./QA_Tests/package-lock.json
 
 *.suo
 *~
