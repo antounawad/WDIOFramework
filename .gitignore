@@ -23,6 +23,7 @@ Pages.g.*
 **/[Bb]in/intermediate/
 **/QA_Tests/errorShots/*.png
 **/QA_Tests/docs/*.pdf
+**/QA_Tests/node_modules/
 *.suo
 *~
 *.log
