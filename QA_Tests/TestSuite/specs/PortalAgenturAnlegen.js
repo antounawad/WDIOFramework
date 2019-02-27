@@ -17,11 +17,12 @@ describe('Portal Agentur anlegen', () => {
         testLib.SetValue('#Vorname', 'TestAgentur');
         testLib.SetValue('#Nachname', 'LastName');
         testLib.SetValue('#emailfield', testLib.GenerateRandomEmail('@antoun.test.eg'));
-        
-        // testLib.ClickElementSimple('#AgenturTyp');
         testLib.ClickElementByAttribute('value', '1');
-        // testLib.SetSimpleListBoxValue('#AgenturTyp', 2);
-    //  var x = 99;
+        // testLib._SetComplexListBoxValue('checkbox','[id="acceptTermsBlock"]',"","id",false);
+        // var Checkbox = $(".form-group.pull-right ~ .iCheck-helper");
+        // Checkbox.click();
+        testLib.ClickElement("#acceptTerms ~ .iCheck-helper");
+        testLib.CompareAndClickIfMatch("href", "#next", "Registrieren")
 
 
 

@@ -21,9 +21,6 @@ describe('webdriver.io page', () => {
         browser.url('https://automatictest.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F');
         login.LoginUser("antoun.awad@xbav.de", "qatestAantoun")
 
-
-
-
         // Click the ArbG Chapter and click add new ArbG
         testLib.ClickElementByAttribute('title', 'Arbeitgeber');
         testLib.ClickElementByAttribute('class', 'md-button-small md-accent md-button md-ink-ripple');
@@ -50,18 +47,12 @@ describe('webdriver.io page', () => {
         testLib.PauseAction(1000);
         testLib.ClickElement('//md-tab-item[text()="Zahlungsart / GwG"]', '#Iban');
 
-        //testLib.ClickElement('//md-content[text()="Lastschrift');
         var paymentMethod = '#Kontodaten_PaymentMethod';
-        testLib.ClickElement(paymentMethod);
-        var clickTransfer = $('#select_option_139');
-        clickTransfer.click();
+        testLib._SetComplexListBoxValue('value="1"',paymentMethod);
+
 
         testLib.ClickElementSimple('#Kontodaten_HandeltAufEigeneRechnung');
 
-        //testLib.SetValue(paymentMethod, 'Lastschrift')
-        //HaPe prüfen und ClassLib ergänzen testLib.SetSimpleListBoxValue(paymentMethod, '2')
-        //var clickTransfer = $('//md-option[text()="Überweisung"]');
-        //clickTransfer.click();
         testLib.ClickElementByAttribute("ng-click", "saveVn($event)", '#Search')//  $('//button[text()="Speichern"]');
 
         // Check if the ArbG is created and exsits in the list 
@@ -82,6 +73,8 @@ describe('webdriver.io page', () => {
         else {
             console.log("Opppss FirstTest is not there!!!")
         }
+
+
 
         // testLib.ClickElementByAttribute('aria-controls', 'tab-content-264');
         // var tabClick = $("//*[contains(text(),'Betriebsstätten')]/../md-icon");

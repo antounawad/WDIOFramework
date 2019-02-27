@@ -192,6 +192,9 @@ class TestLib {
         return this._GetValuefromArg("dom");
     }
 
+    get VersionCompare() {
+        return this._GetValuefromArg("ver");
+    }
 
     // Returns Version aus Args
     get Version() {
@@ -686,7 +689,7 @@ class TestLib {
     }
 
     _CheckAndClearSelectorArr(selector) {
-        if (selector.includes("next")) {
+        if (selector.includes("next") || selector.includes("prev") ) {
             this._InitSelectorIndex();
         }
     }
@@ -771,11 +774,32 @@ class TestLib {
 
 
 
+    // CheckVersion() {
+    //     if (this.Version !== '') {
+    //         var t = browser.getText('#container-main');
+    //         console.log(t);
+    //         assert.notEqual(t.indexOf('Version ' + this.Version), -1, "Fehlerhafte Version ausgliefert.");
+    //     }
+    // }
+
+
     CheckVersion() {
-        if (this.Version !== '') {
-            var t = browser.getText('#container-main');
-            console.log(t);
-            assert.notEqual(t.indexOf('Version ' + this.Version), -1, "Fehlerhafte Version ausgliefert.");
+        if (this.VersionCompare !== '') {
+            var currentVersion = $('#container-main').getText();
+            var propertyVersion = this.VersionCompare;
+            return currentVersion.includes("Version " + propertyVersion);
+        }
+    }
+
+    CheckGivenVersion(versionToCheck = "") {
+        if (versionToCheck != "") {
+            var currentVersion = $('#container-main').getText();
+            return currentVersion.includes("Version " + versionToCheck);
+
+
+        }
+        else {
+            console.log("No Version was given to Chaeck")
         }
     }
 
@@ -965,7 +989,7 @@ class TestLib {
         var sel = this._GetSelector(searchSelector);
         if (sel != null) {
             var selectorValue = sel.getText();
-            if (selectorValue === compareValue) {
+            if (selectorValue.trim() === compareValue.trim()) {
                 sel.click();
             }
         }
@@ -1839,9 +1863,92 @@ class TestLib {
 
     }
 
+    _SetComplexListBoxValue(searchText, selector, attribute="",searchSelector="id")
+        {
+            try
+            {
+                var listSelector = this._GetSelector(selector);
+                var html = null;
+                if(listSelector !== null)
+                {
+                    html = listSelector.getHTML();
+                    listSelector.click();
+                    
+                    if(attribute !== "")
+                    {
+                        var attr = listSelector.getAttribute(attribute)
+                        var attrSel = this._GetSelector('#'+attr);
+                        if(attrSel !== null)
+                        {
+                            html = attrSel.getHTML();
+                        }
+                    }
+                }
+    
+                if(html === null)
+                {
+                    return null;
+                }
+        
+                var searchTextIndex = html.indexOf(searchText);
+                var stringToken = html.substr(0,searchTextIndex);
+                var searchIDIndex = stringToken.lastIndexOf(searchSelector);
+                var stringToken = stringToken.substr(searchIDIndex, searchTextIndex)
+                var splitArr = stringToken.split('"');
+                if(splitArr.length >= 1 && splitArr[1] !== null && splitArr[1].includes("select"))
+                {
+                    var clickElem = this._GetSelector("#"+splitArr[1]);
+                    if(clickElem !== null)
+                    {
+                        clickElem.click(); 
+                    }
+                    
+                }
+            }
+            catch(ex)
+            {
+                if (this.IsDebug)
+                    console.log("Warning: Text: " + searchText + " not found.")
+            }
+            return null;
+            
+        }    
+
+    // this Method reads the config file and for ex, if the list from simplelist type , the click element method will be called 
+    // <?xml version="1.0" encoding="utf-8"?>
+    // <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    // <Maincontext = "Portal">
+    // <Subcontext>
+    // <Login>
+    // <Fields>
+    // 	<Name>Common:InvestmentFond</Name>
+    // 	<Value></Value>
+    // 	<SimpleList>true</SimpleList>
+    // 	<Attribute>value</Attribute>
+    // 	<Check>true</Check>
+    //   </Field>  
+    // </Fields>
+    // </Config>
+    // </Login>
+    // </Subcontext>
+    // </Maincontext>
+    // ---------------------------------------------------------------------------------------
+    //  _ReadXMLcONFIG()
+    //  {
+    //     // liest config
+    //     // iterate through fields
+    //     var sel = $(Name);
+    //     if(type == simplelist)
+    //     {
+    //         this.ClickElementByAttribute(value, '1');
+    //     }
+
+    //  }
 
 
 }
+
+
 
 
 
