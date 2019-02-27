@@ -52,7 +52,11 @@ exports.config = {
         // 5 instances get started at a time.
         maxInstances: 5,
         //
-        browserName: 'firefox'
+        browserName: 'firefox',
+        // If outputDir is provided WebdriverIO can capture driver session logs
+        // it is possible to configure which logTypes to include/exclude.
+        // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
+        // excludeDriverLogs: ['bugreport', 'server'],
     }],
     //
     // ===================
@@ -60,11 +64,22 @@ exports.config = {
     // ===================
     // Define all options that are relevant for the WebdriverIO instance here
     //
-    // Level of logging verbosity: trace | debug | info | warn | error
-    logLevel: 'trace',
+    // Level of logging verbosity: trace | debug | info | warn | error | silent
+    logLevel: 'info',
     //
-    // Warns when a deprecated command is used
-    deprecationWarnings: true,
+    // Set specific log levels per logger
+    // loggers:
+    // - webdriver, webdriverio
+    // - wdio-applitools-service, wdio-browserstack-service, wdio-devtools-service, wdio-sauce-service
+    // - wdio-mocha-framework, wdio-jasmine-framework
+    // - wdio-local-runner, wdio-lambda-runner
+    // - wdio-sumologic-reporter
+    // - wdio-cli, wdio-config, wdio-sync, wdio-utils
+    // Level of logging verbosity: trace | debug | info | warn | error | silent
+    // logLevels: {
+        // webdriver: 'info',
+        // 'wdio-applitools-service': 'info'
+    // },
     //
     // If you only want to run your tests until a specific amount of tests have failed use
     // bail (default is 0 - don't bail, run all tests).
@@ -90,7 +105,7 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['firefox-profile','selenium-standalone','phantomjs','iedriver'],
+    services: ['firefox-profile','selenium-standalone','phantomjs','chromedriver','iedriver'],
     //
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -103,8 +118,7 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    reporters: ['junit'],
-    
+    // reporters: ['dot'],
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
