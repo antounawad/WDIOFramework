@@ -31,6 +31,11 @@ class VM{
 
     }
 
+    AddArbeitgeber()
+    {
+       testLib.WalkThroughWorkflow();
+    }
+
 
 }
 module.exports = VM;

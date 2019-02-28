@@ -92,12 +92,19 @@ var _takeScreenShotAllDialogs = false;
 var _SplitVersicherer = false;
 var _SplitFrom = 0;
 var _SplitTo = 0;
+var _LoginName = null;
+var _LoginPassword = null;
+var _WorkflowSelector = null;
 
 var _SelectorIndexArr = [100]
 var _SelectorArr = [100]
 
 
 class TestLib {
+
+    get LoginName() { return _LoginName };
+    get LoginPassword() { return _LoginPassword };
+    get WorkflowSelector() { return _WorkflowSelector };
 
     set TakeScreenShotAllDialogs(value) {
 
@@ -265,7 +272,7 @@ class TestLib {
     CompareTitle(title) {
         return browser.getTitle().includes(title);
     }
-
+// listbox mit Angular 
     SetListBoxValue(selector, value) {
         var fieldname = this._GetFieldName(selector);
 
@@ -1048,11 +1055,9 @@ class TestLib {
     }
 
 
-    InitBrowserStartVermittler(readxml = false) {
-        var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de' + 'Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F';
-        if (String(this.TargetUrl).toUpperCase() == 'BERATUNG') {
-            url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
-        }
+    InitBrowserStart(login=null,readxml = false, rktest=false) {
+        var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de/' + this.TestComponent+ "/Account/Login?ReturnUrl=%2F"+ this.TestComponent+"%2F";
+
         browser.url(url);
 
         this.SaveScreenShot();
@@ -1064,31 +1069,41 @@ class TestLib {
         // Alle Kombinationen oder nur spezielle oder nur SmokeTest
         // SmokeTest := Nur erste funtkionierende Kombination
         if (readxml) {
+            
+            this._ReadXMLMainConfig();
+            if(login !== null)
+            {
+                login.LoginUser(this.LoginName, this.LoginPassword);
+            }
+        }
+        
+        if(rktest)
+        {
             this._ReadXMLAttributeCommon(true);
         }
 
     }
 
-    InitBrowserStart(readxml = true) {
-        var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de' + '/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F';
-        if (String(this.TargetUrl).toUpperCase() == 'BERATUNG') {
-            url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
-        }
-        browser.url(url);
+    // InitBrowserStart(readxml = true) {
+    //     var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de' + '/Beratung/Account/Login?ReturnUrl=%2FBeratung%2F';
+    //     if (String(this.TargetUrl).toUpperCase() == 'BERATUNG') {
+    //         url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
+    //     }
+    //     browser.url(url);
 
-        this.SaveScreenShot();
+    //     this.SaveScreenShot();
 
 
 
-        // Erstmal die Standard configuration auslesen
-        // Alle Versicherer oder nur spezielle
-        // Alle Kombinationen oder nur spezielle oder nur SmokeTest
-        // SmokeTest := Nur erste funtkionierende Kombination
-        if (readxml) {
-            this._ReadXMLAttributeCommon(true);
-        }
+    //     // Erstmal die Standard configuration auslesen
+    //     // Alle Versicherer oder nur spezielle
+    //     // Alle Kombinationen oder nur spezielle oder nur SmokeTest
+    //     // SmokeTest := Nur erste funtkionierende Kombination
+    //     if (readxml) {
+    //         this._ReadXMLAttributeCommon(true);
+    //     }
 
-    }
+    // }
 
     SetListBoxValue(selector, value) {
         var fieldname = this._GetFieldName(selector);
@@ -1631,6 +1646,18 @@ class TestLib {
         _VpName = fields[0]['Value'][0];
     }
 
+    _ReadXMLMainConfig() {
+
+        this._GetXmlParser(this.MainConfigPath).parseString(this.Fs.readFileSync(this.MainConfigPath), function (err, configContent) {
+                _BreakAtError             =  configContent['Config']['Tests'][0].$['breakaterror'];
+                _debug                    =        configContent['Config']['Tests'][0].$['debug'];
+                _LoginName             = configContent['Config']['Workflow'][0]['Login'][0]['Name'][0];
+                _LoginPassword              =  configContent['Config']['Workflow'][0]['Login'][0]['Password'][0];
+                _WorkflowSelector = configContent['Config']['Workflow'][0]['Arbeitgeber'][0];
+            });
+    }
+
+
 
 
     _GetCommonConfig(list, value, field) {
@@ -1862,7 +1889,7 @@ class TestLib {
         z = x.isDisplayed();
 
     }
-
+// List box ohne Angular und mit generieter ID 
     _SetComplexListBoxValue(searchText, selector, attribute="",searchSelector="id")
         {
             try
@@ -1913,6 +1940,81 @@ class TestLib {
             return null;
             
         }    
+
+
+    WalkThroughWorkflow()
+    {
+        this.WorkflowSelector.Selector.forEach(value => {
+            var type                =  value['Type'][0];
+           var attributeName       =  value['AttributeName'][0];
+           var attributeValue      =  value['AttributeValue'][0];
+           var action              =  value['Action'][0]._;
+           var waitUntilSelector   =  value['Action'][0].$['waitSelector'];
+           var value2Set   =  "";
+
+           try
+           {
+                value2Set = value['Action'][0].$['value'];
+           }
+           catch(ex)
+           {
+
+           }
+           
+           if(type == "Attribute")
+           {
+             if(action === "Click")
+             {
+                this.ClickElementByAttribute(attributeName, attributeValue, waitUntilSelector);
+             }
+                   
+           }
+           else if(type == "Id")
+           {
+               if(action === "Click")
+               {
+                    this.ClickElement("#"+attributeValue,waitUntilSelector);
+               }
+
+               if(value2Set != "")
+               {
+                  this.SetValue("#"+attributeValue,value2Set)
+               }
+           }
+           else if(type == "TextSelector")
+           {
+               if(action === "Click")
+               {
+                    this.ClickElement("//"+attributeValue,waitUntilSelector);
+               }
+
+               if(value2Set != "")
+               {
+                  this.SetValue("#"+attributeValue,value2Set)
+               }
+           }
+           else if(type == "ComplexList")
+           {
+  
+                this._SetComplexListBoxValue(value2Set, attributeValue);
+
+           }     
+           else if(type == "Class")
+           {
+               if(action === "Click")
+               {
+                    this.ClickElement("."+attributeValue,waitUntilSelector);
+               }
+
+               if(value2Set != "")
+               {
+                  this.SetValue("."+attributeValue,value2Set)
+               }
+           }                 
+           
+        });        
+
+    }
 
     // this Method reads the config file and for ex, if the list from simplelist type , the click element method will be called 
     // <?xml version="1.0" encoding="utf-8"?>
