@@ -16,7 +16,9 @@ describe('webdriver.io page', () => {
     it('should have the right title', () => {
 
 
-        browser.url('https://automatictest.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F');
+        testLib.InitBrowserStart(true);
+  
+        
         login.LoginUser("antoun.awad@xbav.de", "qatestAantoun")
 
         var version = testLib.CheckVersion();
@@ -27,6 +29,13 @@ describe('webdriver.io page', () => {
         if (version === true) {
             console.log("Version Match , good job ");
         }
+vn.SearchVN("AutomRKTestVN",2000)
+testLib.Navigate2Site("Arbeitnehmer – Auswahl");
+
+
+
+
+        
     });
 });
 

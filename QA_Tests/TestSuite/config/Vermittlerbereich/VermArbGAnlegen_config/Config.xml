@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Workflow>
+<Login>
+	<Name>antoun.awad@xbav.de</Name>
+	<Password>qatestAantoun</Password>
+</Login>
+<Arbeitgeber>
+<Selector>
+<Type>Attribute</Type>
+<AttributeName>title</AttributeName>
+<AttributeValue>Arbeitgeber</AttributeValue>
+<Action waitSelector="">Click</Action>
+</Selector>
+<Selector>
+<Type>Attribute</Type>
+<AttributeName>class</AttributeName>
+<AttributeValue>md-button-small md-accent md-button md-ink-ripple</AttributeValue>
+<Action waitSelector="#Stammdaten_Name">Click</Action>
+</Selector>
+<Selector>
+<Type>Id</Type>
+<AttributeName>Id</AttributeName>
+<AttributeValue>Stammdaten_Name</AttributeValue>
+<Action waitSelector="" value="firsttest">Click</Action>
+</Selector>
+<Selector>
+<Type>Id</Type>
+<AttributeName>Id</AttributeName>
+<AttributeValue>Stammdaten_MehrereBetriebsstaetten</AttributeValue>
+<Action waitSelector="" value="">Click</Action>
+</Selector>
+<Selector>
+<Type>TextSelector</Type>
+<AttributeName>TextSelector</AttributeName>
+<AttributeValue>md-tab-item[text()="Betriebsstätten"]</AttributeValue>
+<Action waitSelector="#btnNewFacility" value="">Click</Action>
+</Selector>
+</Arbeitgeber>
+</Workflow>
+<Tests debug="true" breakaterror="false"></Tests>
+</Config>
