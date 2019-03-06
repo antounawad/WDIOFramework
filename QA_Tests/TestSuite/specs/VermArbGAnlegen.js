@@ -10,15 +10,15 @@ describe('webdriver.io page', () => {
     it('should have the right title', () => {
 
 
-        testLib.InitBrowserStart(login,true);
-        vm.AddArbeitgeber();
-
-
-
-
-
-
-
+        try
+        {
+            testLib.InitBrowserStart(login,true);
+            vm.AddArbeitgeber();
+        }
+        catch(exception)
+        {
+            var ex = exception;
+        }
 
 
         // // // // browser.url('https://automatictest.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F');

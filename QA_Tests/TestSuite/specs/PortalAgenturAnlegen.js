@@ -24,6 +24,12 @@ describe('Portal Agentur anlegen', () => {
         testLib.ClickElement("#acceptTerms ~ .iCheck-helper");
         testLib.CompareAndClickIfMatch("href", "#next", "Registrieren")
 
+        testLib.SaveScreenShotSimple();
+
+        
+
+        
+
 
 
 

@@ -17,6 +17,8 @@ class VN {
     SearchVN(searchValue, timeout = 2000) {
         testLib.SaveScreenShot();
         testLib.SetValue(_searchSelector, searchValue)
+        testLib.ClickElementSimple('#tableList')
+
         testLib.SaveScreenShot();
     }
 

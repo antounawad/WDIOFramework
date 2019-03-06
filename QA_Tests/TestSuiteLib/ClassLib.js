@@ -1,3 +1,4 @@
+
 var assert = require('assert');
 var fs = require('fs'),
     xml2js = require('xml2js')
@@ -160,7 +161,7 @@ class TestLib {
     //Wegen Config Dateien.
     get ExecutablePath() { return _executablePath };
 
-    get ErrorShotPath() { return this.ExecutablePath + 'TestSuite\\' + this.TargetUrl + '\\' + _TestFolder + _TestConfigFolder + 'errorShots\\' };
+    get ErrorShotPath() { return this.ExecutablePath + 'TestSuite\\' + this.ConfigLib + '\\' + this.TestComponent + '\\' + this.TestConfigFolder + '\\' + 'errorShots\\' };
 
     // Gibt die VersichererList aus Config Datei zurück
     get Versicherer() { return _Versicherer };
@@ -272,7 +273,7 @@ class TestLib {
     CompareTitle(title) {
         return browser.getTitle().includes(title);
     }
-// listbox mit Angular 
+    // listbox mit Angular 
     SetListBoxValue(selector, value) {
         var fieldname = this._GetFieldName(selector);
 
@@ -315,6 +316,14 @@ class TestLib {
             if (this.IsDebug)
                 console.log("Warning: Selector: " + selector + " not found.")
             return "";
+        }
+
+    }
+
+
+    _ShowLogText(text) {
+        if (this.IsDebug) {
+            console.log(text);
         }
 
     }
@@ -695,8 +704,13 @@ class TestLib {
         }
     }
 
+    SaveScreenShotSimple(title = this.BrowserTitle) {
+        this._WaitUntilTitle();
+        this._TakeErrorShot(title);
+    }
+
     _CheckAndClearSelectorArr(selector) {
-        if (selector.includes("next") || selector.includes("prev") ) {
+        if (selector.includes("next") || selector.includes("prev")) {
             this._InitSelectorIndex();
         }
     }
@@ -794,7 +808,16 @@ class TestLib {
         if (this.VersionCompare !== '') {
             var currentVersion = $('#container-main').getText();
             var propertyVersion = this.VersionCompare;
-            return currentVersion.includes("Version " + propertyVersion);
+            // assert.equal(currentVersion.includes("Version " + propertyVersion), true, "Fehlerhafte Version ausgliefert.");
+
+            var versionFinal = currentVersion.includes("Version " + propertyVersion)
+            if (versionFinal === false) {
+                console.log("++++++++++++++++++++ Fehlerhafte Version ausgliefert ++++++++++++++++++++++++++");
+            }
+            if (versionFinal === true) {
+                console.log("Version Match , Gut Gemacht ");
+            }
+
         }
     }
 
@@ -991,12 +1014,11 @@ class TestLib {
     // compare a value of innerText of a given Attribute with a give Text from the Usre and Click the element if match 
     CompareAndClickIfMatch(attribute, attributeValue, compareValue) {
 
-
         var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']';
         var sel = this._GetSelector(searchSelector);
         if (sel != null) {
             var selectorValue = sel.getText();
-            if (selectorValue.trim() === compareValue.trim()) {
+            if (String(selectorValue.trim()).toLowerCase() === String(compareValue.trim()).toLowerCase()) {
                 sel.click();
             }
         }
@@ -1055,8 +1077,8 @@ class TestLib {
     }
 
 
-    InitBrowserStart(login=null,readxml = false, rktest=false) {
-        var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de/' + this.TestComponent+ "/Account/Login?ReturnUrl=%2F"+ this.TestComponent+"%2F";
+    InitBrowserStart(login = null, readxml = false, rktest = false) {
+        var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de/' + this.TestComponent + "/Account/Login?ReturnUrl=%2F" + this.TestComponent + "%2F";
 
         browser.url(url);
 
@@ -1069,16 +1091,14 @@ class TestLib {
         // Alle Kombinationen oder nur spezielle oder nur SmokeTest
         // SmokeTest := Nur erste funtkionierende Kombination
         if (readxml) {
-            
+
             this._ReadXMLMainConfig();
-            if(login !== null)
-            {
+            if (login !== null) {
                 login.LoginUser(this.LoginName, this.LoginPassword);
             }
         }
-        
-        if(rktest)
-        {
+
+        if (rktest) {
             this._ReadXMLAttributeCommon(true);
         }
 
@@ -1649,12 +1669,12 @@ class TestLib {
     _ReadXMLMainConfig() {
 
         this._GetXmlParser(this.MainConfigPath).parseString(this.Fs.readFileSync(this.MainConfigPath), function (err, configContent) {
-                _BreakAtError             =  configContent['Config']['Tests'][0].$['breakaterror'];
-                _debug                    =        configContent['Config']['Tests'][0].$['debug'];
-                _LoginName             = configContent['Config']['Workflow'][0]['Login'][0]['Name'][0];
-                _LoginPassword              =  configContent['Config']['Workflow'][0]['Login'][0]['Password'][0];
-                _WorkflowSelector = configContent['Config']['Workflow'][0]['Arbeitgeber'][0];
-            });
+            _BreakAtError = configContent['Config']['Tests'][0].$['breakaterror'];
+            _debug = configContent['Config']['Tests'][0].$['debug'];
+            _LoginName = configContent['Config']['Workflow'][0]['Login'][0]['Name'][0];
+            _LoginPassword = configContent['Config']['Workflow'][0]['Login'][0]['Password'][0];
+            _WorkflowSelector = configContent['Config']['Workflow'][0]['Arbeitgeber'][0];
+        });
     }
 
 
@@ -1889,130 +1909,119 @@ class TestLib {
         z = x.isDisplayed();
 
     }
-// List box ohne Angular und mit generieter ID 
-    _SetComplexListBoxValue(searchText, selector, attribute="",searchSelector="id")
-        {
-            try
-            {
-                var listSelector = this._GetSelector(selector);
-                var html = null;
-                if(listSelector !== null)
-                {
-                    html = listSelector.getHTML();
-                    listSelector.click();
-                    
-                    if(attribute !== "")
-                    {
-                        var attr = listSelector.getAttribute(attribute)
-                        var attrSel = this._GetSelector('#'+attr);
-                        if(attrSel !== null)
-                        {
-                            html = attrSel.getHTML();
-                        }
-                    }
-                }
-    
-                if(html === null)
-                {
-                    return null;
-                }
-        
-                var searchTextIndex = html.indexOf(searchText);
-                var stringToken = html.substr(0,searchTextIndex);
-                var searchIDIndex = stringToken.lastIndexOf(searchSelector);
-                var stringToken = stringToken.substr(searchIDIndex, searchTextIndex)
-                var splitArr = stringToken.split('"');
-                if(splitArr.length >= 1 && splitArr[1] !== null && splitArr[1].includes("select"))
-                {
-                    var clickElem = this._GetSelector("#"+splitArr[1]);
-                    if(clickElem !== null)
-                    {
-                        clickElem.click(); 
-                    }
-                    
-                }
-            }
-            catch(ex)
-            {
-                if (this.IsDebug)
-                    console.log("Warning: Text: " + searchText + " not found.")
-            }
-            return null;
-            
-        }    
+    // List box ohne Angular und mit generieter ID 
+    _SetComplexListBoxValue(searchText, selector, attribute = "", searchSelector = "id") {
+        try {
+            var listSelector = this._GetSelector(selector);
+            var html = null;
+            if (listSelector !== null) {
+                html = listSelector.getHTML();
+                listSelector.click();
+
+                if (attribute !== "") {
+                    var attr = listSelector.getAttribute(attribute)
+                    var attrSel = this._GetSelector('#' + attr);
+                    if (attrSel !== null) {
+                        html = attrSel.getHTML();
+                    }
+                }
+            }
+
+            if (html === null) {
+                return null;
+            }
+
+            var searchTextIndex = html.indexOf(searchText);
+            var stringToken = html.substr(0, searchTextIndex);
+            var searchIDIndex = stringToken.lastIndexOf(searchSelector);
+            var stringToken = stringToken.substr(searchIDIndex, searchTextIndex)
+            var splitArr = stringToken.split('"');
+            if (splitArr.length >= 1 && splitArr[1] !== null && splitArr[1].includes("select")) {
+                var clickElem = this._GetSelector("#" + splitArr[1]);
+                if (clickElem !== null) {
+                    clickElem.click();
+                }
+
+            }
+        }
+        catch (ex) {
+            if (this.IsDebug)
+                console.log("Warning: Text: " + searchText + " not found.")
+        }
+        return null;
+
+    }
 
 
-    WalkThroughWorkflow()
-    {
-        this.WorkflowSelector.Selector.forEach(value => {
-            var type                =  value['Type'][0];
-           var attributeName       =  value['AttributeName'][0];
-           var attributeValue      =  value['AttributeValue'][0];
-           var action              =  value['Action'][0]._;
-           var waitUntilSelector   =  value['Action'][0].$['waitSelector'];
-           var value2Set   =  "";
+    WalkThroughWorkflow() {
 
-           try
-           {
-                value2Set = value['Action'][0].$['value'];
-           }
-           catch(ex)
-           {
+        try {
+            this.WorkflowSelector.Selector.forEach(value => {
+                var typeOfSelector = value['Type'][0];
+                var attributeName = value['AttributeName'][0];
+                var attributeValue = value['AttributeValue'][0];
+                var action = value['Action'][0]._;
+                var waitUntilSelector = value['Action'][0].$['waitSelector'];
+                var value2Set = "";
 
-           }
-           
-           if(type == "Attribute")
-           {
-             if(action === "Click")
-             {
-                this.ClickElementByAttribute(attributeName, attributeValue, waitUntilSelector);
-             }
-                   
-           }
-           else if(type == "Id")
-           {
-               if(action === "Click")
-               {
-                    this.ClickElement("#"+attributeValue,waitUntilSelector);
-               }
+                try {
+                    value2Set = value['Action'][0].$['value'];
+                }
+                catch (ex) {
 
-               if(value2Set != "")
-               {
-                  this.SetValue("#"+attributeValue,value2Set)
-               }
-           }
-           else if(type == "TextSelector")
-           {
-               if(action === "Click")
-               {
-                    this.ClickElement("//"+attributeValue,waitUntilSelector);
-               }
+                }
 
-               if(value2Set != "")
-               {
-                  this.SetValue("#"+attributeValue,value2Set)
-               }
-           }
-           else if(type == "ComplexList")
-           {
-  
-                this._SetComplexListBoxValue(value2Set, attributeValue);
+                if (typeOfSelector == "Attribute") {
+                    if (action === "Click") {
+                        this.ClickElementByAttribute(attributeName, attributeValue, waitUntilSelector);
+                    }
 
-           }     
-           else if(type == "Class")
-           {
-               if(action === "Click")
-               {
-                    this.ClickElement("."+attributeValue,waitUntilSelector);
-               }
+                }
+                else if (typeOfSelector == "Id") {
+                    if (action === "Click") {
+                        this.ClickElement("#" + attributeValue, waitUntilSelector);
+                    }
 
-               if(value2Set != "")
-               {
-                  this.SetValue("."+attributeValue,value2Set)
-               }
-           }                 
-           
-        });        
+                    if (value2Set != "") {
+                        this.SetValue("#" + attributeValue, value2Set)
+                    }
+                }
+                else if (typeOfSelector == "TextSelector") {
+                    if (action === "Click") {
+                        this.ClickElement("//" + attributeValue, waitUntilSelector);
+                    }
+
+                    if (value2Set != "") {
+                        this.SetValue("#" + attributeValue, value2Set)
+                    }
+                }
+                else if (typeOfSelector == "ComplexList") {
+
+                    this._SetComplexListBoxValue(value2Set, attributeValue);
+
+                }
+                else if (typeOfSelector == "Class") {
+                    if (action === "Click") {
+                        this.ClickElement("." + attributeValue, waitUntilSelector);
+                    }
+
+                    if (value2Set != "") {
+                        this.SetValue("." + attributeValue, value2Set)
+                    }
+                }
+
+                else if (typeOfSelector == "Screenshot") {
+                    if (action === "Save") {
+                        this.SaveScreenShotSimple(attributeValue)
+                    }
+
+                }
+
+            });
+        }
+        catch (exception) {
+            this._ShowLogText(exception.message);
+        }
 
     }
 

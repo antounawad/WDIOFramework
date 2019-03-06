@@ -16,26 +16,24 @@ describe('webdriver.io page', () => {
     it('should have the right title', () => {
 
 
-        testLib.InitBrowserStart(true);
-  
-        
+        testLib.InitBrowserStart();
+
+
         login.LoginUser("antoun.awad@xbav.de", "qatestAantoun")
 
-        var version = testLib.CheckVersion();
+        testLib.CheckVersion();
         // var version = testLib.CheckGivenVersion("5.2.22");
-        if (version === false) {
-            console.log("Fehlerhafte Version ausgliefert");
-        }
-        if (version === true) {
-            console.log("Version Match , good job ");
-        }
-vn.SearchVN("AutomRKTestVN",2000)
-testLib.Navigate2Site("Arbeitnehmer – Auswahl");
-
-
-
 
         
+
+        vn.SearchVN("AutomRKTestVN", 2000)
+        testLib.Navigate2Site("Arbeitnehmer – Auswahl");
+
+
+
+
+
+
     });
 });
 
