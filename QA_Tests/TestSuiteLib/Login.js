@@ -29,6 +29,7 @@ class Login {
 
 				if (warningMSG.isDisplayed()) {
 
+						console.log("+++++++++++++++++++++++ The Site is Offline , time to Check things up!!++++++++++++++++++++++++");
 						throw new Exception("+++++++++++++++++++++++ The Site is Offline , time to Check things up!!++++++++++++++++++++++++");
 				}
 			}

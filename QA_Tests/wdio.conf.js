@@ -115,10 +115,14 @@ exports.config = {
     // before running any tests.
     framework: 'mocha',
     //
+    // The number of times to retry the entire specfile when it fails as a whole
+    // specFileRetries: 1,
+    //
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter.html
-    // reporters: ['dot'],
+    reporters: ['junit'],
+    
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
