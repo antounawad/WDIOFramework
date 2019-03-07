@@ -22,7 +22,7 @@ exports.config = {
     //
     specs: [
         //'./TestSuite/specs/**/*.js'
-		        'C:/git/shared/QA_Tests/TestSuite/specs/VermArbGAnlegen.js'
+		        'C:/git/shared/QA_Tests/TestSuite/specs/SiteOnlineCheck.js'
 
     ],
     // Patterns to exclude.
@@ -66,7 +66,7 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error
-    logLevel: 'trace',
+    logLevel: 'error',
     //
     // Warns when a deprecated command is used
     deprecationWarnings: true,

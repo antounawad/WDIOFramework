@@ -33,7 +33,7 @@
                 // prd= Product or Test Component  (arbN, arbG, schnellrechner , ...)
                 // tcf = Root TestConfig  Folder
                 // cfg = path to a specific test Config
-                "wdio.conf_debug.js", "--url=rc", "--dom=xbav-berater", "--cfg=config", "--prd=beratung", "--tcf=esig_config", "--ver=5.3.2"
+                "wdio.conf_debug.js", "--url=automatictest", "--dom=xbav-berater", "--cfg=config", "--prd=beratung", "--tcf=esig_config", "--ver=5.3.3"
 
             ]
         }

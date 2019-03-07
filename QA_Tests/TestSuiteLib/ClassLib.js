@@ -100,12 +100,21 @@ var _WorkflowSelector = null;
 var _SelectorIndexArr = [100]
 var _SelectorArr = [100]
 
+var _ErrorMessage = [200]
+
 
 class TestLib {
 
     get LoginName() { return _LoginName };
     get LoginPassword() { return _LoginPassword };
     get WorkflowSelector() { return _WorkflowSelector };
+
+    set AddErrorMessage(value)
+    {
+        _ErrorMessage.push(value);
+    }
+
+    get ErrorMessage() { return _ErrorMessage };
 
     set TakeScreenShotAllDialogs(value) {
 
@@ -500,7 +509,7 @@ class TestLib {
 
 
     // Navigiert zur Seite des Übergebenen Seitentitels
-    Navigate2Site(title, failSite = '') {
+    Navigate2Site(title, failSite = '', checkSiteFields=true) {
         try {
 
             if (_Navigate2SiteIterator >= 20) {
@@ -540,7 +549,7 @@ class TestLib {
                 this._WaitUntilVisible(this.BtnNavNext);
                 this.Next();
 
-                this._CheckSiteFields();
+               
             }
         } catch (ex) {
             _Navigate2SiteIterator += 1;
@@ -550,7 +559,10 @@ class TestLib {
             }
             this.Navigate2Site(title, failSite);
         } finally {
-            this._CheckSiteFields();
+            if(checkSiteFields == true)
+            {
+                this._CheckSiteFields();
+            }
         }
     }
 
@@ -710,7 +722,7 @@ class TestLib {
     }
 
     _CheckAndClearSelectorArr(selector) {
-        if (selector.includes("next") || selector.includes("prev")) {
+        if (selector.includes("Next") || selector.includes("Prev")) {
             this._InitSelectorIndex();
         }
     }
@@ -812,7 +824,10 @@ class TestLib {
 
             var versionFinal = currentVersion.includes("Version " + propertyVersion)
             if (versionFinal === false) {
-                console.log("++++++++++++++++++++ Fehlerhafte Version ausgliefert ++++++++++++++++++++++++++");
+                var message = "++++++++++++++++++++ Fehlerhafte Version ausgliefert ++++++++++++++++++++++++++"
+                this.AddErrorMessage = message;
+                console.log(message);
+                return;
             }
             if (versionFinal === true) {
                 console.log("Version Match , Gut Gemacht ");
@@ -899,12 +914,12 @@ class TestLib {
             _message = message;
         }
 
-        if (this.CheckIsVisible(_btnBlurredOverlay)) {
-            this.ClickElementSimple(_btnBlurredOverlay);
-            if (this.CheckIsVisible(_gridSelector)) {
-                this.ClickElementSimple(_gridSelector);
-            }
-        }
+        // if (this.CheckIsVisible(_btnBlurredOverlay)) {
+        //     this.ClickElementSimple(_btnBlurredOverlay);
+        //     if (this.CheckIsVisible(_gridSelector)) {
+        //         this.ClickElementSimple(_gridSelector);
+        //     }
+        // }
 
         var funcSel = this._GetSelector;
         var result = browser.waitUntil(function () {
@@ -1078,6 +1093,9 @@ class TestLib {
 
 
     InitBrowserStart(login = null, readxml = false, rktest = false) {
+
+        this._ClearErrormessage();
+
         var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de/' + this.TestComponent + "/Account/Login?ReturnUrl=%2F" + this.TestComponent + "%2F";
 
         browser.url(url);
@@ -1894,8 +1912,8 @@ class TestLib {
     _InitSelectorIndex() {
         try {
             for (var i = 0; i <= _SelectorArr.length - 1; i++) {
-                _SelectorArr[i] = null;
-                _SelectorIndexArr[i] = null;
+                    _SelectorArr[i] = "";
+                    _SelectorIndexArr[i] = "";
             }
         } catch (ex) {
 
@@ -2023,7 +2041,28 @@ class TestLib {
             this._ShowLogText(exception.message);
         }
 
+
     }
+
+    _ClearErrormessage()
+    {
+        for(var i = 0;i<=_ErrorMessage.length-1; i++)
+        {
+            _ErrorMessage[i] = null;
+        }
+    }
+
+    _CheckErrormessage()
+    {
+        for(var i = _ErrorMessage.length-1;i>=0; i--)
+        {
+           var content =  _ErrorMessage[i] != null;
+           console.log(content);
+           return content;
+        }
+        return "";
+    }
+
 
     // this Method reads the config file and for ex, if the list from simplelist type , the click element method will be called 
     // <?xml version="1.0" encoding="utf-8"?>
