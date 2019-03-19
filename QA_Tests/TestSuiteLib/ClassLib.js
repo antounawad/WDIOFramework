@@ -109,8 +109,7 @@ class TestLib {
     get LoginPassword() { return _LoginPassword };
     get WorkflowSelector() { return _WorkflowSelector };
 
-    set AddErrorMessage(value)
-    {
+    set AddErrorMessage(value) {
         _ErrorMessage.push(value);
     }
 
@@ -509,7 +508,7 @@ class TestLib {
 
 
     // Navigiert zur Seite des Übergebenen Seitentitels
-    Navigate2Site(title, failSite = '', checkSiteFields=true) {
+    Navigate2Site(title, failSite = '', checkSiteFields = true) {
         try {
 
             if (_Navigate2SiteIterator >= 20) {
@@ -549,7 +548,7 @@ class TestLib {
                 this._WaitUntilVisible(this.BtnNavNext);
                 this.Next();
 
-               
+
             }
         } catch (ex) {
             _Navigate2SiteIterator += 1;
@@ -559,8 +558,7 @@ class TestLib {
             }
             this.Navigate2Site(title, failSite);
         } finally {
-            if(checkSiteFields == true)
-            {
+            if (checkSiteFields == true) {
                 this._CheckSiteFields();
             }
         }
@@ -820,8 +818,6 @@ class TestLib {
         if (this.VersionCompare !== '') {
             var currentVersion = $('#container-main').getText();
             var propertyVersion = this.VersionCompare;
-            // assert.equal(currentVersion.includes("Version " + propertyVersion), true, "Fehlerhafte Version ausgliefert.");
-
             var versionFinal = currentVersion.includes("Version " + propertyVersion)
             if (versionFinal === false) {
                 var message = "++++++++++++++++++++ Fehlerhafte Version ausgliefert ++++++++++++++++++++++++++"
@@ -830,7 +826,7 @@ class TestLib {
                 return;
             }
             if (versionFinal === true) {
-                console.log("Version Match , Gut Gemacht ");
+                console.log("+++++++++++++++++++++ Version Match , Gut Gemacht +++++++++++++++++++++++");
             }
 
         }
@@ -994,7 +990,7 @@ class TestLib {
     }
 
 
-    ScrollToView(attribute, attributeValue, waitForUntilVisible = "") {
+    ScrollToView(attribute, attributeValue, waitForUntilVisible = false) {
         var searchSelector = '[' + attribute + '=' + '"' + attributeValue + '"' + ']'
 
         if (this._WaitUntilVisible(searchSelector)) {
@@ -1098,16 +1094,11 @@ class TestLib {
 
         var url = 'https://' + this.TargetUrl + '.' + this.TargetDom + '.de/' + this.TestComponent + "/Account/Login?ReturnUrl=%2F" + this.TestComponent + "%2F";
 
+        if (String(this.TargetUrl).toUpperCase() == 'BERATUNG') {
+            url = 'http://beratung.xbav-berater.de/Account/Login?ReturnUrl=%2F';
+        }
         browser.url(url);
-
         this.SaveScreenShot();
-
-        //https://rc.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F
-
-        // Erstmal die Standard configuration auslesen
-        // Alle Versicherer oder nur spezielle
-        // Alle Kombinationen oder nur spezielle oder nur SmokeTest
-        // SmokeTest := Nur erste funtkionierende Kombination
         if (readxml) {
 
             this._ReadXMLMainConfig();
@@ -1912,8 +1903,8 @@ class TestLib {
     _InitSelectorIndex() {
         try {
             for (var i = 0; i <= _SelectorArr.length - 1; i++) {
-                    _SelectorArr[i] = "";
-                    _SelectorIndexArr[i] = "";
+                _SelectorArr[i] = "";
+                _SelectorIndexArr[i] = "";
             }
         } catch (ex) {
 
@@ -1930,10 +1921,18 @@ class TestLib {
     // List box ohne Angular und mit generieter ID 
     _SetComplexListBoxValue(searchText, selector, attribute = "", searchSelector = "id") {
         try {
+
+            //ToDo: Alle Leerzeichen aus searchText rausfiltern
+            // var x = searchText.replace("_","")
+
             var listSelector = this._GetSelector(selector);
             var html = null;
             if (listSelector !== null) {
                 html = listSelector.getHTML();
+
+
+
+
                 listSelector.click();
 
                 if (attribute !== "") {
@@ -2044,21 +2043,17 @@ class TestLib {
 
     }
 
-    _ClearErrormessage()
-    {
-        for(var i = 0;i<=_ErrorMessage.length-1; i++)
-        {
+    _ClearErrormessage() {
+        for (var i = 0; i <= _ErrorMessage.length - 1; i++) {
             _ErrorMessage[i] = null;
         }
     }
 
-    _CheckErrormessage()
-    {
-        for(var i = _ErrorMessage.length-1;i>=0; i--)
-        {
-           var content =  _ErrorMessage[i] != null;
-           console.log(content);
-           return content;
+    _CheckErrormessage() {
+        for (var i = _ErrorMessage.length - 1; i >= 0; i--) {
+            var content = _ErrorMessage[i] != null;
+            console.log(content);
+            return content;
         }
         return "";
     }

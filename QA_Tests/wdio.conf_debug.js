@@ -22,7 +22,7 @@ exports.config = {
     //
     specs: [
         //'./TestSuite/specs/**/*.js'
-		        'C:/git/shared/QA_Tests/TestSuite/specs/SiteOnlineCheck.js'
+		        'C:/git/shared/QA_Tests/TestSuite/specs/VermArbGAnlegen.js'
 
     ],
     // Patterns to exclude.

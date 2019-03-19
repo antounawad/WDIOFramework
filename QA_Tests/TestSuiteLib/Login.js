@@ -20,6 +20,7 @@ class Login {
 			assert.notEqual(userElement, null);
 			if (userElement.isDisplayed()) {
 				userElement.setValue(username);
+
 			}
 			else if (warningMSG.isDisplayed()) {
 				browser.refresh()
@@ -29,8 +30,8 @@ class Login {
 
 				if (warningMSG.isDisplayed()) {
 
-						console.log("+++++++++++++++++++++++ The Site is Offline , time to Check things up!!++++++++++++++++++++++++");
-						throw new Exception("+++++++++++++++++++++++ The Site is Offline , time to Check things up!!++++++++++++++++++++++++");
+						console.log("+++++++++++++++++ Achtung : Beratung ist Offline +++++++++++++++++");
+						throw new Exception("+++++++++++++++++ The Site is Offline , time to Check things up!! +++++++++++++++++");
 				}
 			}
 
@@ -39,7 +40,7 @@ class Login {
 			assert.notEqual(passwdElement, null);
 			passwdElement.setValue(password);
 			testLib.ClickElement(loginBtnSelector);
-
+			console.log("+++++++++++++++++ Beratung is Online +++++++++++++++++");
 			testLib.SaveScreenShot();
 
 			if (testLib.CheckIsVisible(_sessionBusy)) {
