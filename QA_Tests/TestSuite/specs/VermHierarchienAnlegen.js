@@ -17,39 +17,33 @@ var ScreenShotFolderpath = './Temp/screenshot.png';
 describe('webdriver.io page', () => {
     it('should have the right title', () => {
 
-
         browser.url('https://automatictest.xbav-berater.de/Vermittlerbereich/Account/Login?ReturnUrl=%2FVermittlerbereich%2F');
-        login.LoginUser("antoun.awad@xbav.de", "qatestAantoun")
+        login.LoginUser("antoun.awad", "qatestAantoun")
 
-        // Click the ArbG Chapter and click add new ArbG
-        testLib.ClickElementByAttribute('title', 'Arbeitnehmer');
-        testLib.ClickElementByAttribute('ng-click', 'addNewVp()');
-        testLib._SetComplexListBoxValue('Antoun  Co. xxxxxxx  xxxxxxxx', '[ng-model="newVp.Vn"]');
-        testLib.ClickElementSimple('#newVpDialog_btnAnlegen', 1000)
-        testLib.ClickElementSimple('#Stammdaten_Title', 1000)
-        testLib.CompareAndClickIfMatch('ng-repeat', 'item in AvailableTitles', 'Herr')
-        testLib.PauseAction(1000);
-        testLib.SetValue('#Stammdaten_Firstname', 'Muster')
-        testLib.SetValue('#Stammdaten_Lastname', 'ArbN')
-        testLib.SetValue('#Stammdaten_Street', 'Muster Straße')
-        testLib.SetValue('#Zip', '66123', 1000)
-        // testLib.SetValue('#Stammdaten_City', 'Saarbrücken')
-        testLib.SetValue('[class="md-datepicker-input md-input"]', '01.01.2000', 1000)
+        testLib.ClickElementByAttribute('title', 'Hierarchien');
+        testLib.ClickElementByAttribute('href', '/Vermittlerbereich/Hierarchy/Create', '#Address_Street');
+        testLib._SetComplexListBoxValue(' -- keine -- ', '[ng-model="model.ExclusiveAgentVrID"]');
+        testLib.SetValue('[ng-model="model.Name"]', 'Hierarchie Test')
+        testLib.CompareAndClickIfMatch('class', 'flex layout-row layout-align-space-between-center', 'Makler')
         testLib.CompareAndClickIfMatch('class', 'md-raised md-accent md-button md-ink-ripple', 'Speichern')
 
-        var searchArbN = '#Search';
-        testLib.SetValue(searchArbN, 'ArbN, Muster');
-
+        var searchAgentur = '#Search';
+        testLib.SetValue(searchAgentur, 'Hierarchie Test');
+        // testLib.ClickElement('[aria-label="Nur aktive"]');
         var searchButton = '//button[text()="Suchen"]';
         testLib.ClickElementSimple(searchButton);
-        var searchElement = '//a[text()="ArbN, Muster"]';
+        var searchElement = '//a[text()="Hierarchie Test"]';
         var result = testLib.CheckIsVisible(searchElement, 1000)
 
         if (result) {
-            console.log("+++++++++++ ArbN ist Erfolgreich angelegt +++++++++++")
+            console.log("+++++++++++ Hierarchie ist Erfolgreich angelegt +++++++++++")
+            testLib.ClickElement('[aria-label="Löschen"]', '[aria-label="Hierarchie löschen"]')
+            testLib.ClickElement('.md-primary.md-confirm-button.md-button.md-ink-ripple.md-default-theme')
+            testLib.PauseAction(2000)
+
         }
         else {
-            console.log("+++++++++++ Fehler: ArbN konnte nicht angelegt werden!! ArbN ist nicht gefunden ++++++++++")
+            console.log("+++++++++++ Fehler: Hierarchie ist nicht gefunden ++++++++++")
             browser.saveScreenshot(ScreenShotFolderpath);
 
         }
